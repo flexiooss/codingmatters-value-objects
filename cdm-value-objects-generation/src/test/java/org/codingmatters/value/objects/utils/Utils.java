@@ -38,7 +38,6 @@ public class Utils {
         }
 
         public String build() {
-            System.out.println("builded " + this.internal.toString());
             return this.internal.toString();
         }
     }
