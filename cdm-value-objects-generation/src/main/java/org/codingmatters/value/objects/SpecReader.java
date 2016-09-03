@@ -32,8 +32,10 @@ public class SpecReader {
         for (String valueName : root.keySet()) {
             ValueSpec.Builder value = valueSpec().name(valueName);
             Map<String, ?> properties = (Map<String, ?>) root.get(valueName);
-            for (String propertyName : properties.keySet()) {
-                value.addProperty(property().name(propertyName).type(PropertyType.valueOf(((String)properties.get(propertyName)).toUpperCase())));
+            if(properties != null) {
+                for (String propertyName : properties.keySet()) {
+                    value.addProperty(property().name(propertyName).type(PropertyType.valueOf(((String) properties.get(propertyName)).toUpperCase())));
+                }
             }
 
             spec.addValue(value);
