@@ -56,8 +56,14 @@ public class ContextSpecParser {
         if(! JAVA_IDENTIFIER_PATTERN.matcher(name).matches()) {
             throw new SpecSyntaxException("malformed property name {context} : should be a valid java identifier", this.context);
         }
+        PropertyType type;
+        try {
+            type = PropertyType.valueOf(((String) value).toUpperCase());
+        } catch(IllegalArgumentException e) {
+            throw new SpecSyntaxException("invalid type for property {context} : strrrrring", this.context);
+        }
         return property()
                 .name(name)
-                .type(PropertyType.valueOf(((String)value).toUpperCase()));
+                .type(type);
     }
 }

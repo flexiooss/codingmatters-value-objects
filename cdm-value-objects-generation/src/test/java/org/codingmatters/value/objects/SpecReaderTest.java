@@ -94,4 +94,17 @@ public class SpecReaderTest {
             reader.read(in);
         }
     }
+
+    @Test
+    public void invalidType() throws Exception {
+        this.exception.expect(SpecSyntaxException.class);
+        this.exception.expectMessage("invalid type for property \"val/prop\" : strrrrring");
+
+        try(InputStream in = streamFor(string()
+                .line("val:")
+                .line("  prop: strrrrring")
+                .build())) {
+            reader.read(in);
+        }
+    }
 }
