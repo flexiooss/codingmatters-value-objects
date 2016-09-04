@@ -1,7 +1,10 @@
 package org.codingmatters.value.objects;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
+import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
 import org.codingmatters.value.objects.spec.PropertyType;
+import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -25,6 +28,20 @@ public class SpecReaderTest {
     public ExpectedException exception = ExpectedException.none();
 
     private SpecReader reader = new SpecReader();
+
+    @Test
+    public void lowLevelSyntaxError() throws Exception {
+        this.exception.expect(LowLevelSyntaxException.class);
+        this.exception.expectMessage("spec must be valid YAML expression");
+        this.exception.expectCause(Matchers.isA(JsonMappingException.class));
+
+        try(InputStream in = streamFor(string()
+                .line("val")
+                .line("  prop string")
+                .build())) {
+            reader.read(in);
+        }
+    }
 
     @Test
     public void manySimpleValueSpec() throws Exception {

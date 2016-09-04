@@ -1,7 +1,10 @@
 package org.codingmatters.value.objects;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
 import org.codingmatters.value.objects.reader.ContextSpecParser;
 import org.codingmatters.value.objects.spec.Spec;
@@ -17,13 +20,14 @@ public class SpecReader {
 
     static private final ObjectMapper MAPPER = new ObjectMapper(new YAMLFactory());
 
-    public Spec read(InputStream in) throws IOException, SpecSyntaxException {
+    public Spec read(InputStream in) throws IOException, SpecSyntaxException, LowLevelSyntaxException {
         ObjectMapper mapper = getMapper();
-
-
-        Map<String,?> root = mapper.readValue(in, Map.class);
-
-        return new ContextSpecParser(root).parse();
+        try {
+            Map<String, ?> root = mapper.readValue(in, Map.class);
+            return new ContextSpecParser(root).parse();
+        } catch(JsonParseException | JsonMappingException e) {
+            throw new LowLevelSyntaxException("spec must be valid YAML expression", e);
+        }
     }
 
 
