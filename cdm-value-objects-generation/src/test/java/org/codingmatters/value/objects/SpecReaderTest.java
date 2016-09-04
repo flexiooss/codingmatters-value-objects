@@ -1,7 +1,10 @@
 package org.codingmatters.value.objects;
 
+import org.codingmatters.value.objects.exception.SpecSyntaxException;
 import org.codingmatters.value.objects.spec.PropertyType;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.io.InputStream;
 
@@ -17,6 +20,10 @@ import static org.junit.Assert.assertThat;
  * Created by nelt on 9/3/16.
  */
 public class SpecReaderTest {
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
     private SpecReader reader = new SpecReader();
 
     @Test
@@ -55,6 +62,19 @@ public class SpecReaderTest {
                                     .build()
                     )
             );
+        }
+    }
+
+    @Test
+    public void malformedPropertyName() throws Exception {
+        this.exception.expect(SpecSyntaxException.class);
+        this.exception.expectMessage("malformed property name \"val/prop erty\" : should be a valid java identifier");
+
+        try(InputStream in = streamFor(string()
+                .line("val:")
+                .line("  prop erty: string")
+                .build())) {
+            reader.read(in);
         }
     }
 }
