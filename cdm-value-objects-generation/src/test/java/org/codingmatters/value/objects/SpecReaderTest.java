@@ -73,8 +73,28 @@ public class SpecReaderTest {
                     is(
                             spec()
                                     .addValue(valueSpec().name("val")
-                                            .addProperty(property().name("p1").type(PropertyType.STRING))
-                                            .addProperty(property().name("p2").type(PropertyType.STRING))
+                                            .addProperty(property().name("p1").type(PropertyType.STRING).referencedType(String.class.getName()))
+                                            .addProperty(property().name("p2").type(PropertyType.STRING).referencedType(String.class.getName()))
+                                    )
+                                    .build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void propertyWithObjectType() throws Exception {
+        try(InputStream in = streamFor(string()
+                .line("val1:")
+                .line("  p: ")
+                .line("    object: java.lang.String")
+                .build())) {
+            assertThat(
+                    reader.read(in),
+                    is(
+                            spec()
+                                    .addValue(valueSpec().name("val1")
+                                            .addProperty(property().name("p").type(PropertyType.OBJECT).referencedType("java.lang.String"))
                                     )
                                     .build()
                     )
@@ -98,7 +118,7 @@ public class SpecReaderTest {
     @Test
     public void invalidType() throws Exception {
         this.exception.expect(SpecSyntaxException.class);
-        this.exception.expectMessage("invalid type for property \"val/prop\" : strrrrring, should be one of string, int, long, float, double, bool");
+        this.exception.expectMessage("invalid type for property \"val/prop\" : strrrrring, should be one of ");
 
         try(InputStream in = streamFor(string()
                 .line("val:")

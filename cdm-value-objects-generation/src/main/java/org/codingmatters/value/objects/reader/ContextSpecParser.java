@@ -56,16 +56,35 @@ public class ContextSpecParser {
         if(! JAVA_IDENTIFIER_PATTERN.matcher(name).matches()) {
             throw new SpecSyntaxException("malformed property name {context} : should be a valid java identifier", this.context);
         }
-        PropertyType type;
-        try {
-            type = PropertyType.valueOf(((String) value).toUpperCase());
-        } catch(IllegalArgumentException e) {
-            throw new SpecSyntaxException(
-                    String.format("invalid type for property {context} : strrrrring, should be one of %s", PropertyType.validTypesSpec()),
-                    this.context);
+
+
+        PropertyType type = null;
+        String referencedType = null;
+        if(value instanceof String) {
+            type = this.parseType((String) value);
+            referencedType = type.getReferencedType();
+        } else if(value instanceof Map) {
+            Map valueMap = (Map) value;
+            if(valueMap.containsKey("object")) {
+                type = PropertyType.OBJECT;
+                referencedType = (String) valueMap.get("object");
+            }
         }
+
         return property()
                 .name(name)
-                .type(type);
+                .type(type).referencedType(referencedType);
+    }
+
+    private PropertyType parseType(String typeSpec) throws SpecSyntaxException {
+        PropertyType type;
+        try {
+            type = PropertyType.valueOf(typeSpec.toUpperCase());
+        } catch(IllegalArgumentException e) {
+            throw new SpecSyntaxException(
+                    String.format("invalid type for property {context} : %s, should be one of %s", typeSpec, PropertyType.validTypesSpec()),
+                    this.context);
+        }
+        return type;
     }
 }
