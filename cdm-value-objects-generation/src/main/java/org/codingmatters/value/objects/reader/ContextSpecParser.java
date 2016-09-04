@@ -60,7 +60,9 @@ public class ContextSpecParser {
         try {
             type = PropertyType.valueOf(((String) value).toUpperCase());
         } catch(IllegalArgumentException e) {
-            throw new SpecSyntaxException("invalid type for property {context} : strrrrring", this.context);
+            throw new SpecSyntaxException(
+                    String.format("invalid type for property {context} : strrrrring, should be one of %s", PropertyType.validTypesSpec()),
+                    this.context);
         }
         return property()
                 .name(name)
