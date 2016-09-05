@@ -146,4 +146,17 @@ public class SpecReaderTest {
             );
         }
     }
+
+    @Test
+    public void propertyWithInSpecValueObjectType_notDeclared_throwsSpecSyntaxException() throws Exception {
+        this.exception.expect(SpecSyntaxException.class);
+        this.exception.expectMessage("undeclared referenced type for \"val1/p\" : a referenced type should be declared in the same spec");
+
+        try(InputStream in = streamFor(string()
+                .line("val1:")
+                .line("  p: $val2")
+                .build())) {
+            reader.read(in);
+        }
+    }
 }

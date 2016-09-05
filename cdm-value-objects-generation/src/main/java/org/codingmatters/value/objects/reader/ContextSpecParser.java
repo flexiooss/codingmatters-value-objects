@@ -74,6 +74,8 @@ public class ContextSpecParser {
         if(type.startsWith("$")) {
             if(this.root.keySet().contains(type.substring(1))) {
                 referencedType = String.format("#ref(%s)", type.substring(1));
+            } else {
+                throw new SpecSyntaxException("undeclared referenced type for {context} : a referenced type should be declared in the same spec", this.context);
             }
         } else if(FULLY_QUALIFIED_CLASS_NAME_PATTERN.matcher(type).matches()) {
             referencedType = type;
