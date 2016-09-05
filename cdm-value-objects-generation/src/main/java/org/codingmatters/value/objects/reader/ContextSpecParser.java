@@ -59,7 +59,7 @@ public class ContextSpecParser {
 
         String referencedType = null;
         if(value instanceof String) {
-            referencedType = this.parseType((String) value).getReferencedType();
+            referencedType = this.parseType((String) value).getImplementationType();
         } else if(value instanceof Map) {
             Map valueMap = (Map) value;
             if(valueMap.containsKey("object")) {

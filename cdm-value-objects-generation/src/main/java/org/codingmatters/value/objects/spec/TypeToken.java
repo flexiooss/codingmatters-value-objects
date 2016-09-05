@@ -13,14 +13,14 @@ public enum TypeToken {
     BOOL(Boolean.class.getName())
     ;
 
-    private final String referencedType;
+    private final String implementationType;
 
-    TypeToken(String referencedType) {
-        this.referencedType = referencedType;
+    TypeToken(String implementationType) {
+        this.implementationType = implementationType;
     }
 
-    public String getReferencedType() {
-        return referencedType;
+    public String getImplementationType() {
+        return implementationType;
     }
 
     static public String validTypesSpec() {
