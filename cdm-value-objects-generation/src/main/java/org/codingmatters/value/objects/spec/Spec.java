@@ -27,7 +27,7 @@ public class Spec {
         }
 
         public Spec build() {
-            return new Spec(new ArrayList<ValueSpec>(this.values));
+            return new Spec(new ArrayList<>(this.values));
         }
     }
 

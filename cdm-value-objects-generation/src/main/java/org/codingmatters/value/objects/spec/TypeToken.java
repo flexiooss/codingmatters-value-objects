@@ -6,16 +6,16 @@ import java.util.stream.Collectors;
 /**
  * Created by nelt on 9/3/16.
  */
-public enum PropertyType {
+public enum TypeToken {
     STRING(String.class.getName()),
     INT(Integer.class.getName()), LONG(Long.class.getName()),
     FLOAT(Float.class.getName()), DOUBLE(Double.class.getName()),
-    BOOL(Boolean.class.getName()),
-    OBJECT("reference");
+    BOOL(Boolean.class.getName())
+    ;
 
     private final String referencedType;
 
-    PropertyType(String referencedType) {
+    TypeToken(String referencedType) {
         this.referencedType = referencedType;
     }
 

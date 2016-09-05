@@ -3,7 +3,6 @@ package org.codingmatters.value.objects;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
-import org.codingmatters.value.objects.spec.PropertyType;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
@@ -73,8 +72,8 @@ public class SpecReaderTest {
                     is(
                             spec()
                                     .addValue(valueSpec().name("val")
-                                            .addProperty(property().name("p1").type(PropertyType.STRING).referencedType(String.class.getName()))
-                                            .addProperty(property().name("p2").type(PropertyType.STRING).referencedType(String.class.getName()))
+                                            .addProperty(property().name("p1").type(String.class.getName()))
+                                            .addProperty(property().name("p2").type(String.class.getName()))
                                     )
                                     .build()
                     )
@@ -94,7 +93,7 @@ public class SpecReaderTest {
                     is(
                             spec()
                                     .addValue(valueSpec().name("val1")
-                                            .addProperty(property().name("p").type(PropertyType.OBJECT).referencedType("java.lang.String"))
+                                            .addProperty(property().name("p").type("java.lang.String"))
                                     )
                                     .build()
                     )

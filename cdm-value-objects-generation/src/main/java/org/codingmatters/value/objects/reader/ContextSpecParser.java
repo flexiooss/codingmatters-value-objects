@@ -2,7 +2,7 @@ package org.codingmatters.value.objects.reader;
 
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
 import org.codingmatters.value.objects.spec.PropertySpec;
-import org.codingmatters.value.objects.spec.PropertyType;
+import org.codingmatters.value.objects.spec.TypeToken;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.ValueSpec;
 
@@ -57,32 +57,28 @@ public class ContextSpecParser {
             throw new SpecSyntaxException("malformed property name {context} : should be a valid java identifier", this.context);
         }
 
-
-        PropertyType type = null;
         String referencedType = null;
         if(value instanceof String) {
-            type = this.parseType((String) value);
-            referencedType = type.getReferencedType();
+            referencedType = this.parseType((String) value).getReferencedType();
         } else if(value instanceof Map) {
             Map valueMap = (Map) value;
             if(valueMap.containsKey("object")) {
-                type = PropertyType.OBJECT;
                 referencedType = (String) valueMap.get("object");
             }
         }
 
         return property()
                 .name(name)
-                .type(type).referencedType(referencedType);
+                .type(referencedType);
     }
 
-    private PropertyType parseType(String typeSpec) throws SpecSyntaxException {
-        PropertyType type;
+    private TypeToken parseType(String typeSpec) throws SpecSyntaxException {
+        TypeToken type;
         try {
-            type = PropertyType.valueOf(typeSpec.toUpperCase());
+            type = TypeToken.valueOf(typeSpec.toUpperCase());
         } catch(IllegalArgumentException e) {
             throw new SpecSyntaxException(
-                    String.format("invalid type for property {context} : %s, should be one of %s", typeSpec, PropertyType.validTypesSpec()),
+                    String.format("invalid type for property {context} : %s, should be one of %s", typeSpec, TypeToken.validTypesSpec()),
                     this.context);
         }
         return type;
