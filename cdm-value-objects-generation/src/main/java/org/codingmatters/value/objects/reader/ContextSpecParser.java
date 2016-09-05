@@ -59,6 +59,8 @@ public class ContextSpecParser {
             TypeSpec.Builder typeSpec;
             if (value instanceof String) {
                 typeSpec = this.typeForString((String) value);
+            } else if (value instanceof Map && ((Map) value).containsKey("value-object")) {
+                typeSpec = this.typeForString((String) ((Map) value).get("value-object")).typeKind(TypeKind.EXTERNAL_VALUE_OBJECT);
             } else if (value instanceof Map && ((Map) value).containsKey("type")) {
                 typeSpec = this.typeForString((String) ((Map) value).get("type"));
             } else {
@@ -79,7 +81,7 @@ public class ContextSpecParser {
         if(type.startsWith("$")) {
             if(this.root.keySet().contains(type.substring(1))) {
                 return type()
-                        .typeRef(String.format("#ref(%s)", type.substring(1)))
+                        .typeRef(type.substring(1))
                         .typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)
                         ;
             } else {
