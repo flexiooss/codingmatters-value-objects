@@ -43,6 +43,32 @@ public class SpecReaderTest {
     }
 
     @Test
+    public void malformedPropertyName() throws Exception {
+        this.exception.expect(SpecSyntaxException.class);
+        this.exception.expectMessage("malformed property name \"val/prop erty\" : should be a valid java identifier");
+
+        try(InputStream in = streamFor(string()
+                .line("val:")
+                .line("  prop erty: string")
+                .build())) {
+            reader.read(in);
+        }
+    }
+
+    @Test
+    public void invalidType() throws Exception {
+        this.exception.expect(SpecSyntaxException.class);
+        this.exception.expectMessage("invalid type for property \"val/prop\" : strrrrring, should be one of ");
+
+        try(InputStream in = streamFor(string()
+                .line("val:")
+                .line("  prop: strrrrring")
+                .build())) {
+            reader.read(in);
+        }
+    }
+
+    @Test
     public void manySimpleValueSpec() throws Exception {
         try(InputStream in = streamFor(string()
                 .line("val1:")
@@ -101,28 +127,23 @@ public class SpecReaderTest {
     }
 
     @Test
-    public void malformedPropertyName() throws Exception {
-        this.exception.expect(SpecSyntaxException.class);
-        this.exception.expectMessage("malformed property name \"val/prop erty\" : should be a valid java identifier");
-
+    public void propertyWithInSpecValueObjectType() throws Exception {
         try(InputStream in = streamFor(string()
-                .line("val:")
-                .line("  prop erty: string")
+                .line("val1:")
+                .line("  p: $val2")
+                .line("val2:")
                 .build())) {
-            reader.read(in);
-        }
-    }
-
-    @Test
-    public void invalidType() throws Exception {
-        this.exception.expect(SpecSyntaxException.class);
-        this.exception.expectMessage("invalid type for property \"val/prop\" : strrrrring, should be one of ");
-
-        try(InputStream in = streamFor(string()
-                .line("val:")
-                .line("  prop: strrrrring")
-                .build())) {
-            reader.read(in);
+            assertThat(
+                    reader.read(in),
+                    is(
+                            spec()
+                                    .addValue(valueSpec().name("val1")
+                                            .addProperty(property().name("p").type("#ref(val2)"))
+                                    )
+                                    .addValue(valueSpec().name("val2"))
+                                    .build()
+                    )
+            );
         }
     }
 }

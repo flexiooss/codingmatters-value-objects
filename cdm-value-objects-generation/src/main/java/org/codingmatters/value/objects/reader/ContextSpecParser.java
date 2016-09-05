@@ -59,11 +59,7 @@ public class ContextSpecParser {
 
         String referencedType = null;
         if(value instanceof String) {
-            if(FULLY_QUALIFIED_CLASS_NAME_PATTERN.matcher((String) value).matches()) {
-                referencedType = (String) value;
-            } else {
-                referencedType = this.parseType((String) value).getImplementationType();
-            }
+            referencedType = this.typeForString((String) value, referencedType);
         } else {
             throw new SpecSyntaxException(String.format("unexpected specification for property {context}: %s", value), this.context);
         }
@@ -71,6 +67,20 @@ public class ContextSpecParser {
         return property()
                 .name(name)
                 .type(referencedType);
+    }
+
+    private String typeForString(String value, String referencedType) throws SpecSyntaxException {
+        String type = value;
+        if(type.startsWith("$")) {
+            if(this.root.keySet().contains(type.substring(1))) {
+                referencedType = String.format("#ref(%s)", type.substring(1));
+            }
+        } else if(FULLY_QUALIFIED_CLASS_NAME_PATTERN.matcher(type).matches()) {
+            referencedType = type;
+        } else {
+            referencedType = this.parseType(type).getImplementationType();
+        }
+        return referencedType;
     }
 
     private TypeToken parseType(String typeSpec) throws SpecSyntaxException {
