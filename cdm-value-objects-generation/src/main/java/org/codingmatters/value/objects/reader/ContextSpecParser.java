@@ -53,36 +53,41 @@ public class ContextSpecParser {
 
     private PropertySpec.Builder createPropertySpec(String name, Object value) throws SpecSyntaxException {
         this.context.push(name);
-        if(! JAVA_IDENTIFIER_PATTERN.matcher(name).matches()) {
-            throw new SpecSyntaxException("malformed property name {context} : should be a valid java identifier", this.context);
-        }
+        try {
+            if (!JAVA_IDENTIFIER_PATTERN.matcher(name).matches()) {
+                throw new SpecSyntaxException("malformed property name {context} : should be a valid java identifier", this.context);
+            }
 
-        String referencedType = null;
-        if(value instanceof String) {
-            referencedType = this.typeForString((String) value, referencedType);
-        } else {
-            throw new SpecSyntaxException(String.format("unexpected specification for property {context}: %s", value), this.context);
-        }
+            String referencedType;
+            if (value instanceof String) {
+                referencedType = this.typeForString((String) value);
+            } else if (value instanceof Map && ((Map) value).containsKey("type")) {
+                referencedType = this.typeForString((String) ((Map) value).get("type"));
+            } else {
+                throw new SpecSyntaxException(String.format("unexpected specification for property {context}: %s", value), this.context);
+            }
 
-        return property()
-                .name(name)
-                .type(referencedType);
+            return property()
+                    .name(name)
+                    .type(referencedType);
+        } finally {
+            this.context.pop();
+        }
     }
 
-    private String typeForString(String value, String referencedType) throws SpecSyntaxException {
+    private String typeForString(String value) throws SpecSyntaxException {
         String type = value;
         if(type.startsWith("$")) {
             if(this.root.keySet().contains(type.substring(1))) {
-                referencedType = String.format("#ref(%s)", type.substring(1));
+                return String.format("#ref(%s)", type.substring(1));
             } else {
                 throw new SpecSyntaxException("undeclared referenced type for {context} : a referenced type should be declared in the same spec", this.context);
             }
         } else if(FULLY_QUALIFIED_CLASS_NAME_PATTERN.matcher(type).matches()) {
-            referencedType = type;
+            return type;
         } else {
-            referencedType = this.parseType(type).getImplementationType();
+            return this.parseType(type).getImplementationType();
         }
-        return referencedType;
     }
 
     private TypeToken parseType(String typeSpec) throws SpecSyntaxException {
@@ -91,7 +96,7 @@ public class ContextSpecParser {
             type = TypeToken.valueOf(typeSpec.toUpperCase());
         } catch(IllegalArgumentException e) {
             throw new SpecSyntaxException(
-                    String.format("invalid type for property {context} : %s, should be one of %s or a fully qualified class name.", typeSpec, TypeToken.validTypesSpec()),
+                    String.format("invalid type for property {context} : %s, should be one of %s, a reference to an in spec declared type ($type notation) or a fully qualified class name (default package classes cannot be used).", typeSpec, TypeToken.validTypesSpec()),
                     this.context);
         }
         return type;

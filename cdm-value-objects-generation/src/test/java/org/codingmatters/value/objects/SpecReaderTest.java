@@ -159,4 +159,26 @@ public class SpecReaderTest {
             reader.read(in);
         }
     }
+
+    @Test
+    public void propertyObjectWithTypeObject() throws Exception {
+        try(InputStream in = streamFor(string()
+                .line("val:")
+                .line("  p1: {type: java.lang.String}")
+                .line("  p2:")
+                .line("    type: $val")
+                .build())) {
+            assertThat(
+                    reader.read(in),
+                    is(
+                            spec()
+                                    .addValue(valueSpec().name("val")
+                                            .addProperty(property().name("p1").type("java.lang.String"))
+                                            .addProperty(property().name("p2").type("#ref(val)"))
+                                    )
+                                    .build()
+                    )
+            );
+        }
+    }
 }
