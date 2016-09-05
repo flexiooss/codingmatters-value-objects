@@ -60,7 +60,8 @@ public class ContextSpecParser {
             if (value instanceof String) {
                 typeSpec = this.typeForString((String) value);
             } else if (value instanceof Map && ((Map) value).containsKey("value-object")) {
-                typeSpec = this.typeForString((String) ((Map) value).get("value-object")).typeKind(TypeKind.EXTERNAL_VALUE_OBJECT);
+                typeSpec = this.typeForString((String) ((Map) value).get("value-object"))
+                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT);
             } else if (value instanceof Map && ((Map) value).containsKey("type")) {
                 typeSpec = this.typeForString((String) ((Map) value).get("type"));
             } else {
