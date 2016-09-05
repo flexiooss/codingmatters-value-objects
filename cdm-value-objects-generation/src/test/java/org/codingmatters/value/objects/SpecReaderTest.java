@@ -3,6 +3,8 @@ package org.codingmatters.value.objects;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
+import org.codingmatters.value.objects.spec.TypeKind;
+import org.codingmatters.value.objects.spec.TypeSpec;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
@@ -12,6 +14,7 @@ import java.io.InputStream;
 
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
 import static org.codingmatters.value.objects.spec.Spec.spec;
+import static org.codingmatters.value.objects.spec.TypeSpec.type;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
 import static org.codingmatters.value.objects.utils.Utils.streamFor;
 import static org.codingmatters.value.objects.utils.Utils.string;
@@ -98,8 +101,8 @@ public class SpecReaderTest {
                     is(
                             spec()
                                     .addValue(valueSpec().name("val")
-                                            .addProperty(property().name("p1").type(String.class.getName()))
-                                            .addProperty(property().name("p2").type(String.class.getName()))
+                                            .addProperty(property().name("p1").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
+                                            .addProperty(property().name("p2").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
                                     )
                                     .build()
                     )
@@ -118,7 +121,7 @@ public class SpecReaderTest {
                     is(
                             spec()
                                     .addValue(valueSpec().name("val1")
-                                            .addProperty(property().name("p").type("java.lang.String"))
+                                            .addProperty(property().name("p").type(type().typeRef("java.lang.String").typeKind(TypeKind.JAVA_TYPE)))
                                     )
                                     .build()
                     )
@@ -138,7 +141,7 @@ public class SpecReaderTest {
                     is(
                             spec()
                                     .addValue(valueSpec().name("val1")
-                                            .addProperty(property().name("p").type("#ref(val2)"))
+                                            .addProperty(property().name("p").type(type().typeRef("#ref(val2)").typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)))
                                     )
                                     .addValue(valueSpec().name("val2"))
                                     .build()
@@ -173,8 +176,8 @@ public class SpecReaderTest {
                     is(
                             spec()
                                     .addValue(valueSpec().name("val")
-                                            .addProperty(property().name("p1").type("java.lang.String"))
-                                            .addProperty(property().name("p2").type("#ref(val)"))
+                                            .addProperty(property().name("p1").type(type().typeRef("java.lang.String").typeKind(TypeKind.JAVA_TYPE)))
+                                            .addProperty(property().name("p2").type(type().typeRef("#ref(val)").typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)))
                                     )
                                     .build()
                     )

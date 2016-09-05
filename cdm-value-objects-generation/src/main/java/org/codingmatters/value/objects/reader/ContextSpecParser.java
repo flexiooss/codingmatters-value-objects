@@ -1,10 +1,7 @@
 package org.codingmatters.value.objects.reader;
 
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
-import org.codingmatters.value.objects.spec.PropertySpec;
-import org.codingmatters.value.objects.spec.TypeToken;
-import org.codingmatters.value.objects.spec.Spec;
-import org.codingmatters.value.objects.spec.ValueSpec;
+import org.codingmatters.value.objects.spec.*;
 
 import java.util.Map;
 import java.util.Stack;
@@ -12,6 +9,7 @@ import java.util.regex.Pattern;
 
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
 import static org.codingmatters.value.objects.spec.Spec.spec;
+import static org.codingmatters.value.objects.spec.TypeSpec.type;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
 
 /**
@@ -58,35 +56,45 @@ public class ContextSpecParser {
                 throw new SpecSyntaxException("malformed property name {context} : should be a valid java identifier", this.context);
             }
 
-            String referencedType;
+            TypeSpec.Builder typeSpec;
             if (value instanceof String) {
-                referencedType = this.typeForString((String) value);
+                typeSpec = this.typeForString((String) value);
             } else if (value instanceof Map && ((Map) value).containsKey("type")) {
-                referencedType = this.typeForString((String) ((Map) value).get("type"));
+                typeSpec = this.typeForString((String) ((Map) value).get("type"));
             } else {
                 throw new SpecSyntaxException(String.format("unexpected specification for property {context}: %s", value), this.context);
             }
 
             return property()
                     .name(name)
-                    .type(referencedType);
+                    .type(typeSpec)
+                    ;
         } finally {
             this.context.pop();
         }
     }
 
-    private String typeForString(String value) throws SpecSyntaxException {
+    private TypeSpec.Builder typeForString(String value) throws SpecSyntaxException {
         String type = value;
         if(type.startsWith("$")) {
             if(this.root.keySet().contains(type.substring(1))) {
-                return String.format("#ref(%s)", type.substring(1));
+                return type()
+                        .typeRef(String.format("#ref(%s)", type.substring(1)))
+                        .typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)
+                        ;
             } else {
                 throw new SpecSyntaxException("undeclared referenced type for {context} : a referenced type should be declared in the same spec", this.context);
             }
         } else if(FULLY_QUALIFIED_CLASS_NAME_PATTERN.matcher(type).matches()) {
-            return type;
+            return type()
+                    .typeRef(type)
+                    .typeKind(TypeKind.JAVA_TYPE)
+                    ;
         } else {
-            return this.parseType(type).getImplementationType();
+            return type()
+                    .typeRef(this.parseType(type).getImplementationType())
+                    .typeKind(TypeKind.JAVA_TYPE)
+                    ;
         }
     }
 
