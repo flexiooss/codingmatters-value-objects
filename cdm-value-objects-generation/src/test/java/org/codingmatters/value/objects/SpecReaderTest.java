@@ -82,11 +82,10 @@ public class SpecReaderTest {
     }
 
     @Test
-    public void propertyWithObjectType() throws Exception {
+    public void propertyWithImplementationType() throws Exception {
         try(InputStream in = streamFor(string()
                 .line("val1:")
-                .line("  p: ")
-                .line("    object: java.lang.String")
+                .line("  p: java.lang.String")
                 .build())) {
             assertThat(
                     reader.read(in),

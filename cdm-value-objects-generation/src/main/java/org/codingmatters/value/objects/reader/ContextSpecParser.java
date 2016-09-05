@@ -19,7 +19,7 @@ import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
  */
 public class ContextSpecParser {
     private static final Pattern JAVA_IDENTIFIER_PATTERN = Pattern.compile("\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*");
-
+    private static final Pattern FULLY_QUALIFIED_CLASS_NAME_PATTERN = Pattern.compile(JAVA_IDENTIFIER_PATTERN.pattern() + "(\\." + JAVA_IDENTIFIER_PATTERN.pattern() + ")+");
 
     private final Map<String, ?> root;
     private Stack<String> context;
@@ -59,12 +59,13 @@ public class ContextSpecParser {
 
         String referencedType = null;
         if(value instanceof String) {
-            referencedType = this.parseType((String) value).getImplementationType();
-        } else if(value instanceof Map) {
-            Map valueMap = (Map) value;
-            if(valueMap.containsKey("object")) {
-                referencedType = (String) valueMap.get("object");
+            if(FULLY_QUALIFIED_CLASS_NAME_PATTERN.matcher((String) value).matches()) {
+                referencedType = (String) value;
+            } else {
+                referencedType = this.parseType((String) value).getImplementationType();
             }
+        } else {
+            throw new SpecSyntaxException(String.format("unexpected specification for property {context}: %s", value), this.context);
         }
 
         return property()
@@ -78,7 +79,7 @@ public class ContextSpecParser {
             type = TypeToken.valueOf(typeSpec.toUpperCase());
         } catch(IllegalArgumentException e) {
             throw new SpecSyntaxException(
-                    String.format("invalid type for property {context} : %s, should be one of %s", typeSpec, TypeToken.validTypesSpec()),
+                    String.format("invalid type for property {context} : %s, should be one of %s or a fully qualified class name.", typeSpec, TypeToken.validTypesSpec()),
                     this.context);
         }
         return type;
