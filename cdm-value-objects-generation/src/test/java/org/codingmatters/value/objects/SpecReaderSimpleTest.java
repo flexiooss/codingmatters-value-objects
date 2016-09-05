@@ -23,7 +23,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 9/3/16.
  */
-public class SpecReaderTest {
+public class SpecReaderSimpleTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -31,7 +31,7 @@ public class SpecReaderTest {
     private SpecReader reader = new SpecReader();
 
     @Test
-    public void lowLevelSyntaxError() throws Exception {
+    public void underlyingParserError_throwsLowLevelSyntaxException() throws Exception {
         this.exception.expect(LowLevelSyntaxException.class);
         this.exception.expectMessage("spec must be valid YAML expression");
         this.exception.expectCause(Matchers.isA(JsonMappingException.class));
@@ -58,7 +58,7 @@ public class SpecReaderTest {
     }
 
     @Test
-    public void invalidType() throws Exception {
+    public void invalidType_throwsSpecSyntaxException() throws Exception {
         this.exception.expect(SpecSyntaxException.class);
         this.exception.expectMessage("invalid type for property \"val/prop\" : strrrrring, should be one of ");
 
@@ -162,45 +162,4 @@ public class SpecReaderTest {
         }
     }
 
-    @Test
-    public void propertyObjectWithTypeObject() throws Exception {
-        try(InputStream in = streamFor(string()
-                .line("val:")
-                .line("  p1: {type: java.lang.String}")
-                .line("  p2:")
-                .line("    type: $val")
-                .build())) {
-            assertThat(
-                    reader.read(in),
-                    is(
-                            spec()
-                                    .addValue(valueSpec().name("val")
-                                            .addProperty(property().name("p1").type(type().typeRef("java.lang.String").typeKind(TypeKind.JAVA_TYPE)))
-                                            .addProperty(property().name("p2").type(type().typeRef("val").typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)))
-                                    )
-                                    .build()
-                    )
-            );
-        }
-    }
-
-    @Test
-    public void propertyWithExternalValueBuilderType() throws Exception {
-        try(InputStream in = streamFor(string()
-                .line("val:")
-                .line("  p:")
-                .line("    value-object: org.codingmatters.ValueObject")
-                .build())) {
-            assertThat(
-                    reader.read(in),
-                    is(
-                            spec()
-                                    .addValue(valueSpec().name("val")
-                                            .addProperty(property().name("p").type(type().typeRef("org.codingmatters.ValueObject").typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)))
-                                    )
-                                    .build()
-                    )
-            );
-        }
-    }
 }
