@@ -67,19 +67,24 @@ public class ClassMatchersTest {
     }
 
     @Test
+    public void aClass() throws Exception {
+        assertThat(String.class, is(ClassMatchers.isAClass()));
+    }
+
+    @Test
     public void classWithName() throws Exception {
-        assertThat(String.class, is(ClassMatchers.aClass().withName("java.lang.String")));
+        assertThat(String.class, is(ClassMatchers.isAClass().withName("java.lang.String")));
     }
 
     @Test
     public void classHasNotName() throws Exception {
         exception.expect(AssertionError.class);
         exception.expectMessage(
-                "Expected: is class named \"NotThisName\"\n" +
-                "     but: class was named java.lang.String"
+                "Expected: (classname is \"NotThisName\")\n" +
+                "     but: classname is \"NotThisName\" <class java.lang.String> classname was \"java.lang.String\""
         );
 
-        assertThat(String.class, is(ClassMatchers.aClass().withName("NotThisName")));
+        assertThat(String.class, ClassMatchers.isAClass().withName("NotThisName"));
     }
 
 

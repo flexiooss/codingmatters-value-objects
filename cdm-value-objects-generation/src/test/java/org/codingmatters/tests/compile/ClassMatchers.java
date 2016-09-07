@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  */
 public class ClassMatchers {
 
-    static public ClassMatcher aClass() {
+    static public ClassMatcher isAClass() {
         return new ClassMatcher();
     }
 
