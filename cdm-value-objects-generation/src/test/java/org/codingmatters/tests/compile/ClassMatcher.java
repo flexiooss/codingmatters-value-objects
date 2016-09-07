@@ -8,10 +8,14 @@ import org.hamcrest.Description;
  */
 public class ClassMatcher extends BaseMatcher<Class> {
 
-    private final String name;
+    private String name;
 
-    public ClassMatcher(String name) {
+    public ClassMatcher() {
+    }
+
+    public ClassMatcher withName(String name) {
         this.name = name;
+        return this;
     }
 
     @Override

@@ -67,8 +67,8 @@ public class ClassMatchersTest {
     }
 
     @Test
-    public void classHasName() throws Exception {
-        assertThat(String.class, is(ClassMatchers.classNamed("java.lang.String")));
+    public void classWithName() throws Exception {
+        assertThat(String.class, is(ClassMatchers.aClass().withName("java.lang.String")));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class ClassMatchersTest {
                 "     but: class was named java.lang.String"
         );
 
-        assertThat(String.class, is(ClassMatchers.classNamed("NotThisName")));
+        assertThat(String.class, is(ClassMatchers.aClass().withName("NotThisName")));
     }
 
 

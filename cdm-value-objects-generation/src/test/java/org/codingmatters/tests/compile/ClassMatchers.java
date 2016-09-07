@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
  */
 public class ClassMatchers {
 
-    static public ClassMatcher classNamed(String name) {
-        return new ClassMatcher(name);
+    static public ClassMatcher aClass() {
+        return new ClassMatcher();
     }
 
     static public Matcher<Class> hasMethod(String name) {
