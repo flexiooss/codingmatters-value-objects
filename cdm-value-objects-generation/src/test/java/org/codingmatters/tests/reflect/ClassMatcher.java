@@ -67,6 +67,11 @@ public class ClassMatcher extends TypeSafeMatcher<Class> {
                     return true;
                 }
             }
+            for (Method method : item.getMethods()) {
+                if(this.methodMatcher.matches(method)) {
+                    return true;
+                }
+            }
             return false;
         }
 

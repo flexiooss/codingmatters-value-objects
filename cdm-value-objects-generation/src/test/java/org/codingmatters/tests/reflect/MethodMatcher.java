@@ -1,5 +1,6 @@
 package org.codingmatters.tests.reflect;
 
+import org.codingmatters.tests.reflect.utils.LambdaMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -49,9 +50,19 @@ public class MethodMatcher extends TypeSafeMatcher<Method> {
     }
 
     public MethodMatcher thatIsPublic() {
-        this.matchers.add(
-                match("method is public", item -> Modifier.isPublic(item.getModifiers()))
-        );
+        return this.addMatcher("method is public", item -> Modifier.isPublic(item.getModifiers()));
+    }
+
+    public MethodMatcher thatIsPrivate() {
+        return this.addMatcher("method is private", item -> Modifier.isPrivate(item.getModifiers()));
+    }
+
+    public MethodMatcher thatIsProtected() {
+        return this.addMatcher("method is protected", item -> Modifier.isProtected(item.getModifiers()));
+    }
+
+    private MethodMatcher addMatcher(String description, LambdaMatcher.Lambda<Method> lambda) {
+        this.matchers.add(match(description, lambda));
         return this;
     }
 }

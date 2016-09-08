@@ -18,6 +18,13 @@ public class MethodMatcherTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
+    class TestModifiers {
+        public void publicMethod() {}
+        private void privateMethod() {}
+        protected void protectedMethod() {}
+        void defaultMethod() {}
+    }
+
     @Test
     public void isAMethod() throws Exception {
         assertThat(String.class.getMethod("toUpperCase", Locale.class), is(aMethod()));
@@ -38,8 +45,34 @@ public class MethodMatcherTest {
     @Test
     public void isAPublicMethod() throws Exception {
         assertThat(
-                String.class.getMethod("toUpperCase", Locale.class),
+                TestModifiers.class.getDeclaredMethod("publicMethod"),
                 is(aMethod().thatIsPublic())
         );
     }
+
+    @Test
+    public void isAPublicMethod_failure() throws Exception {
+        exception.expect(AssertionError.class);
+        assertThat(
+                TestModifiers.class.getDeclaredMethod("privateMethod"),
+                is(aMethod().thatIsPublic())
+        );
+    }
+
+    @Test
+    public void isAPrivateMethod() throws Exception {
+        assertThat(
+                TestModifiers.class.getDeclaredMethod("privateMethod"),
+                is(aMethod().thatIsPrivate())
+        );
+    }
+
+    @Test
+    public void isAProtectedMethod() throws Exception {
+        assertThat(
+                TestModifiers.class.getDeclaredMethod("protectedMethod"),
+                is(aMethod().thatIsProtected())
+        );
+    }
+
 }
