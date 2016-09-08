@@ -6,6 +6,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 
+import java.lang.reflect.Method;
 import java.util.LinkedList;
 
 /**
@@ -29,6 +30,11 @@ public class ClassMatcher extends TypeSafeMatcher<Class> {
         return this;
     }
 
+    public ClassMatcher withMethod(MethodMatcher methodMatcher) {
+        this.matchers.add(new ClassWithMatchingMethodMatcher(methodMatcher));
+        return this;
+    }
+
     @Override
     protected boolean matchesSafely(Class aClass) {
         return this.compoundMatcher().matches(aClass);
@@ -46,5 +52,29 @@ public class ClassMatcher extends TypeSafeMatcher<Class> {
 
     private Matcher<Object> compoundMatcher() {
         return Matchers.allOf(this.matchers.toArray(new Matcher[this.matchers.size()]));
+    }
+
+    private class ClassWithMatchingMethodMatcher extends TypeSafeMatcher<Class> {
+
+        private final MethodMatcher methodMatcher;
+
+        private ClassWithMatchingMethodMatcher(MethodMatcher methodMatcher) {
+            this.methodMatcher = methodMatcher;
+        }
+
+        @Override
+        protected boolean matchesSafely(Class item) {
+            for (Method method : item.getDeclaredMethods()) {
+                if(this.methodMatcher.matches(method)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public void describeTo(Description description) {
+
+        }
     }
 }

@@ -4,6 +4,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static org.codingmatters.tests.reflect.ReflectMatchers.isAClass;
+import static org.codingmatters.tests.reflect.ReflectMatchers.isAMethod;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -16,24 +18,40 @@ public class ClassMatchersTest {
 
     @Test
     public void aClass() throws Exception {
-        assertThat(String.class, ReflectMatchers.isAClass());
+        assertThat(String.class, isAClass());
     }
 
     @Test
     public void classWithName() throws Exception {
-        assertThat(String.class, ReflectMatchers.isAClass().withName("java.lang.String"));
+        assertThat(String.class, isAClass().withName("java.lang.String"));
     }
 
     @Test
-    public void classHasNotName() throws Exception {
+    public void classWithName_failure() throws Exception {
         exception.expect(AssertionError.class);
         exception.expectMessage(
                 "Expected: (class name is \"NotThisName\")\n" +
                 "     but: class name is \"NotThisName\" <class java.lang.String> class name was \"java.lang.String\""
         );
 
-        assertThat(String.class, ReflectMatchers.isAClass().withName("NotThisName"));
+        assertThat(String.class, isAClass().withName("NotThisName"));
     }
 
+    @Test
+    public void classWithMethod() throws Exception {
+        assertThat(String.class, isAClass().withMethod(isAMethod().withName("toUpperCase")));
+    }
 
+    @Test
+    public void classWithManyMethod() throws Exception {
+        assertThat(String.class, isAClass()
+                .withMethod(isAMethod().withName("toUpperCase"))
+                .withMethod(isAMethod().withName("toLowerCase")));
+    }
+
+    @Test
+    public void classWithMethod_failure() throws Exception {
+        exception.expect(AssertionError.class);
+        assertThat(String.class, isAClass().withMethod(isAMethod().withName("noSuchMeth")));
+    }
 }
