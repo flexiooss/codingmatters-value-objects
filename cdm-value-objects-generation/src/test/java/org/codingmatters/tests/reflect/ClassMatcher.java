@@ -1,6 +1,5 @@
 package org.codingmatters.tests.reflect;
 
-import org.codingmatters.tests.reflect.utils.TransformedMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -8,6 +7,8 @@ import org.hamcrest.TypeSafeMatcher;
 
 import java.lang.reflect.Method;
 import java.util.LinkedList;
+
+import static org.codingmatters.tests.reflect.utils.LambdaMatcher.match;
 
 /**
  * Created by nelt on 9/6/16.
@@ -18,15 +19,12 @@ public class ClassMatcher extends TypeSafeMatcher<Class> {
         return new ClassMatcher();
     }
 
-    private final LinkedList<Matcher> matchers = new LinkedList<>();
+    private final LinkedList<Matcher<Class>> matchers = new LinkedList<>();
 
     private ClassMatcher() {}
 
     public ClassMatcher named(String name) {
-        this.matchers.add(new TransformedMatcher<Class>(
-                "class name",
-                o -> o.getName(),
-                Matchers.is(name)));
+        this.matchers.add(match("class name is " + name, item -> item.getName().equals(name)));
         return this;
     }
 
