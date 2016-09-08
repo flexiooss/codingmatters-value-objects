@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.aMethod;
 import static org.hamcrest.Matchers.is;
@@ -23,6 +24,8 @@ public class MethodMatcherTest {
         private void privateMethod() {}
         protected void protectedMethod() {}
         void packagePrivateMethod() {}
+
+        public String returnsString() {return "";}
     }
 
     @Test
@@ -84,6 +87,23 @@ public class MethodMatcherTest {
         );
     }
 
+    @Test
+    public void returnsType() throws Exception {
+        assertThat(method("returnsString"), is(aMethod().returning(String.class)));
+    }
+
+    @Test
+    public void returnsType_failure() throws Exception {
+        exception.expect(AssertionError.class);
+
+        assertThat(method("returnsString"), is(aMethod().returning(List.class)));
+    }
+
+    @Test
+    public void returnsVoid() throws Exception {
+        assertThat(method("publicMethod"), is(aMethod().returningVoid()));
+        assertThat(method("publicMethod"), is(aMethod().returning(void.class)));
+    }
 
     private Method method(String name) throws NoSuchMethodException {
         return TestClass.class.getDeclaredMethod(name);

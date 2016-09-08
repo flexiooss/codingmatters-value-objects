@@ -62,11 +62,19 @@ public class MethodMatcher extends TypeSafeMatcher<Method> {
     }
 
     public MethodMatcher thatIsPackagePrivateMethod() {
-        return this.addMatcher("methode is package private", item -> ! (isPublic(item.getModifiers()) || isPrivate(item.getModifiers()) || isProtected(item.getModifiers())));
+        return this.addMatcher("method is package private", item -> ! (isPublic(item.getModifiers()) || isPrivate(item.getModifiers()) || isProtected(item.getModifiers())));
     }
 
     private MethodMatcher addMatcher(String description, LambdaMatcher.Lambda<Method> lambda) {
         this.matchers.add(match(description, lambda));
         return this;
+    }
+
+    public MethodMatcher returning(Class aClass) {
+        return this.addMatcher("method returns a " + aClass.getName(), item -> aClass.equals(item.getReturnType()));
+    }
+
+    public MethodMatcher returningVoid() {
+        return this.returning(void.class);
     }
 }
