@@ -12,28 +12,25 @@ import java.util.LinkedList;
  */
 public class ClassMatcher extends TypeSafeMatcher<Class> {
 
-    private final LinkedList<Matcher> matchers = new LinkedList<>();
-    private String name;
-
-    public ClassMatcher() {
+    static public ClassMatcher isAClass() {
+        return new ClassMatcher();
     }
+
+    private final LinkedList<Matcher> matchers = new LinkedList<>();
+
+    private ClassMatcher() {}
 
     public ClassMatcher withName(String name) {
         this.matchers.add(new TransformedMatcher<Class>(
-                "classname",
+                "class name",
                 o -> o.getName(),
                 Matchers.is(name)));
-        this.name = name;
         return this;
     }
 
     @Override
     protected boolean matchesSafely(Class aClass) {
         return this.compoundMatcher().matches(aClass);
-    }
-
-    private Matcher<Object> compoundMatcher() {
-        return Matchers.allOf(this.matchers.toArray(new Matcher[this.matchers.size()]));
     }
 
     @Override
@@ -44,5 +41,9 @@ public class ClassMatcher extends TypeSafeMatcher<Class> {
     @Override
     protected void describeMismatchSafely(Class item, Description mismatchDescription) {
         this.compoundMatcher().describeMismatch(item, mismatchDescription);
+    }
+
+    private Matcher<Object> compoundMatcher() {
+        return Matchers.allOf(this.matchers.toArray(new Matcher[this.matchers.size()]));
     }
 }

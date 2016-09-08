@@ -13,10 +13,6 @@ import java.util.stream.Collectors;
  */
 public class ClassMatchers {
 
-    static public ClassMatcher isAClass() {
-        return new ClassMatcher();
-    }
-
     static public Matcher<Class> hasMethod(String name) {
         return new BaseMatcher<Class>() {
             @Override
