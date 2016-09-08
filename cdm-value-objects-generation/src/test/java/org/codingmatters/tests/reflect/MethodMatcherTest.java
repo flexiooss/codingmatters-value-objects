@@ -34,4 +34,12 @@ public class MethodMatcherTest {
 
         assertThat(String.class.getMethod("toUpperCase", Locale.class), is(aMethod().named("noNamedLikeThat")));
     }
+
+    @Test
+    public void isAPublicMethod() throws Exception {
+        assertThat(
+                String.class.getMethod("toUpperCase", Locale.class),
+                is(aMethod().thatIsPublic())
+        );
+    }
 }

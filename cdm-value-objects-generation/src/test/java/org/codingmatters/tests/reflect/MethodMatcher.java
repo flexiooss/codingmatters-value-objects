@@ -1,13 +1,15 @@
 package org.codingmatters.tests.reflect;
 
-import org.codingmatters.tests.reflect.utils.TransformedMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.LinkedList;
+
+import static org.codingmatters.tests.reflect.utils.LambdaMatcher.match;
 
 /**
  * Created by nelt on 9/8/16.
@@ -18,15 +20,12 @@ public class MethodMatcher extends TypeSafeMatcher<Method> {
         return new MethodMatcher();
     }
 
-    private final LinkedList<Matcher> matchers = new LinkedList<>();
+    private final LinkedList<Matcher<Method>> matchers = new LinkedList<>();
 
     private MethodMatcher() {}
 
     public MethodMatcher named(String name) {
-        this.matchers.add(new TransformedMatcher<Method>(
-                "method name",
-                o -> o.getName(),
-                Matchers.is(name)));
+        this.matchers.add(match("method name is " + name, item -> item.getName().equals(name)));
         return this;
     }
 
@@ -47,5 +46,12 @@ public class MethodMatcher extends TypeSafeMatcher<Method> {
 
     private Matcher<Object> compoundMatcher() {
         return Matchers.allOf(this.matchers.toArray(new Matcher[this.matchers.size()]));
+    }
+
+    public MethodMatcher thatIsPublic() {
+        this.matchers.add(
+                match("method is public", item -> Modifier.isPublic(item.getModifiers()))
+        );
+        return this;
     }
 }
