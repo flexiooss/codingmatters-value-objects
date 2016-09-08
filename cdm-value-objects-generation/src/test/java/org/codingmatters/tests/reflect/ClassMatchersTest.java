@@ -1,4 +1,4 @@
-package org.codingmatters.tests.compile;
+package org.codingmatters.tests.reflect;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,12 +16,12 @@ public class ClassMatchersTest {
 
     @Test
     public void aClass() throws Exception {
-        assertThat(String.class, ClassMatcher.isAClass());
+        assertThat(String.class, ReflectMatchers.isAClass());
     }
 
     @Test
     public void classWithName() throws Exception {
-        assertThat(String.class, ClassMatcher.isAClass().withName("java.lang.String"));
+        assertThat(String.class, ReflectMatchers.isAClass().withName("java.lang.String"));
     }
 
     @Test
@@ -32,7 +32,7 @@ public class ClassMatchersTest {
                 "     but: class name is \"NotThisName\" <class java.lang.String> class name was \"java.lang.String\""
         );
 
-        assertThat(String.class, ClassMatcher.isAClass().withName("NotThisName"));
+        assertThat(String.class, ReflectMatchers.isAClass().withName("NotThisName"));
     }
 
 

@@ -1,4 +1,4 @@
-package org.codingmatters.tests.compile;
+package org.codingmatters.tests.reflect;
 
 import org.junit.Test;
 
@@ -13,11 +13,11 @@ public class MethodMatcherTest {
 
     @Test
     public void aMethod() throws Exception {
-        assertThat(String.class.getMethod("toUpperCase", Locale.class), MethodMatcher.isAMethod());
+        assertThat(String.class.getMethod("toUpperCase", Locale.class), ReflectMatchers.isAMethod());
     }
 
     @Test
     public void aMethodWithName() throws Exception {
-        assertThat(String.class.getMethod("toUpperCase", Locale.class), MethodMatcher.isAMethod().withName("toUpperCase"));
+        assertThat(String.class.getMethod("toUpperCase", Locale.class), ReflectMatchers.isAMethod().withName("toUpperCase"));
     }
 }

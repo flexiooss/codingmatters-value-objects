@@ -1,5 +1,6 @@
-package org.codingmatters.tests.compile;
+package org.codingmatters.tests.reflect;
 
+import org.codingmatters.tests.reflect.utils.TransformedMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;

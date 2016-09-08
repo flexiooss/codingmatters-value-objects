@@ -1,4 +1,4 @@
-package org.codingmatters.tests.compile;
+package org.codingmatters.tests.reflect;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;

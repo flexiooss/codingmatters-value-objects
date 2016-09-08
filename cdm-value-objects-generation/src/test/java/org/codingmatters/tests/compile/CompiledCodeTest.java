@@ -1,5 +1,6 @@
 package org.codingmatters.tests.compile;
 
+import org.codingmatters.tests.reflect.ClassMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

@@ -1,4 +1,4 @@
-package org.codingmatters.tests.compile;
+package org.codingmatters.tests.reflect.utils;
 
 import org.junit.Rule;
 import org.junit.Test;
