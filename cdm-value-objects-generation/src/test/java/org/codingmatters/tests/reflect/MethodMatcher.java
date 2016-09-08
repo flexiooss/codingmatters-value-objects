@@ -7,9 +7,9 @@ import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 
+import static java.lang.reflect.Modifier.*;
 import static org.codingmatters.tests.reflect.utils.LambdaMatcher.match;
 
 /**
@@ -50,15 +50,19 @@ public class MethodMatcher extends TypeSafeMatcher<Method> {
     }
 
     public MethodMatcher thatIsPublic() {
-        return this.addMatcher("method is public", item -> Modifier.isPublic(item.getModifiers()));
+        return this.addMatcher("method is public", item -> isPublic(item.getModifiers()));
     }
 
     public MethodMatcher thatIsPrivate() {
-        return this.addMatcher("method is private", item -> Modifier.isPrivate(item.getModifiers()));
+        return this.addMatcher("method is private", item -> isPrivate(item.getModifiers()));
     }
 
     public MethodMatcher thatIsProtected() {
-        return this.addMatcher("method is protected", item -> Modifier.isProtected(item.getModifiers()));
+        return this.addMatcher("method is protected", item -> isProtected(item.getModifiers()));
+    }
+
+    public MethodMatcher thatIsPackagePrivateMethod() {
+        return this.addMatcher("methode is package private", item -> ! (isPublic(item.getModifiers()) || isPrivate(item.getModifiers()) || isProtected(item.getModifiers())));
     }
 
     private MethodMatcher addMatcher(String description, LambdaMatcher.Lambda<Method> lambda) {

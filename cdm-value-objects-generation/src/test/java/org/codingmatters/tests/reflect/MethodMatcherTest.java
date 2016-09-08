@@ -4,7 +4,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.Locale;
+import java.lang.reflect.Method;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.aMethod;
 import static org.hamcrest.Matchers.is;
@@ -18,34 +18,35 @@ public class MethodMatcherTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    class TestModifiers {
+    class TestClass {
         public void publicMethod() {}
         private void privateMethod() {}
         protected void protectedMethod() {}
-        void defaultMethod() {}
+        void packagePrivateMethod() {}
     }
 
     @Test
     public void isAMethod() throws Exception {
-        assertThat(String.class.getMethod("toUpperCase", Locale.class), is(aMethod()));
+        String name = "publicMethod";
+        assertThat(method(name), is(aMethod()));
     }
 
     @Test
     public void aMethodWithName() throws Exception {
-        assertThat(String.class.getMethod("toUpperCase", Locale.class), is(aMethod().named("toUpperCase")));
+        assertThat(method("publicMethod"), is(aMethod().named("publicMethod")));
     }
 
     @Test
     public void aMethodWithName_failure() throws Exception {
         exception.expect(AssertionError.class);
 
-        assertThat(String.class.getMethod("toUpperCase", Locale.class), is(aMethod().named("noNamedLikeThat")));
+        assertThat(method("publicMethod"), is(aMethod().named("noNamedLikeThat")));
     }
 
     @Test
     public void isAPublicMethod() throws Exception {
         assertThat(
-                TestModifiers.class.getDeclaredMethod("publicMethod"),
+                method("publicMethod"),
                 is(aMethod().thatIsPublic())
         );
     }
@@ -54,7 +55,7 @@ public class MethodMatcherTest {
     public void isAPublicMethod_failure() throws Exception {
         exception.expect(AssertionError.class);
         assertThat(
-                TestModifiers.class.getDeclaredMethod("privateMethod"),
+                method("privateMethod"),
                 is(aMethod().thatIsPublic())
         );
     }
@@ -62,7 +63,7 @@ public class MethodMatcherTest {
     @Test
     public void isAPrivateMethod() throws Exception {
         assertThat(
-                TestModifiers.class.getDeclaredMethod("privateMethod"),
+                method("privateMethod"),
                 is(aMethod().thatIsPrivate())
         );
     }
@@ -70,9 +71,21 @@ public class MethodMatcherTest {
     @Test
     public void isAProtectedMethod() throws Exception {
         assertThat(
-                TestModifiers.class.getDeclaredMethod("protectedMethod"),
+                method("protectedMethod"),
                 is(aMethod().thatIsProtected())
         );
     }
 
+    @Test
+    public void isAPackagePrivateMethod() throws Exception {
+        assertThat(
+                method("packagePrivateMethod"),
+                is(aMethod().thatIsPackagePrivateMethod())
+        );
+    }
+
+
+    private Method method(String name) throws NoSuchMethodException {
+        return TestClass.class.getDeclaredMethod(name);
+    }
 }
