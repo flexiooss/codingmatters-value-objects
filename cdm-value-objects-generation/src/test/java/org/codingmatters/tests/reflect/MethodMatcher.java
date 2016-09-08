@@ -14,7 +14,7 @@ import java.util.LinkedList;
  */
 public class MethodMatcher extends TypeSafeMatcher<Method> {
 
-    static public MethodMatcher isAMethod() {
+    static public MethodMatcher aMethod() {
         return new MethodMatcher();
     }
 
@@ -22,7 +22,7 @@ public class MethodMatcher extends TypeSafeMatcher<Method> {
 
     private MethodMatcher() {}
 
-    public MethodMatcher withName(String name) {
+    public MethodMatcher named(String name) {
         this.matchers.add(new TransformedMatcher<Method>(
                 "method name",
                 o -> o.getName(),

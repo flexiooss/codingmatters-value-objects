@@ -1,9 +1,13 @@
 package org.codingmatters.tests.reflect;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.Locale;
 
+import static org.codingmatters.tests.reflect.ReflectMatchers.aMethod;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -11,13 +15,23 @@ import static org.junit.Assert.assertThat;
  */
 public class MethodMatcherTest {
 
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
     @Test
-    public void aMethod() throws Exception {
-        assertThat(String.class.getMethod("toUpperCase", Locale.class), ReflectMatchers.isAMethod());
+    public void isAMethod() throws Exception {
+        assertThat(String.class.getMethod("toUpperCase", Locale.class), is(aMethod()));
     }
 
     @Test
     public void aMethodWithName() throws Exception {
-        assertThat(String.class.getMethod("toUpperCase", Locale.class), ReflectMatchers.isAMethod().withName("toUpperCase"));
+        assertThat(String.class.getMethod("toUpperCase", Locale.class), is(aMethod().named("toUpperCase")));
+    }
+
+    @Test
+    public void aMethodWithName_failure() throws Exception {
+        exception.expect(AssertionError.class);
+
+        assertThat(String.class.getMethod("toUpperCase", Locale.class), is(aMethod().named("noNamedLikeThat")));
     }
 }

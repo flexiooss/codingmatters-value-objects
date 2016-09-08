@@ -14,7 +14,7 @@ import java.util.LinkedList;
  */
 public class ClassMatcher extends TypeSafeMatcher<Class> {
 
-    static public ClassMatcher isAClass() {
+    static public ClassMatcher aClass() {
         return new ClassMatcher();
     }
 
@@ -22,7 +22,7 @@ public class ClassMatcher extends TypeSafeMatcher<Class> {
 
     private ClassMatcher() {}
 
-    public ClassMatcher withName(String name) {
+    public ClassMatcher named(String name) {
         this.matchers.add(new TransformedMatcher<Class>(
                 "class name",
                 o -> o.getName(),
@@ -30,7 +30,7 @@ public class ClassMatcher extends TypeSafeMatcher<Class> {
         return this;
     }
 
-    public ClassMatcher withMethod(MethodMatcher methodMatcher) {
+    public ClassMatcher with(MethodMatcher methodMatcher) {
         this.matchers.add(new ClassWithMatchingMethodMatcher(methodMatcher));
         return this;
     }
