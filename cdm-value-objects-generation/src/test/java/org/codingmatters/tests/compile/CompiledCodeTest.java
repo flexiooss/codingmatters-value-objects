@@ -1,6 +1,5 @@
 package org.codingmatters.tests.compile;
 
-import org.codingmatters.tests.reflect.ClassMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -11,6 +10,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.UUID;
 
+import static org.codingmatters.tests.reflect.ReflectMatchers.aClass;
+import static org.codingmatters.tests.reflect.ReflectMatchers.aMethod;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -75,16 +76,13 @@ public class CompiledCodeTest {
 
     @Test
     public void classMatcher_methodNameMatches() throws Exception {
-        assertThat(compiled.getClass("org.codingmatters.HelloWorld"), ClassMatchers.hasMethod("sayHello"));
+        assertThat(compiled.getClass("org.codingmatters.HelloWorld"), is(aClass().with(aMethod().named("sayHello"))));
     }
 
     @Test
     public void classMatcher_methodNameDosentMatch_throwsAssertionError() throws Exception {
         this.exception.expect(AssertionError.class);
-        this.exception.expectMessage(
-                "Expected: class has method named \"undefined\"\n" +
-                "     but: class has the following methods "
-        );
-        assertThat(compiled.getClass("org.codingmatters.HelloWorld"), ClassMatchers.hasMethod("undefined"));
+
+        assertThat(compiled.getClass("org.codingmatters.HelloWorld"), is(aClass().with(aMethod().named("undefined"))));
     }
 }
