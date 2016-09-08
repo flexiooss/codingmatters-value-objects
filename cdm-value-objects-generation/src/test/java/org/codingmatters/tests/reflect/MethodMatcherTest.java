@@ -26,6 +26,10 @@ public class MethodMatcherTest {
         void packagePrivateMethod() {}
 
         public String returnsString() {return "";}
+        public void returnsVoid() {}
+
+        public void withParameters(String s, int i) {}
+        public void withoutParameters() {}
     }
 
     @Test
@@ -93,6 +97,12 @@ public class MethodMatcherTest {
     }
 
     @Test
+    public void returnsVoid() throws Exception {
+        assertThat(method("returnsVoid"), is(aMethod().returningVoid()));
+        assertThat(method("returnsVoid"), is(aMethod().returning(void.class)));
+    }
+
+    @Test
     public void returnsType_failure() throws Exception {
         exception.expect(AssertionError.class);
 
@@ -100,12 +110,28 @@ public class MethodMatcherTest {
     }
 
     @Test
-    public void returnsVoid() throws Exception {
-        assertThat(method("publicMethod"), is(aMethod().returningVoid()));
-        assertThat(method("publicMethod"), is(aMethod().returning(void.class)));
+    public void withParameters() throws Exception {
+        assertThat(method("withParameters", String.class, int.class), is(aMethod().withParameters(String.class, int.class)));
     }
 
-    private Method method(String name) throws NoSuchMethodException {
-        return TestClass.class.getDeclaredMethod(name);
+    @Test
+    public void withoutParameters() throws Exception {
+        assertThat(method("withoutParameters"), is(aMethod().withParameters()));
+    }
+
+    @Test
+    public void withParameters_fails() throws Exception {
+        exception.expect(AssertionError.class);
+        assertThat(method("withParameters", String.class, int.class), is(aMethod().withParameters(String.class)));
+
+        exception.expect(AssertionError.class);
+        assertThat(method("withParameters", String.class, int.class), is(aMethod().withParameters()));
+
+        exception.expect(AssertionError.class);
+        assertThat(method("withoutParameters"), is(aMethod().withParameters(String.class)));
+    }
+
+    private Method method(String name, Class ... args) throws NoSuchMethodException {
+        return TestClass.class.getDeclaredMethod(name, args);
     }
 }

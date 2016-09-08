@@ -7,7 +7,9 @@ import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 import static java.lang.reflect.Modifier.*;
 import static org.codingmatters.tests.reflect.utils.LambdaMatcher.match;
@@ -76,5 +78,10 @@ public class MethodMatcher extends TypeSafeMatcher<Method> {
 
     public MethodMatcher returningVoid() {
         return this.returning(void.class);
+    }
+
+    public MethodMatcher withParameters(Class ... parameters) {
+        String paramsSpec = Arrays.stream(parameters).map(aClass -> aClass.getName()).collect(Collectors.joining(", "));
+        return this.addMatcher("method parameters are " + paramsSpec, item -> Arrays.equals(item.getParameterTypes(), parameters));
     }
 }
