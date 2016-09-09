@@ -7,9 +7,7 @@ import org.junit.rules.ExpectedException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import static org.codingmatters.tests.reflect.MethodMatcher.aStaticMethod;
-import static org.codingmatters.tests.reflect.MethodMatcher.anInstanceMethod;
-import static org.codingmatters.tests.reflect.ReflectMatchers.aMethod;
+import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 

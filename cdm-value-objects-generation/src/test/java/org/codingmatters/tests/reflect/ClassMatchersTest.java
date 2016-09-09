@@ -4,8 +4,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.codingmatters.tests.reflect.ReflectMatchers.aClass;
-import static org.codingmatters.tests.reflect.ReflectMatchers.aMethod;
+import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -20,6 +19,10 @@ public class ClassMatchersTest {
     @Test
     public void isAClass() throws Exception {
         assertThat(String.class, is(aClass()));
+    }
+    @Test
+    public void isAnInterface() throws Exception {
+        assertThat(Comparable.class, is(anInterface()));
     }
 
     @Test

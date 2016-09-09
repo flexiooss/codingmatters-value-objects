@@ -1,11 +1,13 @@
 package org.codingmatters.tests.reflect;
 
+import org.codingmatters.tests.reflect.utils.LambdaMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 
 import static org.codingmatters.tests.reflect.utils.LambdaMatcher.match;
@@ -16,7 +18,11 @@ import static org.codingmatters.tests.reflect.utils.LambdaMatcher.match;
 public class ClassMatcher extends TypeSafeMatcher<Class> {
 
     static public ClassMatcher aClass() {
-        return new ClassMatcher();
+        return new ClassMatcher().addMatcher("class", item -> ! Modifier.isInterface(item.getModifiers()));
+    }
+
+    static public ClassMatcher anInterface() {
+        return new ClassMatcher().addMatcher("interface", item -> Modifier.isInterface(item.getModifiers()));
     }
 
     private final LinkedList<Matcher<Class>> matchers = new LinkedList<>();
@@ -24,7 +30,7 @@ public class ClassMatcher extends TypeSafeMatcher<Class> {
     private ClassMatcher() {}
 
     public ClassMatcher named(String name) {
-        this.matchers.add(match("class named " + name, item -> item.getName().equals(name)));
+        this.addMatcher("class named " + name, item -> item.getName().equals(name));
         return this;
     }
 
@@ -50,6 +56,11 @@ public class ClassMatcher extends TypeSafeMatcher<Class> {
 
     private Matcher<Object> compoundMatcher() {
         return Matchers.allOf(this.matchers.toArray(new Matcher[this.matchers.size()]));
+    }
+
+    private ClassMatcher addMatcher(String description, LambdaMatcher.Lambda<Class> lambda) {
+        this.matchers.add(match(description, lambda));
+        return this;
     }
 
     private class ClassWithMatchingMethodMatcher extends TypeSafeMatcher<Class> {
