@@ -40,19 +40,13 @@ public class MethodMatcher extends TypeSafeMatcher<Method> {
         return this;
     }
 
-    @Override
-    protected boolean matchesSafely(Method aMethod) {
-        return this.compoundMatcher().matches(aMethod);
+
+    public MethodMatcher thatIsStatic() {
+        return this.addMatcher("static method", item -> isStatic(item.getModifiers()));
     }
 
-    @Override
-    public void describeTo(Description description) {
-        this.compoundMatcher().describeTo(description);
-    }
-
-    @Override
-    protected void describeMismatchSafely(Method item, Description mismatchDescription) {
-        this.compoundMatcher().describeMismatch(item, mismatchDescription);
+    public MethodMatcher thatIsNotStatic() {
+        return this.addMatcher("instance method", item -> ! isStatic(item.getModifiers()));
     }
 
     public MethodMatcher thatIsPublic() {
@@ -71,6 +65,11 @@ public class MethodMatcher extends TypeSafeMatcher<Method> {
         return this.addMatcher("package private method", item -> ! (isPublic(item.getModifiers()) || isPrivate(item.getModifiers()) || isProtected(item.getModifiers())));
     }
 
+    public MethodMatcher withParameters(Class ... parameters) {
+        String paramsSpec = Arrays.stream(parameters).map(aClass -> aClass.getName()).collect(Collectors.joining(", "));
+        return this.addMatcher("method parameters are " + paramsSpec, item -> Arrays.equals(item.getParameterTypes(), parameters));
+    }
+
     public MethodMatcher returning(Class aClass) {
         return this.addMatcher("method returns a " + aClass.getName(), item -> aClass.equals(item.getReturnType()));
     }
@@ -79,25 +78,30 @@ public class MethodMatcher extends TypeSafeMatcher<Method> {
         return this.returning(void.class);
     }
 
-    public MethodMatcher withParameters(Class ... parameters) {
-        String paramsSpec = Arrays.stream(parameters).map(aClass -> aClass.getName()).collect(Collectors.joining(", "));
-        return this.addMatcher("method parameters are " + paramsSpec, item -> Arrays.equals(item.getParameterTypes(), parameters));
+
+
+    private MethodMatcher addMatcher(String description, LambdaMatcher.Lambda<Method> lambda) {
+        this.matchers.add(match(description, lambda));
+        return this;
     }
 
-    public MethodMatcher thatIsStatic() {
-        return this.addMatcher("static method", item -> isStatic(item.getModifiers()));
+    @Override
+    protected boolean matchesSafely(Method aMethod) {
+        return this.compoundMatcher().matches(aMethod);
     }
 
-    public MethodMatcher thatIsNotStatic() {
-        return this.addMatcher("instance method", item -> ! isStatic(item.getModifiers()));
+    @Override
+    public void describeTo(Description description) {
+        this.compoundMatcher().describeTo(description);
+    }
+
+    @Override
+    protected void describeMismatchSafely(Method item, Description mismatchDescription) {
+        this.compoundMatcher().describeMismatch(item, mismatchDescription);
     }
 
     private Matcher<Object> compoundMatcher() {
         return Matchers.allOf(this.matchers.toArray(new Matcher[this.matchers.size()]));
     }
 
-    private MethodMatcher addMatcher(String description, LambdaMatcher.Lambda<Method> lambda) {
-        this.matchers.add(match(description, lambda));
-        return this;
-    }
 }
