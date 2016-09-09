@@ -55,10 +55,6 @@ public class MethodMatcher extends TypeSafeMatcher<Method> {
         this.compoundMatcher().describeMismatch(item, mismatchDescription);
     }
 
-    private Matcher<Object> compoundMatcher() {
-        return Matchers.allOf(this.matchers.toArray(new Matcher[this.matchers.size()]));
-    }
-
     public MethodMatcher thatIsPublic() {
         return this.addMatcher("public method", item -> isPublic(item.getModifiers()));
     }
@@ -73,11 +69,6 @@ public class MethodMatcher extends TypeSafeMatcher<Method> {
 
     public MethodMatcher thatIsPackagePrivateMethod() {
         return this.addMatcher("package private method", item -> ! (isPublic(item.getModifiers()) || isPrivate(item.getModifiers()) || isProtected(item.getModifiers())));
-    }
-
-    private MethodMatcher addMatcher(String description, LambdaMatcher.Lambda<Method> lambda) {
-        this.matchers.add(match(description, lambda));
-        return this;
     }
 
     public MethodMatcher returning(Class aClass) {
@@ -99,5 +90,14 @@ public class MethodMatcher extends TypeSafeMatcher<Method> {
 
     public MethodMatcher thatIsNotStatic() {
         return this.addMatcher("instance method", item -> ! isStatic(item.getModifiers()));
+    }
+
+    private Matcher<Object> compoundMatcher() {
+        return Matchers.allOf(this.matchers.toArray(new Matcher[this.matchers.size()]));
+    }
+
+    private MethodMatcher addMatcher(String description, LambdaMatcher.Lambda<Method> lambda) {
+        this.matchers.add(match(description, lambda));
+        return this;
     }
 }
