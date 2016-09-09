@@ -23,12 +23,20 @@ public class MethodMatcher extends TypeSafeMatcher<Method> {
         return new MethodMatcher();
     }
 
+    static public MethodMatcher anInstanceMethod() {
+        return new MethodMatcher().thatIsNotStatic();
+    }
+
+    static public MethodMatcher aStaticMethod() {
+        return new MethodMatcher().thatIsStatic();
+    }
+
     private final LinkedList<Matcher<Method>> matchers = new LinkedList<>();
 
     private MethodMatcher() {}
 
     public MethodMatcher named(String name) {
-        this.matchers.add(match("method name is " + name, item -> item.getName().equals(name)));
+        this.matchers.add(match("method named " + name, item -> item.getName().equals(name)));
         return this;
     }
 
@@ -52,19 +60,19 @@ public class MethodMatcher extends TypeSafeMatcher<Method> {
     }
 
     public MethodMatcher thatIsPublic() {
-        return this.addMatcher("method is public", item -> isPublic(item.getModifiers()));
+        return this.addMatcher("public method", item -> isPublic(item.getModifiers()));
     }
 
     public MethodMatcher thatIsPrivate() {
-        return this.addMatcher("method is private", item -> isPrivate(item.getModifiers()));
+        return this.addMatcher("private method", item -> isPrivate(item.getModifiers()));
     }
 
     public MethodMatcher thatIsProtected() {
-        return this.addMatcher("method is protected", item -> isProtected(item.getModifiers()));
+        return this.addMatcher("protected method", item -> isProtected(item.getModifiers()));
     }
 
     public MethodMatcher thatIsPackagePrivateMethod() {
-        return this.addMatcher("method is package private", item -> ! (isPublic(item.getModifiers()) || isPrivate(item.getModifiers()) || isProtected(item.getModifiers())));
+        return this.addMatcher("package private method", item -> ! (isPublic(item.getModifiers()) || isPrivate(item.getModifiers()) || isProtected(item.getModifiers())));
     }
 
     private MethodMatcher addMatcher(String description, LambdaMatcher.Lambda<Method> lambda) {
@@ -83,5 +91,13 @@ public class MethodMatcher extends TypeSafeMatcher<Method> {
     public MethodMatcher withParameters(Class ... parameters) {
         String paramsSpec = Arrays.stream(parameters).map(aClass -> aClass.getName()).collect(Collectors.joining(", "));
         return this.addMatcher("method parameters are " + paramsSpec, item -> Arrays.equals(item.getParameterTypes(), parameters));
+    }
+
+    public MethodMatcher thatIsStatic() {
+        return this.addMatcher("static method", item -> isStatic(item.getModifiers()));
+    }
+
+    public MethodMatcher thatIsNotStatic() {
+        return this.addMatcher("instance method", item -> ! isStatic(item.getModifiers()));
     }
 }

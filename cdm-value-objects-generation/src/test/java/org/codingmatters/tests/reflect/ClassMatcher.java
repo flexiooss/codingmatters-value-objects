@@ -24,7 +24,7 @@ public class ClassMatcher extends TypeSafeMatcher<Class> {
     private ClassMatcher() {}
 
     public ClassMatcher named(String name) {
-        this.matchers.add(match("class name is " + name, item -> item.getName().equals(name)));
+        this.matchers.add(match("class named " + name, item -> item.getName().equals(name)));
         return this;
     }
 

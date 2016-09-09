@@ -7,6 +7,8 @@ import org.junit.rules.ExpectedException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import static org.codingmatters.tests.reflect.MethodMatcher.aStaticMethod;
+import static org.codingmatters.tests.reflect.MethodMatcher.anInstanceMethod;
 import static org.codingmatters.tests.reflect.ReflectMatchers.aMethod;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -19,7 +21,7 @@ public class MethodMatcherTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    class TestClass {
+    static class TestClass {
         public void publicMethod() {}
         private void privateMethod() {}
         protected void protectedMethod() {}
@@ -30,6 +32,9 @@ public class MethodMatcherTest {
 
         public void withParameters(String s, int i) {}
         public void withoutParameters() {}
+
+        static public void staticMethod() {}
+        public void instanceMethod() {}
     }
 
     @Test
@@ -129,6 +134,32 @@ public class MethodMatcherTest {
 
         exception.expect(AssertionError.class);
         assertThat(method("withoutParameters"), is(aMethod().withParameters(String.class)));
+    }
+
+    @Test
+    public void staticMethod() throws Exception {
+        assertThat(method("staticMethod"), is(aStaticMethod()));
+        assertThat(method("staticMethod"), is(aMethod().thatIsStatic()));
+    }
+
+    @Test
+    public void staticMethod_fails() throws Exception {
+        exception.expect(AssertionError.class);
+
+        assertThat(method("instanceMethod"), is(aStaticMethod()));
+    }
+
+    @Test
+    public void instanceMethod() throws Exception {
+        assertThat(method("instanceMethod"), is(anInstanceMethod()));
+        assertThat(method("instanceMethod"), is(aMethod().thatIsNotStatic()));
+    }
+
+    @Test
+    public void instanceMethod_fails() throws Exception {
+        exception.expect(AssertionError.class);
+
+        assertThat(method("staticMethod"), is(anInstanceMethod()));
     }
 
     private Method method(String name, Class ... args) throws NoSuchMethodException {
