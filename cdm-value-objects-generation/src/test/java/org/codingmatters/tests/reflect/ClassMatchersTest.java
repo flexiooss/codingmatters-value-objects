@@ -66,4 +66,42 @@ public class ClassMatchersTest {
                 .with(aMethod().named("noSuchMethod")))
         );
     }
+
+    public class Public {}
+    private class Private {}
+    protected class Protected {}
+    class PackagePrivate {}
+
+    @Test
+    public void publicClass() throws Exception {
+        assertThat(Public.class, is(aClass().thatIsPublic()));
+    }
+
+    @Test
+    public void privateClass() throws Exception {
+        assertThat(Private.class, is(aClass().thatIsPrivate()));
+    }
+
+    @Test
+    public void protectedClass() throws Exception {
+        assertThat(Protected.class, is(aClass().thatIsProtected()));
+    }
+
+    @Test
+    public void packagePrivateClass() throws Exception {
+        assertThat(PackagePrivate.class, is(aClass().thatIsPackagePrivateMethod()));
+    }
+
+    public static class Static {}
+    public class NotStatic {}
+
+    @Test
+    public void staticClass() throws Exception {
+        assertThat(Static.class, is(aClass().thatIsStatic()));
+    }
+
+    @Test
+    public void notStaticClass() throws Exception {
+        assertThat(NotStatic.class, is(aClass().thatIsNotStatic()));
+    }
 }

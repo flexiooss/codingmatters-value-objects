@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 
+import static java.lang.reflect.Modifier.*;
 import static org.codingmatters.tests.reflect.utils.LambdaMatcher.match;
 
 /**
@@ -38,6 +39,33 @@ public class ClassMatcher extends TypeSafeMatcher<Class> {
         this.matchers.add(new ClassWithMatchingMethodMatcher(methodMatcher));
         return this;
     }
+
+
+    public ClassMatcher thatIsStatic() {
+        return this.addMatcher("static method", item -> isStatic(item.getModifiers()));
+    }
+
+    public ClassMatcher thatIsNotStatic() {
+        return this.addMatcher("instance method", item -> ! isStatic(item.getModifiers()));
+    }
+
+    public ClassMatcher thatIsPublic() {
+        return this.addMatcher("public method", item -> isPublic(item.getModifiers()));
+    }
+
+    public ClassMatcher thatIsPrivate() {
+        return this.addMatcher("private method", item -> isPrivate(item.getModifiers()));
+    }
+
+    public ClassMatcher thatIsProtected() {
+        return this.addMatcher("protected method", item -> isProtected(item.getModifiers()));
+    }
+
+    public ClassMatcher thatIsPackagePrivateMethod() {
+        return this.addMatcher("package private method", item -> ! (isPublic(item.getModifiers()) || isPrivate(item.getModifiers()) || isProtected(item.getModifiers())));
+    }
+
+
 
     @Override
     protected boolean matchesSafely(Class aClass) {
