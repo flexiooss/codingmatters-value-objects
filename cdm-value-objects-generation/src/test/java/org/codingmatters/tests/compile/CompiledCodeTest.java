@@ -9,9 +9,9 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.FileWriter;
 
-import static org.codingmatters.tests.reflect.ReflectMatchers.aClass;
-import static org.codingmatters.tests.reflect.ReflectMatchers.aMethod;
-import static org.hamcrest.Matchers.*;
+import static org.codingmatters.tests.reflect.ReflectMatchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -52,19 +52,18 @@ public class CompiledCodeTest {
 
     @Test
     public void getCompiledClass() throws Exception {
-        assertThat(compiled.getClass("org.codingmatters.HelloWorld"), is(notNullValue()));
-        assertThat(compiled.getClass("org.codingmatters.NoSuchClass"), is(nullValue()));
+        assertThat(compiled.getClass("org.codingmatters.HelloWorld"), is(aClass()));
+        assertThat(compiled.getClass("org.codingmatters.NoSuchClass"), is(not(aClass())));
     }
 
     @Test
     public void classMatcher_methodNameMatches() throws Exception {
-        assertThat(compiled.getClass("org.codingmatters.HelloWorld"), is(aClass().with(aMethod().named("sayHello"))));
-    }
-
-    @Test
-    public void classMatcher_methodNameDosentMatch_throwsAssertionError() throws Exception {
-        this.exception.expect(AssertionError.class);
-
-        assertThat(compiled.getClass("org.codingmatters.HelloWorld"), is(aClass().with(aMethod().named("undefined"))));
+        assertThat(
+                compiled.getClass("org.codingmatters.HelloWorld"),
+                is(aClass()
+                        .with(aMethod().named("sayHello").thatIsPublic().returning(String.class))
+                        .with(aStaticMethod().named("main").thatIsPublic().withParameters(String[].class).returningVoid())
+                )
+        );
     }
 }
