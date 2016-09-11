@@ -23,4 +23,16 @@ public class ReflectMatchers {
     static public MethodMatcher anInstanceMethod() {
         return MethodMatcher.anInstanceMethod();
     }
+
+    static public FieldMatcher aField() {
+        return FieldMatcher.aField();
+    }
+
+    static public FieldMatcher aStaticField() {
+        return FieldMatcher.aStaticField();
+    }
+
+    static public FieldMatcher anInstanceField() {
+        return FieldMatcher.anInstanceField();
+    }
 }
