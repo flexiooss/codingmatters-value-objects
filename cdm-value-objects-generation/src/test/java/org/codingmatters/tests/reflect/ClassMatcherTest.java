@@ -11,7 +11,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 9/6/16.
  */
-public class ClassMatchersTest {
+public class ClassMatcherTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
