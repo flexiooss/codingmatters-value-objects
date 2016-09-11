@@ -1,6 +1,5 @@
-package org.codingmatters.tests.reflect;
+package org.codingmatters.tests.reflect.utils;
 
-import org.codingmatters.tests.reflect.utils.LambdaMatcher;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 

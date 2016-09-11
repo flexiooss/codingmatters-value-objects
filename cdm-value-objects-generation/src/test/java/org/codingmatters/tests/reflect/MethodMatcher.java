@@ -1,5 +1,6 @@
 package org.codingmatters.tests.reflect;
 
+import org.codingmatters.tests.reflect.utils.MatcherChain;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 

@@ -1,5 +1,7 @@
 package org.codingmatters.tests.reflect;
 
+import org.codingmatters.tests.reflect.utils.MatcherChain;
+
 import java.lang.reflect.Member;
 
 import static java.lang.reflect.Modifier.*;
