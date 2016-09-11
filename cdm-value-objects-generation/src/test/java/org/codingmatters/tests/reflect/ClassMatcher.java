@@ -2,13 +2,10 @@ package org.codingmatters.tests.reflect;
 
 import org.codingmatters.tests.reflect.utils.LambdaMatcher;
 import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.LinkedList;
 
 import static java.lang.reflect.Modifier.*;
 import static org.codingmatters.tests.reflect.utils.LambdaMatcher.match;
@@ -26,7 +23,7 @@ public class ClassMatcher extends TypeSafeMatcher<Class> {
         return new ClassMatcher().addMatcher("interface", item -> Modifier.isInterface(item.getModifiers()));
     }
 
-    private final LinkedList<Matcher<Class>> matchers = new LinkedList<>();
+    private final MatcherChain<Class> matchers = new MatcherChain<>();
 
     private ClassMatcher() {}
 
@@ -69,21 +66,17 @@ public class ClassMatcher extends TypeSafeMatcher<Class> {
 
     @Override
     protected boolean matchesSafely(Class aClass) {
-        return this.compoundMatcher().matches(aClass);
+        return this.matchers.compoundMatcher().matches(aClass);
     }
 
     @Override
     public void describeTo(Description description) {
-        this.compoundMatcher().describeTo(description);
+        this.matchers.compoundMatcher().describeTo(description);
     }
 
     @Override
     protected void describeMismatchSafely(Class item, Description mismatchDescription) {
-        this.compoundMatcher().describeMismatch(item, mismatchDescription);
-    }
-
-    private Matcher<Object> compoundMatcher() {
-        return Matchers.allOf(this.matchers.toArray(new Matcher[this.matchers.size()]));
+        this.matchers.compoundMatcher().describeMismatch(item, mismatchDescription);
     }
 
     private ClassMatcher addMatcher(String description, LambdaMatcher.Lambda<Class> lambda) {

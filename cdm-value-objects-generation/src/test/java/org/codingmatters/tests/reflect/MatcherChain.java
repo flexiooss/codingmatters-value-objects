@@ -4,7 +4,6 @@ import org.codingmatters.tests.reflect.utils.LambdaMatcher;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 
-import java.lang.reflect.Member;
 import java.util.LinkedList;
 
 import static org.codingmatters.tests.reflect.utils.LambdaMatcher.match;
@@ -12,7 +11,7 @@ import static org.codingmatters.tests.reflect.utils.LambdaMatcher.match;
 /**
  * Created by nelt on 9/11/16.
  */
-public class MatcherChain<T extends Member> {
+public class MatcherChain<T> {
 
     private final LinkedList<Matcher<T>> matchers = new LinkedList<>();
 
