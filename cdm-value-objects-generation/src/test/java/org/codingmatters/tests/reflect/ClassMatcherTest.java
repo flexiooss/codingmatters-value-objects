@@ -111,7 +111,11 @@ public class ClassMatcherTest {
 
     @Test
     public void classWithField() throws Exception {
-        assertThat(ClassWithField.class, is(aClass().with(aField().named("field"))));
+        assertThat(ClassWithField.class, is(aClass().with(aField())));
+    }
 
+    @Test
+    public void classWithNamedField() throws Exception {
+        assertThat(ClassWithField.class, is(aClass().with(aField().named("field"))));
     }
 }
