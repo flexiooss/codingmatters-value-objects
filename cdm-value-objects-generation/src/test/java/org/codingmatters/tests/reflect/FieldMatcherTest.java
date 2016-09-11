@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -26,42 +27,47 @@ public class FieldMatcherTest {
 
     @Test
     public void namedField() throws Exception {
-        assertThat(field("name"), aField().named("name"));
+        assertThat(field("name"), is(aField().named("name")));
+    }
+
+    @Test
+    public void fieldType() throws Exception {
+        assertThat(field("name"), is(aField().withType(String.class)));
     }
 
     @Test
     public void publicField() throws Exception {
-        assertThat(field("publicField"), aField().public_());
+        assertThat(field("publicField"), is(aField().public_()));
     }
 
     @Test
     public void privateField() throws Exception {
-        assertThat(field("privateField"), aField().private_());
+        assertThat(field("privateField"), is(aField().private_()));
     }
 
     @Test
     public void protectedField() throws Exception {
-        assertThat(field("protectedField"), aField().protected_());
+        assertThat(field("protectedField"), is(aField().protected_()));
     }
 
     @Test
     public void packagePrivateField() throws Exception {
-        assertThat(field("packagePrivateField"), aField().packagePrivate());
+        assertThat(field("packagePrivateField"), is(aField().packagePrivate()));
     }
 
     @Test
     public void instanceField() throws Exception {
-        assertThat(field("instanceField"), anInstanceField());
+        assertThat(field("instanceField"), is(anInstanceField()));
     }
 
     @Test
     public void staticField() throws Exception {
-        assertThat(field("staticField"), aStaticField());
+        assertThat(field("staticField"), is(aStaticField()));
     }
 
 
 
-    private Field field(String name, Class ... args) throws NoSuchFieldException {
+    private Field field(String name) throws NoSuchFieldException {
         return TestClass.class.getDeclaredField(name);
     }
 }

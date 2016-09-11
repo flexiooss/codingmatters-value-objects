@@ -60,6 +60,11 @@ public class FieldMatcher extends TypeSafeMatcher<Field> {
         return this.memberDeleguate.packagePrivate(this);
     }
 
+    public FieldMatcher withType(Class type) {
+        this.matchers.addMatcher("field type", item -> item.getType().equals(type));
+        return this;
+    }
+
 
 
     @Override
