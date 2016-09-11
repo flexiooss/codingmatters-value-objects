@@ -34,7 +34,7 @@ public class ClassMatchersTest {
     public void classWithName_failure() throws Exception {
         exception.expect(AssertionError.class);
 
-        assertThat(String.class, is(aClass().named("NotThisName")));
+        assertThat(String.class, is(aClass().named("not.that.Name")));
     }
 
     @Test
