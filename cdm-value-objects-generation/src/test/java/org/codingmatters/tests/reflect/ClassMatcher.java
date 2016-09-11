@@ -3,10 +3,16 @@ package org.codingmatters.tests.reflect;
 import org.codingmatters.tests.reflect.utils.LambdaMatcher;
 import org.codingmatters.tests.reflect.utils.MatcherChain;
 import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import static java.lang.reflect.Modifier.*;
 import static org.codingmatters.tests.reflect.utils.LambdaMatcher.match;
@@ -34,7 +40,22 @@ public class ClassMatcher extends TypeSafeMatcher<Class> {
     }
 
     public ClassMatcher with(MethodMatcher methodMatcher) {
-        this.matchers.add(new ClassWithMatchingMethodMatcher(methodMatcher));
+        this.matchers.add(new ClassMemberMatcher<Method>(methodMatcher, item -> {
+            List<Method> result = new LinkedList<>();
+            result.addAll(Arrays.asList(item.getDeclaredMethods()));
+            result.addAll(Arrays.asList(item.getMethods()));
+            return result;
+        }));
+        return this;
+    }
+
+    public Matcher<Class> with(FieldMatcher fieldMatcher) {
+        this.matchers.add(new ClassMemberMatcher<Field>(fieldMatcher, item -> {
+            List<Field> result = new LinkedList<>();
+            result.addAll(Arrays.asList(item.getDeclaredFields()));
+            result.addAll(Arrays.asList(item.getFields()));
+            return result;
+        }));
         return this;
     }
 
@@ -85,22 +106,19 @@ public class ClassMatcher extends TypeSafeMatcher<Class> {
         return this;
     }
 
-    private class ClassWithMatchingMethodMatcher extends TypeSafeMatcher<Class> {
+    static private class ClassMemberMatcher<T extends Member> extends TypeSafeMatcher<Class> {
 
-        private final MethodMatcher methodMatcher;
+        private final TypeSafeMatcher<T> methodMatcher;
+        private final MemberCollector<T> memberCollector;
 
-        private ClassWithMatchingMethodMatcher(MethodMatcher methodMatcher) {
+        private ClassMemberMatcher(TypeSafeMatcher<T> methodMatcher, MemberCollector<T> memberCollector) {
             this.methodMatcher = methodMatcher;
+            this.memberCollector = memberCollector;
         }
 
         @Override
         protected boolean matchesSafely(Class item) {
-            for (Method method : item.getDeclaredMethods()) {
-                if(this.methodMatcher.matches(method)) {
-                    return true;
-                }
-            }
-            for (Method method : item.getMethods()) {
+            for (T method : this.memberCollector.candidates(item)) {
                 if(this.methodMatcher.matches(method)) {
                     return true;
                 }
@@ -112,5 +130,10 @@ public class ClassMatcher extends TypeSafeMatcher<Class> {
         public void describeTo(Description description) {
 
         }
+
+        private interface MemberCollector<T extends Member> {
+            List<T> candidates(Class item);
+        }
     }
+
 }

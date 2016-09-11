@@ -92,8 +92,8 @@ public class ClassMatcherTest {
         assertThat(PackagePrivate.class, is(aClass().thatIsPackagePrivateMethod()));
     }
 
-    public static class Static {}
-    public class NotStatic {}
+    static class Static {}
+    class NotStatic {}
 
     @Test
     public void staticClass() throws Exception {
@@ -103,5 +103,15 @@ public class ClassMatcherTest {
     @Test
     public void notStaticClass() throws Exception {
         assertThat(NotStatic.class, is(aClass().thatIsNotStatic()));
+    }
+
+    static class ClassWithField {
+        public String field;
+    }
+
+    @Test
+    public void classWithField() throws Exception {
+        assertThat(ClassWithField.class, is(aClass().with(aField().named("field"))));
+
     }
 }
