@@ -61,8 +61,8 @@ public class CompiledCodeTest {
         assertThat(
                 compiled.getClass("org.codingmatters.HelloWorld"),
                 is(aClass()
-                        .with(aMethod().named("sayHello").thatIsPublic().returning(String.class))
-                        .with(aStaticMethod().named("main").thatIsPublic().withParameters(String[].class).returningVoid())
+                        .with(aMethod().named("sayHello").public_().returning(String.class))
+                        .with(aStaticMethod().named("main").public_().withParameters(String[].class).returningVoid())
                 )
         );
     }

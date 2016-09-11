@@ -33,12 +33,22 @@ public class MethodMatcherTest {
 
         static public void staticMethod() {}
         public void instanceMethod() {}
+
+        public String complete(String arg1, String arg2) {return "";}
+    }
+
+    @Test
+    public void completeSignature() throws Exception {
+        assertThat(method("complete", String.class, String.class),
+                is(
+                        aMethod().named("complete").public_().withParameters(String.class, String.class).returning(String.class)
+                )
+        );
     }
 
     @Test
     public void isAMethod() throws Exception {
-        String name = "publicMethod";
-        assertThat(method(name), is(aMethod()));
+        assertThat(method("publicMethod"), is(aMethod()));
     }
 
     @Test
@@ -57,7 +67,7 @@ public class MethodMatcherTest {
     public void isAPublicMethod() throws Exception {
         assertThat(
                 method("publicMethod"),
-                is(aMethod().thatIsPublic())
+                is(aMethod().public_())
         );
     }
 
@@ -66,7 +76,7 @@ public class MethodMatcherTest {
         exception.expect(AssertionError.class);
         assertThat(
                 method("privateMethod"),
-                is(aMethod().thatIsPublic())
+                is(aMethod().public_())
         );
     }
 
@@ -74,7 +84,7 @@ public class MethodMatcherTest {
     public void isAPrivateMethod() throws Exception {
         assertThat(
                 method("privateMethod"),
-                is(aMethod().thatIsPrivate())
+                is(aMethod().private_())
         );
     }
 
@@ -82,7 +92,7 @@ public class MethodMatcherTest {
     public void isAProtectedMethod() throws Exception {
         assertThat(
                 method("protectedMethod"),
-                is(aMethod().thatIsProtected())
+                is(aMethod().protected_())
         );
     }
 
@@ -90,7 +100,7 @@ public class MethodMatcherTest {
     public void isAPackagePrivateMethod() throws Exception {
         assertThat(
                 method("packagePrivateMethod"),
-                is(aMethod().thatIsPackagePrivateMethod())
+                is(aMethod().packagePrivate())
         );
     }
 
@@ -137,7 +147,7 @@ public class MethodMatcherTest {
     @Test
     public void staticMethod() throws Exception {
         assertThat(method("staticMethod"), is(aStaticMethod()));
-        assertThat(method("staticMethod"), is(aMethod().thatIsStatic()));
+        assertThat(method("staticMethod"), is(aMethod().static_()));
     }
 
     @Test
@@ -150,7 +160,7 @@ public class MethodMatcherTest {
     @Test
     public void instanceMethod() throws Exception {
         assertThat(method("instanceMethod"), is(anInstanceMethod()));
-        assertThat(method("instanceMethod"), is(aMethod().thatIsNotStatic()));
+        assertThat(method("instanceMethod"), is(aMethod().notStatic()));
     }
 
     @Test
