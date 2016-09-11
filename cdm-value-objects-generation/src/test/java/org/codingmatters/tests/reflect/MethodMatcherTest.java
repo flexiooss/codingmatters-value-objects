@@ -19,7 +19,7 @@ public class MethodMatcherTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    static class TestClass {
+    static abstract class TestClass {
         public void publicMethod() {}
         private void privateMethod() {}
         protected void protectedMethod() {}
@@ -33,6 +33,8 @@ public class MethodMatcherTest {
 
         static public void staticMethod() {}
         public void instanceMethod() {}
+
+        public abstract void abstractMethod();
 
         public String complete(String arg1, String arg2) {return "";}
     }
@@ -168,6 +170,11 @@ public class MethodMatcherTest {
         exception.expect(AssertionError.class);
 
         assertThat(method("staticMethod"), is(anInstanceMethod()));
+    }
+
+    @Test
+    public void abstractMethod() throws Exception {
+        assertThat(method("abstractMethod"), is(aMethod().abstract_()));
     }
 
     private Method method(String name, Class ... args) throws NoSuchMethodException {

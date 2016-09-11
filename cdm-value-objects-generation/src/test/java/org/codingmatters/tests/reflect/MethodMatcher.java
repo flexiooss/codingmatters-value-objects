@@ -62,6 +62,10 @@ public class MethodMatcher extends TypeSafeMatcher<Method> {
         return this.memberDeleguate.packagePrivate(this);
     }
 
+    public MethodMatcher abstract_() {
+        return this.memberDeleguate.abstract_(this);
+    }
+
     public MethodMatcher withParameters(Class ... parameters) {
         String paramsSpec = Arrays.stream(parameters).map(aClass -> aClass.getName()).collect(Collectors.joining(", "));
         this.matchers.addMatcher("method parameters are " + paramsSpec, item -> Arrays.equals(item.getParameterTypes(), parameters));
