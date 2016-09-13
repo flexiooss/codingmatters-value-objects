@@ -25,11 +25,6 @@ public class PropertySpec {
             return this;
         }
 
-//        public Builder type(TypeSpec type) {
-//            this.type = type;
-//            return this;
-//        }
-
         public PropertySpec build() {
             return new PropertySpec(this.name, this.type.typeRef(), this.type.typeKind());
         }
