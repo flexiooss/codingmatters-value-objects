@@ -8,26 +8,24 @@
         <groupId>org.codingmatters.value.objects</groupId>
         <artifactId>cdm-value-objects-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+
         <relativePath>../cdm-value-objects-parent</relativePath>
     </parent>
 
-    <artifactId>cdm-value-objects-generation</artifactId>
+    <groupId>org.codingmatters.tests</groupId>
+    <artifactId>cdm-reflect-matchers</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.codingmatters.tests</groupId>
-            <artifactId>cdm-reflect-matchers</artifactId>
-            <scope>test</scope>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>1.3</version>
         </dependency>
     </dependencies>
+
     
 </project>

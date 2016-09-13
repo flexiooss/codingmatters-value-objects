@@ -15,10 +15,18 @@
         <module>cdm-value-objects-parent</module>
         <module>cdm-value-objects-generation</module>
         <module>cdm-value-objects-maven-plugin</module>
+
+        <module>cdm-reflect-matchers</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.codingmatters.tests</groupId>
+                <artifactId>cdm-reflect-matchers</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>cdm-value-objects-parent</artifactId>
@@ -27,6 +35,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>cdm-value-objects-generation</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>cdm-value-objects-maven-plugin</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

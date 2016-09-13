@@ -15,7 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static java.lang.reflect.Modifier.*;
-import static org.codingmatters.tests.reflect.utils.LambdaMatcher.match;
 
 /**
  * Created by nelt on 9/6/16.
@@ -102,7 +101,7 @@ public class ClassMatcher extends TypeSafeMatcher<Class> {
     }
 
     private ClassMatcher addMatcher(String description, LambdaMatcher.Lambda<Class> lambda) {
-        this.matchers.add(match(description, lambda));
+        this.matchers.add(LambdaMatcher.match(description, lambda));
         return this;
     }
 
