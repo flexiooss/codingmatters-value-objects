@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * Created by nelt on 9/5/16.
  */
-public class TypeSpec {
+public class PropertyTypeSpec {
 
     static public Builder type() {
         return new Builder();
@@ -25,15 +25,15 @@ public class TypeSpec {
             return this;
         }
 
-        public TypeSpec build() {
-            return new TypeSpec(this.typeRef, this.typeKind);
+        public PropertyTypeSpec build() {
+            return new PropertyTypeSpec(this.typeRef, this.typeKind);
         }
     }
 
     private final String typeRef;
     private final TypeKind typeKind;
 
-    private TypeSpec(String typeRef, TypeKind typeKind) {
+    private PropertyTypeSpec(String typeRef, TypeKind typeKind) {
         this.typeRef = typeRef;
         this.typeKind = typeKind;
     }
@@ -50,7 +50,7 @@ public class TypeSpec {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TypeSpec typeSpec = (TypeSpec) o;
+        PropertyTypeSpec typeSpec = (PropertyTypeSpec) o;
         return Objects.equals(typeRef, typeSpec.typeRef) &&
                 typeKind == typeSpec.typeKind;
     }
@@ -62,7 +62,7 @@ public class TypeSpec {
 
     @Override
     public String toString() {
-        return "TypeSpec{" +
+        return "PropertyTypeSpec{" +
                 "typeRef='" + typeRef + '\'' +
                 ", typeKind=" + typeKind +
                 '}';

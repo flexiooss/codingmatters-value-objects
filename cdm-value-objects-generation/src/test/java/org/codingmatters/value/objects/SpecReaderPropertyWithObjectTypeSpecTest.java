@@ -8,8 +8,8 @@ import org.junit.rules.ExpectedException;
 import java.io.InputStream;
 
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
+import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
 import static org.codingmatters.value.objects.spec.Spec.spec;
-import static org.codingmatters.value.objects.spec.TypeSpec.type;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
 import static org.codingmatters.value.objects.utils.Utils.streamFor;
 import static org.codingmatters.value.objects.utils.Utils.string;

@@ -13,14 +13,14 @@ public class PropertySpec {
 
     static public class Builder {
         private String name;
-        private TypeSpec type;
+        private PropertyTypeSpec type;
 
         public Builder name(String name) {
             this.name = name;
             return this;
         }
 
-        public Builder type(TypeSpec.Builder type) {
+        public Builder type(PropertyTypeSpec.Builder type) {
             this.type = type.build();
             return this;
         }

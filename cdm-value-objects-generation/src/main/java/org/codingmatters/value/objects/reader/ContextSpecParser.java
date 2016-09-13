@@ -8,8 +8,8 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
+import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
 import static org.codingmatters.value.objects.spec.Spec.spec;
-import static org.codingmatters.value.objects.spec.TypeSpec.type;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
 
 /**
@@ -56,7 +56,7 @@ public class ContextSpecParser {
                 throw new SpecSyntaxException("malformed property name {context} : should be a valid java identifier", this.context);
             }
 
-            TypeSpec.Builder typeSpec;
+            PropertyTypeSpec.Builder typeSpec;
             if (value instanceof String) {
                 typeSpec = this.typeForString((String) value);
             } else if (value instanceof Map && ((Map) value).containsKey("value-object")) {
@@ -77,7 +77,7 @@ public class ContextSpecParser {
         }
     }
 
-    private TypeSpec.Builder typeForString(String value) throws SpecSyntaxException {
+    private PropertyTypeSpec.Builder typeForString(String value) throws SpecSyntaxException {
         String type = value;
         if(type.startsWith("$")) {
             if(this.root.keySet().contains(type.substring(1))) {

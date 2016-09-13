@@ -37,6 +37,10 @@ public class Spec {
         this.valueSpecs = valueSpecs;
     }
 
+    public List<ValueSpec> valueSpecs() {
+        return valueSpecs;
+    }
+
     @Override
     public String toString() {
         return "Spec{" +

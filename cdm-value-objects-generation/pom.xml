@@ -24,6 +24,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.squareup</groupId>
+            <artifactId>javapoet</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.codingmatters.tests</groupId>
             <artifactId>cdm-reflect-matchers</artifactId>
             <scope>test</scope>
