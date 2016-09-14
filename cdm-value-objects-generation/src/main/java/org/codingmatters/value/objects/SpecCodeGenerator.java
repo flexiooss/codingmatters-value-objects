@@ -42,11 +42,8 @@ public class SpecCodeGenerator {
                     .addSuperinterface(ClassName.get(this.packageName, interfaceName))
                     .build();
 
-
             this.writeJavaFile(packageDestination, valueInterface);
             this.writeJavaFile(packageDestination, valueImpl);
-
-
         }
     }
 
