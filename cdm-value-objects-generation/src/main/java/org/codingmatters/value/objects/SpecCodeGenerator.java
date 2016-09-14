@@ -4,14 +4,16 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.ValueSpec;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
-import static javax.lang.model.element.Modifier.PUBLIC;
-import static javax.lang.model.element.Modifier.STATIC;
+import static javax.lang.model.element.Modifier.*;
 
 /**
  * Created by nelt on 9/13/16.
@@ -37,28 +39,48 @@ public class SpecCodeGenerator {
     private void generateValueTypesTo(ValueSpec valueSpec, File packageDestination) throws IOException {
         String interfaceName = this.capitalizedFirst(valueSpec.name());
 
-        TypeSpec valueBuilder = this.createValueBuilder(interfaceName);
-        TypeSpec valueInterface = this.createValueInterface(interfaceName, valueBuilder);
-        TypeSpec valueImpl = this.createValueImplementation(interfaceName);
+        TypeSpec valueBuilder = this.createValueBuilder(interfaceName, valueSpec.propertySpecs());
+        TypeSpec valueInterface = this.createValueInterface(interfaceName, valueBuilder, valueSpec.propertySpecs());
+        TypeSpec valueImpl = this.createValueImplementation(interfaceName, valueSpec.propertySpecs());
 
         this.writeJavaFile(packageDestination, valueInterface);
         this.writeJavaFile(packageDestination, valueImpl);
     }
 
-    private TypeSpec createValueImplementation(String interfaceName) {
-        return TypeSpec.classBuilder(interfaceName + "Impl")
-                    .addSuperinterface(ClassName.get(this.packageName, interfaceName))
-                    .build();
-    }
 
-    private TypeSpec createValueInterface(String interfaceName, TypeSpec valueBuilder) {
+    private TypeSpec createValueInterface(String interfaceName, TypeSpec valueBuilder, List<PropertySpec> propertySpecs) {
+        List<MethodSpec> getters = new LinkedList<>();
+
+        for (PropertySpec propertySpec : propertySpecs) {
+            getters.add(
+                    MethodSpec.methodBuilder(propertySpec.name())
+                            .returns(ClassName.bestGuess(propertySpec.type()))
+                            .addModifiers(PUBLIC, ABSTRACT)
+                            .build()
+            );
+        }
+
         return TypeSpec.interfaceBuilder(interfaceName)
                     .addModifiers(PUBLIC)
+                    .addMethods(getters)
                     .addType(valueBuilder)
                     .build();
     }
 
-    private TypeSpec createValueBuilder(String interfaceName) {
+    private TypeSpec createValueBuilder(String interfaceName, List<PropertySpec> propertySpecs) {
+        List<MethodSpec> setters = new LinkedList<>();
+
+        for (PropertySpec propertySpec : propertySpecs) {
+            setters.add(
+                    MethodSpec.methodBuilder(propertySpec.name())
+                            .addParameter(ClassName.bestGuess(propertySpec.type()), propertySpec.name())
+                            .returns(ClassName.bestGuess("Builder"))
+                            .addModifiers(PUBLIC)
+                            .addStatement("return this")
+                            .build()
+            );
+        }
+
         MethodSpec builderMethod = MethodSpec.methodBuilder("builder")
                 .addModifiers(STATIC, PUBLIC)
                 .returns(ClassName.bestGuess("Builder"))
@@ -74,6 +96,25 @@ public class SpecCodeGenerator {
                 .addModifiers(PUBLIC, STATIC)
                 .addMethod(builderMethod)
                 .addMethod(buildMethod)
+                .addMethods(setters)
+                .build();
+    }
+
+    private TypeSpec createValueImplementation(String interfaceName, List<PropertySpec> propertySpecs) {
+        List<MethodSpec> getters = new LinkedList<>();
+
+        for (PropertySpec propertySpec : propertySpecs) {
+            getters.add(
+                    MethodSpec.methodBuilder(propertySpec.name())
+                            .returns(ClassName.bestGuess(propertySpec.type()))
+                            .addModifiers(PUBLIC)
+                            .addStatement("return null")
+                            .build()
+            );
+        }
+        return TypeSpec.classBuilder(interfaceName + "Impl")
+                .addSuperinterface(ClassName.get(this.packageName, interfaceName))
+                .addMethods(getters)
                 .build();
     }
 

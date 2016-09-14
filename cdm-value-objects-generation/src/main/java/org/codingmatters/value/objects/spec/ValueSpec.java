@@ -49,6 +49,10 @@ public class ValueSpec {
         return name;
     }
 
+    public List<PropertySpec> propertySpecs() {
+        return propertySpecs;
+    }
+
     @Override
     public String toString() {
         return "ValueSpec{" +
