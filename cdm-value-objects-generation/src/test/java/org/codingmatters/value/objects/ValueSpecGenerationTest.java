@@ -17,6 +17,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 9/13/16.
  */
+@SuppressWarnings("unchecked")
 public class ValueSpecGenerationTest {
 
     @Rule
@@ -72,7 +73,9 @@ public class ValueSpecGenerationTest {
                 .getMethod("builder")
                 .invoke(null)
                 ;
-        Object value = compiled.getClass("org.generated.Val$Builder").getMethod("build").invoke(builder);
+        Object value = compiled.getClass("org.generated.Val$Builder")
+                .getMethod("build")
+                .invoke(builder);
 
         assertThat(value, is(notNullValue(compiled.getClass("org.generated.ValImpl"))));
     }
