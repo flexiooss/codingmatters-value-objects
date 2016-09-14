@@ -21,14 +21,15 @@ public class SpecCodeGeneratorTest {
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
 
+    private final Spec spec  = spec()
+            .addValue(
+                    valueSpec().name("val")
+            )
+            .build();
+
     @Test
     public void value_generatesInterface() throws Exception {
-        Spec spec = spec()
-                .addValue(
-                        valueSpec().name("val")
-                )
-                .build();
-        new SpecCodeGenerator(spec, "org.generated").generateTo(dir.getRoot());
+        new SpecCodeGenerator(this.spec, "org.generated").generateTo(dir.getRoot());
         CompiledCode compiled = CompiledCode.compile(this.dir.getRoot());
 
         assertThat(compiled.getClass("org.generated.Val"), is(anInterface().public_()));
@@ -36,12 +37,7 @@ public class SpecCodeGeneratorTest {
 
     @Test
     public void value_generatesBuilder() throws Exception {
-        Spec spec = spec()
-                .addValue(
-                        valueSpec().name("val")
-                )
-                .build();
-        new SpecCodeGenerator(spec, "org.generated").generateTo(dir.getRoot());
+        new SpecCodeGenerator(this.spec, "org.generated").generateTo(dir.getRoot());
         CompiledCode compiled = CompiledCode.compile(this.dir.getRoot());
 
         assertThat(compiled.getClass("org.generated.Val$Builder"), is(aClass()));
@@ -49,12 +45,7 @@ public class SpecCodeGeneratorTest {
 
     @Test
     public void value_generatesPackagePrivateImplementationClass() throws Exception {
-        Spec spec = spec()
-                .addValue(
-                        valueSpec().name("val")
-                )
-                .build();
-        new SpecCodeGenerator(spec, "org.generated").generateTo(dir.getRoot());
+        new SpecCodeGenerator(this.spec, "org.generated").generateTo(dir.getRoot());
         CompiledCode compiled = CompiledCode.compile(this.dir.getRoot());
 
         assertThat(compiled.getClass("org.generated.ValImpl"),
