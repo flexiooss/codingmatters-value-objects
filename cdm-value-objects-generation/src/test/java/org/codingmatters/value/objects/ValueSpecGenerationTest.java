@@ -17,7 +17,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 9/13/16.
  */
-public class SpecCodeGeneratorTest {
+public class ValueSpecGenerationTest {
 
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
