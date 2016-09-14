@@ -57,6 +57,11 @@ public class SpecCodeGeneratorTest {
         new SpecCodeGenerator(spec, "org.generated").generateTo(dir.getRoot());
         CompiledCode compiled = CompiledCode.compile(this.dir.getRoot());
 
-        assertThat(compiled.getClass("org.generated.ValImpl"), is(aClass().packagePrivate()));
+        assertThat(compiled.getClass("org.generated.ValImpl"),
+                is(
+                        aClass().packagePrivate()
+                                .implementing(compiled.getClass("org.generated.Val"))
+                )
+        );
     }
 }

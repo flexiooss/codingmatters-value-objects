@@ -1,5 +1,6 @@
 package org.codingmatters.value.objects;
 
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.value.objects.spec.Spec;
@@ -38,6 +39,7 @@ public class SpecCodeGenerator {
                     .addType(valueBuilder)
                     .build();
             TypeSpec valueImpl = TypeSpec.classBuilder(interfaceName + "Impl")
+                    .addSuperinterface(ClassName.get(this.packageName, interfaceName))
                     .build();
 
 
