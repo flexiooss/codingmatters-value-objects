@@ -2,6 +2,7 @@ package org.codingmatters.value.objects;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.ValueSpec;
@@ -29,22 +30,51 @@ public class SpecCodeGenerator {
         File packageDestination = new File(dir, packageName.replaceAll(".", "/"));
 
         for (ValueSpec valueSpec : this.spec.valueSpecs()) {
-            String interfaceName = this.capitalizedFirst(valueSpec.name());
+            this.generateValueTypesTo(valueSpec, packageDestination);
+        }
+    }
 
-            TypeSpec valueBuilder = TypeSpec.classBuilder("Builder")
-                    .addModifiers(PUBLIC, STATIC)
+    private void generateValueTypesTo(ValueSpec valueSpec, File packageDestination) throws IOException {
+        String interfaceName = this.capitalizedFirst(valueSpec.name());
+
+        TypeSpec valueBuilder = this.createValueBuilder(interfaceName);
+        TypeSpec valueInterface = this.createValueInterface(interfaceName, valueBuilder);
+        TypeSpec valueImpl = this.createValueImplementation(interfaceName);
+
+        this.writeJavaFile(packageDestination, valueInterface);
+        this.writeJavaFile(packageDestination, valueImpl);
+    }
+
+    private TypeSpec createValueImplementation(String interfaceName) {
+        return TypeSpec.classBuilder(interfaceName + "Impl")
+                    .addSuperinterface(ClassName.get(this.packageName, interfaceName))
                     .build();
-            TypeSpec valueInterface = TypeSpec.interfaceBuilder(interfaceName)
+    }
+
+    private TypeSpec createValueInterface(String interfaceName, TypeSpec valueBuilder) {
+        return TypeSpec.interfaceBuilder(interfaceName)
                     .addModifiers(PUBLIC)
                     .addType(valueBuilder)
                     .build();
-            TypeSpec valueImpl = TypeSpec.classBuilder(interfaceName + "Impl")
-                    .addSuperinterface(ClassName.get(this.packageName, interfaceName))
-                    .build();
+    }
 
-            this.writeJavaFile(packageDestination, valueInterface);
-            this.writeJavaFile(packageDestination, valueImpl);
-        }
+    private TypeSpec createValueBuilder(String interfaceName) {
+        MethodSpec builderMethod = MethodSpec.methodBuilder("builder")
+                .addModifiers(STATIC, PUBLIC)
+                .returns(ClassName.bestGuess("Builder"))
+                .addStatement("return new $T()", ClassName.bestGuess("Builder"))
+                .build();
+        MethodSpec buildMethod = MethodSpec.methodBuilder("build")
+                .addModifiers(PUBLIC)
+                .returns(ClassName.bestGuess(interfaceName))
+                .addStatement("return new $T()", ClassName.bestGuess(interfaceName + "Impl"))
+                .build();
+
+        return TypeSpec.classBuilder("Builder")
+                .addModifiers(PUBLIC, STATIC)
+                .addMethod(builderMethod)
+                .addMethod(buildMethod)
+                .build();
     }
 
     private void writeJavaFile(File packageDestination, TypeSpec valueInterface) throws IOException {

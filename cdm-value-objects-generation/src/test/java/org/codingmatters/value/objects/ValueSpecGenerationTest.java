@@ -7,11 +7,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import static org.codingmatters.tests.reflect.ReflectMatchers.aClass;
-import static org.codingmatters.tests.reflect.ReflectMatchers.anInterface;
+import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.codingmatters.value.objects.spec.Spec.spec;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -42,16 +42,46 @@ public class ValueSpecGenerationTest {
 
     @Test
     public void valueBuilder() throws Exception {
-        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aClass().public_().static_()));
+        assertThat(compiled.getClass("org.generated.Val$Builder"), is(
+                aClass().public_().static_()
+                    .with(aStaticMethod().named("builder")
+                            .public_()
+                            .withParameters()
+                            .returning(compiled.getClass("org.generated.Val$Builder"))
+                    )
+                    .with(anInstanceMethod().named("build")
+                            .public_()
+                            .withParameters()
+                            .returning(compiled.getClass("org.generated.Val"))
+                    )
+        ));
+    }
+
+    @Test
+    public void valueBuilder_builder_returnsABuilder() throws Exception {
+        Object builder = compiled.getClass("org.generated.Val$Builder")
+                .getMethod("builder")
+                .invoke(null);
+
+        assertThat(builder, is(notNullValue(compiled.getClass("org.generated.Val$Builder"))));
+    }
+
+    @Test
+    public void valueBuilder_build_returnsAnImplementationInstance() throws Exception {
+        Object builder = compiled.getClass("org.generated.Val$Builder")
+                .getMethod("builder")
+                .invoke(null)
+                ;
+        Object value = compiled.getClass("org.generated.Val$Builder").getMethod("build").invoke(builder);
+
+        assertThat(value, is(notNullValue(compiled.getClass("org.generated.ValImpl"))));
     }
 
     @Test
     public void valueImplementationClass() throws Exception {
-        assertThat(compiled.getClass("org.generated.ValImpl"),
-                is(
-                        aClass().packagePrivate()
-                                .implementing(compiled.getClass("org.generated.Val"))
-                )
-        );
+        assertThat(compiled.getClass("org.generated.ValImpl"),is(
+                aClass().packagePrivate()
+                        .implementing(compiled.getClass("org.generated.Val"))
+        ));
     }
 }
