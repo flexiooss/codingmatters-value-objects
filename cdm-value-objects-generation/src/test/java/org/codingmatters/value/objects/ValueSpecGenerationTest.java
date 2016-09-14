@@ -48,7 +48,6 @@ public class ValueSpecGenerationTest {
         assertThat(compiled.getClass("org.generated.Val2"), is(anInterface()));
         assertThat(compiled.getClass("org.generated.Val2$Builder"), is(aClass()));
         assertThat(compiled.getClass("org.generated.Val2Impl"), is(aClass()));
-
     }
 
     @Test
