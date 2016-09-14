@@ -27,6 +27,9 @@ public class ValueSpecGenerationTest {
             .addValue(
                     valueSpec().name("val")
             )
+            .addValue(
+                    valueSpec().name("val2")
+            )
             .build();
     private CompiledCode compiled;
 
@@ -86,5 +89,17 @@ public class ValueSpecGenerationTest {
                 aClass().packagePrivate()
                         .implementing(compiled.getClass("org.generated.Val"))
         ));
+    }
+
+    @Test
+    public void twoValueSpec_twoInterfacesTwoBuilderTwoImpl() throws Exception {
+        assertThat(compiled.getClass("org.generated.Val"), is(anInterface()));
+        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aClass()));
+        assertThat(compiled.getClass("org.generated.ValImpl"), is(aClass()));
+
+        assertThat(compiled.getClass("org.generated.Val2"), is(anInterface()));
+        assertThat(compiled.getClass("org.generated.Val2$Builder"), is(aClass()));
+        assertThat(compiled.getClass("org.generated.Val2Impl"), is(aClass()));
+
     }
 }
