@@ -2,6 +2,7 @@ package org.codingmatters.value.objects;
 
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.value.objects.spec.Spec;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -26,28 +27,26 @@ public class SpecCodeGeneratorTest {
                     valueSpec().name("val")
             )
             .build();
+    private CompiledCode compiled;
+
+    @Before
+    public void setUp() throws Exception {
+        new SpecCodeGenerator(this.spec, "org.generated").generateTo(dir.getRoot());
+        this.compiled = CompiledCode.compile(this.dir.getRoot());
+    }
 
     @Test
-    public void value_generatesInterface() throws Exception {
-        new SpecCodeGenerator(this.spec, "org.generated").generateTo(dir.getRoot());
-        CompiledCode compiled = CompiledCode.compile(this.dir.getRoot());
-
+    public void valueInterface() throws Exception {
         assertThat(compiled.getClass("org.generated.Val"), is(anInterface().public_()));
     }
 
     @Test
-    public void value_generatesBuilder() throws Exception {
-        new SpecCodeGenerator(this.spec, "org.generated").generateTo(dir.getRoot());
-        CompiledCode compiled = CompiledCode.compile(this.dir.getRoot());
-
-        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aClass()));
+    public void valueBuilder() throws Exception {
+        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aClass().public_().static_()));
     }
 
     @Test
-    public void value_generatesPackagePrivateImplementationClass() throws Exception {
-        new SpecCodeGenerator(this.spec, "org.generated").generateTo(dir.getRoot());
-        CompiledCode compiled = CompiledCode.compile(this.dir.getRoot());
-
+    public void valueImplementationClass() throws Exception {
         assertThat(compiled.getClass("org.generated.ValImpl"),
                 is(
                         aClass().packagePrivate()
