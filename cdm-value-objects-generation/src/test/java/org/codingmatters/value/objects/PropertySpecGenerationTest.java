@@ -50,4 +50,43 @@ public class PropertySpecGenerationTest {
         assertThat(compiled.getClass("org.generated.ValImpl"), is(aClass().with(aMethod().named("prop2"))));
         assertThat(compiled.getClass("org.generated.Val$Builder"), is(aClass().with(aMethod().named("prop"))));
     }
+
+    @Test
+    public void propertyInterfaceGetterSignature() throws Exception {
+        assertThat(compiled.getClass("org.generated.Val"), is(
+                anInterface().with(
+                        aMethod().named("prop").withParameters().returning(String.class)
+                )
+        ));
+    }
+
+    @Test
+    public void propertyBuilderSetterSignature() throws Exception {
+        assertThat(compiled.getClass("org.generated.Val$Builder"), is(
+                aClass().with(
+                        aMethod().public_().named("prop")
+                                .withParameters(String.class).returning(compiled.getClass("org.generated.Val$Builder"))
+                )
+        ));
+    }
+
+    @Test
+    public void propertyValueGetterSignature() throws Exception {
+        assertThat(compiled.getClass("org.generated.ValImpl"), is(
+                aClass().with(
+                        aMethod().public_().named("prop")
+                                .withParameters().returning(String.class)
+                )
+        ));
+    }
+
+    @Test
+    public void valueBuilding() throws Exception {
+        Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        compiled.on(builder).invoke("prop", String.class).with("prop value");
+        Object value = compiled.on(builder).invoke("build");
+
+//        assertThat(value, is(notNullValue(compiled.getClass("org.generated.ValImpl"))));
+//        assertThat(compiled.on(value).invoke("prop"), is("prop value"));
+    }
 }

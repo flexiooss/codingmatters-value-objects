@@ -90,7 +90,7 @@ public class ValueSpecGenerationTest {
     @Test
     public void valueImplementationClass() throws Exception {
         assertThat(compiled.getClass("org.generated.ValImpl"),is(
-                aClass().packagePrivate()
+                aClass().public_()
                         .implementing(compiled.getClass("org.generated.Val"))
         ));
     }

@@ -114,6 +114,7 @@ public class SpecCodeGenerator {
         }
         return TypeSpec.classBuilder(interfaceName + "Impl")
                 .addSuperinterface(ClassName.get(this.packageName, interfaceName))
+                .addModifiers(PUBLIC)
                 .addMethods(getters)
                 .build();
     }
@@ -121,6 +122,7 @@ public class SpecCodeGenerator {
     private void writeJavaFile(File packageDestination, TypeSpec valueInterface) throws IOException {
         JavaFile file = JavaFile.builder(this.packageName, valueInterface).build();
         file.writeTo(packageDestination);
+//        file.writeTo(System.out);
     }
 
     private String capitalizedFirst(String str) {
