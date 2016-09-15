@@ -74,22 +74,15 @@ public class ValueSpecGenerationTest {
 
     @Test
     public void valueBuilder_builder_returnsABuilder() throws Exception {
-        Object builder = compiled.getClass("org.generated.Val$Builder")
-                .getMethod("builder")
-                .invoke(null);
+        Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
 
         assertThat(builder, is(notNullValue(compiled.getClass("org.generated.Val$Builder"))));
     }
 
     @Test
     public void valueBuilder_build_returnsAnImplementationInstance() throws Exception {
-        Object builder = compiled.getClass("org.generated.Val$Builder")
-                .getMethod("builder")
-                .invoke(null)
-                ;
-        Object value = compiled.getClass("org.generated.Val$Builder")
-                .getMethod("build")
-                .invoke(builder);
+        Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        Object value = compiled.on(builder).invoke("build");
 
         assertThat(value, is(notNullValue(compiled.getClass("org.generated.ValImpl"))));
     }
