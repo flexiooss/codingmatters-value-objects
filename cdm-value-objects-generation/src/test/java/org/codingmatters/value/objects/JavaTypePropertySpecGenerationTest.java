@@ -20,7 +20,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 9/14/16.
  */
-public class PropertySpecGenerationTest {
+public class JavaTypePropertySpecGenerationTest {
 
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
