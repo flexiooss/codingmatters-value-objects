@@ -14,6 +14,7 @@ import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
 import static org.codingmatters.value.objects.spec.Spec.spec;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -48,7 +49,7 @@ public class PropertySpecGenerationTest {
 
         assertThat(compiled.getClass("org.generated.Val"), is(anInterface().with(aMethod().named("prop2"))));
         assertThat(compiled.getClass("org.generated.ValImpl"), is(aClass().with(aMethod().named("prop2"))));
-        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aClass().with(aMethod().named("prop"))));
+        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aClass().with(aMethod().named("prop2"))));
     }
 
     @Test
@@ -71,6 +72,15 @@ public class PropertySpecGenerationTest {
     }
 
     @Test
+    public void propertyBuilderField() throws Exception {
+        assertThat(compiled.getClass("org.generated.Val$Builder"), is(
+                aClass().with(
+                        aField().named("prop").private_()
+                )
+        ));
+    }
+
+    @Test
     public void propertyValueGetterSignature() throws Exception {
         assertThat(compiled.getClass("org.generated.ValImpl"), is(
                 aClass().with(
@@ -81,12 +91,21 @@ public class PropertySpecGenerationTest {
     }
 
     @Test
+    public void propertyValueField() throws Exception {
+        assertThat(compiled.getClass("org.generated.ValImpl"), is(
+                aClass().with(
+                        aField().named("prop").private_().final_()
+                )
+        ));
+    }
+
+    @Test
     public void valueBuilding() throws Exception {
         Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
         compiled.on(builder).invoke("prop", String.class).with("prop value");
         Object value = compiled.on(builder).invoke("build");
 
-//        assertThat(value, is(notNullValue(compiled.getClass("org.generated.ValImpl"))));
-//        assertThat(compiled.on(value).invoke("prop"), is("prop value"));
+        assertThat(value, is(notNullValue(compiled.getClass("org.generated.ValImpl"))));
+        assertThat(compiled.on(value).invoke("prop"), is("prop value"));
     }
 }

@@ -1,9 +1,6 @@
 package org.codingmatters.value.objects;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.ValueSpec;
@@ -68,17 +65,35 @@ public class SpecCodeGenerator {
     }
 
     private TypeSpec createValueBuilder(String interfaceName, List<PropertySpec> propertySpecs) {
+        List<FieldSpec> fields = new LinkedList<>();
         List<MethodSpec> setters = new LinkedList<>();
 
+        String constructorParametersFormat = null;
+        List<String> constructorParametersNames = new LinkedList<>();
+
         for (PropertySpec propertySpec : propertySpecs) {
+            fields.add(
+                    FieldSpec.builder(ClassName.bestGuess(propertySpec.type()), propertySpec.name(), PRIVATE).build()
+            );
             setters.add(
                     MethodSpec.methodBuilder(propertySpec.name())
                             .addParameter(ClassName.bestGuess(propertySpec.type()), propertySpec.name())
                             .returns(ClassName.bestGuess("Builder"))
                             .addModifiers(PUBLIC)
+                            .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
                             .addStatement("return this")
                             .build()
             );
+            if(constructorParametersFormat == null) {
+                constructorParametersFormat = "";
+            } else {
+                constructorParametersFormat += ", ";
+            }
+            constructorParametersFormat += "this.$N";
+            constructorParametersNames.add(propertySpec.name());
+        }
+        if(constructorParametersFormat == null) {
+            constructorParametersFormat = "";
         }
 
         MethodSpec builderMethod = MethodSpec.methodBuilder("builder")
@@ -89,33 +104,64 @@ public class SpecCodeGenerator {
         MethodSpec buildMethod = MethodSpec.methodBuilder("build")
                 .addModifiers(PUBLIC)
                 .returns(ClassName.bestGuess(interfaceName))
-                .addStatement("return new $T()", ClassName.bestGuess(interfaceName + "Impl"))
+                .addStatement(
+                        "return new $T(" + constructorParametersFormat + ")",
+                        concat(ClassName.bestGuess(interfaceName + "Impl"), constructorParametersNames.toArray()))
                 .build();
 
         return TypeSpec.classBuilder("Builder")
                 .addModifiers(PUBLIC, STATIC)
                 .addMethod(builderMethod)
                 .addMethod(buildMethod)
+                .addFields(fields)
                 .addMethods(setters)
                 .build();
     }
 
+    private Object [] concat(Object first, Object ... others) {
+        int size = 1;
+        if(others != null) {
+            size += others.length;
+        }
+        Object[] result = new Object[size];
+        result[0] = first;
+        for(int i = 1 ; i < result.length ; i++) {
+            result[i] = others[i-1];
+        }
+        return result;
+    }
+
     private TypeSpec createValueImplementation(String interfaceName, List<PropertySpec> propertySpecs) {
+        List<FieldSpec> fields = new LinkedList<>();
         List<MethodSpec> getters = new LinkedList<>();
 
+        MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder();
+
         for (PropertySpec propertySpec : propertySpecs) {
+            constructorBuilder
+                    .addParameter(ClassName.bestGuess(propertySpec.type()), propertySpec.name())
+                    .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
+            ;
+
+
+            fields.add(
+                    FieldSpec.builder(ClassName.bestGuess(propertySpec.type()), propertySpec.name(), PRIVATE, FINAL).build()
+            );
             getters.add(
                     MethodSpec.methodBuilder(propertySpec.name())
                             .returns(ClassName.bestGuess(propertySpec.type()))
                             .addModifiers(PUBLIC)
-                            .addStatement("return null")
+                            .addStatement("return this.$N", propertySpec.name())
                             .build()
             );
         }
+
         return TypeSpec.classBuilder(interfaceName + "Impl")
                 .addSuperinterface(ClassName.get(this.packageName, interfaceName))
                 .addModifiers(PUBLIC)
+                .addMethod(constructorBuilder.build())
                 .addMethods(getters)
+                .addFields(fields)
                 .build();
     }
 
