@@ -83,10 +83,16 @@
                     <version>3.5</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>1.12</version>
+                </plugin>
+                <plugin>
                     <groupId>org.codingmatters.value.objects</groupId>
                     <artifactId>cdm-value-objects-maven-plugin</artifactId>
                     <version>${project.version}</version>
                 </plugin>
+
             </plugins>
         </pluginManagement>
     </build>
