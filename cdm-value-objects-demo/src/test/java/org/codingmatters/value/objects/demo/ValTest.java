@@ -12,8 +12,12 @@ public class ValTest {
 
     @Test
     public void nominal() throws Exception {
-        Val val = Val.Builder.builder().prop("toto").build();
+        Value value = Value.Builder.builder()
+                .stringProperty("toto")
+                .booleanProperty(true)
+                .build();
 
-        assertThat(val.prop(), is("toto"));
+        assertThat(value.stringProperty(), is("toto"));
+        assertThat(value.booleanProperty(), is(true));
     }
 }

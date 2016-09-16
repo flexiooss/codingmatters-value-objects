@@ -1,2 +1,3 @@
-val:
-  prop: string
+value:
+  stringProperty: string
+  booleanProperty: bool
