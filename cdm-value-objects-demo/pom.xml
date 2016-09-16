@@ -26,7 +26,7 @@
                         </goals>
                         <configuration>
                             <inputSpecification>${basedir}/src/main/resources/spec.yaml</inputSpecification>
-                            <outputDirectory>${basedir}/target/generated-sources/</outputDirectory>
+                            <outputDirectory>${basedir}/src/generated-sources</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

@@ -22,7 +22,11 @@ public class GenerateMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        System.out.printf("Will eventually generate:\n\t- spec: %s\n\t- output directory: %s\n", this.inputSpecification, this.outputDirectory);
+        this.getLog().info("generating value object with configuration:");
+        this.getLog().info("\t- specification file " + this.inputSpecification.getAbsolutePath());
+        this.getLog().info("\t- to output directory " + this.outputDirectory.getAbsolutePath());
+
+        new GenerateDeleguate(this.inputSpecification, this.outputDirectory).run();
     }
 
     public File getInputSpecification() {

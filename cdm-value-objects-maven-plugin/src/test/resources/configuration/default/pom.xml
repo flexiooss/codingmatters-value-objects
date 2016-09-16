@@ -14,7 +14,9 @@
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-maven-plugin</artifactId>
 
-                <configuration/>
+                <configuration>
+                </configuration>
+
             </plugin>
         </plugins>
     </build>
