@@ -15,6 +15,9 @@ import java.io.File;
 public class GenerateMojo extends AbstractMojo {
 
     @Parameter(required = true)
+    private String destinationPackage;
+
+    @Parameter(required = true)
     private File inputSpecification;
 
     @Parameter(defaultValue = "${basedir}/target/generated-sources/")
@@ -23,10 +26,11 @@ public class GenerateMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         this.getLog().info("generating value object with configuration:");
-        this.getLog().info("\t- specification file " + this.inputSpecification.getAbsolutePath());
-        this.getLog().info("\t- to output directory " + this.outputDirectory.getAbsolutePath());
+        this.getLog().info("\t- to package          :" + this.inputSpecification.getAbsolutePath());
+        this.getLog().info("\t- specification file  :" + this.inputSpecification.getAbsolutePath());
+        this.getLog().info("\t- to output directory : " + this.outputDirectory.getAbsolutePath());
 
-        new GenerateDeleguate(this.inputSpecification, this.outputDirectory).run();
+        new GenerateDeleguate(this.destinationPackage, this.inputSpecification, this.outputDirectory).run();
     }
 
     public File getInputSpecification() {

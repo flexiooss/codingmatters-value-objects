@@ -15,10 +15,12 @@ import java.io.InputStream;
  */
 public class GenerateDeleguate implements Runnable {
 
+    private final String destinationPackage;
     private final File inputSpecification;
     private final File outputDirectory;
 
-    public GenerateDeleguate(File inputSpecification, File outputDirectory) {
+    public GenerateDeleguate(String destinationPackage, File inputSpecification, File outputDirectory) {
+        this.destinationPackage = destinationPackage;
         this.inputSpecification = inputSpecification;
         this.outputDirectory = outputDirectory;
     }
@@ -29,7 +31,7 @@ public class GenerateDeleguate implements Runnable {
         SpecReader reader = new SpecReader();
         try {
             try(InputStream in = new FileInputStream(this.inputSpecification)) {
-                new SpecCodeGenerator(reader.read(in), "org.generated").generateTo(this.outputDirectory);
+                new SpecCodeGenerator(reader.read(in), this.destinationPackage).generateTo(this.outputDirectory);
             }
         } catch (IOException e) {
             e.printStackTrace();

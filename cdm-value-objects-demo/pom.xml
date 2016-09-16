@@ -25,6 +25,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
+                            <destinationPackage>org.codingmatters.value.objects.demo</destinationPackage>
                             <inputSpecification>${basedir}/src/main/resources/spec.yaml</inputSpecification>
                         </configuration>
                     </execution>
