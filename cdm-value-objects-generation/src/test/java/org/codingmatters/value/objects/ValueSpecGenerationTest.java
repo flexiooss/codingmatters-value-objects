@@ -7,7 +7,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import static org.codingmatters.tests.reflect.ReflectMatchers.*;
+import static org.codingmatters.tests.reflect.ReflectMatchers.aStatic_;
+import static org.codingmatters.tests.reflect.ReflectMatchers.anInstance;
 import static org.codingmatters.value.objects.spec.Spec.spec;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
 import static org.hamcrest.Matchers.is;
@@ -41,30 +42,30 @@ public class ValueSpecGenerationTest {
 
     @Test
     public void twoValueSpec_twoInterfacesTwoBuilderTwoImpl() throws Exception {
-        assertThat(compiled.getClass("org.generated.Val"), is(anInterface()));
-        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aClass()));
-        assertThat(compiled.getClass("org.generated.ValImpl"), is(aClass()));
+        assertThat(compiled.getClass("org.generated.Val"), is(anInstance().interface_()));
+        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aStatic_().class_()));
+        assertThat(compiled.getClass("org.generated.ValImpl"), is(anInstance().class_()));
 
-        assertThat(compiled.getClass("org.generated.Val2"), is(anInterface()));
-        assertThat(compiled.getClass("org.generated.Val2$Builder"), is(aClass()));
-        assertThat(compiled.getClass("org.generated.Val2Impl"), is(aClass()));
+        assertThat(compiled.getClass("org.generated.Val2"), is(anInstance().interface_()));
+        assertThat(compiled.getClass("org.generated.Val2$Builder"), is(aStatic_().class_()));
+        assertThat(compiled.getClass("org.generated.Val2Impl"), is(anInstance().class_()));
     }
 
     @Test
     public void valueInterface() throws Exception {
-        assertThat(compiled.getClass("org.generated.Val"), is(anInterface().public_()));
+        assertThat(compiled.getClass("org.generated.Val"), is(anInstance().interface_().public_()));
     }
 
     @Test
     public void valueBuilder() throws Exception {
         assertThat(compiled.getClass("org.generated.Val$Builder"), is(
-                aClass().public_().static_()
-                    .with(aStaticMethod().named("builder")
+                aStatic_().class_().public_()
+                    .with(aStatic_().method().named("builder")
                             .public_()
                             .withParameters()
                             .returning(compiled.getClass("org.generated.Val$Builder"))
                     )
-                    .with(anInstanceMethod().named("build")
+                    .with(anInstance().method().named("build")
                             .public_()
                             .withParameters()
                             .returning(compiled.getClass("org.generated.Val"))
@@ -90,7 +91,7 @@ public class ValueSpecGenerationTest {
     @Test
     public void valueImplementationClass() throws Exception {
         assertThat(compiled.getClass("org.generated.ValImpl"),is(
-                aClass().public_()
+                anInstance().class_().public_()
                         .implementing(compiled.getClass("org.generated.Val"))
         ));
     }
