@@ -1,7 +1,6 @@
 package org.codingmatters.value.objects;
 
 import org.codingmatters.tests.compile.CompiledCode;
-import org.codingmatters.tests.reflect.MethodMatcher;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
 import org.junit.Before;
@@ -43,21 +42,21 @@ public class JavaTypePropertySpecGenerationTest {
 
     @Test
     public void multipleProperty_multipleMethods() throws Exception {
-        assertThat(compiled.getClass("org.generated.Val"), is(anInstance().interface_().with(MethodMatcher.anInstanceMethod().named("prop"))));
-        assertThat(compiled.getClass("org.generated.ValImpl"), is(anInstance().class_().with(MethodMatcher.anInstanceMethod().named("prop"))));
-        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aStatic_().class_().with(MethodMatcher.anInstanceMethod().named("prop"))));
+        assertThat(compiled.getClass("org.generated.Val"), is(anInstance().interface_().with(anInstance().method().named("prop"))));
+        assertThat(compiled.getClass("org.generated.ValImpl"), is(anInstance().class_().with(anInstance().method().named("prop"))));
+        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aStatic().class_().with(anInstance().method().named("prop"))));
 
 
-        assertThat(compiled.getClass("org.generated.Val"), is(anInstance().interface_().with(MethodMatcher.anInstanceMethod().named("prop2"))));
-        assertThat(compiled.getClass("org.generated.ValImpl"), is(anInstance().class_().with(MethodMatcher.anInstanceMethod().named("prop2"))));
-        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aStatic_().class_().with(MethodMatcher.anInstanceMethod().named("prop2"))));
+        assertThat(compiled.getClass("org.generated.Val"), is(anInstance().interface_().with(anInstance().method().named("prop2"))));
+        assertThat(compiled.getClass("org.generated.ValImpl"), is(anInstance().class_().with(anInstance().method().named("prop2"))));
+        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aStatic().class_().with(anInstance().method().named("prop2"))));
     }
 
     @Test
     public void propertyInterfaceGetterSignature() throws Exception {
         assertThat(compiled.getClass("org.generated.Val"), is(
                 anInstance().interface_().with(
-                        MethodMatcher.anInstanceMethod().named("prop").withParameters().returning(String.class)
+                        anInstance().method().named("prop").withParameters().returning(String.class)
                 )
         ));
     }
@@ -65,7 +64,7 @@ public class JavaTypePropertySpecGenerationTest {
     @Test
     public void propertyBuilderSetterSignature() throws Exception {
         assertThat(compiled.getClass("org.generated.Val$Builder"), is(
-                aStatic_().class_().with(
+                aStatic().class_().with(
                         aPublic().method().named("prop")
                                 .withParameters(String.class).returning(compiled.getClass("org.generated.Val$Builder"))
                 )
@@ -75,7 +74,7 @@ public class JavaTypePropertySpecGenerationTest {
     @Test
     public void propertyBuilderField() throws Exception {
         assertThat(compiled.getClass("org.generated.Val$Builder"), is(
-                aStatic_().class_().with(
+                aStatic().class_().with(
                         aPrivate().field().named("prop")
                 )
         ));

@@ -42,11 +42,11 @@ public class ValueSpecGenerationTest {
     @Test
     public void twoValueSpec_twoInterfacesTwoBuilderTwoImpl() throws Exception {
         assertThat(compiled.getClass("org.generated.Val"), is(anInstance().interface_()));
-        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aStatic_().class_()));
+        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aStatic().class_()));
         assertThat(compiled.getClass("org.generated.ValImpl"), is(anInstance().class_()));
 
         assertThat(compiled.getClass("org.generated.Val2"), is(anInstance().interface_()));
-        assertThat(compiled.getClass("org.generated.Val2$Builder"), is(aStatic_().class_()));
+        assertThat(compiled.getClass("org.generated.Val2$Builder"), is(aStatic().class_()));
         assertThat(compiled.getClass("org.generated.Val2Impl"), is(anInstance().class_()));
     }
 
