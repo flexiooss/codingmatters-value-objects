@@ -1,7 +1,6 @@
 package org.codingmatters.value.objects;
 
 import org.codingmatters.tests.compile.CompiledCode;
-import org.codingmatters.tests.reflect.FieldMatcher;
 import org.codingmatters.tests.reflect.MethodMatcher;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
@@ -10,8 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import static org.codingmatters.tests.reflect.ReflectMatchers.aStatic_;
-import static org.codingmatters.tests.reflect.ReflectMatchers.anInstance;
+import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
 import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
 import static org.codingmatters.value.objects.spec.Spec.spec;
@@ -68,7 +66,7 @@ public class JavaTypePropertySpecGenerationTest {
     public void propertyBuilderSetterSignature() throws Exception {
         assertThat(compiled.getClass("org.generated.Val$Builder"), is(
                 aStatic_().class_().with(
-                        MethodMatcher.anInstanceMethod().public_().named("prop")
+                        aPublic().method().named("prop")
                                 .withParameters(String.class).returning(compiled.getClass("org.generated.Val$Builder"))
                 )
         ));
@@ -78,7 +76,7 @@ public class JavaTypePropertySpecGenerationTest {
     public void propertyBuilderField() throws Exception {
         assertThat(compiled.getClass("org.generated.Val$Builder"), is(
                 aStatic_().class_().with(
-                        FieldMatcher.anInstanceField().named("prop").private_()
+                        aPrivate().field().named("prop")
                 )
         ));
     }
@@ -87,7 +85,7 @@ public class JavaTypePropertySpecGenerationTest {
     public void propertyValueGetterSignature() throws Exception {
         assertThat(compiled.getClass("org.generated.ValImpl"), is(
                 anInstance().class_().with(
-                        MethodMatcher.anInstanceMethod().public_().named("prop")
+                        aPublic().method().named("prop")
                                 .withParameters().returning(String.class)
                 )
         ));
@@ -97,7 +95,7 @@ public class JavaTypePropertySpecGenerationTest {
     public void propertyValueField() throws Exception {
         assertThat(compiled.getClass("org.generated.ValImpl"), is(
                 anInstance().class_().with(
-                        FieldMatcher.anInstanceField().named("prop").private_().final_()
+                        aPrivate().field().named("prop").final_()
                 )
         ));
     }

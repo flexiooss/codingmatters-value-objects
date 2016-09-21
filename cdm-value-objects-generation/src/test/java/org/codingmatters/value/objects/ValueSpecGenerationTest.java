@@ -7,8 +7,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import static org.codingmatters.tests.reflect.ReflectMatchers.aStatic_;
-import static org.codingmatters.tests.reflect.ReflectMatchers.anInstance;
+import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.codingmatters.value.objects.spec.Spec.spec;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
 import static org.hamcrest.Matchers.is;
@@ -53,20 +52,20 @@ public class ValueSpecGenerationTest {
 
     @Test
     public void valueInterface() throws Exception {
-        assertThat(compiled.getClass("org.generated.Val"), is(anInstance().interface_().public_()));
+        assertThat(compiled.getClass("org.generated.Val"), is(aPublic().interface_()));
     }
 
     @Test
     public void valueBuilder() throws Exception {
         assertThat(compiled.getClass("org.generated.Val$Builder"), is(
-                aStatic_().class_().public_()
-                    .with(aStatic_().method().named("builder")
-                            .public_()
+                aPublic().static_().class_()
+                    .with(aPublic().static_().method()
+                            .named("builder")
                             .withParameters()
                             .returning(compiled.getClass("org.generated.Val$Builder"))
                     )
-                    .with(anInstance().method().named("build")
-                            .public_()
+                    .with(aPublic().method()
+                            .named("build")
                             .withParameters()
                             .returning(compiled.getClass("org.generated.Val"))
                     )
@@ -91,7 +90,7 @@ public class ValueSpecGenerationTest {
     @Test
     public void valueImplementationClass() throws Exception {
         assertThat(compiled.getClass("org.generated.ValImpl"),is(
-                anInstance().class_().public_()
+                aPublic().class_()
                         .implementing(compiled.getClass("org.generated.Val"))
         ));
     }
