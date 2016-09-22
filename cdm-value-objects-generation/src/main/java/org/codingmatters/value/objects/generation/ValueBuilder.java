@@ -3,6 +3,7 @@ package org.codingmatters.value.objects.generation;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.value.objects.spec.PropertySpec;
 
 import java.util.LinkedList;
@@ -29,20 +30,14 @@ public class ValueBuilder {
         this.buildMethod = this.createBuildMethod(interfaceName, propertySpecs);
     }
 
-    public List<FieldSpec> fields() {
-        return fields;
-    }
-
-    public List<MethodSpec> setters() {
-        return setters;
-    }
-
-    public MethodSpec builderMethod() {
-        return builderMethod;
-    }
-
-    public MethodSpec buildMethod() {
-        return buildMethod;
+    public TypeSpec type() {
+        return TypeSpec.classBuilder("Builder")
+                .addModifiers(PUBLIC, STATIC)
+                .addMethod(this.builderMethod)
+                .addMethod(this.buildMethod)
+                .addFields(this.fields)
+                .addMethods(this.setters)
+                .build();
     }
 
     private List<FieldSpec> createFields(List<PropertySpec> propertySpecs) {
@@ -55,7 +50,6 @@ public class ValueBuilder {
         }
         return fields;
     }
-
 
     private List<MethodSpec> createSetters(List<PropertySpec> propertySpecs) {
         List<MethodSpec> setters = new LinkedList<>();

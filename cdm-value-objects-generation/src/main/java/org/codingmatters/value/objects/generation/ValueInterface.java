@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.generation;
 
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.value.objects.spec.PropertySpec;
 
 import java.util.LinkedList;
@@ -15,10 +16,22 @@ import static org.codingmatters.value.objects.generation.PropertyHelper.property
  */
 public class ValueInterface {
 
+    private final String interfaceName;
     private final List<MethodSpec> getters;
+    private final ValueBuilder valueBuilder;
 
-    public ValueInterface(List<PropertySpec> propertySpecs) {
+    public ValueInterface(String interfaceName, List<PropertySpec> propertySpecs) {
+        this.interfaceName = interfaceName;
         this.getters = this.createGetters(propertySpecs);
+        this.valueBuilder = new ValueBuilder(interfaceName, propertySpecs);
+    }
+
+    public TypeSpec type() {
+        return TypeSpec.interfaceBuilder(this.interfaceName)
+                .addModifiers(PUBLIC)
+                .addMethods(this.getters)
+                .addType(this.valueBuilder.type())
+                .build();
     }
 
     private List<MethodSpec> createGetters(List<PropertySpec> propertySpecs) {
@@ -33,9 +46,5 @@ public class ValueInterface {
             );
         }
         return result;
-    }
-
-    public List<MethodSpec> getters() {
-        return this.getters;
     }
 }

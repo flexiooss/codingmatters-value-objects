@@ -1,7 +1,9 @@
 package org.codingmatters.value.objects.generation;
 
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.value.objects.spec.PropertySpec;
 
 import java.util.LinkedList;
@@ -15,14 +17,28 @@ import static org.codingmatters.value.objects.generation.PropertyHelper.property
  */
 public class ValueImplementation {
 
+    private final String packageName;
+    private final String interfaceName;
     private final MethodSpec constructor;
     private final List<FieldSpec> fields;
     private final List<MethodSpec> getters;
 
-    public ValueImplementation(String interfaceName, List<PropertySpec> propertySpecs) {
+    public ValueImplementation(String packageName, String interfaceName, List<PropertySpec> propertySpecs) {
+        this.packageName = packageName;
+        this.interfaceName = interfaceName;
         this.constructor = this.createConstructor(propertySpecs);
         this.fields = this.createFields(propertySpecs);
         this.getters = this.createGetters(propertySpecs);
+    }
+
+    public TypeSpec type() {
+        return TypeSpec.classBuilder(interfaceName + "Impl")
+                .addSuperinterface(ClassName.get(this.packageName, interfaceName))
+                .addModifiers(PUBLIC)
+                .addMethod(this.constructor)
+                .addMethods(this.getters)
+                .addFields(this.fields)
+                .build();
     }
 
     private MethodSpec createConstructor(List<PropertySpec> propertySpecs) {
@@ -38,11 +54,6 @@ public class ValueImplementation {
         return constructorBuilder.build();
     }
 
-    public MethodSpec constructor() {
-        return constructor;
-    }
-
-
     private List<FieldSpec> createFields(List<PropertySpec> propertySpecs) {
         List<FieldSpec> fields = new LinkedList<>();
         for (PropertySpec propertySpec : propertySpecs) {
@@ -52,11 +63,6 @@ public class ValueImplementation {
         }
         return fields;
     }
-
-    public List<FieldSpec> fields() {
-        return fields;
-    }
-
 
     private List<MethodSpec> createGetters(List<PropertySpec> propertySpecs) {
         List<MethodSpec> getters = new LinkedList<>();
@@ -69,10 +75,6 @@ public class ValueImplementation {
                             .build()
             );
         }
-        return getters;
-    }
-
-    public List<MethodSpec> getters() {
         return getters;
     }
 }

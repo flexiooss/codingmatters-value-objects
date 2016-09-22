@@ -1,18 +1,12 @@
 package org.codingmatters.value.objects.generation;
 
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.ValueSpec;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-
-import static javax.lang.model.element.Modifier.PUBLIC;
-import static javax.lang.model.element.Modifier.STATIC;
 
 /**
  * Created by nelt on 9/13/16.
@@ -38,49 +32,12 @@ public class SpecCodeGenerator {
     private void generateValueTypesTo(ValueSpec valueSpec, File packageDestination) throws IOException {
         String interfaceName = capitalizedFirst(valueSpec.name());
 
-        TypeSpec valueInterface = this.createValueInterface(interfaceName, valueSpec, valueSpec.propertySpecs());
-        TypeSpec valueImpl = this.createValueImplementation(interfaceName, valueSpec.propertySpecs());
-
+        TypeSpec valueInterface = new ValueInterface(interfaceName, valueSpec.propertySpecs()).type();
         this.writeJavaFile(packageDestination, valueInterface);
+
+        TypeSpec valueImpl = new ValueImplementation(this.packageName, interfaceName, valueSpec.propertySpecs()).type();
         this.writeJavaFile(packageDestination, valueImpl);
     }
-
-
-    private TypeSpec createValueInterface(String interfaceName, ValueSpec valueSpec, List<PropertySpec> propertySpecs) {
-        TypeSpec valueBuilder = this.createValueBuilder(interfaceName, valueSpec.propertySpecs());
-        ValueInterface valueInterface = new ValueInterface(propertySpecs);
-
-        return TypeSpec.interfaceBuilder(interfaceName)
-                    .addModifiers(PUBLIC)
-                    .addMethods(valueInterface.getters())
-                    .addType(valueBuilder)
-                    .build();
-    }
-
-    private TypeSpec createValueBuilder(String interfaceName, List<PropertySpec> propertySpecs) {
-        ValueBuilder valueBuilderGenerator = new ValueBuilder(interfaceName, propertySpecs);
-
-        return TypeSpec.classBuilder("Builder")
-                .addModifiers(PUBLIC, STATIC)
-                .addMethod(valueBuilderGenerator.builderMethod())
-                .addMethod(valueBuilderGenerator.buildMethod())
-                .addFields(valueBuilderGenerator.fields())
-                .addMethods(valueBuilderGenerator.setters())
-                .build();
-    }
-
-    private TypeSpec createValueImplementation(String interfaceName, List<PropertySpec> propertySpecs) {
-        ValueImplementation valueImplementation = new ValueImplementation(interfaceName, propertySpecs);
-
-        return TypeSpec.classBuilder(interfaceName + "Impl")
-                .addSuperinterface(ClassName.get(this.packageName, interfaceName))
-                .addModifiers(PUBLIC)
-                .addMethod(valueImplementation.constructor())
-                .addMethods(valueImplementation.getters())
-                .addFields(valueImplementation.fields())
-                .build();
-    }
-
 
 
     private void writeJavaFile(File packageDestination, TypeSpec valueInterface) throws IOException {
