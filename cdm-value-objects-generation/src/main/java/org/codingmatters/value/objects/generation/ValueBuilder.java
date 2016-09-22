@@ -9,20 +9,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static javax.lang.model.element.Modifier.*;
+import static org.codingmatters.value.objects.generation.PropertyHelper.propertyType;
 import static org.codingmatters.value.objects.generation.SpecCodeGenerator.concat;
 
 /**
  * Created by nelt on 9/22/16.
  */
-public class ValueBuilderGenerator {
-
+public class ValueBuilder {
 
     private final List<FieldSpec> fields;
     private final List<MethodSpec> setters;
     private final MethodSpec builderMethod;
     private final MethodSpec buildMethod;
 
-    public ValueBuilderGenerator(String interfaceName, List<PropertySpec> propertySpecs) {
+    public ValueBuilder(String interfaceName, List<PropertySpec> propertySpecs) {
         this.fields = this.createFields(propertySpecs);
         this.setters = this.createSetters(propertySpecs);
         this.builderMethod = this.createBuilderMethod();
@@ -50,11 +50,12 @@ public class ValueBuilderGenerator {
 
         for (PropertySpec propertySpec : propertySpecs) {
             fields.add(
-                    FieldSpec.builder(ClassName.bestGuess(propertySpec.type()), propertySpec.name(), PRIVATE).build()
+                    FieldSpec.builder(propertyType(propertySpec), propertySpec.name(), PRIVATE).build()
             );
         }
         return fields;
     }
+
 
     private List<MethodSpec> createSetters(List<PropertySpec> propertySpecs) {
         List<MethodSpec> setters = new LinkedList<>();
@@ -62,7 +63,7 @@ public class ValueBuilderGenerator {
         for (PropertySpec propertySpec : propertySpecs) {
             setters.add(
                     MethodSpec.methodBuilder(propertySpec.name())
-                            .addParameter(ClassName.bestGuess(propertySpec.type()), propertySpec.name())
+                            .addParameter(propertyType(propertySpec), propertySpec.name())
                             .returns(ClassName.bestGuess("Builder"))
                             .addModifiers(PUBLIC)
                             .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())

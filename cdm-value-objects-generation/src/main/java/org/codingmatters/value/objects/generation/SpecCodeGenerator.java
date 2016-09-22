@@ -1,16 +1,18 @@
 package org.codingmatters.value.objects.generation;
 
-import com.squareup.javapoet.*;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.ValueSpec;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
-import static javax.lang.model.element.Modifier.*;
+import static javax.lang.model.element.Modifier.PUBLIC;
+import static javax.lang.model.element.Modifier.STATIC;
 
 /**
  * Created by nelt on 9/13/16.
@@ -34,7 +36,7 @@ public class SpecCodeGenerator {
     }
 
     private void generateValueTypesTo(ValueSpec valueSpec, File packageDestination) throws IOException {
-        String interfaceName = this.capitalizedFirst(valueSpec.name());
+        String interfaceName = capitalizedFirst(valueSpec.name());
 
         TypeSpec valueBuilder = this.createValueBuilder(interfaceName, valueSpec.propertySpecs());
         TypeSpec valueInterface = this.createValueInterface(interfaceName, valueBuilder, valueSpec.propertySpecs());
@@ -46,26 +48,17 @@ public class SpecCodeGenerator {
 
 
     private TypeSpec createValueInterface(String interfaceName, TypeSpec valueBuilder, List<PropertySpec> propertySpecs) {
-        List<MethodSpec> getters = new LinkedList<>();
-
-        for (PropertySpec propertySpec : propertySpecs) {
-            getters.add(
-                    MethodSpec.methodBuilder(propertySpec.name())
-                            .returns(ClassName.bestGuess(propertySpec.type()))
-                            .addModifiers(PUBLIC, ABSTRACT)
-                            .build()
-            );
-        }
+        ValueInterface valueInterface = new ValueInterface(propertySpecs);
 
         return TypeSpec.interfaceBuilder(interfaceName)
                     .addModifiers(PUBLIC)
-                    .addMethods(getters)
+                    .addMethods(valueInterface.getters())
                     .addType(valueBuilder)
                     .build();
     }
 
     private TypeSpec createValueBuilder(String interfaceName, List<PropertySpec> propertySpecs) {
-        ValueBuilderGenerator valueBuilderGenerator = new ValueBuilderGenerator(interfaceName, propertySpecs);
+        ValueBuilder valueBuilderGenerator = new ValueBuilder(interfaceName, propertySpecs);
 
         return TypeSpec.classBuilder("Builder")
                 .addModifiers(PUBLIC, STATIC)
@@ -90,38 +83,18 @@ public class SpecCodeGenerator {
     }
 
     private TypeSpec createValueImplementation(String interfaceName, List<PropertySpec> propertySpecs) {
-        List<FieldSpec> fields = new LinkedList<>();
-        List<MethodSpec> getters = new LinkedList<>();
-
-        MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder();
-
-        for (PropertySpec propertySpec : propertySpecs) {
-            constructorBuilder
-                    .addParameter(ClassName.bestGuess(propertySpec.type()), propertySpec.name())
-                    .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
-            ;
-
-
-            fields.add(
-                    FieldSpec.builder(ClassName.bestGuess(propertySpec.type()), propertySpec.name(), PRIVATE, FINAL).build()
-            );
-            getters.add(
-                    MethodSpec.methodBuilder(propertySpec.name())
-                            .returns(ClassName.bestGuess(propertySpec.type()))
-                            .addModifiers(PUBLIC)
-                            .addStatement("return this.$N", propertySpec.name())
-                            .build()
-            );
-        }
+        ValueImplementation valueImplementation = new ValueImplementation(interfaceName, propertySpecs);
 
         return TypeSpec.classBuilder(interfaceName + "Impl")
                 .addSuperinterface(ClassName.get(this.packageName, interfaceName))
                 .addModifiers(PUBLIC)
-                .addMethod(constructorBuilder.build())
-                .addMethods(getters)
-                .addFields(fields)
+                .addMethod(valueImplementation.constructor())
+                .addMethods(valueImplementation.getters())
+                .addFields(valueImplementation.fields())
                 .build();
     }
+
+
 
     private void writeJavaFile(File packageDestination, TypeSpec valueInterface) throws IOException {
         JavaFile file = JavaFile.builder(this.packageName, valueInterface).build();
@@ -129,7 +102,7 @@ public class SpecCodeGenerator {
 //        file.writeTo(System.out);
     }
 
-    private String capitalizedFirst(String str) {
+    static public String capitalizedFirst(String str) {
         return str.substring(0,1).toUpperCase() + str.substring(1).toLowerCase();
     }
 }

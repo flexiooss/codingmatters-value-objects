@@ -25,9 +25,9 @@ public class ValueTypePropertyGenerationSpec {
 
     private final Spec spec = spec()
             .addValue(valueSpec().name("val")
-                    .addProperty(property().name("selfReference").type(type().typeRef("val").typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)))
-                    .addProperty(property().name("inSpecfReference").type(type().typeRef("val2").typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)))
-                    .addProperty(property().name("inSpecfReference").type(type().typeRef("org.external.value.ExternalValue").typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)))
+                    .addProperty(property().name("recursiveValue").type(type().typeRef("val").typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)))
+                    .addProperty(property().name("inSpecValue").type(type().typeRef("val2").typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)))
+//                    .addProperty(property().name("outSpecValue").type(type().typeRef("org.external.value.ExternalValue").typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)))
             )
             .addValue(valueSpec().name("val2"))
             .build();
@@ -35,9 +35,9 @@ public class ValueTypePropertyGenerationSpec {
 
     @Before
     public void setUp() throws Exception {
-//        new SpecCodeGenerator(this.externalSpec, "org.external.value").generateTo(dir.getRoot());
-//        new SpecCodeGenerator(this.spec, "org.generated").generateTo(dir.getRoot());
-//        this.compiled = CompiledCode.compile(this.dir.getRoot());
+        new SpecCodeGenerator(this.externalSpec, "org.external.value").generateTo(dir.getRoot());
+        new SpecCodeGenerator(this.spec, "org.generated").generateTo(dir.getRoot());
+        this.compiled = CompiledCode.compile(this.dir.getRoot());
     }
 
     @Test
