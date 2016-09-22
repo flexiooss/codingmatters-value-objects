@@ -65,60 +65,18 @@ public class SpecCodeGenerator {
     }
 
     private TypeSpec createValueBuilder(String interfaceName, List<PropertySpec> propertySpecs) {
-        List<FieldSpec> fields = new LinkedList<>();
-        List<MethodSpec> setters = new LinkedList<>();
-
-        String constructorParametersFormat = null;
-        List<String> constructorParametersNames = new LinkedList<>();
-
-        for (PropertySpec propertySpec : propertySpecs) {
-            fields.add(
-                    FieldSpec.builder(ClassName.bestGuess(propertySpec.type()), propertySpec.name(), PRIVATE).build()
-            );
-            setters.add(
-                    MethodSpec.methodBuilder(propertySpec.name())
-                            .addParameter(ClassName.bestGuess(propertySpec.type()), propertySpec.name())
-                            .returns(ClassName.bestGuess("Builder"))
-                            .addModifiers(PUBLIC)
-                            .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
-                            .addStatement("return this")
-                            .build()
-            );
-            if(constructorParametersFormat == null) {
-                constructorParametersFormat = "";
-            } else {
-                constructorParametersFormat += ", ";
-            }
-            constructorParametersFormat += "this.$N";
-            constructorParametersNames.add(propertySpec.name());
-        }
-        if(constructorParametersFormat == null) {
-            constructorParametersFormat = "";
-        }
-
-        MethodSpec builderMethod = MethodSpec.methodBuilder("builder")
-                .addModifiers(STATIC, PUBLIC)
-                .returns(ClassName.bestGuess("Builder"))
-                .addStatement("return new $T()", ClassName.bestGuess("Builder"))
-                .build();
-        MethodSpec buildMethod = MethodSpec.methodBuilder("build")
-                .addModifiers(PUBLIC)
-                .returns(ClassName.bestGuess(interfaceName))
-                .addStatement(
-                        "return new $T(" + constructorParametersFormat + ")",
-                        concat(ClassName.bestGuess(interfaceName + "Impl"), constructorParametersNames.toArray()))
-                .build();
+        ValueBuilderGenerator valueBuilderGenerator = new ValueBuilderGenerator(interfaceName, propertySpecs);
 
         return TypeSpec.classBuilder("Builder")
                 .addModifiers(PUBLIC, STATIC)
-                .addMethod(builderMethod)
-                .addMethod(buildMethod)
-                .addFields(fields)
-                .addMethods(setters)
+                .addMethod(valueBuilderGenerator.builderMethod())
+                .addMethod(valueBuilderGenerator.buildMethod())
+                .addFields(valueBuilderGenerator.fields())
+                .addMethods(valueBuilderGenerator.setters())
                 .build();
     }
 
-    private Object [] concat(Object first, Object ... others) {
+    static public Object [] concat(Object first, Object ... others) {
         int size = 1;
         if(others != null) {
             size += others.length;
