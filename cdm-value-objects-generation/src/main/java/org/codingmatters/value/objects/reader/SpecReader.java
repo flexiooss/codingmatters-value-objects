@@ -1,4 +1,4 @@
-package org.codingmatters.value.objects;
+package org.codingmatters.value.objects.reader;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
-import org.codingmatters.value.objects.reader.ContextSpecParser;
 import org.codingmatters.value.objects.spec.Spec;
 
 import java.io.IOException;

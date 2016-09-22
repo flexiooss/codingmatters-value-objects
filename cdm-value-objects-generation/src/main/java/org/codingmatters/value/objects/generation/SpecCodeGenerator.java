@@ -1,4 +1,4 @@
-package org.codingmatters.value.objects;
+package org.codingmatters.value.objects.generation;
 
 import com.squareup.javapoet.*;
 import org.codingmatters.value.objects.spec.PropertySpec;

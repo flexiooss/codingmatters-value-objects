@@ -1,4 +1,4 @@
-package org.codingmatters.value.objects;
+package org.codingmatters.value.objects.generation;
 
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.value.objects.spec.Spec;

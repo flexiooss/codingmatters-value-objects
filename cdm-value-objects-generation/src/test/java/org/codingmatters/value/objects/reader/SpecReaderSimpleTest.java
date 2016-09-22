@@ -1,4 +1,4 @@
-package org.codingmatters.value.objects;
+package org.codingmatters.value.objects.reader;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.codingmatters.value.objects.exception.LowLevelSyntaxException;

@@ -1,4 +1,4 @@
-package org.codingmatters.value.objects;
+package org.codingmatters.value.objects.generation;
 
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.value.objects.spec.Spec;
@@ -54,49 +54,49 @@ public class JavaTypePropertySpecGenerationTest {
 
     @Test
     public void propertyInterfaceGetterSignature() throws Exception {
-        assertThat(compiled.getClass("org.generated.Val"), is(
-                anInstance().interface_().with(
+        assertThat(compiled.getClass("org.generated.Val"),
+                is(anInterface().with(
                         anInstance().method().named("prop").withParameters().returning(String.class)
-                )
-        ));
+                ))
+        );
     }
 
     @Test
     public void propertyBuilderSetterSignature() throws Exception {
-        assertThat(compiled.getClass("org.generated.Val$Builder"), is(
-                aStatic().class_().with(
+        assertThat(compiled.getClass("org.generated.Val$Builder"),
+                is(aStatic().class_().with(
                         aPublic().method().named("prop")
                                 .withParameters(String.class).returning(compiled.getClass("org.generated.Val$Builder"))
-                )
-        ));
+                ))
+        );
     }
 
     @Test
     public void propertyBuilderField() throws Exception {
-        assertThat(compiled.getClass("org.generated.Val$Builder"), is(
-                aStatic().class_().with(
+        assertThat(compiled.getClass("org.generated.Val$Builder"),
+                is(aStatic().class_().with(
                         aPrivate().field().named("prop")
-                )
-        ));
+                ))
+        );
     }
 
     @Test
     public void propertyValueGetterSignature() throws Exception {
-        assertThat(compiled.getClass("org.generated.ValImpl"), is(
-                anInstance().class_().with(
+        assertThat(compiled.getClass("org.generated.ValImpl"),
+                is(aClass().with(
                         aPublic().method().named("prop")
                                 .withParameters().returning(String.class)
-                )
-        ));
+                ))
+        );
     }
 
     @Test
     public void propertyValueField() throws Exception {
-        assertThat(compiled.getClass("org.generated.ValImpl"), is(
-                anInstance().class_().with(
+        assertThat(compiled.getClass("org.generated.ValImpl"),
+                is(aClass().with(
                         aPrivate().field().named("prop").final_()
-                )
-        ));
+                ))
+        );
     }
 
     @Test

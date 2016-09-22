@@ -1,4 +1,4 @@
-package org.codingmatters.value.objects;
+package org.codingmatters.value.objects.reader;
 
 import org.codingmatters.value.objects.spec.TypeKind;
 import org.junit.Rule;

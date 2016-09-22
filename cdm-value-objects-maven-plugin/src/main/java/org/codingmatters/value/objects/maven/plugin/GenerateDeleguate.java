@@ -1,9 +1,9 @@
 package org.codingmatters.value.objects.maven.plugin;
 
-import org.codingmatters.value.objects.SpecCodeGenerator;
-import org.codingmatters.value.objects.SpecReader;
 import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
+import org.codingmatters.value.objects.generation.SpecCodeGenerator;
+import org.codingmatters.value.objects.reader.SpecReader;
 
 import java.io.File;
 import java.io.FileInputStream;
