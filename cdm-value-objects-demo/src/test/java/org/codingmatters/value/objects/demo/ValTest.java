@@ -3,6 +3,7 @@ package org.codingmatters.value.objects.demo;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -11,7 +12,7 @@ import static org.junit.Assert.assertThat;
 public class ValTest {
 
     @Test
-    public void nominal() throws Exception {
+    public void simpleValue() throws Exception {
         Value value = Value.Builder.builder()
                 .stringProperty("toto")
                 .booleanProperty(true)
@@ -19,5 +20,16 @@ public class ValTest {
 
         assertThat(value.stringProperty(), is("toto"));
         assertThat(value.booleanProperty(), is(true));
+    }
+
+    @Test
+    public void complexValue() throws Exception {
+        Complexvalue value = Complexvalue.Builder.builder()
+                .recursiveProperty(Complexvalue.Builder.builder())
+                .inSpecProperty(Value.Builder.builder().stringProperty("toto"))
+                .build();
+
+        assertThat(value.inSpecProperty().stringProperty(), is("toto"));
+        assertThat(value.recursiveProperty(), is(notNullValue(Complexvalue.class)));
     }
 }
