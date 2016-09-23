@@ -20,13 +20,25 @@
                 <artifactId>cdm-value-objects-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>spec1</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <destinationPackage>org.codingmatters.value.objects.demo.referenced</destinationPackage>
+                            <inputSpecification>src/main/resources/spec1.yaml</inputSpecification>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>spec2</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
                             <destinationPackage>org.codingmatters.value.objects.demo</destinationPackage>
-                            <inputSpecification>${basedir}/src/main/resources/spec.yaml</inputSpecification>
+                            <inputSpecification>src/main/resources/spec2.yaml</inputSpecification>
                         </configuration>
                     </execution>
                 </executions>

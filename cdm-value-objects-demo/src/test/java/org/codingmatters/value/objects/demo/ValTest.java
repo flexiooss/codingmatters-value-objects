@@ -1,5 +1,6 @@
 package org.codingmatters.value.objects.demo;
 
+import org.codingmatters.value.objects.demo.referenced.ReferencedValue;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -31,5 +32,11 @@ public class ValTest {
 
         assertThat(value.inSpecProperty().stringProperty(), is("toto"));
         assertThat(value.recursiveProperty(), is(notNullValue(ComplexValue.class)));
+    }
+
+    @Test
+    public void externalValue() throws Exception {
+        ComplexValue value = ComplexValue.Builder.builder().outSpecProperty(ReferencedValue.Builder.builder()).build();
+        assertThat(value.outSpecProperty(), is(notNullValue(ReferencedValue.class)));
     }
 }
