@@ -8,10 +8,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
 import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
 import static org.codingmatters.value.objects.spec.Spec.spec;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by nelt on 9/22/16.
@@ -42,6 +45,64 @@ public class ValueTypePropertyGenerationSpec {
 
     @Test
     public void selfReferenceValueObject() throws Exception {
-
+        assertThat(compiled.getClass("org.generated.Val"),
+                is(anInterface()
+                        .with(aMethod()
+                                .named("recursiveValue")
+                                .withParameters().returning(compiled.getClass("org.generated.Val"))
+                        )
+                        .with(aMethod()
+                                .named("inSpecValue")
+                                .withParameters().returning(compiled.getClass("org.generated.Val2"))
+                        )
+                ));
+        assertThat(compiled.getClass("org.generated.ValImpl"),
+                is(aClass()
+                        .implementing(compiled.getClass("org.generated.Val"))
+                ));
     }
+
+    @Test
+    public void builder_setterForValueProperty_hasABuilderArgument() throws Exception {
+        assertThat(compiled.getClass("org.generated.Val$Builder"),
+                is(aStatic().public_().class_()
+                        .with(aMethod()
+                                .named("recursiveValue")
+                                .withParameters(compiled.getClass("org.generated.Val$Builder"))
+                                .returning(compiled.getClass("org.generated.Val$Builder"))
+                        )
+                ));
+
+        assertThat(compiled.getClass("org.generated.Val$Builder"),
+                is(aStatic().public_().class_()
+                        .with(aMethod()
+                                .named("inSpecValue")
+                                .withParameters(compiled.getClass("org.generated.Val2$Builder"))
+                                .returning(compiled.getClass("org.generated.Val$Builder"))
+                        )
+                ));
+    }
+
+
+    @Test
+    public void valueBuilding() throws Exception {
+        Object referencedBuilder = compiled.onClass("org.generated.Val2$Builder").invoke("builder");
+
+        Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        compiled.on(builder).invoke("inSpecValue", compiled.getClass("org.generated.Val2$Builder")).with(referencedBuilder);
+        Object value = compiled.on(builder).invoke("build");
+
+        assertThat(value, is(notNullValue(compiled.getClass("org.generated.ValImpl"))));
+        assertThat(compiled.on(value).invoke("inSpecValue"), is(notNullValue(compiled.getClass("org.generated.Val2"))));
+    }
+
+    @Test
+    public void valueBuildingWithNullBuilder() throws Exception {
+        Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        Object value = compiled.on(builder).invoke("build");
+
+        assertThat(value, is(notNullValue(compiled.getClass("org.generated.ValImpl"))));
+        assertThat(compiled.on(value).invoke("inSpecValue"), is(nullValue()));
+    }
+
 }

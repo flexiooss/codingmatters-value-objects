@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static javax.lang.model.element.Modifier.*;
-import static org.codingmatters.value.objects.generation.PropertyHelper.propertyType;
+import static org.codingmatters.value.objects.generation.PropertyHelper.builderPropertyType;
 import static org.codingmatters.value.objects.generation.SpecCodeGenerator.concat;
 
 /**
@@ -44,9 +44,7 @@ public class ValueBuilder {
         List<FieldSpec> fields = new LinkedList<>();
 
         for (PropertySpec propertySpec : propertySpecs) {
-            fields.add(
-                    FieldSpec.builder(propertyType(propertySpec), propertySpec.name(), PRIVATE).build()
-            );
+            fields.add(FieldSpec.builder(builderPropertyType(propertySpec), propertySpec.name(), PRIVATE).build());
         }
         return fields;
     }
@@ -57,7 +55,7 @@ public class ValueBuilder {
         for (PropertySpec propertySpec : propertySpecs) {
             setters.add(
                     MethodSpec.methodBuilder(propertySpec.name())
-                            .addParameter(propertyType(propertySpec), propertySpec.name())
+                            .addParameter(builderPropertyType(propertySpec), propertySpec.name())
                             .returns(ClassName.bestGuess("Builder"))
                             .addModifiers(PUBLIC)
                             .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
@@ -86,8 +84,16 @@ public class ValueBuilder {
             } else {
                 constructorParametersFormat += ", ";
             }
-            constructorParametersFormat += "this.$N";
-            constructorParametersNames.add(propertySpec.name());
+
+
+            if(propertySpec.typeKind().isValueObject()) {
+                constructorParametersFormat += "this.$N != null ? this.$N.build() : null";
+                constructorParametersNames.add(propertySpec.name());
+                constructorParametersNames.add(propertySpec.name());
+            } else {
+                constructorParametersFormat += "this.$N";
+                constructorParametersNames.add(propertySpec.name());
+            }
         }
         if(constructorParametersFormat == null) {
             constructorParametersFormat = "";

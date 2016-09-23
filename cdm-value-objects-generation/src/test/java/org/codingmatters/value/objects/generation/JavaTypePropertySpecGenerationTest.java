@@ -42,14 +42,14 @@ public class JavaTypePropertySpecGenerationTest {
 
     @Test
     public void multipleProperty_multipleMethods() throws Exception {
-        assertThat(compiled.getClass("org.generated.Val"), is(anInstance().interface_().with(anInstance().method().named("prop"))));
-        assertThat(compiled.getClass("org.generated.ValImpl"), is(anInstance().class_().with(anInstance().method().named("prop"))));
-        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aStatic().class_().with(anInstance().method().named("prop"))));
+        assertThat(compiled.getClass("org.generated.Val"), is(anInstance().public_().interface_().with(anInstance().method().named("prop"))));
+        assertThat(compiled.getClass("org.generated.ValImpl"), is(anInstance().public_().class_().with(anInstance().method().named("prop"))));
+        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aStatic().public_().class_().with(anInstance().method().named("prop"))));
 
 
-        assertThat(compiled.getClass("org.generated.Val"), is(anInstance().interface_().with(anInstance().method().named("prop2"))));
-        assertThat(compiled.getClass("org.generated.ValImpl"), is(anInstance().class_().with(anInstance().method().named("prop2"))));
-        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aStatic().class_().with(anInstance().method().named("prop2"))));
+        assertThat(compiled.getClass("org.generated.Val"), is(anInstance().public_().interface_().with(anInstance().method().named("prop2"))));
+        assertThat(compiled.getClass("org.generated.ValImpl"), is(anInstance().public_().class_().with(anInstance().method().named("prop2"))));
+        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aStatic().public_().class_().with(anInstance().method().named("prop2"))));
     }
 
     @Test
