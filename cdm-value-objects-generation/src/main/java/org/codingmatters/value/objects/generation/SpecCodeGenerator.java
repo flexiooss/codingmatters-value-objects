@@ -47,7 +47,7 @@ public class SpecCodeGenerator {
     }
 
     static public String capitalizedFirst(String str) {
-        return str.substring(0,1).toUpperCase() + str.substring(1).toLowerCase();
+        return str.substring(0,1).toUpperCase() + str.substring(1);
     }
 
     static public Object [] concat(Object first, Object ... others) {

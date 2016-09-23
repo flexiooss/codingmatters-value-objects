@@ -24,12 +24,12 @@ public class ValTest {
 
     @Test
     public void complexValue() throws Exception {
-        Complexvalue value = Complexvalue.Builder.builder()
-                .recursiveProperty(Complexvalue.Builder.builder())
+        ComplexValue value = ComplexValue.Builder.builder()
+                .recursiveProperty(ComplexValue.Builder.builder())
                 .inSpecProperty(Value.Builder.builder().stringProperty("toto"))
                 .build();
 
         assertThat(value.inSpecProperty().stringProperty(), is("toto"));
-        assertThat(value.recursiveProperty(), is(notNullValue(Complexvalue.class)));
+        assertThat(value.recursiveProperty(), is(notNullValue(ComplexValue.class)));
     }
 }
