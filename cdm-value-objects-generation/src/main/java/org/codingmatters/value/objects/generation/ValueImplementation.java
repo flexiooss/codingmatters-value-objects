@@ -115,6 +115,7 @@ public class ValueImplementation {
                 .addModifiers(PUBLIC)
                 .addParameter(ClassName.bestGuess(Object.class.getName()), "o")
                 .returns(boolean.class)
+                .addAnnotation(ClassName.get(Override.class))
                 .addStatement("if (this == o) return true")
                 .addStatement("if (o == null || getClass() != o.getClass()) return false")
                 .addStatement("$T that = ($T) o", className, className)
