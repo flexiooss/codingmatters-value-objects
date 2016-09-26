@@ -83,6 +83,7 @@ public class ValueImplementation {
     }
 
     private MethodSpec createEquals(List<PropertySpec> propertySpecs) {
+        ClassName className = ClassName.get(this.packageName, this.interfaceName + "Impl");
         /*
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -94,7 +95,11 @@ public class ValueImplementation {
         String equalsStatement;
         List<Object> equalsStatementParameters= new LinkedList<>();
         if(propertySpecs.size() > 0) {
-            equalsStatement = "return ";
+            equalsStatement = "$T that = ($T) o;\n";
+            equalsStatementParameters.add(className);
+            equalsStatementParameters.add(className);
+
+            equalsStatement += "return ";
             boolean started = false;
             for (PropertySpec propertySpec : propertySpecs) {
                 if(started) {
@@ -110,7 +115,6 @@ public class ValueImplementation {
             equalsStatement = "return true";
         }
 
-        ClassName className = ClassName.get(this.packageName, this.interfaceName + "Impl");
         return MethodSpec.methodBuilder("equals")
                 .addModifiers(PUBLIC)
                 .addParameter(ClassName.bestGuess(Object.class.getName()), "o")
@@ -118,7 +122,6 @@ public class ValueImplementation {
                 .addAnnotation(ClassName.get(Override.class))
                 .addStatement("if (this == o) return true")
                 .addStatement("if (o == null || getClass() != o.getClass()) return false")
-                .addStatement("$T that = ($T) o", className, className)
                 .addStatement(equalsStatement, equalsStatementParameters.toArray())
                 .build();
     }
