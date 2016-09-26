@@ -8,6 +8,7 @@ import org.codingmatters.value.objects.spec.PropertySpec;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.lang.model.element.Modifier.*;
 import static org.codingmatters.value.objects.generation.PropertyHelper.propertyType;
@@ -22,6 +23,7 @@ public class ValueImplementation {
     private final MethodSpec constructor;
     private final List<FieldSpec> fields;
     private final List<MethodSpec> getters;
+    private MethodSpec equalsMethod;
 
     public ValueImplementation(String packageName, String interfaceName, List<PropertySpec> propertySpecs) {
         this.packageName = packageName;
@@ -29,6 +31,7 @@ public class ValueImplementation {
         this.constructor = this.createConstructor(propertySpecs);
         this.fields = this.createFields(propertySpecs);
         this.getters = this.createGetters(propertySpecs);
+        this.equalsMethod = this.createEquals(propertySpecs);
     }
 
     public TypeSpec type() {
@@ -37,6 +40,7 @@ public class ValueImplementation {
                 .addModifiers(PUBLIC)
                 .addMethod(this.constructor)
                 .addMethods(this.getters)
+                .addMethod(this.equalsMethod)
                 .addFields(this.fields)
                 .build();
     }
@@ -76,5 +80,45 @@ public class ValueImplementation {
             );
         }
         return getters;
+    }
+
+    private MethodSpec createEquals(List<PropertySpec> propertySpecs) {
+        /*
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PropertySpec that = (PropertySpec) o;
+        return Objects.equals(name, that.name) &&
+                Objects.equals(type, that.type);
+         */
+
+        String equalsStatement;
+        List<Object> equalsStatementParameters= new LinkedList<>();
+        if(propertySpecs.size() > 0) {
+            equalsStatement = "return ";
+            boolean started = false;
+            for (PropertySpec propertySpec : propertySpecs) {
+                if(started) {
+                    equalsStatement += " && \n";
+                }
+                started = true;
+
+                equalsStatement += "$T.equals(" + propertySpec.name() + ", that." + propertySpec.name() + ")";
+                equalsStatementParameters.add(ClassName.get(Objects.class));
+            }
+
+        } else {
+            equalsStatement = "return true";
+        }
+
+        ClassName className = ClassName.get(this.packageName, this.interfaceName + "Impl");
+        return MethodSpec.methodBuilder("equals")
+                .addModifiers(PUBLIC)
+                .addParameter(ClassName.bestGuess(Object.class.getName()), "o")
+                .returns(boolean.class)
+                .addStatement("if (this == o) return true")
+                .addStatement("if (o == null || getClass() != o.getClass()) return false")
+                .addStatement("$T that = ($T) o", className, className)
+                .addStatement(equalsStatement, equalsStatementParameters.toArray())
+                .build();
     }
 }
