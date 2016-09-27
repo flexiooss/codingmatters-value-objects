@@ -24,6 +24,7 @@ public class ValueImplementation {
     private final List<FieldSpec> fields;
     private final List<MethodSpec> getters;
     private MethodSpec equalsMethod;
+    private final MethodSpec hashCodeMethod;
 
     public ValueImplementation(String packageName, String interfaceName, List<PropertySpec> propertySpecs) {
         this.packageName = packageName;
@@ -32,6 +33,7 @@ public class ValueImplementation {
         this.fields = this.createFields(propertySpecs);
         this.getters = this.createGetters(propertySpecs);
         this.equalsMethod = this.createEquals(propertySpecs);
+        this.hashCodeMethod = this.createHashCode(propertySpecs);
     }
 
     public TypeSpec type() {
@@ -39,9 +41,10 @@ public class ValueImplementation {
                 .addSuperinterface(ClassName.get(this.packageName, interfaceName))
                 .addModifiers(PUBLIC)
                 .addMethod(this.constructor)
+                .addFields(this.fields)
                 .addMethods(this.getters)
                 .addMethod(this.equalsMethod)
-                .addFields(this.fields)
+                .addMethod(this.hashCodeMethod)
                 .build();
     }
 
@@ -92,27 +95,27 @@ public class ValueImplementation {
                 Objects.equals(type, that.type);
          */
 
-        String equalsStatement;
-        List<Object> equalsStatementParameters= new LinkedList<>();
+        String statement;
+        List<Object> bindings= new LinkedList<>();
         if(propertySpecs.size() > 0) {
-            equalsStatement = "$T that = ($T) o;\n";
-            equalsStatementParameters.add(className);
-            equalsStatementParameters.add(className);
+            statement = "$T that = ($T) o;\n";
+            bindings.add(className);
+            bindings.add(className);
 
-            equalsStatement += "return ";
+            statement += "return ";
             boolean started = false;
             for (PropertySpec propertySpec : propertySpecs) {
                 if(started) {
-                    equalsStatement += " && \n";
+                    statement += " && \n";
                 }
                 started = true;
 
-                equalsStatement += "$T.equals(" + propertySpec.name() + ", that." + propertySpec.name() + ")";
-                equalsStatementParameters.add(ClassName.get(Objects.class));
+                statement += "$T.equals(this." + propertySpec.name() + ", that." + propertySpec.name() + ")";
+                bindings.add(ClassName.get(Objects.class));
             }
 
         } else {
-            equalsStatement = "return true";
+            statement = "return true";
         }
 
         return MethodSpec.methodBuilder("equals")
@@ -122,7 +125,30 @@ public class ValueImplementation {
                 .addAnnotation(ClassName.get(Override.class))
                 .addStatement("if (this == o) return true")
                 .addStatement("if (o == null || getClass() != o.getClass()) return false")
-                .addStatement(equalsStatement, equalsStatementParameters.toArray())
+                .addStatement(statement, bindings.toArray())
+                .build();
+    }
+
+    private MethodSpec createHashCode(List<PropertySpec> propertySpecs) {
+        String statement = "return $T.hash(";
+
+        //return Objects.hash(valueSpecs);
+
+        boolean started = false;
+        for (PropertySpec propertySpec : propertySpecs) {
+            if(started) {
+                statement += ", ";
+            }
+            started = true;
+            statement += "this." + propertySpec.name();
+        }
+        statement += ")";
+
+        return MethodSpec.methodBuilder("hashCode")
+                .addModifiers(PUBLIC)
+                .returns(int.class)
+                .addAnnotation(ClassName.get(Override.class))
+                .addStatement(statement, ClassName.get(Objects.class))
                 .build();
     }
 }
