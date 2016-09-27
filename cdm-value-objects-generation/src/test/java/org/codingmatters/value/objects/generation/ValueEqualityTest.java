@@ -45,7 +45,7 @@ public class ValueEqualityTest {
     }
 
     @Test
-    public void equalsSignature() throws Exception {
+    public void signature() throws Exception {
         assertThat(compiled.getClass("org.generated.ValImpl"),
                 is(aClass()
                         .with(aPublic().method()
