@@ -17,46 +17,58 @@ import static org.codingmatters.value.objects.generation.SpecCodeGenerator.conca
  * Created by nelt on 9/22/16.
  */
 public class ValueBuilder {
+    private final ClassName builderType;
+    private final List<PropertySpec> propertySpecs;
+    private ClassName valueType;
+    private ClassName valueImplType;
 
     private final List<FieldSpec> fields;
     private final List<MethodSpec> setters;
     private final MethodSpec builderMethod;
+    private final MethodSpec builderFromValueMethod;
     private final MethodSpec buildMethod;
 
-    public ValueBuilder(String interfaceName, List<PropertySpec> propertySpecs) {
-        this.fields = this.createFields(propertySpecs);
-        this.setters = this.createSetters(propertySpecs);
+    public ValueBuilder(String packageName, String interfaceName, List<PropertySpec> propertySpecs) {
+        this.valueType = ClassName.get(packageName, interfaceName);
+        this.valueImplType = ClassName.get(packageName, interfaceName + "Impl");
+        this.builderType = ClassName.get(packageName, interfaceName + ".Builder");
+        this.propertySpecs = propertySpecs;
+
+        this.fields = this.createFields();
+        this.setters = this.createSetters();
         this.builderMethod = this.createBuilderMethod();
-        this.buildMethod = this.createBuildMethod(interfaceName, propertySpecs);
+        this.builderFromValueMethod = this.createBuilderFromValueMethod();
+        this.buildMethod = this.createBuildMethod();
     }
 
     public TypeSpec type() {
         return TypeSpec.classBuilder("Builder")
                 .addModifiers(PUBLIC, STATIC)
                 .addMethod(this.builderMethod)
+                .addMethod(this.builderFromValueMethod)
                 .addMethod(this.buildMethod)
                 .addFields(this.fields)
                 .addMethods(this.setters)
                 .build();
     }
 
-    private List<FieldSpec> createFields(List<PropertySpec> propertySpecs) {
+    private List<FieldSpec> createFields() {
         List<FieldSpec> fields = new LinkedList<>();
 
-        for (PropertySpec propertySpec : propertySpecs) {
+        for (PropertySpec propertySpec : this.propertySpecs) {
             fields.add(FieldSpec.builder(builderPropertyType(propertySpec), propertySpec.name(), PRIVATE).build());
         }
         return fields;
     }
 
-    private List<MethodSpec> createSetters(List<PropertySpec> propertySpecs) {
+    private List<MethodSpec> createSetters() {
         List<MethodSpec> setters = new LinkedList<>();
 
-        for (PropertySpec propertySpec : propertySpecs) {
+        for (PropertySpec propertySpec : this.propertySpecs) {
             setters.add(
                     MethodSpec.methodBuilder(propertySpec.name())
                             .addParameter(builderPropertyType(propertySpec), propertySpec.name())
-                            .returns(ClassName.bestGuess("Builder"))
+                            .returns(this.builderType)
                             .addModifiers(PUBLIC)
                             .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
                             .addStatement("return this")
@@ -70,15 +82,38 @@ public class ValueBuilder {
         return MethodSpec.methodBuilder("builder")
                 .addModifiers(STATIC, PUBLIC)
                 .returns(ClassName.bestGuess("Builder"))
-                .addStatement("return new $T()", ClassName.bestGuess("Builder"))
+                .addStatement("return new $T()", this.builderType)
                 .build();
     }
 
-    private MethodSpec createBuildMethod(String interfaceName, List<PropertySpec> propertySpecs) {
+    private MethodSpec createBuilderFromValueMethod() {
+        List<Object> bindings = new LinkedList<>();
+
+        String statement = "return new $T()\n";
+        bindings.add(this.builderType);
+
+        for (PropertySpec propertySpec : this.propertySpecs) {
+            if(propertySpec.typeKind().isValueObject()) {
+                statement += "." + propertySpec.name() + "($T.from(value." + propertySpec.name() + "()))\n";
+                bindings.add(builderPropertyType(propertySpec));
+            } else {
+                statement += "." + propertySpec.name() + "(value." + propertySpec.name() + "())\n";
+            }
+        }
+
+        return MethodSpec.methodBuilder("from")
+                .addModifiers(STATIC, PUBLIC)
+                .addParameter(this.valueType, "value")
+                .returns(this.builderType)
+                .addStatement(statement, bindings.toArray())
+                .build();
+    }
+
+    private MethodSpec createBuildMethod() {
         String constructorParametersFormat = null;
         List<String> constructorParametersNames = new LinkedList<>();
 
-        for (PropertySpec propertySpec : propertySpecs) {
+        for (PropertySpec propertySpec : this.propertySpecs) {
             if(constructorParametersFormat == null) {
                 constructorParametersFormat = "";
             } else {
@@ -100,10 +135,10 @@ public class ValueBuilder {
         }
         return MethodSpec.methodBuilder("build")
                 .addModifiers(PUBLIC)
-                .returns(ClassName.bestGuess(interfaceName))
+                .returns(this.valueType)
                 .addStatement(
                         "return new $T(" + constructorParametersFormat + ")",
-                        concat(ClassName.bestGuess(interfaceName + "Impl"), constructorParametersNames.toArray()))
+                        concat(this.valueImplType, constructorParametersNames.toArray()))
                 .build();
     }
 }

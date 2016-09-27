@@ -16,14 +16,16 @@ import static org.codingmatters.value.objects.generation.PropertyHelper.property
  */
 public class ValueInterface {
 
+    private final String packageName;
     private final String interfaceName;
     private final List<MethodSpec> getters;
     private final ValueBuilder valueBuilder;
 
-    public ValueInterface(String interfaceName, List<PropertySpec> propertySpecs) {
+    public ValueInterface(String packageName, String interfaceName, List<PropertySpec> propertySpecs) {
+        this.packageName = packageName;
         this.interfaceName = interfaceName;
         this.getters = this.createGetters(propertySpecs);
-        this.valueBuilder = new ValueBuilder(interfaceName, propertySpecs);
+        this.valueBuilder = new ValueBuilder(this.packageName, interfaceName, propertySpecs);
     }
 
     public TypeSpec type() {
