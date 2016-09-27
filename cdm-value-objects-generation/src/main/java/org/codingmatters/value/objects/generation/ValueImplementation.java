@@ -9,6 +9,7 @@ import org.codingmatters.value.objects.spec.PropertySpec;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static javax.lang.model.element.Modifier.*;
 import static org.codingmatters.value.objects.generation.PropertyHelper.propertyType;
@@ -136,19 +137,14 @@ public class ValueImplementation {
     }
 
     private MethodSpec createHashCode(List<PropertySpec> propertySpecs) {
-        String statement = "return $T.hash(";
 
-        //return Objects.hash(this.prop...);
-
-        boolean started = false;
-        for (PropertySpec propertySpec : propertySpecs) {
-            if(started) {
-                statement += ", ";
-            }
-            started = true;
-            statement += "this." + propertySpec.name();
-        }
-        statement += ")";
+        String statement = propertySpecs.stream()
+                .map(propertySpec -> "this." + propertySpec.name())
+                .collect(Collectors.joining(
+                        ", ",
+                        "return $T.hash(",
+                        ")"
+                ));
 
         return MethodSpec.methodBuilder("hashCode")
                 .addModifiers(PUBLIC)
@@ -159,23 +155,16 @@ public class ValueImplementation {
     }
 
     private MethodSpec createToString(List<PropertySpec> propertySpecs) {
-        /*
-        return "Spec{" +
-                "valueSpecs=" + valueSpecs +
-                '}';
-         */
-        String statement = "return \"" + this.interfaceName + "{\" +\n";
-        boolean started = false;
-        for (PropertySpec propertySpec : propertySpecs) {
-            if(started) {
-                statement += "\", \" + ";
-            }
-            started = true;
-            statement += "\"" + propertySpec.name() + "=\" + this." + propertySpec.name() + " +\n";
-        }
-
-        statement += "'}'";
-
+        String statement =
+                propertySpecs.stream()
+                        .map(propertySpec -> "\"" + propertySpec.name() + "=\" + this." + propertySpec.name() + " +\n")
+                        .collect(Collectors.joining(
+                                "\", \" + ",
+                                "return \"" + this.interfaceName + "{\" +\n",
+                                "'}'"
+                                )
+                        )
+                ;
         return MethodSpec.methodBuilder("toString")
                 .addModifiers(PUBLIC)
                 .returns(String.class)
