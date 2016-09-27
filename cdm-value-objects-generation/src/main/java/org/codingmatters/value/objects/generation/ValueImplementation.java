@@ -12,7 +12,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static javax.lang.model.element.Modifier.*;
+import static org.codingmatters.value.objects.generation.PropertyHelper.builderPropertyType;
 import static org.codingmatters.value.objects.generation.PropertyHelper.propertyType;
+import static org.codingmatters.value.objects.generation.SpecCodeGenerator.capitalizedFirst;
 
 /**
  * Created by nelt on 9/22/16.
@@ -21,23 +23,33 @@ public class ValueImplementation {
 
     private final String packageName;
     private final String interfaceName;
+
+    private final ClassName valueType;
+    private final ClassName valueImplType;
+    private final ClassName builderType;
+    private final List<PropertySpec> propertySpecs;
+
     private final MethodSpec constructor;
     private final List<FieldSpec> fields;
     private final List<MethodSpec> getters;
-    private MethodSpec equalsMethod;
+    private final List<MethodSpec> withers;
+    private final MethodSpec equalsMethod;
     private final MethodSpec hashCodeMethod;
     private final MethodSpec toStringMethod;
-    private final ClassName className;
 
     public ValueImplementation(String packageName, String interfaceName, List<PropertySpec> propertySpecs) {
         this.packageName = packageName;
         this.interfaceName = interfaceName;
 
-        this.className = ClassName.get(this.packageName, this.interfaceName + "Impl");
+        this.valueType = ClassName.get(packageName, interfaceName);
+        this.valueImplType = ClassName.get(packageName, interfaceName + "Impl");
+        this.builderType = ClassName.get(packageName, interfaceName + ".Builder");
+        this.propertySpecs = propertySpecs;
 
         this.constructor = this.createConstructor(propertySpecs);
         this.fields = this.createFields(propertySpecs);
         this.getters = this.createGetters(propertySpecs);
+        this.withers = this.createWithers(propertySpecs);
         this.equalsMethod = this.createEquals(propertySpecs);
         this.hashCodeMethod = this.createHashCode(propertySpecs);
         this.toStringMethod = this.createToString(propertySpecs);
@@ -50,6 +62,7 @@ public class ValueImplementation {
                 .addMethod(this.constructor)
                 .addFields(this.fields)
                 .addMethods(this.getters)
+                .addMethods(this.withers)
                 .addMethod(this.equalsMethod)
                 .addMethod(this.hashCodeMethod)
                 .addMethod(this.toStringMethod)
@@ -106,8 +119,8 @@ public class ValueImplementation {
         List<Object> bindings= new LinkedList<>();
         if(propertySpecs.size() > 0) {
             statement = "$T that = ($T) o;\n";
-            bindings.add(className);
-            bindings.add(className);
+            bindings.add(this.valueImplType);
+            bindings.add(this.valueImplType);
 
             statement += "return ";
             boolean started = false;
@@ -171,5 +184,33 @@ public class ValueImplementation {
                 .addAnnotation(Override.class)
                 .addStatement(statement)
                 .build();
+    }
+
+
+    private List<MethodSpec> createWithers(List<PropertySpec> propertySpecs) {
+        List<MethodSpec> result = new LinkedList<>();
+
+        for (PropertySpec propertySpec : propertySpecs) {
+            if(propertySpec.typeKind().isValueObject()) {
+                result.add(
+                        MethodSpec.methodBuilder("with" + capitalizedFirst(propertySpec.name()))
+                                .returns(this.valueType)
+                                .addModifiers(PUBLIC)
+                                .addParameter(builderPropertyType(propertySpec), "value")
+                                .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.builderType)
+                                .build()
+                );
+            } else {
+                result.add(
+                        MethodSpec.methodBuilder("with" + capitalizedFirst(propertySpec.name()))
+                                .returns(this.valueType)
+                                .addModifiers(PUBLIC)
+                                .addParameter(propertyType(propertySpec), "value")
+                                .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.builderType)
+                                .build()
+                );
+            }
+        }
+        return result;
     }
 }
