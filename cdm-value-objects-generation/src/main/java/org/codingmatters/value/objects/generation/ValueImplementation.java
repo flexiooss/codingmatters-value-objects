@@ -25,15 +25,21 @@ public class ValueImplementation {
     private final List<MethodSpec> getters;
     private MethodSpec equalsMethod;
     private final MethodSpec hashCodeMethod;
+    private final MethodSpec toStringMethod;
+    private final ClassName className;
 
     public ValueImplementation(String packageName, String interfaceName, List<PropertySpec> propertySpecs) {
         this.packageName = packageName;
         this.interfaceName = interfaceName;
+
+        this.className = ClassName.get(this.packageName, this.interfaceName + "Impl");
+
         this.constructor = this.createConstructor(propertySpecs);
         this.fields = this.createFields(propertySpecs);
         this.getters = this.createGetters(propertySpecs);
         this.equalsMethod = this.createEquals(propertySpecs);
         this.hashCodeMethod = this.createHashCode(propertySpecs);
+        this.toStringMethod = this.createToString(propertySpecs);
     }
 
     public TypeSpec type() {
@@ -45,6 +51,7 @@ public class ValueImplementation {
                 .addMethods(this.getters)
                 .addMethod(this.equalsMethod)
                 .addMethod(this.hashCodeMethod)
+                .addMethod(this.toStringMethod)
                 .build();
     }
 
@@ -86,7 +93,6 @@ public class ValueImplementation {
     }
 
     private MethodSpec createEquals(List<PropertySpec> propertySpecs) {
-        ClassName className = ClassName.get(this.packageName, this.interfaceName + "Impl");
         /*
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -132,7 +138,7 @@ public class ValueImplementation {
     private MethodSpec createHashCode(List<PropertySpec> propertySpecs) {
         String statement = "return $T.hash(";
 
-        //return Objects.hash(valueSpecs);
+        //return Objects.hash(this.prop...);
 
         boolean started = false;
         for (PropertySpec propertySpec : propertySpecs) {
@@ -149,6 +155,32 @@ public class ValueImplementation {
                 .returns(int.class)
                 .addAnnotation(ClassName.get(Override.class))
                 .addStatement(statement, ClassName.get(Objects.class))
+                .build();
+    }
+
+    private MethodSpec createToString(List<PropertySpec> propertySpecs) {
+        /*
+        return "Spec{" +
+                "valueSpecs=" + valueSpecs +
+                '}';
+         */
+        String statement = "return \"" + this.interfaceName + "{\" +\n";
+        boolean started = false;
+        for (PropertySpec propertySpec : propertySpecs) {
+            if(started) {
+                statement += "\", \" + ";
+            }
+            started = true;
+            statement += "\"" + propertySpec.name() + "=\" + this." + propertySpec.name() + " +\n";
+        }
+
+        statement += "'}'";
+
+        return MethodSpec.methodBuilder("toString")
+                .addModifiers(PUBLIC)
+                .returns(String.class)
+                .addAnnotation(Override.class)
+                .addStatement(statement)
                 .build();
     }
 }
