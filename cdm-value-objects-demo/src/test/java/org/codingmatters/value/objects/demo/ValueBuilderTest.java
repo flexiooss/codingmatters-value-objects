@@ -10,7 +10,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 9/16/16.n
  */
-public class ValTest {
+public class ValueBuilderTest {
 
     @Test
     public void simpleValue() throws Exception {
@@ -39,4 +39,5 @@ public class ValTest {
         ComplexValue value = ComplexValue.Builder.builder().outSpecProperty(ReferencedValue.Builder.builder()).build();
         assertThat(value.outSpecProperty(), is(notNullValue(ReferencedValue.class)));
     }
+
 }
