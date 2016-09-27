@@ -105,7 +105,12 @@ public class ValueBuilder {
                 .addModifiers(STATIC, PUBLIC)
                 .addParameter(this.valueType, "value")
                 .returns(this.builderType)
+                .beginControlFlow("if(value != null)")
                 .addStatement(statement, bindings.toArray())
+                .endControlFlow()
+                .beginControlFlow("else")
+                .addStatement("return null")
+                .endControlFlow()
                 .build();
     }
 

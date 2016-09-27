@@ -79,6 +79,19 @@ public class BuilderFromTest {
     }
 
     @Test
+    public void simpleValueWithNulls() throws Exception {
+        Object aBuilder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        compiled.on(aBuilder).invoke("prop1", String.class).with(new Object[] {null});
+        compiled.on(aBuilder).invoke("prop2", String.class).with(new Object[] {null});
+        Object value = compiled.on(aBuilder).invoke("build");
+
+        Object anotherBuilder = compiled.onClass("org.generated.Val$Builder")
+                .invoke("from", compiled.getClass("org.generated.Val")).with(value);
+
+        assertThat(compiled.on(anotherBuilder).invoke("build"), is(value));
+    }
+
+    @Test
     public void complex() throws Exception {
         Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
         compiled.on(builder).invoke("prop1", String.class).with("v1");
@@ -86,6 +99,19 @@ public class BuilderFromTest {
 
         Object complexBuilder = compiled.onClass("org.generated.ComplexVal$Builder").invoke("builder");
         compiled.on(complexBuilder).invoke("prop", compiled.getClass("org.generated.Val$Builder")).with(builder);
+        Object complexValue = compiled.on(complexBuilder).invoke("build");
+
+
+        Object anotherBuilder = compiled.onClass("org.generated.ComplexVal$Builder")
+                .invoke("from", compiled.getClass("org.generated.ComplexVal")).with(complexValue);
+
+        assertThat(compiled.on(anotherBuilder).invoke("build"), is(complexValue));
+    }
+
+    @Test
+    public void complexWithNulls() throws Exception {
+        Object complexBuilder = compiled.onClass("org.generated.ComplexVal$Builder").invoke("builder");
+        compiled.on(complexBuilder).invoke("prop", compiled.getClass("org.generated.Val$Builder")).with(new Object[] {null});
         Object complexValue = compiled.on(complexBuilder).invoke("build");
 
 
