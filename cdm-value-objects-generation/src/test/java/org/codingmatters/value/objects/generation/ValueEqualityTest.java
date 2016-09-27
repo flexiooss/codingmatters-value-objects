@@ -31,6 +31,7 @@ public class ValueEqualityTest {
                     .addProperty(property().name("prop1").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
                     .addProperty(property().name("prop2").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
             )
+            .addValue(valueSpec().name("noPropertyVal"))
             .addValue(valueSpec().name("complexVal")
                     .addProperty(property().name("prop").type(type().typeRef("val").typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)))
             )
@@ -98,6 +99,17 @@ public class ValueEqualityTest {
     }
 
     @Test
+    public void noPropertyValue() throws Exception {
+        Object aBuilder = compiled.onClass("org.generated.NoPropertyVal$Builder").invoke("builder");
+        Object aValue = compiled.on(aBuilder).invoke("build");
+
+        Object anotherBuilder = compiled.onClass("org.generated.NoPropertyVal$Builder").invoke("builder");
+        Object anotherValue = compiled.on(anotherBuilder).invoke("build");
+
+        assertThat(aValue, is(anotherValue));
+    }
+
+    @Test
     public void deepEqualityOnComplexValue() throws Exception {
         Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
         compiled.on(builder).invoke("prop1", String.class).with("v1");
@@ -107,10 +119,10 @@ public class ValueEqualityTest {
         compiled.on(complexBuilder).invoke("prop", compiled.getClass("org.generated.Val$Builder")).with(builder);
         Object complexValue = compiled.on(complexBuilder).invoke("build");
 
-        Object anotherComplexBuilder = compiled.onClass("org.generated.ComplexVal$Builder").invoke("builder");
-        compiled.on(anotherComplexBuilder).invoke("prop", compiled.getClass("org.generated.Val$Builder")).with(builder);
-        Object anotherComplexValue = compiled.on(anotherComplexBuilder).invoke("build");
+        Object sameComplexBuilder = compiled.onClass("org.generated.ComplexVal$Builder").invoke("builder");
+        compiled.on(sameComplexBuilder).invoke("prop", compiled.getClass("org.generated.Val$Builder")).with(builder);
+        Object sameComplexValue = compiled.on(sameComplexBuilder).invoke("build");
 
-        assertThat(complexValue, is(anotherComplexValue));
+        assertThat(complexValue, is(sameComplexValue));
     }
 }
