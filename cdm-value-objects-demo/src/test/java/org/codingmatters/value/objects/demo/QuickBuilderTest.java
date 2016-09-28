@@ -1,0 +1,41 @@
+package org.codingmatters.value.objects.demo;
+
+import org.junit.Test;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
+
+/**
+ * Created by nelt on 9/28/16.
+ */
+public class QuickBuilderTest {
+    @Test
+    public void simple() throws Exception {
+        Value value = Value.Builder.builder()
+                .stringProperty("toto")
+                .booleanProperty(true)
+                .build();
+
+        Value v2 = value.withStringProperty("titi");
+        assertThat(v2, is(not(value)));
+        assertThat(v2.stringProperty(), is("titi"));
+        assertThat(v2.booleanProperty(), is(true));
+
+        Value v3 = value.withStringProperty("titi");
+        assertThat(v3, is(v2));
+    }
+
+    @Test
+    public void complex() throws Exception {
+        ComplexValue value = ComplexValue.Builder.builder()
+                .recursiveProperty(ComplexValue.Builder.builder())
+                .inSpecProperty(Value.Builder.builder().stringProperty("toto"))
+                .build();
+
+        ComplexValue v2 = value.withInSpecProperty(Value.Builder.builder().stringProperty("titi"));
+
+        assertThat(v2, is(not(value)));
+        assertThat(v2.inSpecProperty().stringProperty(), is("titi"));
+    }
+}
