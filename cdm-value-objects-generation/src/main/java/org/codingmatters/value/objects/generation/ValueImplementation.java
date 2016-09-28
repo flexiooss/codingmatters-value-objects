@@ -12,8 +12,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static javax.lang.model.element.Modifier.*;
-import static org.codingmatters.value.objects.generation.PropertyHelper.builderPropertyType;
-import static org.codingmatters.value.objects.generation.PropertyHelper.propertyType;
 import static org.codingmatters.value.objects.generation.SpecCodeGenerator.capitalizedFirst;
 
 /**
@@ -64,7 +62,7 @@ public class ValueImplementation {
 
         for (PropertySpec propertySpec : propertySpecs) {
             constructorBuilder
-                    .addParameter(propertyType(propertySpec), propertySpec.name())
+                    .addParameter(this.types.propertyType(propertySpec), propertySpec.name())
                     .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
             ;
         }
@@ -76,7 +74,7 @@ public class ValueImplementation {
         List<FieldSpec> fields = new LinkedList<>();
         for (PropertySpec propertySpec : propertySpecs) {
             fields.add(
-                    FieldSpec.builder(propertyType(propertySpec), propertySpec.name(), PRIVATE, FINAL).build()
+                    FieldSpec.builder(this.types.propertyType(propertySpec), propertySpec.name(), PRIVATE, FINAL).build()
             );
         }
         return fields;
@@ -87,7 +85,7 @@ public class ValueImplementation {
         for (PropertySpec propertySpec : propertySpecs) {
             getters.add(
                     MethodSpec.methodBuilder(propertySpec.name())
-                            .returns(propertyType(propertySpec))
+                            .returns(this.types.propertyType(propertySpec))
                             .addModifiers(PUBLIC)
                             .addStatement("return this.$N", propertySpec.name())
                             .build()
@@ -186,7 +184,7 @@ public class ValueImplementation {
                         MethodSpec.methodBuilder("with" + capitalizedFirst(propertySpec.name()))
                                 .returns(this.types.valueType())
                                 .addModifiers(PUBLIC)
-                                .addParameter(builderPropertyType(propertySpec), "value")
+                                .addParameter(this.types.builderPropertyType(propertySpec), "value")
                                 .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.builderType())
                                 .build()
                 );
@@ -195,7 +193,7 @@ public class ValueImplementation {
                         MethodSpec.methodBuilder("with" + capitalizedFirst(propertySpec.name()))
                                 .returns(this.types.valueType())
                                 .addModifiers(PUBLIC)
-                                .addParameter(propertyType(propertySpec), "value")
+                                .addParameter(this.types.propertyType(propertySpec), "value")
                                 .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.builderType())
                                 .build()
                 );

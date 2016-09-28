@@ -9,8 +9,6 @@ import java.util.List;
 
 import static javax.lang.model.element.Modifier.ABSTRACT;
 import static javax.lang.model.element.Modifier.PUBLIC;
-import static org.codingmatters.value.objects.generation.PropertyHelper.builderPropertyType;
-import static org.codingmatters.value.objects.generation.PropertyHelper.propertyType;
 import static org.codingmatters.value.objects.generation.SpecCodeGenerator.capitalizedFirst;
 
 /**
@@ -48,7 +46,7 @@ public class ValueInterface {
         for (PropertySpec propertySpec : propertySpecs) {
             result.add(
                     MethodSpec.methodBuilder(propertySpec.name())
-                            .returns(propertyType(propertySpec))
+                            .returns(this.types.propertyType(propertySpec))
                             .addModifiers(PUBLIC, ABSTRACT)
                             .build()
             );
@@ -65,7 +63,7 @@ public class ValueInterface {
                         MethodSpec.methodBuilder("with" + capitalizedFirst(propertySpec.name()))
                                 .returns(this.types.valueType())
                                 .addModifiers(PUBLIC, ABSTRACT)
-                                .addParameter(builderPropertyType(propertySpec), "value")
+                                .addParameter(this.types.builderPropertyType(propertySpec), "value")
                                 .build()
                 );
             } else {
@@ -73,7 +71,7 @@ public class ValueInterface {
                         MethodSpec.methodBuilder("with" + capitalizedFirst(propertySpec.name()))
                                 .returns(this.types.valueType())
                                 .addModifiers(PUBLIC, ABSTRACT)
-                                .addParameter(propertyType(propertySpec), "value")
+                                .addParameter(this.types.propertyType(propertySpec), "value")
                                 .build()
                 );
             }

@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static javax.lang.model.element.Modifier.*;
-import static org.codingmatters.value.objects.generation.PropertyHelper.builderPropertyType;
 import static org.codingmatters.value.objects.generation.SpecCodeGenerator.concat;
 
 /**
@@ -52,7 +51,7 @@ public class ValueBuilder {
         List<FieldSpec> fields = new LinkedList<>();
 
         for (PropertySpec propertySpec : this.propertySpecs) {
-            fields.add(FieldSpec.builder(builderPropertyType(propertySpec), propertySpec.name(), PRIVATE).build());
+            fields.add(FieldSpec.builder(this.types.builderPropertyType(propertySpec), propertySpec.name(), PRIVATE).build());
         }
         return fields;
     }
@@ -63,7 +62,7 @@ public class ValueBuilder {
         for (PropertySpec propertySpec : this.propertySpecs) {
             setters.add(
                     MethodSpec.methodBuilder(propertySpec.name())
-                            .addParameter(builderPropertyType(propertySpec), propertySpec.name())
+                            .addParameter(this.types.builderPropertyType(propertySpec), propertySpec.name())
                             .returns(this.types.builderType())
                             .addModifiers(PUBLIC)
                             .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
@@ -91,7 +90,7 @@ public class ValueBuilder {
         for (PropertySpec propertySpec : this.propertySpecs) {
             if(propertySpec.typeKind().isValueObject()) {
                 statement += "." + propertySpec.name() + "($T.from(value." + propertySpec.name() + "()))\n";
-                bindings.add(builderPropertyType(propertySpec));
+                bindings.add(this.types.builderPropertyType(propertySpec));
             } else {
                 statement += "." + propertySpec.name() + "(value." + propertySpec.name() + "())\n";
             }
