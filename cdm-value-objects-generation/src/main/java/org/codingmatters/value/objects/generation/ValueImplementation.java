@@ -12,7 +12,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static javax.lang.model.element.Modifier.*;
-import static org.codingmatters.value.objects.generation.SpecCodeGenerator.capitalizedFirst;
 
 /**
  * Created by nelt on 9/22/16.
@@ -181,7 +180,7 @@ public class ValueImplementation {
         for (PropertySpec propertySpec : propertySpecs) {
             if(propertySpec.typeKind().isValueObject()) {
                 result.add(
-                        MethodSpec.methodBuilder("with" + capitalizedFirst(propertySpec.name()))
+                        MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
                                 .returns(this.types.valueType())
                                 .addModifiers(PUBLIC)
                                 .addParameter(this.types.builderPropertyType(propertySpec), "value")
@@ -190,7 +189,7 @@ public class ValueImplementation {
                 );
             } else {
                 result.add(
-                        MethodSpec.methodBuilder("with" + capitalizedFirst(propertySpec.name()))
+                        MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
                                 .returns(this.types.valueType())
                                 .addModifiers(PUBLIC)
                                 .addParameter(this.types.propertyType(propertySpec), "value")

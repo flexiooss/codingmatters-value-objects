@@ -9,7 +9,6 @@ import java.util.List;
 
 import static javax.lang.model.element.Modifier.ABSTRACT;
 import static javax.lang.model.element.Modifier.PUBLIC;
-import static org.codingmatters.value.objects.generation.SpecCodeGenerator.capitalizedFirst;
 
 /**
  * Created by nelt on 9/22/16.
@@ -60,7 +59,7 @@ public class ValueInterface {
         for (PropertySpec propertySpec : propertySpecs) {
             if(propertySpec.typeKind().isValueObject()) {
                 result.add(
-                        MethodSpec.methodBuilder("with" + capitalizedFirst(propertySpec.name()))
+                        MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
                                 .returns(this.types.valueType())
                                 .addModifiers(PUBLIC, ABSTRACT)
                                 .addParameter(this.types.builderPropertyType(propertySpec), "value")
@@ -68,7 +67,7 @@ public class ValueInterface {
                 );
             } else {
                 result.add(
-                        MethodSpec.methodBuilder("with" + capitalizedFirst(propertySpec.name()))
+                        MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
                                 .returns(this.types.valueType())
                                 .addModifiers(PUBLIC, ABSTRACT)
                                 .addParameter(this.types.propertyType(propertySpec), "value")

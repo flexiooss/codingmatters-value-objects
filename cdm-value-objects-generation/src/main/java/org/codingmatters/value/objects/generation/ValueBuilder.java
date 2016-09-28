@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static javax.lang.model.element.Modifier.*;
-import static org.codingmatters.value.objects.generation.SpecCodeGenerator.concat;
 
 /**
  * Created by nelt on 9/22/16.
@@ -140,5 +139,18 @@ public class ValueBuilder {
                         "return new $T(" + constructorParametersFormat + ")",
                         concat(this.types.valueImplType(), constructorParametersNames.toArray()))
                 .build();
+    }
+
+    static private Object [] concat(Object first, Object ... others) {
+        int size = 1;
+        if(others != null) {
+            size += others.length;
+        }
+        Object[] result = new Object[size];
+        result[0] = first;
+        for(int i = 1 ; i < result.length ; i++) {
+            result[i] = others[i-1];
+        }
+        return result;
     }
 }

@@ -2,8 +2,8 @@ package org.codingmatters.value.objects.generation;
 
 import com.squareup.javapoet.ClassName;
 import org.codingmatters.value.objects.spec.PropertySpec;
+import org.codingmatters.value.objects.spec.ValueSpec;
 
-import static org.codingmatters.value.objects.generation.SpecCodeGenerator.capitalizedFirst;
 import static org.codingmatters.value.objects.spec.TypeKind.EXTERNAL_VALUE_OBJECT;
 import static org.codingmatters.value.objects.spec.TypeKind.IN_SPEC_VALUE_OBJECT;
 
@@ -16,7 +16,8 @@ public class ValueObjectConfiguration {
     private final ClassName valueImplType;
     private final ClassName builderType;
 
-    public ValueObjectConfiguration(String packageName, String interfaceName) {
+    public ValueObjectConfiguration(String packageName, ValueSpec valueSpec) {
+        String interfaceName = capitalizedFirst(valueSpec.name());
         this.valueType = ClassName.get(packageName, interfaceName);
         this.valueImplType = ClassName.get(packageName, interfaceName + "Impl");
         this.builderType = ClassName.get(packageName, interfaceName + ".Builder");
@@ -55,4 +56,14 @@ public class ValueObjectConfiguration {
             return propertyType(propertySpec);
         }
     }
+
+    public String witherMethodName(PropertySpec propertySpec) {
+        return "with" + capitalizedFirst(propertySpec.name());
+    }
+
+
+    static private String capitalizedFirst(String str) {
+        return str.substring(0,1).toUpperCase() + str.substring(1);
+    }
+
 }

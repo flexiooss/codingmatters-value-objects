@@ -30,7 +30,7 @@ public class SpecCodeGenerator {
     }
 
     private void generateValueTypesTo(ValueSpec valueSpec, File packageDestination) throws IOException {
-        ValueObjectConfiguration types = new ValueObjectConfiguration(this.packageName, capitalizedFirst(valueSpec.name()));
+        ValueObjectConfiguration types = new ValueObjectConfiguration(this.packageName, valueSpec);
 
         TypeSpec valueInterface = new ValueInterface(types, valueSpec.propertySpecs()).type();
         this.writeJavaFile(packageDestination, valueInterface);
@@ -45,20 +45,4 @@ public class SpecCodeGenerator {
         file.writeTo(packageDestination);
     }
 
-    static public String capitalizedFirst(String str) {
-        return str.substring(0,1).toUpperCase() + str.substring(1);
-    }
-
-    static public Object [] concat(Object first, Object ... others) {
-        int size = 1;
-        if(others != null) {
-            size += others.length;
-        }
-        Object[] result = new Object[size];
-        result[0] = first;
-        for(int i = 1 ; i < result.length ; i++) {
-            result[i] = others[i-1];
-        }
-        return result;
-    }
 }
