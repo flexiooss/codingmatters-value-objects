@@ -18,7 +18,7 @@ import static javax.lang.model.element.Modifier.*;
  */
 public class ValueImplementation {
 
-    private final ValueObjectConfiguration types;
+    private final ValueConfiguration types;
     private final List<PropertySpec> propertySpecs;
 
     private final MethodSpec constructor;
@@ -29,7 +29,7 @@ public class ValueImplementation {
     private final MethodSpec hashCodeMethod;
     private final MethodSpec toStringMethod;
 
-    public ValueImplementation(ValueObjectConfiguration types, List<PropertySpec> propertySpecs) {
+    public ValueImplementation(ValueConfiguration types, List<PropertySpec> propertySpecs) {
         this.types = types;
         this.propertySpecs = propertySpecs;
 

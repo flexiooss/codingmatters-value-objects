@@ -15,7 +15,7 @@ import static javax.lang.model.element.Modifier.*;
  * Created by nelt on 9/22/16.
  */
 public class ValueBuilder {
-    private final ValueObjectConfiguration types;
+    private final ValueConfiguration types;
     private final List<PropertySpec> propertySpecs;
 
     private final List<FieldSpec> fields;
@@ -24,7 +24,7 @@ public class ValueBuilder {
     private final MethodSpec builderFromValueMethod;
     private final MethodSpec buildMethod;
 
-    public ValueBuilder(ValueObjectConfiguration types, List<PropertySpec> propertySpecs) {
+    public ValueBuilder(ValueConfiguration types, List<PropertySpec> propertySpecs) {
         this.types = types;
         this.propertySpecs = propertySpecs;
 

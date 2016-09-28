@@ -10,13 +10,13 @@ import static org.codingmatters.value.objects.spec.TypeKind.IN_SPEC_VALUE_OBJECT
 /**
  * Created by nelt on 9/28/16.
  */
-public class ValueObjectConfiguration {
+public class ValueConfiguration {
 
     private final ClassName valueType;
     private final ClassName valueImplType;
     private final ClassName builderType;
 
-    public ValueObjectConfiguration(String packageName, ValueSpec valueSpec) {
+    public ValueConfiguration(String packageName, ValueSpec valueSpec) {
         String interfaceName = capitalizedFirst(valueSpec.name());
         this.valueType = ClassName.get(packageName, interfaceName);
         this.valueImplType = ClassName.get(packageName, interfaceName + "Impl");

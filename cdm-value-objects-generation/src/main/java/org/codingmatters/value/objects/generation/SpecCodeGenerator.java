@@ -30,7 +30,7 @@ public class SpecCodeGenerator {
     }
 
     private void generateValueTypesTo(ValueSpec valueSpec, File packageDestination) throws IOException {
-        ValueObjectConfiguration types = new ValueObjectConfiguration(this.packageName, valueSpec);
+        ValueConfiguration types = new ValueConfiguration(this.packageName, valueSpec);
 
         TypeSpec valueInterface = new ValueInterface(types, valueSpec.propertySpecs()).type();
         this.writeJavaFile(packageDestination, valueInterface);

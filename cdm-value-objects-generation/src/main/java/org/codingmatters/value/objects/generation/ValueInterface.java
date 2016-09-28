@@ -14,14 +14,14 @@ import static javax.lang.model.element.Modifier.PUBLIC;
  * Created by nelt on 9/22/16.
  */
 public class ValueInterface {
-    private final ValueObjectConfiguration types;
+    private final ValueConfiguration types;
     private final List<PropertySpec> propertySpecs;
 
     private final List<MethodSpec> getters;
     private final List<MethodSpec> withers;
     private final ValueBuilder valueBuilder;
 
-    public ValueInterface(ValueObjectConfiguration types, List<PropertySpec> propertySpecs) {
+    public ValueInterface(ValueConfiguration types, List<PropertySpec> propertySpecs) {
         this.types = types;
         this.propertySpecs = propertySpecs;
 
