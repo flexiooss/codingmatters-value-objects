@@ -30,12 +30,12 @@ public class SpecCodeGenerator {
     }
 
     private void generateValueTypesTo(ValueSpec valueSpec, File packageDestination) throws IOException {
-        String interfaceName = capitalizedFirst(valueSpec.name());
+        ValueObjectConfiguration types = new ValueObjectConfiguration(this.packageName, capitalizedFirst(valueSpec.name()));
 
-        TypeSpec valueInterface = new ValueInterface(this.packageName, interfaceName, valueSpec.propertySpecs()).type();
+        TypeSpec valueInterface = new ValueInterface(types, valueSpec.propertySpecs()).type();
         this.writeJavaFile(packageDestination, valueInterface);
 
-        TypeSpec valueImpl = new ValueImplementation(this.packageName, interfaceName, valueSpec.propertySpecs()).type();
+        TypeSpec valueImpl = new ValueImplementation(types, valueSpec.propertySpecs()).type();
         this.writeJavaFile(packageDestination, valueImpl);
     }
 

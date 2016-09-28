@@ -17,10 +17,8 @@ import static org.codingmatters.value.objects.generation.SpecCodeGenerator.conca
  * Created by nelt on 9/22/16.
  */
 public class ValueBuilder {
-    private final ClassName builderType;
+    private final ValueObjectConfiguration types;
     private final List<PropertySpec> propertySpecs;
-    private ClassName valueType;
-    private ClassName valueImplType;
 
     private final List<FieldSpec> fields;
     private final List<MethodSpec> setters;
@@ -28,10 +26,8 @@ public class ValueBuilder {
     private final MethodSpec builderFromValueMethod;
     private final MethodSpec buildMethod;
 
-    public ValueBuilder(String packageName, String interfaceName, List<PropertySpec> propertySpecs) {
-        this.valueType = ClassName.get(packageName, interfaceName);
-        this.valueImplType = ClassName.get(packageName, interfaceName + "Impl");
-        this.builderType = ClassName.get(packageName, interfaceName + ".Builder");
+    public ValueBuilder(ValueObjectConfiguration types, List<PropertySpec> propertySpecs) {
+        this.types = types;
         this.propertySpecs = propertySpecs;
 
         this.fields = this.createFields();
@@ -68,7 +64,7 @@ public class ValueBuilder {
             setters.add(
                     MethodSpec.methodBuilder(propertySpec.name())
                             .addParameter(builderPropertyType(propertySpec), propertySpec.name())
-                            .returns(this.builderType)
+                            .returns(this.types.builderType())
                             .addModifiers(PUBLIC)
                             .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
                             .addStatement("return this")
@@ -82,7 +78,7 @@ public class ValueBuilder {
         return MethodSpec.methodBuilder("builder")
                 .addModifiers(STATIC, PUBLIC)
                 .returns(ClassName.bestGuess("Builder"))
-                .addStatement("return new $T()", this.builderType)
+                .addStatement("return new $T()", this.types.builderType())
                 .build();
     }
 
@@ -90,7 +86,7 @@ public class ValueBuilder {
         List<Object> bindings = new LinkedList<>();
 
         String statement = "return new $T()\n";
-        bindings.add(this.builderType);
+        bindings.add(this.types.builderType());
 
         for (PropertySpec propertySpec : this.propertySpecs) {
             if(propertySpec.typeKind().isValueObject()) {
@@ -103,8 +99,8 @@ public class ValueBuilder {
 
         return MethodSpec.methodBuilder("from")
                 .addModifiers(STATIC, PUBLIC)
-                .addParameter(this.valueType, "value")
-                .returns(this.builderType)
+                .addParameter(this.types.valueType(), "value")
+                .returns(this.types.builderType())
                 .beginControlFlow("if(value != null)")
                 .addStatement(statement, bindings.toArray())
                 .endControlFlow()
@@ -140,10 +136,10 @@ public class ValueBuilder {
         }
         return MethodSpec.methodBuilder("build")
                 .addModifiers(PUBLIC)
-                .returns(this.valueType)
+                .returns(this.types.valueType())
                 .addStatement(
                         "return new $T(" + constructorParametersFormat + ")",
-                        concat(this.valueImplType, constructorParametersNames.toArray()))
+                        concat(this.types.valueImplType(), constructorParametersNames.toArray()))
                 .build();
     }
 }

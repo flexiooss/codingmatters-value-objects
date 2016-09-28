@@ -1,6 +1,5 @@
 package org.codingmatters.value.objects.generation;
 
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.value.objects.spec.PropertySpec;
@@ -18,35 +17,24 @@ import static org.codingmatters.value.objects.generation.SpecCodeGenerator.capit
  * Created by nelt on 9/22/16.
  */
 public class ValueInterface {
-
-    private final String packageName;
-    private final String interfaceName;
-
-    private final ClassName valueType;
-    private final ClassName valueImplType;
-    private final ClassName builderType;
+    private final ValueObjectConfiguration types;
     private final List<PropertySpec> propertySpecs;
 
     private final List<MethodSpec> getters;
     private final List<MethodSpec> withers;
     private final ValueBuilder valueBuilder;
 
-    public ValueInterface(String packageName, String interfaceName, List<PropertySpec> propertySpecs) {
-        this.packageName = packageName;
-        this.interfaceName = interfaceName;
-
-        this.valueType = ClassName.get(packageName, interfaceName);
-        this.valueImplType = ClassName.get(packageName, interfaceName + "Impl");
-        this.builderType = ClassName.get(packageName, interfaceName + ".Builder");
+    public ValueInterface(ValueObjectConfiguration types, List<PropertySpec> propertySpecs) {
+        this.types = types;
         this.propertySpecs = propertySpecs;
 
-        this.getters = this.createGetters(propertySpecs);
-        this.withers = this.createWithers(propertySpecs);
-        this.valueBuilder = new ValueBuilder(this.packageName, interfaceName, propertySpecs);
+        this.getters = this.createGetters();
+        this.withers = this.createWithers();
+        this.valueBuilder = new ValueBuilder(types, propertySpecs);
     }
 
     public TypeSpec type() {
-        return TypeSpec.interfaceBuilder(this.interfaceName)
+        return TypeSpec.interfaceBuilder(this.types.valueType())
                 .addModifiers(PUBLIC)
                 .addMethods(this.getters)
                 .addMethods(this.withers)
@@ -54,7 +42,7 @@ public class ValueInterface {
                 .build();
     }
 
-    private List<MethodSpec> createGetters(List<PropertySpec> propertySpecs) {
+    private List<MethodSpec> createGetters() {
         List<MethodSpec> result = new LinkedList<>();
 
         for (PropertySpec propertySpec : propertySpecs) {
@@ -68,14 +56,14 @@ public class ValueInterface {
         return result;
     }
 
-    private List<MethodSpec> createWithers(List<PropertySpec> propertySpecs) {
+    private List<MethodSpec> createWithers() {
         List<MethodSpec> result = new LinkedList<>();
 
         for (PropertySpec propertySpec : propertySpecs) {
             if(propertySpec.typeKind().isValueObject()) {
                 result.add(
                         MethodSpec.methodBuilder("with" + capitalizedFirst(propertySpec.name()))
-                                .returns(this.valueType)
+                                .returns(this.types.valueType())
                                 .addModifiers(PUBLIC, ABSTRACT)
                                 .addParameter(builderPropertyType(propertySpec), "value")
                                 .build()
@@ -83,7 +71,7 @@ public class ValueInterface {
             } else {
                 result.add(
                         MethodSpec.methodBuilder("with" + capitalizedFirst(propertySpec.name()))
-                                .returns(this.valueType)
+                                .returns(this.types.valueType())
                                 .addModifiers(PUBLIC, ABSTRACT)
                                 .addParameter(propertyType(propertySpec), "value")
                                 .build()
