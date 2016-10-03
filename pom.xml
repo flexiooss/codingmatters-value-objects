@@ -49,18 +49,10 @@
         <module>cdm-value-objects-generation</module>
         <module>cdm-value-objects-maven-plugin</module>
         <module>cdm-value-objects-demo</module>
-
-        <module>cdm-reflect-matchers</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.codingmatters.tests</groupId>
-                <artifactId>cdm-reflect-matchers</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>cdm-value-objects-parent</artifactId>

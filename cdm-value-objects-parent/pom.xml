@@ -60,6 +60,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.codingmatters.tests</groupId>
+                <artifactId>codingmatters-reflect-unit</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-plugin-api</artifactId>
                 <version>3.3.9</version>
