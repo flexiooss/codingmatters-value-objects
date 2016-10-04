@@ -46,6 +46,7 @@
 
     <modules>
         <module>cdm-value-objects-parent</module>
+        <module>cdm-value-objects-spec</module>
         <module>cdm-value-objects-generation</module>
         <module>cdm-value-objects-maven-plugin</module>
         <module>cdm-value-objects-demo</module>
@@ -57,6 +58,11 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>cdm-value-objects-parent</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.value.objects</groupId>
+                <artifactId>cdm-value-objects-spec</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
