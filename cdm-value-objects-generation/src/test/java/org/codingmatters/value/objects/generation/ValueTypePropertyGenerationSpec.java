@@ -57,7 +57,7 @@ public class ValueTypePropertyGenerationSpec {
                         )
                 ));
         assertThat(compiled.getClass("org.generated.ValImpl"),
-                is(aClass()
+                is(aPackagePrivate().class_()
                         .implementing(compiled.getClass("org.generated.Val"))
                 ));
     }
@@ -112,7 +112,7 @@ public class ValueTypePropertyGenerationSpec {
         Object value = compiled.on(builder).invoke("build");
 
         assertThat(value, is(notNullValue(compiled.getClass("org.generated.ValImpl"))));
-        assertThat(compiled.on(value).invoke("inSpecValue"), is(notNullValue(compiled.getClass("org.generated.Val2"))));
+        assertThat(compiled.on(value).castedTo("org.generated.Val").invoke("inSpecValue"), is(notNullValue(compiled.getClass("org.generated.Val2"))));
     }
 
     @Test
@@ -121,7 +121,7 @@ public class ValueTypePropertyGenerationSpec {
         Object value = compiled.on(builder).invoke("build");
 
         assertThat(value, is(notNullValue(compiled.getClass("org.generated.ValImpl"))));
-        assertThat(compiled.on(value).invoke("inSpecValue"), is(nullValue()));
+        assertThat(compiled.on(value).castedTo("org.generated.Val").invoke("inSpecValue"), is(nullValue()));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class ValueTypePropertyGenerationSpec {
         Object value = compiled.on(builder).invoke("build");
 
         assertThat(value, is(notNullValue(compiled.getClass("org.generated.ValImpl"))));
-        assertThat(compiled.on(value).invoke("outSpecValue"), is(notNullValue(compiled.getClass("org.external.value.ExternalValue"))));
+        assertThat(compiled.on(value).castedTo("org.generated.Val").invoke("outSpecValue"), is(notNullValue(compiled.getClass("org.external.value.ExternalValue"))));
     }
 
 

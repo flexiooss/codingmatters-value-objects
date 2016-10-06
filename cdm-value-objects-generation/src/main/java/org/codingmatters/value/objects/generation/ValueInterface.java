@@ -35,6 +35,10 @@ public class ValueInterface {
                 .addModifiers(PUBLIC)
                 .addMethods(this.getters)
                 .addMethods(this.withers)
+                .addMethod(MethodSpec.methodBuilder("hashCode")
+                        .addModifiers(PUBLIC, ABSTRACT)
+                        .returns(int.class)
+                        .build())
                 .addType(this.valueBuilder.type())
                 .build();
     }

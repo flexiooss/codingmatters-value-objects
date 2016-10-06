@@ -64,10 +64,10 @@ public class ValueWithTest {
         compiled.on(aBuilder).invoke("prop2", String.class).with("v2");
         Object aValue = compiled.on(aBuilder).invoke("build");
 
-        Object anotherValue = compiled.on(aValue).invoke("withProp1", String.class).with("v3");
+        Object anotherValue = compiled.on(aValue).castedTo("org.generated.Val").invoke("withProp1", String.class).with("v3");
 
-        assertThat(compiled.on(anotherValue).invoke("prop1"), is("v3"));
-        assertThat(compiled.on(anotherValue).invoke("prop2"), is("v2"));
+        assertThat(compiled.on(anotherValue).castedTo("org.generated.Val").invoke("prop1"), is("v3"));
+        assertThat(compiled.on(anotherValue).castedTo("org.generated.Val").invoke("prop2"), is("v2"));
     }
 
     @Test
@@ -81,8 +81,8 @@ public class ValueWithTest {
         Object complexValue = compiled.on(complexBuilder).invoke("build");
 
         compiled.on(builder).invoke("prop1", String.class).with("v3");
-        Object anotherValue = compiled.on(complexValue).invoke("withProp", compiled.getClass("org.generated.Val$Builder")).with(builder);
+        Object anotherValue = compiled.on(complexValue).castedTo("org.generated.ComplexVal").invoke("withProp", compiled.getClass("org.generated.Val$Builder")).with(builder);
 
-        assertThat(compiled.on(anotherValue).invoke("prop"), is((Object) compiled.on(builder).invoke("build")));
+        assertThat(compiled.on(anotherValue).castedTo("org.generated.ComplexVal").invoke("prop"), is((Object) compiled.on(builder).invoke("build")));
     }
 }

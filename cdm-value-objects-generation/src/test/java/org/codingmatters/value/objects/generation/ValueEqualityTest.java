@@ -8,7 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import static org.codingmatters.tests.reflect.ReflectMatchers.aClass;
+import static org.codingmatters.tests.reflect.ReflectMatchers.aPackagePrivate;
 import static org.codingmatters.tests.reflect.ReflectMatchers.aPublic;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
 import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
@@ -48,7 +48,7 @@ public class ValueEqualityTest {
     @Test
     public void signature() throws Exception {
         assertThat(compiled.getClass("org.generated.ValImpl"),
-                is(aClass()
+                is(aPackagePrivate().class_()
                         .with(aPublic().method()
                                 .named("equals")
                                 .withParameters(Object.class)

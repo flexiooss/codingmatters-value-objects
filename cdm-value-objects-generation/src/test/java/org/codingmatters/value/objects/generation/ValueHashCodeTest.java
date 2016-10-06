@@ -8,7 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import static org.codingmatters.tests.reflect.ReflectMatchers.aClass;
+import static org.codingmatters.tests.reflect.ReflectMatchers.aPackagePrivate;
 import static org.codingmatters.tests.reflect.ReflectMatchers.aPublic;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
 import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
@@ -49,7 +49,7 @@ public class ValueHashCodeTest {
     @Test
     public void signature() throws Exception {
         assertThat(compiled.getClass("org.generated.ValImpl"),
-                is(aClass()
+                is(aPackagePrivate().class_()
                         .with(aPublic().method()
                                 .named("hashCode")
                                 .withParameters()
@@ -66,8 +66,8 @@ public class ValueHashCodeTest {
         compiled.on(builder).invoke("prop2", String.class).with("v2");
         Object value = compiled.on(builder).invoke("build");
 
-        int hash1 = compiled.on(value).invoke("hashCode");
-        int hash2 = compiled.on(value).invoke("hashCode");
+        int hash1 = compiled.on(value).castedTo("org.generated.Val").invoke("hashCode");
+        int hash2 = compiled.on(value).castedTo("org.generated.Val").invoke("hashCode");
 
         assertEquals(hash1, hash2);
     }

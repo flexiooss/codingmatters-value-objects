@@ -40,14 +40,21 @@ public class ValueSpecGenerationTest {
     }
 
     @Test
-    public void twoValueSpec_twoInterfacesTwoBuilderTwoImpl() throws Exception {
+    public void valueFramework() throws Exception {
+        assertThat(compiled.getClass("org.generated.Val"), is(aPublic().interface_()));
+        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aStatic().public_().class_()));
+        assertThat(compiled.getClass("org.generated.ValImpl"), is(aPackagePrivate().class_()));
+    }
+
+    @Test
+    public void twoValueSpec_twoValues() throws Exception {
         assertThat(compiled.getClass("org.generated.Val"), is(aPublic().interface_()));
         assertThat(compiled.getClass("org.generated.Val$Builder"), is(aStatic().class_()));
-        assertThat(compiled.getClass("org.generated.ValImpl"), is(anInstance().class_()));
+        assertThat(compiled.getClass("org.generated.ValImpl"), is(aPackagePrivate().class_()));
 
         assertThat(compiled.getClass("org.generated.Val2"), is(aPublic().interface_()));
         assertThat(compiled.getClass("org.generated.Val2$Builder"), is(aStatic().class_()));
-        assertThat(compiled.getClass("org.generated.Val2Impl"), is(anInstance().class_()));
+        assertThat(compiled.getClass("org.generated.Val2Impl"), is(aPackagePrivate().class_()));
     }
 
     @Test
@@ -90,7 +97,7 @@ public class ValueSpecGenerationTest {
     @Test
     public void valueImplementationClass() throws Exception {
         assertThat(compiled.getClass("org.generated.ValImpl"),is(
-                aPublic().class_()
+                aPackagePrivate().class_()
                         .implementing(compiled.getClass("org.generated.Val"))
         ));
     }

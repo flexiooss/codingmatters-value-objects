@@ -45,7 +45,6 @@ public class ValueImplementation {
     public TypeSpec type() {
         return TypeSpec.classBuilder(this.types.valueImplType())
                 .addSuperinterface(this.types.valueType())
-                .addModifiers(PUBLIC)
                 .addMethod(this.constructor)
                 .addFields(this.fields)
                 .addMethods(this.getters)
@@ -184,7 +183,7 @@ public class ValueImplementation {
                                 .returns(this.types.valueType())
                                 .addModifiers(PUBLIC)
                                 .addParameter(this.types.builderPropertyType(propertySpec), "value")
-                                .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.builderType())
+                                .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.valueBuilderType())
                                 .build()
                 );
             } else {
@@ -193,7 +192,7 @@ public class ValueImplementation {
                                 .returns(this.types.valueType())
                                 .addModifiers(PUBLIC)
                                 .addParameter(this.types.propertyType(propertySpec), "value")
-                                .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.builderType())
+                                .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.valueBuilderType())
                                 .build()
                 );
             }

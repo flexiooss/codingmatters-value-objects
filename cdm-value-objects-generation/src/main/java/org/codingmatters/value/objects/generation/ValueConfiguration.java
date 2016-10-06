@@ -31,7 +31,7 @@ public class ValueConfiguration {
         return valueImplType;
     }
 
-    public ClassName builderType() {
+    public ClassName valueBuilderType() {
         return builderType;
     }
 

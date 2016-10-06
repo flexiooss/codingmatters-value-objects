@@ -43,12 +43,12 @@ public class JavaTypePropertySpecGenerationTest {
     @Test
     public void multipleProperty_multipleMethods() throws Exception {
         assertThat(compiled.getClass("org.generated.Val"), is(anInstance().public_().interface_().with(anInstance().method().named("prop"))));
-        assertThat(compiled.getClass("org.generated.ValImpl"), is(anInstance().public_().class_().with(anInstance().method().named("prop"))));
+        assertThat(compiled.getClass("org.generated.ValImpl"), is(aPackagePrivate().class_().with(anInstance().method().named("prop"))));
         assertThat(compiled.getClass("org.generated.Val$Builder"), is(aStatic().public_().class_().with(anInstance().method().named("prop"))));
 
 
         assertThat(compiled.getClass("org.generated.Val"), is(anInstance().public_().interface_().with(anInstance().method().named("prop2"))));
-        assertThat(compiled.getClass("org.generated.ValImpl"), is(anInstance().public_().class_().with(anInstance().method().named("prop2"))));
+        assertThat(compiled.getClass("org.generated.ValImpl"), is(aPackagePrivate().class_().with(anInstance().method().named("prop2"))));
         assertThat(compiled.getClass("org.generated.Val$Builder"), is(aStatic().public_().class_().with(anInstance().method().named("prop2"))));
     }
 
@@ -83,7 +83,7 @@ public class JavaTypePropertySpecGenerationTest {
     @Test
     public void propertyValueGetterSignature() throws Exception {
         assertThat(compiled.getClass("org.generated.ValImpl"),
-                is(aClass().with(
+                is(aPackagePrivate().class_().with(
                         aPublic().method().named("prop")
                                 .withParameters().returning(String.class)
                 ))
@@ -93,7 +93,7 @@ public class JavaTypePropertySpecGenerationTest {
     @Test
     public void propertyValueField() throws Exception {
         assertThat(compiled.getClass("org.generated.ValImpl"),
-                is(aClass().with(
+                is(aPackagePrivate().class_().with(
                         aPrivate().field().named("prop").final_()
                 ))
         );
@@ -106,6 +106,6 @@ public class JavaTypePropertySpecGenerationTest {
         Object value = compiled.on(builder).invoke("build");
 
         assertThat(value, is(notNullValue(compiled.getClass("org.generated.ValImpl"))));
-        assertThat(compiled.on(value).invoke("prop"), is("prop value"));
+        assertThat(compiled.on(value).castedTo("org.generated.Val").invoke("prop"), is("prop value"));
     }
 }

@@ -62,7 +62,7 @@ public class ValueBuilder {
             setters.add(
                     MethodSpec.methodBuilder(propertySpec.name())
                             .addParameter(this.types.builderPropertyType(propertySpec), propertySpec.name())
-                            .returns(this.types.builderType())
+                            .returns(this.types.valueBuilderType())
                             .addModifiers(PUBLIC)
                             .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
                             .addStatement("return this")
@@ -76,7 +76,7 @@ public class ValueBuilder {
         return MethodSpec.methodBuilder("builder")
                 .addModifiers(STATIC, PUBLIC)
                 .returns(ClassName.bestGuess("Builder"))
-                .addStatement("return new $T()", this.types.builderType())
+                .addStatement("return new $T()", this.types.valueBuilderType())
                 .build();
     }
 
@@ -84,7 +84,7 @@ public class ValueBuilder {
         List<Object> bindings = new LinkedList<>();
 
         String statement = "return new $T()\n";
-        bindings.add(this.types.builderType());
+        bindings.add(this.types.valueBuilderType());
 
         for (PropertySpec propertySpec : this.propertySpecs) {
             if(propertySpec.typeKind().isValueObject()) {
@@ -98,7 +98,7 @@ public class ValueBuilder {
         return MethodSpec.methodBuilder("from")
                 .addModifiers(STATIC, PUBLIC)
                 .addParameter(this.types.valueType(), "value")
-                .returns(this.types.builderType())
+                .returns(this.types.valueBuilderType())
                 .beginControlFlow("if(value != null)")
                 .addStatement(statement, bindings.toArray())
                 .endControlFlow()
