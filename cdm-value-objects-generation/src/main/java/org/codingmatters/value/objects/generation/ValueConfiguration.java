@@ -15,12 +15,14 @@ public class ValueConfiguration {
     private final ClassName valueType;
     private final ClassName valueImplType;
     private final ClassName builderType;
+    private final ClassName changerType;
 
     public ValueConfiguration(String packageName, ValueSpec valueSpec) {
         String interfaceName = capitalizedFirst(valueSpec.name());
         this.valueType = ClassName.get(packageName, interfaceName);
         this.valueImplType = ClassName.get(packageName, interfaceName + "Impl");
         this.builderType = ClassName.get(packageName, interfaceName + ".Builder");
+        this.changerType = ClassName.get(packageName, interfaceName + ".Changer");
     }
 
     public ClassName valueType() {
@@ -33,6 +35,10 @@ public class ValueConfiguration {
 
     public ClassName valueBuilderType() {
         return builderType;
+    }
+
+    public ClassName valueChangerType() {
+        return changerType;
     }
 
     public ClassName propertyType(PropertySpec propertySpec) {

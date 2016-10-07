@@ -28,6 +28,7 @@ public class ValueImplementation {
     private final MethodSpec equalsMethod;
     private final MethodSpec hashCodeMethod;
     private final MethodSpec toStringMethod;
+    private final MethodSpec changedMethod;
 
     public ValueImplementation(ValueConfiguration types, List<PropertySpec> propertySpecs) {
         this.types = types;
@@ -40,6 +41,7 @@ public class ValueImplementation {
         this.equalsMethod = this.createEquals();
         this.hashCodeMethod = this.createHashCode();
         this.toStringMethod = this.createToString();
+        this.changedMethod = this.createChangedMethod();
     }
 
     public TypeSpec type() {
@@ -49,9 +51,11 @@ public class ValueImplementation {
                 .addFields(this.fields)
                 .addMethods(this.getters)
                 .addMethods(this.withers)
+                .addMethod(this.changedMethod)
                 .addMethod(this.equalsMethod)
                 .addMethod(this.hashCodeMethod)
                 .addMethod(this.toStringMethod)
+
                 .build();
     }
 
@@ -198,5 +202,14 @@ public class ValueImplementation {
             }
         }
         return result;
+    }
+
+    private MethodSpec createChangedMethod() {
+        return MethodSpec.methodBuilder("changed")
+                .addModifiers(PUBLIC)
+                .addParameter(this.types.valueChangerType(), "changer")
+                .returns(this.types.valueType())
+                .addStatement("return null")
+                .build();
     }
 }

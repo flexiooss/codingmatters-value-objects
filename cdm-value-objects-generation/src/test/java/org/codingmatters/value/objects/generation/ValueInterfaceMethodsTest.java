@@ -28,7 +28,8 @@ public class ValueInterfaceMethodsTest {
             .addValue(valueSpec().name("val")
                     .addProperty(property().name("prop").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
             )
-            .addValue(valueSpec().name("complexVal").addProperty(property().name("prop").type(type().typeRef("val").typeKind(TypeKind.IN_SPEC_VALUE_OBJECT))))
+            .addValue(valueSpec().name("complexVal")
+                    .addProperty(property().name("prop").type(type().typeRef("val").typeKind(TypeKind.IN_SPEC_VALUE_OBJECT))))
             .build();
     private CompiledCode compiled;
 
@@ -39,17 +40,21 @@ public class ValueInterfaceMethodsTest {
     }
 
     @Test
-    public void simplePropertySingatures() throws Exception {
+    public void simplePropertySignatures() throws Exception {
         assertThat(compiled.getClass("org.generated.Val"), is(
                 anInterface()
                         .with(aMethod().named("prop").returning(String.class))
                         .with(aMethod().named("withProp").withParameters(String.class).returning(compiled.getClass("org.generated.Val")))
                         .with(aMethod().named("hashCode").withParameters().returning(int.class))
+                        .with(aMethod().named("changed")
+                                .withParameters(compiled.getClass("org.generated.Val$Changer"))
+                                .returning(compiled.getClass("org.generated.Val"))
+                )
         ));
     }
 
     @Test
-    public void complexPropertySingatures() throws Exception {
+    public void complexPropertySignatures() throws Exception {
         assertThat(compiled.getClass("org.generated.ComplexVal"), is(
                 anInterface()
                         .with(aMethod().named("prop").returning(compiled.getClass("org.generated.Val")))
@@ -57,6 +62,11 @@ public class ValueInterfaceMethodsTest {
                                 .withParameters(compiled.getClass("org.generated.Val$Builder"))
                                 .returning(compiled.getClass("org.generated.ComplexVal")))
                         .with(aMethod().named("hashCode").withParameters().returning(int.class))
+                        .with(aMethod().named("changed")
+                                .withParameters(compiled.getClass("org.generated.ComplexVal$Changer"))
+                                .returning(compiled.getClass("org.generated.ComplexVal"))
+                        )
         ));
     }
+
 }

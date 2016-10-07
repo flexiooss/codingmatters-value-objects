@@ -20,6 +20,9 @@ public class ValueInterface {
     private final List<MethodSpec> getters;
     private final List<MethodSpec> withers;
     private final ValueBuilder valueBuilder;
+    private final ValueChanger valueChanger;
+    private final MethodSpec changedMethod;
+    private final MethodSpec hashCode;
 
     public ValueInterface(ValueConfiguration types, List<PropertySpec> propertySpecs) {
         this.types = types;
@@ -27,7 +30,13 @@ public class ValueInterface {
 
         this.getters = this.createGetters();
         this.withers = this.createWithers();
+        this.changedMethod = this.createChangedMethod();
         this.valueBuilder = new ValueBuilder(types, propertySpecs);
+        this.valueChanger = new ValueChanger(types);
+        this.hashCode = MethodSpec.methodBuilder("hashCode")
+                .addModifiers(PUBLIC, ABSTRACT)
+                .returns(int.class)
+                .build();
     }
 
     public TypeSpec type() {
@@ -35,11 +44,10 @@ public class ValueInterface {
                 .addModifiers(PUBLIC)
                 .addMethods(this.getters)
                 .addMethods(this.withers)
-                .addMethod(MethodSpec.methodBuilder("hashCode")
-                        .addModifiers(PUBLIC, ABSTRACT)
-                        .returns(int.class)
-                        .build())
+                .addMethod(this.hashCode)
+                .addMethod(this.changedMethod)
                 .addType(this.valueBuilder.type())
+                .addType(this.valueChanger.type())
                 .build();
     }
 
@@ -80,5 +88,13 @@ public class ValueInterface {
             }
         }
         return result;
+    }
+
+    private MethodSpec createChangedMethod() {
+        return MethodSpec.methodBuilder("changed")
+                .addModifiers(PUBLIC, ABSTRACT)
+                .addParameter(this.types.valueChangerType(), "changer")
+                .returns(this.types.valueType())
+                .build();
     }
 }
