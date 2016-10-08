@@ -1,7 +1,6 @@
 package org.codingmatters.value.objects.generation;
 
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import javax.lang.model.element.Modifier;
@@ -18,7 +17,7 @@ public class ValueChanger {
         this.configure = MethodSpec.methodBuilder("configure")
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                 .addParameter(this.types.valueBuilderType(), "builder")
-                .returns(TypeName.VOID)
+                .returns(this.types.valueBuilderType())
                 .build();
     }
 

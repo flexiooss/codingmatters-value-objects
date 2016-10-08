@@ -8,6 +8,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import java.io.File;
+import java.io.FileWriter;
+
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
 import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
@@ -22,6 +25,9 @@ import static org.junit.Assert.assertThat;
 public class ValueChangerFrameworkTest {
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
+
+    @Rule
+    public TemporaryFolder testCodeDir = new TemporaryFolder();
 
     private final Spec spec = spec()
             .addValue(valueSpec().name("val")
@@ -42,7 +48,7 @@ public class ValueChangerFrameworkTest {
                 aStatic().interface_()
                         .with(aMethod().named("configure")
                                 .withParameters(compiled.getClass("org.generated.Val$Builder"))
-                                .returning(Void.TYPE))
+                                .returning(compiled.getClass("org.generated.Val$Builder")))
         ));
     }
 
@@ -55,5 +61,38 @@ public class ValueChangerFrameworkTest {
                                 .returning(compiled.getClass("org.generated.Val"))
                         )
         ));
+    }
+
+    @Test
+    public void changedMethodImplementation() throws Exception {
+        this.createTestFile("org.test", "Test",
+                "package org.test;\n" +
+                "\n" +
+                "import org.generated.Val;\n" +
+                "\n" +
+                "public class Test {\n" +
+                "  public static Val change(Val value) {\n" +
+                "    return value.changed(builder -> builder.prop(\"changed\"));" +
+                "  }\n" +
+                "}"
+        );
+        compiled = compiled.withCompiled(testCodeDir.getRoot());
+
+        Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        compiled.on(builder).invoke("prop", String.class).with("unchanged");
+        Object value = compiled.on(builder).invoke("build");
+
+        Object newValue = compiled.onClass("org.test.Test").invoke("change", compiled.getClass("org.generated.Val")).with(value);
+
+        assertThat(compiled.on(newValue).castedTo("org.generated.Val").invoke("prop"), is("changed"));
+    }
+
+    private void createTestFile(String path, String name, String content) throws Exception {
+        File newClass = new File(this.testCodeDir.newFolder(path.split("\\.")), name + ".java");
+        try(FileWriter writer = new FileWriter(newClass)) {
+            writer.write(content);
+            writer.flush();
+        }
+
     }
 }

@@ -209,7 +209,8 @@ public class ValueImplementation {
                 .addModifiers(PUBLIC)
                 .addParameter(this.types.valueChangerType(), "changer")
                 .returns(this.types.valueType())
-                .addStatement("return null")
+//                .addStatement("return null")
+                .addStatement("return changer.configure($T.from(this)).build()", this.types.valueBuilderType())
                 .build();
     }
 }
