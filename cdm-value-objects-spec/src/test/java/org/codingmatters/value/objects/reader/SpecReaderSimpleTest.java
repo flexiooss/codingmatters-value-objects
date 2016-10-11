@@ -3,6 +3,7 @@ package org.codingmatters.value.objects.reader;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
+import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.TypeKind;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
@@ -159,6 +160,57 @@ public class SpecReaderSimpleTest {
                 .line("  p: $val2")
                 .build())) {
             reader.read(in);
+        }
+    }
+
+    @Test
+    public void singleProperty() throws Exception {
+        try(InputStream in = streamFor(string()
+                .line("val:")
+                .line("  prop: string")
+                .build())) {
+            assertThat(
+                    reader.read(in),
+                    is(
+                            spec()
+                                    .addValue(valueSpec().name("val")
+                                            .addProperty(property().name("prop").type(type()
+                                                    .typeRef(String.class.getName())
+                                                    .typeKind(TypeKind.JAVA_TYPE)
+                                                    .cardinality(PropertyCardinality.SINGLE)))
+                                    )
+                                    .build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void listProperty() throws Exception {
+        try(InputStream in = streamFor(string()
+                .line("val:")
+                .line("  listProp: ")
+                .line("    list: string")
+                .line("  setProp: ")
+                .line("    set: string")
+                .build())) {
+            assertThat(
+                    reader.read(in),
+                    is(
+                            spec()
+                                    .addValue(valueSpec().name("val")
+                                            .addProperty(property().name("listProp").type(type()
+                                                    .typeRef(String.class.getName())
+                                                    .typeKind(TypeKind.JAVA_TYPE)
+                                                    .cardinality(PropertyCardinality.LIST)))
+                                            .addProperty(property().name("setProp").type(type()
+                                                    .typeRef(String.class.getName())
+                                                    .typeKind(TypeKind.JAVA_TYPE)
+                                                    .cardinality(PropertyCardinality.SET)))
+                                    )
+                                    .build()
+                    )
+            );
         }
     }
 

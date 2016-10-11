@@ -56,6 +56,17 @@ public class ContextSpecParser {
                 throw new SpecSyntaxException("malformed property name {context} : should be a valid java identifier", this.context);
             }
 
+            PropertyCardinality cardinality;
+            if(value instanceof Map && ((Map) value).containsKey("list")) {
+                cardinality = PropertyCardinality.LIST;
+                value = ((Map) value).get("list");
+            } else if(value instanceof Map && ((Map) value).containsKey("set")) {
+                cardinality = PropertyCardinality.SET;
+                value = ((Map) value).get("set");
+            } else {
+                cardinality = PropertyCardinality.SINGLE;
+            }
+
             PropertyTypeSpec.Builder typeSpec;
             if (value instanceof String) {
                 typeSpec = this.typeForString((String) value);
@@ -67,6 +78,8 @@ public class ContextSpecParser {
             } else {
                 throw new SpecSyntaxException(String.format("unexpected specification for property {context}: %s", value), this.context);
             }
+
+            typeSpec.cardinality(cardinality);
 
             return property()
                     .name(name)
