@@ -26,30 +26,24 @@ public class PropertySpec {
         }
 
         public PropertySpec build() {
-            return new PropertySpec(this.name, this.type.typeRef(), this.type.typeKind());
+            return new PropertySpec(this.name, this.type);
         }
     }
 
     private final String name;
-    private final String type;
-    private final TypeKind typeKind;
+    private PropertyTypeSpec type;
 
-    public PropertySpec(String name, String type, TypeKind typeKind) {
+    public PropertySpec(String name, PropertyTypeSpec type) {
         this.name = name;
         this.type = type;
-        this.typeKind = typeKind;
     }
 
     public String name() {
         return name;
     }
 
-    public String type() {
-        return type;
-    }
-
-    public TypeKind typeKind() {
-        return typeKind;
+    public PropertyTypeSpec typeSpec() {
+        return this.type;
     }
 
     @Override
@@ -58,13 +52,12 @@ public class PropertySpec {
         if (o == null || getClass() != o.getClass()) return false;
         PropertySpec that = (PropertySpec) o;
         return Objects.equals(name, that.name) &&
-                Objects.equals(type, that.type) &&
-                typeKind == that.typeKind;
+                Objects.equals(type, that.type);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, type, typeKind);
+        return Objects.hash(name, type);
     }
 
     @Override
@@ -72,7 +65,6 @@ public class PropertySpec {
         return "PropertySpec{" +
                 "name='" + name + '\'' +
                 ", type='" + type + '\'' +
-                ", typeKind=" + typeKind +
                 '}';
     }
 }

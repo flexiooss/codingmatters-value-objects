@@ -87,7 +87,7 @@ public class ValueBuilder {
         bindings.add(this.types.valueBuilderType());
 
         for (PropertySpec propertySpec : this.propertySpecs) {
-            if(propertySpec.typeKind().isValueObject()) {
+            if(propertySpec.typeSpec().typeKind().isValueObject()) {
                 statement += "." + propertySpec.name() + "($T.from(value." + propertySpec.name() + "()))\n";
                 bindings.add(this.types.builderPropertyType(propertySpec));
             } else {
@@ -120,7 +120,7 @@ public class ValueBuilder {
             }
 
 
-            if(propertySpec.typeKind().isValueObject()) {
+            if(propertySpec.typeSpec().typeKind().isValueObject()) {
                 constructorParametersFormat += "this.$N != null ? this.$N.build() : null";
                 constructorParametersNames.add(propertySpec.name());
                 constructorParametersNames.add(propertySpec.name());

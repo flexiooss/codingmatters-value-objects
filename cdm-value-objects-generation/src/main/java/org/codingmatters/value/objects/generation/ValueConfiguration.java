@@ -42,20 +42,20 @@ public class ValueConfiguration {
     }
 
     public ClassName propertyType(PropertySpec propertySpec) {
-        if(IN_SPEC_VALUE_OBJECT.equals(propertySpec.typeKind())) {
-            return ClassName.bestGuess(capitalizedFirst(propertySpec.type()));
+        if(IN_SPEC_VALUE_OBJECT.equals(propertySpec.typeSpec().typeKind())) {
+            return ClassName.bestGuess(capitalizedFirst(propertySpec.typeSpec().typeRef()));
         } else {
-            return ClassName.bestGuess(propertySpec.type());
+            return ClassName.bestGuess(propertySpec.typeSpec().typeRef());
         }
     }
 
     public ClassName builderPropertyType(PropertySpec propertySpec) {
-        if(propertySpec.typeKind().isValueObject()) {
+        if(propertySpec.typeSpec().typeKind().isValueObject()) {
             String valueType;
-            if(propertySpec.typeKind().equals(EXTERNAL_VALUE_OBJECT)) {
-                valueType = propertySpec.type();
+            if(propertySpec.typeSpec().typeKind().equals(EXTERNAL_VALUE_OBJECT)) {
+                valueType = propertySpec.typeSpec().typeRef();
             } else {
-                valueType = capitalizedFirst(propertySpec.type());
+                valueType = capitalizedFirst(propertySpec.typeSpec().typeRef());
             }
             return ClassName.bestGuess(valueType + ".Builder");
         } else {

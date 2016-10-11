@@ -181,7 +181,7 @@ public class ValueImplementation {
         List<MethodSpec> result = new LinkedList<>();
 
         for (PropertySpec propertySpec : propertySpecs) {
-            if(propertySpec.typeKind().isValueObject()) {
+            if(propertySpec.typeSpec().typeKind().isValueObject()) {
                 result.add(
                         MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
                                 .returns(this.types.valueType())
