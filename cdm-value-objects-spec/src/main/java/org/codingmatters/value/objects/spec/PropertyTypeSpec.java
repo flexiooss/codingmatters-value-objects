@@ -14,6 +14,7 @@ public class PropertyTypeSpec {
     static public class Builder {
         private String typeRef;
         private TypeKind typeKind;
+        private PropertyCardinality cardinality = PropertyCardinality.SINGLE;
 
         public Builder typeRef(String type) {
             this.typeRef = type;
@@ -25,17 +26,24 @@ public class PropertyTypeSpec {
             return this;
         }
 
+        public Builder cardinality(PropertyCardinality cardinality) {
+            this.cardinality = cardinality;
+            return this;
+        }
+
         public PropertyTypeSpec build() {
-            return new PropertyTypeSpec(this.typeRef, this.typeKind);
+            return new PropertyTypeSpec(this.typeRef, this.typeKind, this.cardinality);
         }
     }
 
     private final String typeRef;
     private final TypeKind typeKind;
+    private final PropertyCardinality cardinality;
 
-    private PropertyTypeSpec(String typeRef, TypeKind typeKind) {
+    private PropertyTypeSpec(String typeRef, TypeKind typeKind, PropertyCardinality cardinality) {
         this.typeRef = typeRef;
         this.typeKind = typeKind;
+        this.cardinality = cardinality;
     }
 
     public String typeRef() {
@@ -46,18 +54,23 @@ public class PropertyTypeSpec {
         return typeKind;
     }
 
+    public PropertyCardinality cardinality() {
+        return cardinality;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PropertyTypeSpec typeSpec = (PropertyTypeSpec) o;
         return Objects.equals(typeRef, typeSpec.typeRef) &&
-                typeKind == typeSpec.typeKind;
+                typeKind == typeSpec.typeKind &&
+                cardinality == typeSpec.cardinality;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(typeRef, typeKind);
+        return Objects.hash(typeRef, typeKind, cardinality);
     }
 
     @Override
@@ -65,6 +78,7 @@ public class PropertyTypeSpec {
         return "PropertyTypeSpec{" +
                 "typeRef='" + typeRef + '\'' +
                 ", typeKind=" + typeKind +
+                ", cardinality=" + cardinality +
                 '}';
     }
 }
