@@ -31,13 +31,12 @@ public class ValueListTest {
         return CompiledCode.compile(dest);
     }
 
-
     @Test
     public void name() throws Exception {
         String packageName = "org.generated";
         CompiledCode compiled = this.compiled(packageName, new ValueList(packageName).type());
 
-        assertThat(compiled.getClass("org.generated.ImmutableList"), is(
+        assertThat(compiled.getClass("org.generated.ValueList"), is(
                 anInterface()
                         .with(aMethod().named("contains").withParameters(Object.class).returning(boolean.class))
                         .with(aMethod().named("containsAll").withParameters(Collection.class).returning(boolean.class))

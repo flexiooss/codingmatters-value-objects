@@ -20,7 +20,7 @@ public class ValueList {
     }
 
     public TypeSpec type() {
-        return TypeSpec.interfaceBuilder("ImmutableList")
+        return TypeSpec.interfaceBuilder("ValueList")
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(MethodSpec.methodBuilder("contains")
                         .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
