@@ -1,9 +1,6 @@
 package org.codingmatters.value.objects.generation.collection;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
 import java.util.Collection;
@@ -22,6 +19,7 @@ public class ValueList {
     public TypeSpec type() {
         return TypeSpec.interfaceBuilder("ValueList")
                 .addModifiers(Modifier.PUBLIC)
+                .addTypeVariable(TypeVariableName.get("E"))
                 .addMethod(MethodSpec.methodBuilder("contains")
                         .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
                         .addParameter(TypeName.OBJECT, "o")
@@ -31,6 +29,30 @@ public class ValueList {
                         .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
                         .addParameter(ClassName.get(Collection.class), "c")
                         .returns(TypeName.BOOLEAN)
+                        .build())
+                .addMethod(MethodSpec.methodBuilder("get")
+                        .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
+                        .addParameter(TypeName.INT, "index")
+                        .returns(TypeVariableName.get("E"))
+                        .build())
+                .addMethod(MethodSpec.methodBuilder("size")
+                        .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
+                        .returns(TypeName.INT)
+                        .build())
+                .addMethod(MethodSpec.methodBuilder("indexOf")
+                        .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
+                        .addParameter(Object.class, "o")
+                        .returns(TypeName.INT)
+                        .build())
+                .addMethod(MethodSpec.methodBuilder("isEmpty")
+                        .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
+                        .returns(TypeName.BOOLEAN)
+                        .build())
+                .addMethod(MethodSpec.methodBuilder("toArray")
+                        .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
+                        .addTypeVariable(TypeVariableName.get("T"))
+                        .addParameter(ArrayTypeName.of(TypeVariableName.get("T")), "a")
+                        .returns(ArrayTypeName.of(TypeVariableName.get("T")))
                         .build())
                 .build();
     }

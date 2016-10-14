@@ -10,8 +10,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.util.Collection;
 
-import static org.codingmatters.tests.reflect.ReflectMatchers.aMethod;
-import static org.codingmatters.tests.reflect.ReflectMatchers.anInterface;
+import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -32,14 +31,37 @@ public class ValueListTest {
     }
 
     @Test
-    public void name() throws Exception {
+    public void signatures() throws Exception {
         String packageName = "org.generated";
         CompiledCode compiled = this.compiled(packageName, new ValueList(packageName).type());
 
-        assertThat(compiled.getClass("org.generated.ValueList"), is(
-                anInterface()
-                        .with(aMethod().named("contains").withParameters(Object.class).returning(boolean.class))
-                        .with(aMethod().named("containsAll").withParameters(Collection.class).returning(boolean.class))
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface().with(aGenericType().named("E"))));
+
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
+                .with(aMethod().named("contains").withParameters(Object.class).returning(boolean.class))
         ));
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
+                .with(aMethod().named("containsAll").withParameters(Collection.class).returning(boolean.class))
+        ));
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
+                .with(aMethod().named("get").withParameters(int.class).returning(aGenericType().named("E")))
+        ));
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
+                .with(aMethod().named("size").returning(int.class))
+        ));
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
+                .with(aMethod().named("indexOf").withParameters(Object.class).returning(int.class))
+        ));
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
+                .with(aMethod().named("isEmpty").returning(boolean.class))
+        ));
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
+                .with(aMethod().named("toArray").withParameters(aGenericArray().of(aGenericType().named("T"))).returning(aGenericArray().of(aGenericType().named("T"))))
+        ));
+        //Iterator<E> iterator()
+//        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
+//                .with(aMethod().named("iterator").returning(aGenericArray().of(aGenericType().named("T"))))
+//        ));
+
     }
 }
