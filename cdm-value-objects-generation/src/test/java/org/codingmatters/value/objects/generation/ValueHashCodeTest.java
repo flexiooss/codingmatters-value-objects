@@ -52,7 +52,7 @@ public class ValueHashCodeTest {
                 is(aPackagePrivate().class_()
                         .with(aPublic().method()
                                 .named("hashCode")
-                                .withParameters()
+                                .withoutParameters()
                                 .returning(int.class)
                         )
                 )

@@ -56,7 +56,7 @@ public class JavaTypePropertySpecGenerationTest {
     public void propertyInterfaceGetterSignature() throws Exception {
         assertThat(compiled.getClass("org.generated.Val"),
                 is(anInterface().with(
-                        anInstance().method().named("prop").withParameters().returning(String.class)
+                        anInstance().method().named("prop").withoutParameters().returning(String.class)
                 ))
         );
     }
@@ -85,7 +85,7 @@ public class JavaTypePropertySpecGenerationTest {
         assertThat(compiled.getClass("org.generated.ValImpl"),
                 is(aPackagePrivate().class_().with(
                         aPublic().method().named("prop")
-                                .withParameters().returning(String.class)
+                                .withoutParameters().returning(String.class)
                 ))
         );
     }

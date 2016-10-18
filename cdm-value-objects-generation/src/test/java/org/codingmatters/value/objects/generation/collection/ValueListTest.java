@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.Collection;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
@@ -26,6 +27,7 @@ public class ValueListTest {
         File dest = this.dir.newFolder();
         JavaFile file = JavaFile.builder(packageName, type).build();
         file.writeTo(dest);
+        file.writeTo(System.out);
 
         return CompiledCode.compile(dest);
     }
@@ -35,7 +37,7 @@ public class ValueListTest {
         String packageName = "org.generated";
         CompiledCode compiled = this.compiled(packageName, new ValueList(packageName).type());
 
-        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface().with(aGenericType().named("E"))));
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface().with(aVariableType().named("E"))));
 
         assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
                 .with(aMethod().named("contains").withParameters(Object.class).returning(boolean.class))
@@ -44,7 +46,7 @@ public class ValueListTest {
                 .with(aMethod().named("containsAll").withParameters(Collection.class).returning(boolean.class))
         ));
         assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
-                .with(aMethod().named("get").withParameters(int.class).returning(aGenericType().named("E")))
+                .with(aMethod().named("get").withParameters(int.class).returning(aVariableType().named("E")))
         ));
         assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
                 .with(aMethod().named("size").returning(int.class))
@@ -56,12 +58,27 @@ public class ValueListTest {
                 .with(aMethod().named("isEmpty").returning(boolean.class))
         ));
         assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
-                .with(aMethod().named("toArray").withParameters(aGenericArray().of(aGenericType().named("T"))).returning(aGenericArray().of(aGenericType().named("T"))))
+                .with(aMethod().named("toArray").withParameters(aGenericArray().of(aVariableType().named("T"))).returning(aGenericArray().of(aVariableType().named("T"))))
         ));
-        //Iterator<E> iterator()
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
+                .with(aMethod().named("iterator").returning(aGenericArray().of(aVariableType().named("E"))))
+        ));
 //        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
-//                .with(aMethod().named("iterator").returning(aGenericArray().of(aGenericType().named("T"))))
+//                .with(aMethod().named("spliterator").returning(aGenericType().of(Spliterator.class).with(aVariableType().named("E"))))
 //        ));
 
+    }
+
+    @Test
+    public void name() throws Exception {
+        String packageName = "org.generated";
+        CompiledCode compiled = this.compiled(packageName, new ValueList(packageName).type());
+
+        Method method = compiled.getClass("org.generated.ValueList").getMethod("spliterator");
+        //Spliterator<E> spliterator()
+        assertThat(method, is(aMethod().named("spliterator").returning(aGenericType()
+//                        .of(Spliterator.class)
+//                .with(aVariableType().named("E"))
+        )));
     }
 }

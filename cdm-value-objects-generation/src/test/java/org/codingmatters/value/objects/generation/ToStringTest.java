@@ -50,7 +50,7 @@ public class ToStringTest {
                 is(aPackagePrivate().class_()
                         .with(aPublic().method()
                                 .named("toString")
-                                .withParameters()
+                                .withoutParameters()
                                 .returning(String.class)
                         )
                 )

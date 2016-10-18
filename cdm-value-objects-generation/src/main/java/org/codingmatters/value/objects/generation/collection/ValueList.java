@@ -4,6 +4,7 @@ import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
 import java.util.Collection;
+import java.util.Spliterator;
 
 /**
  * Created by nelt on 10/11/16.
@@ -54,6 +55,16 @@ public class ValueList {
                         .addParameter(ArrayTypeName.of(TypeVariableName.get("T")), "a")
                         .returns(ArrayTypeName.of(TypeVariableName.get("T")))
                         .build())
+                .addMethod(MethodSpec.methodBuilder("iterator")
+                        .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
+                        .returns(ArrayTypeName.of(TypeVariableName.get("E")))
+                        .build())
+                //Spliterator<E> spliterator()
+                .addMethod(MethodSpec.methodBuilder("spliterator")
+                        .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
+                        .returns(ParameterizedTypeName.get(ClassName.get(Spliterator.class), TypeVariableName.get("E")))
+                        .build())
                 .build();
+
     }
 }

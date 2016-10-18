@@ -49,11 +49,11 @@ public class ValueTypePropertyGenerationSpec {
                 is(anInterface()
                         .with(aMethod()
                                 .named("recursiveValue")
-                                .withParameters().returning(compiled.getClass("org.generated.Val"))
+                                .withoutParameters().returning(compiled.getClass("org.generated.Val"))
                         )
                         .with(aMethod()
                                 .named("inSpecValue")
-                                .withParameters().returning(compiled.getClass("org.generated.Val2"))
+                                .withoutParameters().returning(compiled.getClass("org.generated.Val2"))
                         )
                 ));
         assertThat(compiled.getClass("org.generated.ValImpl"),
@@ -90,7 +90,7 @@ public class ValueTypePropertyGenerationSpec {
                 is(anInterface()
                         .with(aMethod()
                                 .named("outSpecValue")
-                                .withParameters().returning(compiled.getClass("org.external.value.ExternalValue"))
+                                .withoutParameters().returning(compiled.getClass("org.external.value.ExternalValue"))
                         )
                 ));
         assertThat(compiled.getClass("org.generated.Val$Builder"),
