@@ -11,8 +11,10 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Spliterator;
 
-import static org.codingmatters.tests.reflect.ReflectMatchers.*;
+import static org.codingmatters.tests.reflect.ReflectMatchers.aMethod;
+import static org.codingmatters.tests.reflect.ReflectMatchers.anInterface;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -38,7 +40,7 @@ public class ValueListTest {
         String packageName = "org.generated";
         CompiledCode compiled = this.compiled(packageName, new ValueList(packageName).type());
 
-        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface().withParameter(aVariableType().named("E"))));
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface().withParameter(TypeMatcher.variable().named("E"))));
 
         assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
                 .with(aMethod().named("contains").withParameters(Object.class).returning(boolean.class))
@@ -47,7 +49,7 @@ public class ValueListTest {
                 .with(aMethod().named("containsAll").withParameters(Collection.class).returning(boolean.class))
         ));
         assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
-                .with(aMethod().named("get").withParameters(int.class).returning(aVariableType().named("E")))
+                .with(aMethod().named("get").withParameters(int.class).returning(TypeMatcher.variable().named("E")))
         ));
         assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
                 .with(aMethod().named("size").returning(int.class))
@@ -59,10 +61,10 @@ public class ValueListTest {
                 .with(aMethod().named("isEmpty").returning(boolean.class))
         ));
         assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
-                .with(aMethod().named("toArray").withParameters(TypeMatcher.typeArray(aVariableType().named("T"))).returning(TypeMatcher.typeArray(aVariableType().named("T"))))
+                .with(aMethod().named("toArray").withParameters(TypeMatcher.typeArray(TypeMatcher.variable().named("T"))).returning(TypeMatcher.typeArray(TypeMatcher.variable().named("T"))))
         ));
         assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
-                .with(aMethod().named("iterator").returning(TypeMatcher.typeArray(aVariableType().named("E"))))
+                .with(aMethod().named("iterator").returning(TypeMatcher.typeArray(TypeMatcher.variable().named("E"))))
         ));
 //        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
 //                .with(aMethod().named("spliterator").returning(aGenericType().of(Spliterator.class).with(aVariableType().named("E"))))
@@ -77,9 +79,10 @@ public class ValueListTest {
 
         Method method = compiled.getClass("org.generated.ValueList").getMethod("spliterator");
         //Spliterator<E> spliterator()
-        assertThat(method, is(aMethod().named("spliterator").returning(aGenericType()
-//                        .of(Spliterator.class)
-//                .with(aVariableType().named("E"))
-        )));
+        assertThat(method, is(aMethod().named("spliterator")
+                .returning(
+                        TypeMatcher.generic().baseClass(Spliterator.class).withParameters(TypeMatcher.typeParameter().named("E"))
+                )
+        ));
     }
 }
