@@ -3,6 +3,7 @@ package org.codingmatters.value.objects.generation.collection;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.tests.compile.CompiledCode;
+import org.codingmatters.tests.reflect.matchers.TypeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -37,7 +38,7 @@ public class ValueListTest {
         String packageName = "org.generated";
         CompiledCode compiled = this.compiled(packageName, new ValueList(packageName).type());
 
-        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface().with(aVariableType().named("E"))));
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface().withParameter(aVariableType().named("E"))));
 
         assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
                 .with(aMethod().named("contains").withParameters(Object.class).returning(boolean.class))
@@ -58,10 +59,10 @@ public class ValueListTest {
                 .with(aMethod().named("isEmpty").returning(boolean.class))
         ));
         assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
-                .with(aMethod().named("toArray").withParameters(aGenericArray().of(aVariableType().named("T"))).returning(aGenericArray().of(aVariableType().named("T"))))
+                .with(aMethod().named("toArray").withParameters(TypeMatcher.typeArray(aVariableType().named("T"))).returning(TypeMatcher.typeArray(aVariableType().named("T"))))
         ));
         assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
-                .with(aMethod().named("iterator").returning(aGenericArray().of(aVariableType().named("E"))))
+                .with(aMethod().named("iterator").returning(TypeMatcher.typeArray(aVariableType().named("E"))))
         ));
 //        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
 //                .with(aMethod().named("spliterator").returning(aGenericType().of(Spliterator.class).with(aVariableType().named("E"))))
