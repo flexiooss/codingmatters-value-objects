@@ -3,18 +3,15 @@ package org.codingmatters.value.objects.generation.collection;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.tests.compile.CompiledCode;
-import org.codingmatters.tests.reflect.ReflectMatchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Spliterator;
 
-import static org.codingmatters.tests.reflect.ReflectMatchers.aMethod;
-import static org.codingmatters.tests.reflect.ReflectMatchers.anInterface;
+import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -40,7 +37,7 @@ public class ValueListTest {
         String packageName = "org.generated";
         CompiledCode compiled = this.compiled(packageName, new ValueList(packageName).type());
 
-        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface().withParameter(ReflectMatchers.variableType().named("E"))));
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface().withParameter(variableType().named("E"))));
 
         assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
                 .with(aMethod().named("contains").withParameters(Object.class).returning(boolean.class))
@@ -49,7 +46,7 @@ public class ValueListTest {
                 .with(aMethod().named("containsAll").withParameters(Collection.class).returning(boolean.class))
         ));
         assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
-                .with(aMethod().named("get").withParameters(int.class).returning(ReflectMatchers.variableType().named("E")))
+                .with(aMethod().named("get").withParameters(int.class).returning(variableType().named("E")))
         ));
         assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
                 .with(aMethod().named("size").returning(int.class))
@@ -61,28 +58,13 @@ public class ValueListTest {
                 .with(aMethod().named("isEmpty").returning(boolean.class))
         ));
         assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
-                .with(aMethod().named("toArray").withParameters(ReflectMatchers.typeArray(ReflectMatchers.variableType().named("T"))).returning(ReflectMatchers.typeArray(ReflectMatchers.variableType().named("T"))))
+                .with(aMethod().named("toArray").withParameters(typeArray(variableType().named("T"))).returning(typeArray(variableType().named("T"))))
         ));
         assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
-                .with(aMethod().named("iterator").returning(ReflectMatchers.typeArray(ReflectMatchers.variableType().named("E"))))
+                .with(aMethod().named("iterator").returning(typeArray(variableType().named("E"))))
         ));
-//        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
-//                .with(aMethod().named("spliterator").returning(aGenericType().of(Spliterator.class).with(aVariableType().named("E"))))
-//        ));
-
-    }
-
-    @Test
-    public void name() throws Exception {
-        String packageName = "org.generated";
-        CompiledCode compiled = this.compiled(packageName, new ValueList(packageName).type());
-
-        Method method = compiled.getClass("org.generated.ValueList").getMethod("spliterator");
-        //Spliterator<E> spliterator()
-        assertThat(method, is(aMethod().named("spliterator")
-                .returning(
-                        ReflectMatchers.genericType().baseClass(Spliterator.class).withParameters(ReflectMatchers.typeParameter().named("E"))
-                )
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
+                .with(aMethod().named("spliterator").returning(genericType().baseClass(Spliterator.class).withParameters(typeParameter().named("E"))))
         ));
     }
 }
