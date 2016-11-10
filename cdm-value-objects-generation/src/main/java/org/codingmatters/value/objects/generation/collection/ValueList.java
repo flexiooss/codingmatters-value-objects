@@ -4,7 +4,6 @@ import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
 import java.util.Collection;
-import java.util.Spliterator;
 
 /**
  * Created by nelt on 10/11/16.
@@ -19,6 +18,7 @@ public class ValueList {
 
     public TypeSpec type() {
         return TypeSpec.interfaceBuilder("ValueList")
+                .addSuperinterface(ParameterizedTypeName.get(ClassName.get(Iterable.class), TypeVariableName.get("E")))
                 .addModifiers(Modifier.PUBLIC)
                 .addTypeVariable(TypeVariableName.get("E"))
                 .addMethod(MethodSpec.methodBuilder("contains")
@@ -28,7 +28,7 @@ public class ValueList {
                         .build())
                 .addMethod(MethodSpec.methodBuilder("containsAll")
                         .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
-                        .addParameter(ClassName.get(Collection.class), "c")
+                        .addParameter(ParameterizedTypeName.get(ClassName.get(Collection.class), TypeVariableName.get("?")), "c")
                         .returns(TypeName.BOOLEAN)
                         .build())
                 .addMethod(MethodSpec.methodBuilder("get")
@@ -55,16 +55,6 @@ public class ValueList {
                         .addParameter(ArrayTypeName.of(TypeVariableName.get("T")), "a")
                         .returns(ArrayTypeName.of(TypeVariableName.get("T")))
                         .build())
-                .addMethod(MethodSpec.methodBuilder("iterator")
-                        .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
-                        .returns(ArrayTypeName.of(TypeVariableName.get("E")))
-                        .build())
-                //Spliterator<E> spliterator()
-                .addMethod(MethodSpec.methodBuilder("spliterator")
-                        .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
-                        .returns(ParameterizedTypeName.get(ClassName.get(Spliterator.class), TypeVariableName.get("E")))
-                        .build())
                 .build();
-
     }
 }
