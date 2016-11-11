@@ -1,8 +1,8 @@
 package org.codingmatters.value.objects.generation.collection;
 
 import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.tests.compile.CompiledCode;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -21,21 +21,21 @@ public class ValueListTest {
 
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
+    private CompiledCode compiled;
 
-    private CompiledCode compiled(String packageName, TypeSpec type) throws Exception {
+    @Before
+    public void setUp() throws Exception {
+        String packageName = "org.generated";
         File dest = this.dir.newFolder();
-        JavaFile file = JavaFile.builder(packageName, type).build();
+        JavaFile file = JavaFile.builder(packageName, new ValueList(packageName).type()).build();
         file.writeTo(dest);
         file.writeTo(System.out);
 
-        return CompiledCode.compile(dest);
+        this.compiled = CompiledCode.compile(dest);
     }
 
     @Test
     public void signatures() throws Exception {
-        String packageName = "org.generated";
-        CompiledCode compiled = this.compiled(packageName, new ValueList(packageName).type());
-
         assertThat(
                 compiled.getClass("org.generated.ValueList").getGenericInterfaces()[0],
                 is(genericType().baseClass(Iterable.class).withParameters(typeParameter().named("E")))
@@ -69,20 +69,5 @@ public class ValueListTest {
                 //<T> T[] toArray(T[] a);
                 .with(aMethod().named("toArray").withParameters(typeArray(variableType().named("T"))).returning(typeArray(variableType().named("T"))))
         ));
-//        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
-//                //E[] iterator();
-//                .with(aMethod().named("iterator").returning(typeArray(variableType().named("E"))))
-//        ));
-//        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
-//                //Spliterator<E> spliterator();
-//                .with(aMethod().named("spliterator").returning(genericType().baseClass(Spliterator.class).withParameters(typeParameter().named("E"))))
-//        ));
-//        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
-//                //void forEach(Consumer<? super T> action)
-//                .with(aMethod().named("forEach")
-//                        .returningVoid()
-//                        .withParameters(genericType().baseClass(Consumer.class).withParameters(typeParameter().wildcard().lowerBound(variableType().named("E"))))
-//                )
-//        ));
     }
 }
