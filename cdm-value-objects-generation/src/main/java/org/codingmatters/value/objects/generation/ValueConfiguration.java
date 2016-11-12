@@ -1,6 +1,9 @@
 package org.codingmatters.value.objects.generation;
 
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.ValueSpec;
 
@@ -16,6 +19,8 @@ public class ValueConfiguration {
     private final ClassName valueImplType;
     private final ClassName builderType;
     private final ClassName changerType;
+    private final ClassName valueListType;
+    private final ClassName valueListImplementationType;
 
     public ValueConfiguration(String packageName, ValueSpec valueSpec) {
         String interfaceName = capitalizedFirst(valueSpec.name());
@@ -23,6 +28,8 @@ public class ValueConfiguration {
         this.valueImplType = ClassName.get(packageName, interfaceName + "Impl");
         this.builderType = ClassName.get(packageName, interfaceName + ".Builder");
         this.changerType = ClassName.get(packageName, interfaceName + ".Changer");
+        this.valueListType = ClassName.get(packageName, "ValueList");
+        this.valueListImplementationType = ClassName.get(packageName, "ValueListImpl");
     }
 
     public ClassName valueType() {
@@ -41,7 +48,16 @@ public class ValueConfiguration {
         return changerType;
     }
 
-    public ClassName propertyType(PropertySpec propertySpec) {
+    public TypeName propertyType(PropertySpec propertySpec) {
+        ClassName singleType = this.propertySingleType(propertySpec);
+        if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
+            return ParameterizedTypeName.get(this.valueListType, singleType);
+        } else {
+            return singleType;
+        }
+    }
+
+    private ClassName propertySingleType(PropertySpec propertySpec) {
         if(IN_SPEC_VALUE_OBJECT.equals(propertySpec.typeSpec().typeKind())) {
             return ClassName.bestGuess(capitalizedFirst(propertySpec.typeSpec().typeRef()));
         } else {
@@ -49,7 +65,7 @@ public class ValueConfiguration {
         }
     }
 
-    public ClassName builderPropertyType(PropertySpec propertySpec) {
+    public TypeName builderPropertyType(PropertySpec propertySpec) {
         if(propertySpec.typeSpec().typeKind().isValueObject()) {
             String valueType;
             if(propertySpec.typeSpec().typeKind().equals(EXTERNAL_VALUE_OBJECT)) {

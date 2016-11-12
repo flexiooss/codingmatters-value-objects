@@ -2,6 +2,10 @@ package org.codingmatters.value.objects.generation;
 
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
+import org.codingmatters.value.objects.generation.collection.ValueList;
+import org.codingmatters.value.objects.generation.collection.ValueListImplementation;
+import org.codingmatters.value.objects.spec.PropertyCardinality;
+import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.ValueSpec;
 
@@ -24,9 +28,26 @@ public class SpecCodeGenerator {
     public void generateTo(File dir) throws IOException {
         File packageDestination = new File(dir, packageName.replaceAll(".", "/"));
 
+        if(this.hasListProperty(this.spec)) {
+            TypeSpec valueInterface = new ValueList(this.packageName).type();
+            this.writeJavaFile(packageDestination, valueInterface);
+            this.writeJavaFile(packageDestination, new ValueListImplementation(this.packageName, valueInterface).type());
+        }
+
         for (ValueSpec valueSpec : this.spec.valueSpecs()) {
             this.generateValueTypesTo(valueSpec, packageDestination);
         }
+    }
+
+    private boolean hasListProperty(Spec spec) {
+        for (ValueSpec valueSpec : spec.valueSpecs()) {
+            for (PropertySpec propertySpec : valueSpec.propertySpecs()) {
+                if(PropertyCardinality.LIST.equals(propertySpec.typeSpec().cardinality())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void generateValueTypesTo(ValueSpec valueSpec, File packageDestination) throws IOException {
@@ -43,6 +64,7 @@ public class SpecCodeGenerator {
     private void writeJavaFile(File packageDestination, TypeSpec valueInterface) throws IOException {
         JavaFile file = JavaFile.builder(this.packageName, valueInterface).build();
         file.writeTo(packageDestination);
+        file.writeTo(System.out);
     }
 
 }
