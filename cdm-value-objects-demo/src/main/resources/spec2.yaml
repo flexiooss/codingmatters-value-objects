@@ -1,6 +1,8 @@
 value:
   stringProperty: string
   booleanProperty: bool
+  listProperty:
+    list: string
 
 complexValue:
   recursiveProperty: $complexValue

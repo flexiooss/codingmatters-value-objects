@@ -64,7 +64,6 @@ public class SpecCodeGenerator {
     private void writeJavaFile(File packageDestination, TypeSpec valueInterface) throws IOException {
         JavaFile file = JavaFile.builder(this.packageName, valueInterface).build();
         file.writeTo(packageDestination);
-        file.writeTo(System.out);
     }
 
 }
