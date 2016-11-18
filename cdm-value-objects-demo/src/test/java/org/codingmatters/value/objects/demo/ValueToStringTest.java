@@ -14,8 +14,9 @@ public class ValueToStringTest {
         Value value = Value.Builder.builder()
                 .stringProperty("toto")
                 .booleanProperty(true)
+                .listProperty()
                 .build();
 
-        assertThat(value.toString(), is("Value{stringProperty=toto, booleanProperty=true, listProperty=null}"));
+        assertThat(value.toString(), is("Value{stringProperty=toto, booleanProperty=true, listProperty=[]}"));
     }
 }

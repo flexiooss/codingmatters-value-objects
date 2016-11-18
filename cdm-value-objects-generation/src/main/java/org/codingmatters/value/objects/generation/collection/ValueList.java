@@ -55,6 +55,11 @@ public class ValueList {
                         .addParameter(ArrayTypeName.of(TypeVariableName.get("T")), "a")
                         .returns(ArrayTypeName.of(TypeVariableName.get("T")))
                         .build())
+                //Object[] toArray()
+                .addMethod(MethodSpec.methodBuilder("toArray")
+                        .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
+                        .returns(Object[].class)
+                        .build())
                 .build();
     }
 }

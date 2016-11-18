@@ -73,6 +73,14 @@ public class ValueConfiguration {
         }
     }
 
+    public TypeName propertyImplType(PropertySpec propertySpec) {
+        if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
+            return ParameterizedTypeName.get(this.valueListImplementationType, this.builderSinglePropertyType(propertySpec));
+        } else {
+            return this.builderSinglePropertyType(propertySpec);
+        }
+    }
+
     private TypeName builderSinglePropertyType(PropertySpec propertySpec) {
         if(propertySpec.typeSpec().typeKind().isValueObject()) {
             String valueType1;

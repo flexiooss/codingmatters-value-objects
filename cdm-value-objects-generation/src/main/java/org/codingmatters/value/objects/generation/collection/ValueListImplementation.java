@@ -1,11 +1,10 @@
 package org.codingmatters.value.objects.generation.collection;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.TypeVariableName;
+import com.squareup.javapoet.*;
 
+import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by nelt on 11/11/16.
@@ -26,6 +25,14 @@ public class ValueListImplementation {
                 .addTypeVariable(TypeVariableName.get("E"))
                 .superclass(ParameterizedTypeName.get(ClassName.get(ArrayList.class), TypeVariableName.get("E")))
                 .addSuperinterface(ParameterizedTypeName.get(ClassName.get(this.packageName, "ValueList"), TypeVariableName.get("E")))
+                .addMethod(MethodSpec.constructorBuilder()
+                        .addModifiers(Modifier.PUBLIC)
+                        .addAnnotation(AnnotationSpec.builder(SuppressWarnings.class)
+                                .addMember("value", "$S", "unchecked")
+                                .build())
+                        .varargs().addParameter(ArrayTypeName.of(TypeVariableName.get("E")), "elements")
+                        .addStatement("super($T.asList($N))", Arrays.class, "elements")
+                        .build())
                 .build();
     }
 }

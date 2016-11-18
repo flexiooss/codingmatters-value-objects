@@ -17,10 +17,12 @@ public class ValueBuilderTest {
         Value value = Value.Builder.builder()
                 .stringProperty("toto")
                 .booleanProperty(true)
+                .listProperty("a", "b", "c")
                 .build();
 
         assertThat(value.stringProperty(), is("toto"));
         assertThat(value.booleanProperty(), is(true));
+        assertThat(value.listProperty().toArray(), is(new String [] {"a", "b", "c"}));
     }
 
     @Test

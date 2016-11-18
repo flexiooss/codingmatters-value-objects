@@ -9,10 +9,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
-import static org.codingmatters.tests.reflect.ReflectMatchers.aPackagePrivate;
-import static org.codingmatters.tests.reflect.ReflectMatchers.variableType;
+import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -47,7 +47,7 @@ public class ValueListImplementationTest {
     }
 
     @Test
-    public void name() throws Exception {
+    public void extendsArrayList() throws Exception {
         assertThat(
                 compiled.getClass("org.generated.ValueListImpl"),
                 is(
@@ -57,7 +57,24 @@ public class ValueListImplementationTest {
                                 .implementing(compiled.getClass("org.generated.ValueList"))
                 )
         );
+    }
 
+    @Test
+    public void constructorFromArray() throws Exception {
+        assertThat(
+                compiled.getClass("org.generated.ValueListImpl"),
+                is(
+                        aPackagePrivate().class_().with(
+                                aConstructor().withParameters(typeArray(variableType().named("E")))
+                        )
+                )
+        );
 
+        Constructor constr = compiled.getClass("org.generated.ValueListImpl")
+                .getConstructor(new Class[]{Object[].class});;
+        constr.setAccessible(true);
+        Object list = constr.newInstance(new Object[]{new Object[]{"a", "b"}});
+
+        assertThat(this.compiled.on(list).invoke("toArray"), is(new String [] {"a", "b"}));
     }
 }

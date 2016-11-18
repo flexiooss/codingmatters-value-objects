@@ -69,5 +69,9 @@ public class ValueListTest {
                 //<T> T[] toArray(T[] a);
                 .with(aMethod().named("toArray").withParameters(typeArray(variableType().named("T"))).returning(typeArray(variableType().named("T"))))
         ));
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
+                //Object[] toArray()
+                .with(aMethod().named("toArray").withoutParameters().returning(Object[].class))
+        ));
     }
 }
