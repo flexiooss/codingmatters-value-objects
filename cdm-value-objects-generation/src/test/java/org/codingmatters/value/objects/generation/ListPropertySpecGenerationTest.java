@@ -1,7 +1,6 @@
 package org.codingmatters.value.objects.generation;
 
 import org.codingmatters.tests.compile.CompiledCode;
-import org.codingmatters.tests.reflect.ReflectMatchers;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
@@ -9,6 +8,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import java.lang.reflect.Method;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
@@ -50,11 +51,33 @@ public class ListPropertySpecGenerationTest {
     }
 
     @Test
-    public void listPropMethod() throws Exception {
-        assertThat(this.compiled.getClass("org.generated.Val"), is(ReflectMatchers.anInterface()
+    public void listPropValueMethod() throws Exception {
+        assertThat(this.compiled.getClass("org.generated.Val"), is(anInterface()
                 .with(aPublic().method().named("listProp").returning(
                         genericType().baseClass(this.compiled.getClass("org.generated.ValueList")).withParameters(typeParameter().named(String.class.getName()))
                 ))
+        ));
+    }
+
+    @Test
+    public void listPropBuilderMethod() throws Exception {
+
+        for (Method method : this.compiled.getClass("org.generated.Val$Builder").getDeclaredMethods()) {
+            System.out.println(method);
+        }
+
+
+        assertThat(this.compiled.getClass("org.generated.Val$Builder"), is(aStatic().class_()
+                .with(aPublic().method()
+                        .named("listProp")
+                        .withParameters(String[].class)
+                        .returning(this.compiled.getClass("org.generated.Val$Builder"))
+                )
+                .with(aPublic().method()
+                        .named("listProp")
+                        .withParameters(genericType().baseClass(this.compiled.getClass("org.generated.ValueList")).withParameters(typeParameter().named(String.class.getName())))
+                        .returning(this.compiled.getClass("org.generated.Val$Builder"))
+                )
         ));
     }
 }

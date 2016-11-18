@@ -57,7 +57,7 @@ public class ValueConfiguration {
         }
     }
 
-    private ClassName propertySingleType(PropertySpec propertySpec) {
+    public ClassName propertySingleType(PropertySpec propertySpec) {
         if(IN_SPEC_VALUE_OBJECT.equals(propertySpec.typeSpec().typeKind())) {
             return ClassName.bestGuess(capitalizedFirst(propertySpec.typeSpec().typeRef()));
         } else {
@@ -66,16 +66,24 @@ public class ValueConfiguration {
     }
 
     public TypeName builderPropertyType(PropertySpec propertySpec) {
-        if(propertySpec.typeSpec().typeKind().isValueObject()) {
-            String valueType;
-            if(propertySpec.typeSpec().typeKind().equals(EXTERNAL_VALUE_OBJECT)) {
-                valueType = propertySpec.typeSpec().typeRef();
-            } else {
-                valueType = capitalizedFirst(propertySpec.typeSpec().typeRef());
-            }
-            return ClassName.bestGuess(valueType + ".Builder");
+        if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
+            return ParameterizedTypeName.get(this.valueListType, this.builderSinglePropertyType(propertySpec));
         } else {
-            return propertyType(propertySpec);
+            return this.builderSinglePropertyType(propertySpec);
+        }
+    }
+
+    private TypeName builderSinglePropertyType(PropertySpec propertySpec) {
+        if(propertySpec.typeSpec().typeKind().isValueObject()) {
+            String valueType1;
+            if(propertySpec.typeSpec().typeKind().equals(EXTERNAL_VALUE_OBJECT)) {
+                valueType1 = propertySpec.typeSpec().typeRef();
+            } else {
+                valueType1 = capitalizedFirst(propertySpec.typeSpec().typeRef());
+            }
+            return ClassName.bestGuess(valueType1 + ".Builder");
+        } else {
+            return propertySingleType(propertySpec);
         }
     }
 

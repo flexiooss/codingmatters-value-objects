@@ -1,11 +1,10 @@
 package org.codingmatters.value.objects.generation;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
+import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -59,17 +58,42 @@ public class ValueBuilder {
         List<MethodSpec> setters = new LinkedList<>();
 
         for (PropertySpec propertySpec : this.propertySpecs) {
-            setters.add(
-                    MethodSpec.methodBuilder(propertySpec.name())
-                            .addParameter(this.types.builderPropertyType(propertySpec), propertySpec.name())
-                            .returns(this.types.valueBuilderType())
-                            .addModifiers(PUBLIC)
-                            .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
-                            .addStatement("return this")
-                            .build()
-            );
+            if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SINGLE)) {
+                setters.add(this.createSingleSetter(propertySpec));
+            } else {
+                setters.addAll(this.createMultipleSetter(propertySpec));
+            }
         }
         return setters;
+    }
+
+    private MethodSpec createSingleSetter(PropertySpec propertySpec) {
+        return MethodSpec.methodBuilder(propertySpec.name())
+                .addParameter(this.types.builderPropertyType(propertySpec), propertySpec.name())
+                .returns(this.types.valueBuilderType())
+                .addModifiers(PUBLIC)
+                .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
+                .addStatement("return this")
+                .build();
+    }
+
+    private List<MethodSpec> createMultipleSetter(PropertySpec propertySpec) {
+        return Arrays.asList(
+                MethodSpec.methodBuilder(propertySpec.name())
+                        .varargs().addParameter(ArrayTypeName.of(this.types.propertySingleType(propertySpec)), propertySpec.name())
+                        .returns(this.types.valueBuilderType())
+                        .addModifiers(PUBLIC)
+        //                .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
+                        .addStatement("return this")
+                        .build(),
+                MethodSpec.methodBuilder(propertySpec.name())
+                        .addParameter(this.types.builderPropertyType(propertySpec), propertySpec.name())
+                        .returns(this.types.valueBuilderType())
+                        .addModifiers(PUBLIC)
+                        //                .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
+                        .addStatement("return this")
+                        .build()
+        );
     }
 
     private MethodSpec createBuilderMethod() {
@@ -87,11 +111,15 @@ public class ValueBuilder {
         bindings.add(this.types.valueBuilderType());
 
         for (PropertySpec propertySpec : this.propertySpecs) {
-            if(propertySpec.typeSpec().typeKind().isValueObject()) {
-                statement += "." + propertySpec.name() + "($T.from(value." + propertySpec.name() + "()))\n";
-                bindings.add(this.types.builderPropertyType(propertySpec));
+            if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SINGLE)) {
+                if (propertySpec.typeSpec().typeKind().isValueObject()) {
+                    statement += "." + propertySpec.name() + "($T.from(value." + propertySpec.name() + "()))\n";
+                    bindings.add(this.types.builderPropertyType(propertySpec));
+                } else {
+                    statement += "." + propertySpec.name() + "(value." + propertySpec.name() + "())\n";
+                }
             } else {
-                statement += "." + propertySpec.name() + "(value." + propertySpec.name() + "())\n";
+
             }
         }
 
