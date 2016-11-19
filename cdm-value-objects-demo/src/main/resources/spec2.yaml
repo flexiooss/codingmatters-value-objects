@@ -3,6 +3,8 @@ value:
   booleanProperty: bool
   listProperty:
     list: string
+  setProperty:
+    set: string
 
 complexValue:
   recursiveProperty: $complexValue

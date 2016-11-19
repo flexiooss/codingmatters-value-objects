@@ -4,6 +4,8 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.value.objects.generation.collection.ValueList;
 import org.codingmatters.value.objects.generation.collection.ValueListImplementation;
+import org.codingmatters.value.objects.generation.collection.ValueSet;
+import org.codingmatters.value.objects.generation.collection.ValueSetImplementation;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.Spec;
@@ -11,6 +13,9 @@ import org.codingmatters.value.objects.spec.ValueSpec;
 
 import java.io.File;
 import java.io.IOException;
+
+import static org.codingmatters.value.objects.spec.PropertyCardinality.LIST;
+import static org.codingmatters.value.objects.spec.PropertyCardinality.SET;
 
 /**
  * Created by nelt on 9/13/16.
@@ -28,10 +33,15 @@ public class SpecCodeGenerator {
     public void generateTo(File dir) throws IOException {
         File packageDestination = new File(dir, packageName.replaceAll(".", "/"));
 
-        if(this.hasListProperty(this.spec)) {
-            TypeSpec valueInterface = new ValueList(this.packageName).type();
-            this.writeJavaFile(packageDestination, valueInterface);
-            this.writeJavaFile(packageDestination, new ValueListImplementation(this.packageName, valueInterface).type());
+        if(this.hasPropertyWithCardinality(this.spec, LIST)) {
+            TypeSpec valueListInterface = new ValueList(this.packageName).type();
+            this.writeJavaFile(packageDestination, valueListInterface);
+            this.writeJavaFile(packageDestination, new ValueListImplementation(this.packageName, valueListInterface).type());
+        }
+        if(this.hasPropertyWithCardinality(this.spec, SET)) {
+            TypeSpec valueSetInterface = new ValueSet(this.packageName).type();
+            this.writeJavaFile(packageDestination, valueSetInterface);
+            this.writeJavaFile(packageDestination, new ValueSetImplementation(this.packageName, valueSetInterface).type());
         }
 
         for (ValueSpec valueSpec : this.spec.valueSpecs()) {
@@ -39,10 +49,10 @@ public class SpecCodeGenerator {
         }
     }
 
-    private boolean hasListProperty(Spec spec) {
+    private boolean hasPropertyWithCardinality(Spec spec, PropertyCardinality cardinality) {
         for (ValueSpec valueSpec : spec.valueSpecs()) {
             for (PropertySpec propertySpec : valueSpec.propertySpecs()) {
-                if(PropertyCardinality.LIST.equals(propertySpec.typeSpec().cardinality())) {
+                if(cardinality.equals(propertySpec.typeSpec().cardinality())) {
                     return true;
                 }
             }
