@@ -31,9 +31,9 @@ public class SpecReaderPropertyWithObjectTypeSpecTest {
     public void typeSpecWithTypeProperty() throws Exception {
         try(InputStream in = streamFor(string()
                 .line("val:")
-                .line("  p1: {type: java.lang.String}")
+                .line("  p1: {$type: java.lang.String}")
                 .line("  p2:")
-                .line("    type: $val")
+                .line("    $type: $val")
                 .build())) {
             assertThat(
                     reader.read(in),
@@ -54,7 +54,7 @@ public class SpecReaderPropertyWithObjectTypeSpecTest {
         try(InputStream in = streamFor(string()
                 .line("val:")
                 .line("  p:")
-                .line("    value-object: org.codingmatters.ValueObject")
+                .line("    $value-object: org.codingmatters.ValueObject")
                 .build())) {
             assertThat(
                     reader.read(in),

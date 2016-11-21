@@ -190,9 +190,9 @@ public class SpecReaderSimpleTest {
         try(InputStream in = streamFor(string()
                 .line("val:")
                 .line("  listProp: ")
-                .line("    list: string")
+                .line("    $list: string")
                 .line("  setProp: ")
-                .line("    set: string")
+                .line("    $set: string")
                 .build())) {
             assertThat(
                     reader.read(in),

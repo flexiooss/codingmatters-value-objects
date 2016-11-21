@@ -19,6 +19,11 @@ public class ContextSpecParser {
     private static final Pattern JAVA_IDENTIFIER_PATTERN = Pattern.compile("\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*");
     private static final Pattern FULLY_QUALIFIED_CLASS_NAME_PATTERN = Pattern.compile(JAVA_IDENTIFIER_PATTERN.pattern() + "(\\." + JAVA_IDENTIFIER_PATTERN.pattern() + ")+");
 
+    public static final String LIST_MARK = "$list";
+    public static final String SET_MARK = "$set";
+    public static final String VALUE_OBJECT_MARK = "$value-object";
+    public static final String TYPE_MARK = "$type";
+
     private final Map<String, ?> root;
     private Stack<String> context;
 
@@ -57,12 +62,12 @@ public class ContextSpecParser {
             }
 
             PropertyCardinality cardinality;
-            if(value instanceof Map && ((Map) value).containsKey("list")) {
+            if(value instanceof Map && ((Map) value).containsKey(LIST_MARK)) {
                 cardinality = PropertyCardinality.LIST;
-                value = ((Map) value).get("list");
-            } else if(value instanceof Map && ((Map) value).containsKey("set")) {
+                value = ((Map) value).get(LIST_MARK);
+            } else if(value instanceof Map && ((Map) value).containsKey(SET_MARK)) {
                 cardinality = PropertyCardinality.SET;
-                value = ((Map) value).get("set");
+                value = ((Map) value).get(SET_MARK);
             } else {
                 cardinality = PropertyCardinality.SINGLE;
             }
@@ -70,11 +75,11 @@ public class ContextSpecParser {
             PropertyTypeSpec.Builder typeSpec;
             if (value instanceof String) {
                 typeSpec = this.typeForString((String) value);
-            } else if (value instanceof Map && ((Map) value).containsKey("value-object")) {
-                typeSpec = this.typeForString((String) ((Map) value).get("value-object"))
+            } else if (value instanceof Map && ((Map) value).containsKey(VALUE_OBJECT_MARK)) {
+                typeSpec = this.typeForString((String) ((Map) value).get(VALUE_OBJECT_MARK))
                         .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT);
-            } else if (value instanceof Map && ((Map) value).containsKey("type")) {
-                typeSpec = this.typeForString((String) ((Map) value).get("type"));
+            } else if (value instanceof Map && ((Map) value).containsKey(TYPE_MARK)) {
+                typeSpec = this.typeForString((String) ((Map) value).get(TYPE_MARK));
             } else if(value instanceof Map) {
                 typeSpec = type().typeKind(TypeKind.EMBEDDED);
                 typeSpec.embeddedValueSpec(this.parseAnonymousValueSpec(((Map)value)));

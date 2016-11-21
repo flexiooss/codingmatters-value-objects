@@ -2,13 +2,13 @@ value:
   stringProperty: string
   booleanProperty: bool
   listProperty:
-    list: string
+    $list: string
   setProperty:
-    set: string
+    $set: string
 
 complexValue:
   recursiveProperty: $complexValue
   inSpecProperty: $value
   outSpecProperty:
-    value-object: org.codingmatters.value.objects.demo.referenced.ReferencedValue
+    $value-object: org.codingmatters.value.objects.demo.referenced.ReferencedValue
 
