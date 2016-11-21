@@ -7,6 +7,7 @@ import org.junit.rules.ExpectedException;
 
 import java.io.InputStream;
 
+import static org.codingmatters.value.objects.spec.AnonymousValueSpec.anonymousValueSpec;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
 import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
 import static org.codingmatters.value.objects.spec.Spec.spec;
@@ -61,6 +62,39 @@ public class SpecReaderPropertyWithObjectTypeSpecTest {
                             spec()
                                     .addValue(valueSpec().name("val")
                                             .addProperty(property().name("p").type(type().typeRef("org.codingmatters.ValueObject").typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)))
+                                    )
+                                    .build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void typeSpecWithEmbeddedObjectProperty() throws Exception {
+        try(InputStream in = streamFor(string()
+                .line("val:")
+                .line("  p:")
+                .line("    p1: string")
+                .line("    p2:")
+                .line("      p3: string")
+                .build())) {
+            assertThat(
+                    reader.read(in),
+                    is(
+                            spec()
+                                    .addValue(valueSpec().name("val")
+                                            .addProperty(property().name("p").type(type().typeKind(TypeKind.EMBEDDED)
+                                                    .embeddedValueSpec(anonymousValueSpec()
+                                                            .addProperty(property().name("p1").type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(String.class.getName())))
+                                                            .addProperty(property().name("p2").type(type().typeKind(TypeKind.EMBEDDED)
+                                                                    .embeddedValueSpec(anonymousValueSpec()
+                                                                            .addProperty(property().name("p3").type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(String.class.getName())).build())
+                                                                            .build()
+                                                                    )
+                                                            ))
+                                                            .build()
+                                                    )
+                                            ))
                                     )
                                     .build()
                     )

@@ -75,6 +75,9 @@ public class ContextSpecParser {
                         .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT);
             } else if (value instanceof Map && ((Map) value).containsKey("type")) {
                 typeSpec = this.typeForString((String) ((Map) value).get("type"));
+            } else if(value instanceof Map) {
+                typeSpec = type().typeKind(TypeKind.EMBEDDED);
+                typeSpec.embeddedValueSpec(this.parseAnonymousValueSpec(((Map)value)));
             } else {
                 throw new SpecSyntaxException(String.format("unexpected specification for property {context}: %s", value), this.context);
             }
@@ -124,5 +127,14 @@ public class ContextSpecParser {
                     this.context);
         }
         return type;
+    }
+
+    private AnonymousValueSpec parseAnonymousValueSpec(Map value) throws SpecSyntaxException {
+        AnonymousValueSpec.Builder result = AnonymousValueSpec.anonymousValueSpec();
+        for (Object name : value.keySet()) {
+            result.addProperty(this.createPropertySpec((String) name, value.get(name)));
+        }
+
+        return result.build();
     }
 }

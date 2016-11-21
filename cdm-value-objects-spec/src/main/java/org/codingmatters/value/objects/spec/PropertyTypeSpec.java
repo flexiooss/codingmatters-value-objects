@@ -15,6 +15,7 @@ public class PropertyTypeSpec {
         private String typeRef;
         private TypeKind typeKind;
         private PropertyCardinality cardinality = PropertyCardinality.SINGLE;
+        private AnonymousValueSpec embeddedValueSpec;
 
         public Builder typeRef(String type) {
             this.typeRef = type;
@@ -31,19 +32,26 @@ public class PropertyTypeSpec {
             return this;
         }
 
+        public Builder embeddedValueSpec(AnonymousValueSpec embeddedValueSpec) {
+            this.embeddedValueSpec = embeddedValueSpec;
+            return this;
+        }
+
         public PropertyTypeSpec build() {
-            return new PropertyTypeSpec(this.typeRef, this.typeKind, this.cardinality);
+            return new PropertyTypeSpec(this.typeRef, this.typeKind, this.cardinality, this.embeddedValueSpec);
         }
     }
 
     private final String typeRef;
     private final TypeKind typeKind;
     private final PropertyCardinality cardinality;
+    private AnonymousValueSpec embeddedValueSpec;
 
-    private PropertyTypeSpec(String typeRef, TypeKind typeKind, PropertyCardinality cardinality) {
+    private PropertyTypeSpec(String typeRef, TypeKind typeKind, PropertyCardinality cardinality, AnonymousValueSpec embeddedValueSpec) {
         this.typeRef = typeRef;
         this.typeKind = typeKind;
         this.cardinality = cardinality;
+        this.embeddedValueSpec = embeddedValueSpec;
     }
 
     public String typeRef() {
@@ -58,19 +66,24 @@ public class PropertyTypeSpec {
         return cardinality;
     }
 
+    public AnonymousValueSpec embeddedValueSpec() {
+        return embeddedValueSpec;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PropertyTypeSpec typeSpec = (PropertyTypeSpec) o;
-        return Objects.equals(typeRef, typeSpec.typeRef) &&
-                typeKind == typeSpec.typeKind &&
-                cardinality == typeSpec.cardinality;
+        PropertyTypeSpec that = (PropertyTypeSpec) o;
+        return Objects.equals(typeRef, that.typeRef) &&
+                typeKind == that.typeKind &&
+                cardinality == that.cardinality &&
+                Objects.equals(embeddedValueSpec, that.embeddedValueSpec);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(typeRef, typeKind, cardinality);
+        return Objects.hash(typeRef, typeKind, cardinality, embeddedValueSpec);
     }
 
     @Override
@@ -79,6 +92,7 @@ public class PropertyTypeSpec {
                 "typeRef='" + typeRef + '\'' +
                 ", typeKind=" + typeKind +
                 ", cardinality=" + cardinality +
+                ", embeddedValueSpec=" + embeddedValueSpec +
                 '}';
     }
 }
