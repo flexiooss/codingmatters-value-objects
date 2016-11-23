@@ -7,6 +7,6 @@ public enum TypeKind {
     JAVA_TYPE, EXTERNAL_VALUE_OBJECT, IN_SPEC_VALUE_OBJECT, EMBEDDED;
 
     public boolean isValueObject() {
-        return this.equals(EXTERNAL_VALUE_OBJECT) || this.equals(IN_SPEC_VALUE_OBJECT) || this.equals(EMBEDDED);
+        return this.equals(EXTERNAL_VALUE_OBJECT) || this.equals(IN_SPEC_VALUE_OBJECT);
     }
 }

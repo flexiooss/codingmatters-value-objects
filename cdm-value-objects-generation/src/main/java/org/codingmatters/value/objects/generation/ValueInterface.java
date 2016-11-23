@@ -55,12 +55,7 @@ public class ValueInterface {
         List<MethodSpec> result = new LinkedList<>();
 
         for (PropertySpec propertySpec : propertySpecs) {
-            result.add(
-                    MethodSpec.methodBuilder(propertySpec.name())
-                            .returns(this.types.propertyType(propertySpec))
-                            .addModifiers(PUBLIC, ABSTRACT)
-                            .build()
-            );
+            result.add(this.createGetter(propertySpec));
         }
         return result;
     }
@@ -69,25 +64,34 @@ public class ValueInterface {
         List<MethodSpec> result = new LinkedList<>();
 
         for (PropertySpec propertySpec : propertySpecs) {
-            if(propertySpec.typeSpec().typeKind().isValueObject()) {
-                result.add(
-                        MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
-                                .returns(this.types.valueType())
-                                .addModifiers(PUBLIC, ABSTRACT)
-                                .addParameter(this.types.builderPropertyType(propertySpec), "value")
-                                .build()
-                );
-            } else {
-                result.add(
-                        MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
-                                .returns(this.types.valueType())
-                                .addModifiers(PUBLIC, ABSTRACT)
-                                .addParameter(this.types.propertyType(propertySpec), "value")
-                                .build()
-                );
-            }
+            result.add(this.createWhither(propertySpec));
         }
         return result;
+    }
+
+    private MethodSpec createGetter(PropertySpec propertySpec) {
+        return MethodSpec.methodBuilder(propertySpec.name())
+                .returns(this.types.propertyType(propertySpec))
+                .addModifiers(PUBLIC, ABSTRACT)
+                .build();
+    }
+
+    private MethodSpec createWhither(PropertySpec propertySpec) {
+        MethodSpec wither;
+        if(propertySpec.typeSpec().typeKind().isValueObject()) {
+            wither = MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
+                    .returns(this.types.valueType())
+                    .addModifiers(PUBLIC, ABSTRACT)
+                    .addParameter(this.types.builderPropertyType(propertySpec), "value")
+                    .build();
+        } else {
+            wither = MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
+                    .returns(this.types.valueType())
+                    .addModifiers(PUBLIC, ABSTRACT)
+                    .addParameter(this.types.propertyType(propertySpec), "value")
+                    .build();
+        }
+        return wither;
     }
 
     private MethodSpec createChangedMethod() {
