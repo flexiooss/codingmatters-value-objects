@@ -21,8 +21,13 @@ public class SpecPreprocessor {
     public List<PackagedValueSpec> packagedValueSpec() {
         List<PackagedValueSpec> result = new LinkedList<>();
         for (ValueSpec valueSpec : this.spec.valueSpecs()) {
-            result.add(new PackagedValueSpec(this.packageName, valueSpec));
+            result.addAll(this.preprocess(valueSpec));
         }
         return result;
     }
+
+    private List<PackagedValueSpec> preprocess(ValueSpec valueSpec) {
+        return new ValueSpecPreprocessor(this.packageName, valueSpec).preprocess();
+    }
+
 }
