@@ -13,6 +13,8 @@ import org.codingmatters.value.objects.spec.ValueSpec;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.codingmatters.value.objects.spec.PropertyCardinality.LIST;
 import static org.codingmatters.value.objects.spec.PropertyCardinality.SET;
@@ -24,14 +26,16 @@ public class SpecCodeGenerator {
 
     private final Spec spec;
     private final String packageName;
+    private final File rootDirectory;
 
-    public SpecCodeGenerator(Spec spec, String packageName) {
+    public SpecCodeGenerator(Spec spec, String packageName, File toDirectory) {
         this.spec = spec;
         this.packageName = packageName;
+        this.rootDirectory = toDirectory;
     }
 
-    public void generateTo(File dir) throws IOException {
-        File packageDestination = new File(dir, packageName.replaceAll(".", "/"));
+    public void generate() throws IOException {
+        File packageDestination = this.packageDestination(rootDirectory, this.packageName);
 
         if(this.hasPropertyWithCardinality(this.spec, LIST)) {
             TypeSpec valueListInterface = new ValueList(this.packageName).type();
@@ -44,9 +48,21 @@ public class SpecCodeGenerator {
             this.writeJavaFile(packageDestination, new ValueSetImplementation(this.packageName, valueSetInterface).type());
         }
 
-        for (ValueSpec valueSpec : this.spec.valueSpecs()) {
-            this.generateValueTypesTo(valueSpec, packageDestination);
+        for (PackagedValueSpec valueSpec : this.packagedValueSpecs()) {
+            this.generateValueTypesTo(valueSpec);
         }
+    }
+
+    private File packageDestination(File dir, String pack) {
+        return new File(dir, pack.replaceAll(".", "/"));
+    }
+
+    private List<PackagedValueSpec> packagedValueSpecs() {
+        List<PackagedValueSpec> result = new LinkedList<>();
+        for (ValueSpec valueSpec : this.spec.valueSpecs()) {
+            result.add(new PackagedValueSpec(this.packageName, valueSpec));
+        }
+        return result;
     }
 
     private boolean hasPropertyWithCardinality(Spec spec, PropertyCardinality cardinality) {
@@ -60,13 +76,14 @@ public class SpecCodeGenerator {
         return false;
     }
 
-    private void generateValueTypesTo(ValueSpec valueSpec, File packageDestination) throws IOException {
-        ValueConfiguration types = new ValueConfiguration(this.packageName, valueSpec);
+    private void generateValueTypesTo(PackagedValueSpec packagedValueSpec) throws IOException {
+        File packageDestination = this.packageDestination(this.rootDirectory, packagedValueSpec.packagename());
+        ValueConfiguration types = new ValueConfiguration(packagedValueSpec.packagename(), packagedValueSpec.valueSpec());
 
-        TypeSpec valueInterface = new ValueInterface(types, valueSpec.propertySpecs()).type();
+        TypeSpec valueInterface = new ValueInterface(types, packagedValueSpec.valueSpec().propertySpecs()).type();
         this.writeJavaFile(packageDestination, valueInterface);
 
-        TypeSpec valueImpl = new ValueImplementation(types, valueSpec.propertySpecs()).type();
+        TypeSpec valueImpl = new ValueImplementation(types, packagedValueSpec.valueSpec().propertySpecs()).type();
         this.writeJavaFile(packageDestination, valueImpl);
     }
 

@@ -38,7 +38,7 @@ public class BuilderFromTest {
 
     @Before
     public void setUp() throws Exception {
-        new SpecCodeGenerator(this.spec, "org.generated").generateTo(dir.getRoot());
+        new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
         this.compiled = CompiledCode.compile(this.dir.getRoot());
     }
 

@@ -31,7 +31,7 @@ public class GenerateDeleguate implements Runnable {
         SpecReader reader = new SpecReader();
         try {
             try(InputStream in = new FileInputStream(this.inputSpecification)) {
-                new SpecCodeGenerator(reader.read(in), this.destinationPackage).generateTo(this.outputDirectory);
+                new SpecCodeGenerator(reader.read(in), this.destinationPackage, this.outputDirectory).generate();
             }
         } catch (IOException e) {
             e.printStackTrace();
