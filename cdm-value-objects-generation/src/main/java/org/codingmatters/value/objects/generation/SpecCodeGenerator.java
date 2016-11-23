@@ -25,30 +25,30 @@ import static org.codingmatters.value.objects.spec.PropertyCardinality.SET;
 public class SpecCodeGenerator {
 
     private final Spec spec;
-    private final String packageName;
+    private final String rootPackage;
     private final File rootDirectory;
 
-    public SpecCodeGenerator(Spec spec, String packageName, File toDirectory) {
+    public SpecCodeGenerator(Spec spec, String rootPackage, File toDirectory) {
         this.spec = spec;
-        this.packageName = packageName;
+        this.rootPackage = rootPackage;
         this.rootDirectory = toDirectory;
     }
 
     public void generate() throws IOException {
-        File packageDestination = this.packageDestination(rootDirectory, this.packageName);
+        File packageDestination = this.packageDestination(rootDirectory, this.rootPackage);
 
         if(this.hasPropertyWithCardinality(this.spec, LIST)) {
-            TypeSpec valueListInterface = new ValueList(this.packageName).type();
-            this.writeJavaFile(packageDestination, valueListInterface);
-            this.writeJavaFile(packageDestination, new ValueListImplementation(this.packageName, valueListInterface).type());
+            TypeSpec valueListInterface = new ValueList(this.rootPackage).type();
+            this.writeJavaFile(packageDestination, this.rootPackage, valueListInterface);
+            this.writeJavaFile(packageDestination, this.rootPackage, new ValueListImplementation(this.rootPackage, valueListInterface).type());
         }
         if(this.hasPropertyWithCardinality(this.spec, SET)) {
-            TypeSpec valueSetInterface = new ValueSet(this.packageName).type();
-            this.writeJavaFile(packageDestination, valueSetInterface);
-            this.writeJavaFile(packageDestination, new ValueSetImplementation(this.packageName, valueSetInterface).type());
+            TypeSpec valueSetInterface = new ValueSet(this.rootPackage).type();
+            this.writeJavaFile(packageDestination, this.rootPackage, valueSetInterface);
+            this.writeJavaFile(packageDestination, this.rootPackage, new ValueSetImplementation(this.rootPackage, valueSetInterface).type());
         }
 
-        for (PackagedValueSpec valueSpec : new SpecPreprocessor(this.spec, this.packageName).packagedValueSpec()) {
+        for (PackagedValueSpec valueSpec : new SpecPreprocessor(this.spec, this.rootPackage).packagedValueSpec()) {
             this.generateValueTypesTo(valueSpec);
         }
     }
@@ -70,18 +70,20 @@ public class SpecCodeGenerator {
 
     private void generateValueTypesTo(PackagedValueSpec packagedValueSpec) throws IOException {
         File packageDestination = this.packageDestination(this.rootDirectory, packagedValueSpec.packagename());
+        packageDestination.mkdirs();
+
         ValueConfiguration types = new ValueConfiguration(packagedValueSpec.packagename(), packagedValueSpec.valueSpec());
 
         TypeSpec valueInterface = new ValueInterface(types, packagedValueSpec.valueSpec().propertySpecs()).type();
-        this.writeJavaFile(packageDestination, valueInterface);
+        this.writeJavaFile(packageDestination, packagedValueSpec.packagename(), valueInterface);
 
         TypeSpec valueImpl = new ValueImplementation(types, packagedValueSpec.valueSpec().propertySpecs()).type();
-        this.writeJavaFile(packageDestination, valueImpl);
+        this.writeJavaFile(packageDestination, packagedValueSpec.packagename(), valueImpl);
     }
 
 
-    private void writeJavaFile(File packageDestination, TypeSpec valueInterface) throws IOException {
-        JavaFile file = JavaFile.builder(this.packageName, valueInterface).build();
+    private void writeJavaFile(File packageDestination, String pack, TypeSpec type) throws IOException {
+        JavaFile file = JavaFile.builder(pack, type).build();
         file.writeTo(packageDestination);
         file.writeTo(System.out);
     }

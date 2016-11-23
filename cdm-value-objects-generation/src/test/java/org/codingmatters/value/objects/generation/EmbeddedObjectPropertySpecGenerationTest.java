@@ -4,7 +4,6 @@ import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -21,7 +20,6 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 11/22/16.
  */
-@Ignore
 public class EmbeddedObjectPropertySpecGenerationTest {
 
     @Rule
@@ -74,7 +72,7 @@ public class EmbeddedObjectPropertySpecGenerationTest {
         );
         assertThat(
                 compiled.getClass("org.generated.Val$Builder"),
-                is(aPublic().interface_()
+                is(aPublic().static_().class_()
                         .with(aPublic().method().named("p")
                                 .withParameters(compiled.getClass("org.generated.val.P$Builder"))
                                 .returning(compiled.getClass("org.generated.Val$Builder")))
