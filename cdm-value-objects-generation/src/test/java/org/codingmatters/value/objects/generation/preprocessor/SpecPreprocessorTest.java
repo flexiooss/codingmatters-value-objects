@@ -67,7 +67,7 @@ public class SpecPreprocessorTest {
         assertThat(val.packagename(), is("org.generated"));
         assertThat(val.valueSpec(), is(
                 valueSpec().name("val")
-                        .addProperty(property().name("p").type(type().typeKind(TypeKind.IN_SPEC_VALUE_OBJECT).typeRef("org.generated.val.P")))
+                        .addProperty(property().name("p").type(type().typeKind(TypeKind.EXTERNAL_VALUE_OBJECT).typeRef("org.generated.val.P")))
                         .build()
         ));
 

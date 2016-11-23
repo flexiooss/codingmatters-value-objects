@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.codingmatters.value.objects.spec.TypeKind.EMBEDDED;
-import static org.codingmatters.value.objects.spec.TypeKind.IN_SPEC_VALUE_OBJECT;
+import static org.codingmatters.value.objects.spec.TypeKind.EXTERNAL_VALUE_OBJECT;
 
 /**
  * Created by nelt on 11/23/16.
@@ -49,7 +49,7 @@ public class ValueSpecPreprocessor {
         return PropertySpec.property()
                 .name(propertySpec.name())
                 .type(PropertyTypeSpec.type()
-                        .typeKind(IN_SPEC_VALUE_OBJECT)
+                        .typeKind(EXTERNAL_VALUE_OBJECT)
                         .typeRef(embeddedPackage + "." + capitalizedFirst(propertySpec.name()))
                         .cardinality(propertySpec.typeSpec().cardinality())
                 )
