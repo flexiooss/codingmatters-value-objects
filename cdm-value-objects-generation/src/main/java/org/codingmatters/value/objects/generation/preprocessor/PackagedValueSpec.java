@@ -1,4 +1,4 @@
-package org.codingmatters.value.objects.generation;
+package org.codingmatters.value.objects.generation.preprocessor;
 
 import org.codingmatters.value.objects.spec.ValueSpec;
 

@@ -6,6 +6,8 @@ import org.codingmatters.value.objects.generation.collection.ValueList;
 import org.codingmatters.value.objects.generation.collection.ValueListImplementation;
 import org.codingmatters.value.objects.generation.collection.ValueSet;
 import org.codingmatters.value.objects.generation.collection.ValueSetImplementation;
+import org.codingmatters.value.objects.generation.preprocessor.PackagedValueSpec;
+import org.codingmatters.value.objects.generation.preprocessor.SpecPreprocessor;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.Spec;
@@ -13,8 +15,6 @@ import org.codingmatters.value.objects.spec.ValueSpec;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 
 import static org.codingmatters.value.objects.spec.PropertyCardinality.LIST;
 import static org.codingmatters.value.objects.spec.PropertyCardinality.SET;
@@ -48,21 +48,13 @@ public class SpecCodeGenerator {
             this.writeJavaFile(packageDestination, new ValueSetImplementation(this.packageName, valueSetInterface).type());
         }
 
-        for (PackagedValueSpec valueSpec : this.packagedValueSpecs()) {
+        for (PackagedValueSpec valueSpec : new SpecPreprocessor(this.spec, this.packageName).packagedValueSpec()) {
             this.generateValueTypesTo(valueSpec);
         }
     }
 
     private File packageDestination(File dir, String pack) {
         return new File(dir, pack.replaceAll(".", "/"));
-    }
-
-    private List<PackagedValueSpec> packagedValueSpecs() {
-        List<PackagedValueSpec> result = new LinkedList<>();
-        for (ValueSpec valueSpec : this.spec.valueSpecs()) {
-            result.add(new PackagedValueSpec(this.packageName, valueSpec));
-        }
-        return result;
     }
 
     private boolean hasPropertyWithCardinality(Spec spec, PropertyCardinality cardinality) {
