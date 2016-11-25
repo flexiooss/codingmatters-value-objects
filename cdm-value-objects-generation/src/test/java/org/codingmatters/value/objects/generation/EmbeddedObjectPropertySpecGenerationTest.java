@@ -74,7 +74,7 @@ public class EmbeddedObjectPropertySpecGenerationTest {
                 compiled.getClass("org.generated.Val$Builder"),
                 is(aPublic().static_().class_()
                         .with(aPublic().method().named("p")
-                                .withParameters(compiled.getClass("org.generated.val.P$Builder"))
+                                .withParameters(compiled.getClass("org.generated.val.P"))
                                 .returning(compiled.getClass("org.generated.Val$Builder")))
                 )
         );

@@ -85,6 +85,9 @@ public class SpecCodeGenerator {
     private void writeJavaFile(File packageDestination, String pack, TypeSpec type) throws IOException {
         JavaFile file = JavaFile.builder(pack, type).build();
         file.writeTo(packageDestination);
+        if(System.getProperty("spec.code.generator.debug", "false").equals("true")) {
+            file.writeTo(System.out);
+        }
     }
 
 }

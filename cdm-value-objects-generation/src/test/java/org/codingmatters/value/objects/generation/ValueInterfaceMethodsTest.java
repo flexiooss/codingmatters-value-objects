@@ -59,7 +59,7 @@ public class ValueInterfaceMethodsTest {
                 anInterface()
                         .with(aMethod().named("prop").returning(compiled.getClass("org.generated.Val")))
                         .with(aMethod().named("withProp")
-                                .withParameters(compiled.getClass("org.generated.Val$Builder"))
+                                .withParameters(compiled.getClass("org.generated.Val"))
                                 .returning(compiled.getClass("org.generated.ComplexVal")))
                         .with(aMethod().named("hashCode").withoutParameters().returning(int.class))
                         .with(aMethod().named("changed")

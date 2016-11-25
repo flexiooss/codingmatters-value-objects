@@ -23,9 +23,9 @@ public class ValueEqualityTest {
 
     @Test
     public void complexValue() throws Exception {
-        ComplexValue aValue = ComplexValue.Builder.builder().inSpecProperty(Value.Builder.builder().stringProperty("toto")).build();
-        ComplexValue theSameValue = ComplexValue.Builder.builder().inSpecProperty(Value.Builder.builder().stringProperty("toto")).build();
-        ComplexValue anotherValue = ComplexValue.Builder.builder().inSpecProperty(Value.Builder.builder().stringProperty("titi")).build();
+        ComplexValue aValue = ComplexValue.Builder.builder().inSpecProperty(Value.Builder.builder().stringProperty("toto").build()).build();
+        ComplexValue theSameValue = ComplexValue.Builder.builder().inSpecProperty(Value.Builder.builder().stringProperty("toto").build()).build();
+        ComplexValue anotherValue = ComplexValue.Builder.builder().inSpecProperty(Value.Builder.builder().stringProperty("titi").build()).build();
 
         assertThat(aValue, is(aValue));
         assertThat(aValue, is(theSameValue));

@@ -114,13 +114,14 @@ public class ValueHashCodeTest {
         Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
         compiled.on(builder).invoke("prop1", String.class).with("v1");
         compiled.on(builder).invoke("prop2", String.class).with("v2");
+        Object builded = compiled.on(builder).invoke("build");
 
         Object complexBuilder = compiled.onClass("org.generated.ComplexVal$Builder").invoke("builder");
-        compiled.on(complexBuilder).invoke("prop", compiled.getClass("org.generated.Val$Builder")).with(builder);
+        compiled.on(complexBuilder).invoke("prop", compiled.getClass("org.generated.Val")).with(builded);
         Object complexValue = compiled.on(complexBuilder).invoke("build");
 
         Object sameComplexBuilder = compiled.onClass("org.generated.ComplexVal$Builder").invoke("builder");
-        compiled.on(sameComplexBuilder).invoke("prop", compiled.getClass("org.generated.Val$Builder")).with(builder);
+        compiled.on(sameComplexBuilder).invoke("prop", compiled.getClass("org.generated.Val")).with(builded);
         Object sameComplexValue = compiled.on(sameComplexBuilder).invoke("build");
 
         assertThat(complexValue.hashCode(), is(sameComplexValue.hashCode()));

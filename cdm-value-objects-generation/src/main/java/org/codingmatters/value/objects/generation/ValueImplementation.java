@@ -181,25 +181,33 @@ public class ValueImplementation {
         List<MethodSpec> result = new LinkedList<>();
 
         for (PropertySpec propertySpec : propertySpecs) {
-            if(propertySpec.typeSpec().typeKind().isValueObject()) {
-                result.add(
-                        MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
-                                .returns(this.types.valueType())
-                                .addModifiers(PUBLIC)
-                                .addParameter(this.types.builderPropertyType(propertySpec), "value")
-                                .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.valueBuilderType())
-                                .build()
-                );
-            } else {
-                result.add(
-                        MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
-                                .returns(this.types.valueType())
-                                .addModifiers(PUBLIC)
-                                .addParameter(this.types.propertyType(propertySpec), "value")
-                                .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.valueBuilderType())
-                                .build()
-                );
-            }
+//            if(propertySpec.typeSpec().typeKind().isValueObject()) {
+//                result.add(
+//                        MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
+//                                .returns(this.types.valueType())
+//                                .addModifiers(PUBLIC)
+//                                .addParameter(this.types.builderPropertyType(propertySpec), "value")
+//                                .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.valueBuilderType())
+//                                .build()
+//                );
+//            } else {
+//                result.add(
+//                        MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
+//                                .returns(this.types.valueType())
+//                                .addModifiers(PUBLIC)
+//                                .addParameter(this.types.propertyType(propertySpec), "value")
+//                                .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.valueBuilderType())
+//                                .build()
+//                );
+//            }
+            result.add(
+                    MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
+                            .returns(this.types.valueType())
+                            .addModifiers(PUBLIC)
+                            .addParameter(this.types.propertyType(propertySpec), "value")
+                            .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.valueBuilderType())
+                            .build()
+            );
         }
         return result;
     }

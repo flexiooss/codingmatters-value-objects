@@ -49,7 +49,8 @@ public class ValueBuilder {
         List<FieldSpec> fields = new LinkedList<>();
 
         for (PropertySpec propertySpec : this.propertySpecs) {
-            fields.add(FieldSpec.builder(this.types.builderPropertyType(propertySpec), propertySpec.name(), PRIVATE).build());
+//            fields.add(FieldSpec.builder(this.types.builderPropertyType(propertySpec), propertySpec.name(), PRIVATE).build());
+            fields.add(FieldSpec.builder(this.types.propertyType(propertySpec), propertySpec.name(), PRIVATE).build());
         }
         return fields;
     }
@@ -69,7 +70,7 @@ public class ValueBuilder {
 
     private MethodSpec createSingleSetter(PropertySpec propertySpec) {
         return MethodSpec.methodBuilder(propertySpec.name())
-                .addParameter(this.types.builderPropertyType(propertySpec), propertySpec.name())
+                .addParameter(this.types.propertyType(propertySpec), propertySpec.name())
                 .returns(this.types.valueBuilderType())
                 .addModifiers(PUBLIC)
                 .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
@@ -116,12 +117,13 @@ public class ValueBuilder {
 
         for (PropertySpec propertySpec : this.propertySpecs) {
             if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SINGLE)) {
-                if (propertySpec.typeSpec().typeKind().isValueObject()) {
-                    statement += "." + propertySpec.name() + "($T.from(value." + propertySpec.name() + "()))\n";
-                    bindings.add(this.types.builderPropertyType(propertySpec));
-                } else {
-                    statement += "." + propertySpec.name() + "(value." + propertySpec.name() + "())\n";
-                }
+//                if (propertySpec.typeSpec().typeKind().isValueObject()) {
+//                    statement += "." + propertySpec.name() + "($T.from(value." + propertySpec.name() + "()))\n";
+//                    bindings.add(this.types.builderPropertyType(propertySpec));
+//                } else {
+//                    statement += "." + propertySpec.name() + "(value." + propertySpec.name() + "())\n";
+//                }
+                statement += "." + propertySpec.name() + "(value." + propertySpec.name() + "())\n";
             } else {
 
             }
@@ -152,14 +154,16 @@ public class ValueBuilder {
             }
 
 
-            if(propertySpec.typeSpec().typeKind().isValueObject()) {
-                constructorParametersFormat += "this.$N != null ? this.$N.build() : null";
-                constructorParametersNames.add(propertySpec.name());
-                constructorParametersNames.add(propertySpec.name());
-            } else {
-                constructorParametersFormat += "this.$N";
-                constructorParametersNames.add(propertySpec.name());
-            }
+//            if(propertySpec.typeSpec().typeKind().isValueObject()) {
+//                constructorParametersFormat += "this.$N != null ? this.$N.build() : null";
+//                constructorParametersNames.add(propertySpec.name());
+//                constructorParametersNames.add(propertySpec.name());
+//            } else {
+//                constructorParametersFormat += "this.$N";
+//                constructorParametersNames.add(propertySpec.name());
+//            }
+            constructorParametersFormat += "this.$N";
+            constructorParametersNames.add(propertySpec.name());
         }
         if(constructorParametersFormat == null) {
             constructorParametersFormat = "";

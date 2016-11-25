@@ -29,11 +29,11 @@ public class QuickBuilderTest {
     @Test
     public void complex() throws Exception {
         ComplexValue value = ComplexValue.Builder.builder()
-                .recursiveProperty(ComplexValue.Builder.builder())
-                .inSpecProperty(Value.Builder.builder().stringProperty("toto"))
+                .recursiveProperty(ComplexValue.Builder.builder().build())
+                .inSpecProperty(Value.Builder.builder().stringProperty("toto").build())
                 .build();
 
-        ComplexValue v2 = value.withInSpecProperty(Value.Builder.builder().stringProperty("titi"));
+        ComplexValue v2 = value.withInSpecProperty(Value.Builder.builder().stringProperty("titi").build());
 
         assertThat(v2, is(not(value)));
         assertThat(v2.inSpecProperty().stringProperty(), is("titi"));

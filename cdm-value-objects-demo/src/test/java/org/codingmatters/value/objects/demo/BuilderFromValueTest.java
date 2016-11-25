@@ -24,8 +24,8 @@ public class BuilderFromValueTest {
     @Test
     public void complexValue() throws Exception {
         ComplexValue value = ComplexValue.Builder.builder()
-                .recursiveProperty(ComplexValue.Builder.builder())
-                .inSpecProperty(Value.Builder.builder().stringProperty("toto"))
+                .recursiveProperty(ComplexValue.Builder.builder().build())
+                .inSpecProperty(Value.Builder.builder().stringProperty("toto").build())
                 .build();
 
         assertThat(ComplexValue.Builder.from(value).build(), is(value));
@@ -33,7 +33,7 @@ public class BuilderFromValueTest {
 
     @Test
     public void externalValue() throws Exception {
-        ComplexValue value = ComplexValue.Builder.builder().outSpecProperty(ReferencedValue.Builder.builder()).build();
+        ComplexValue value = ComplexValue.Builder.builder().outSpecProperty(ReferencedValue.Builder.builder().build()).build();
 
         assertThat(ComplexValue.Builder.from(value).build(), is(value));
     }
