@@ -77,26 +77,11 @@ public class ValueInterface {
     }
 
     private MethodSpec createWhither(PropertySpec propertySpec) {
-        MethodSpec wither;
-//        if(propertySpec.typeSpec().typeKind().isValueObject()) {
-//            wither = MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
-//                    .returns(this.types.valueType())
-//                    .addModifiers(PUBLIC, ABSTRACT)
-//                    .addParameter(this.types.builderPropertyType(propertySpec), "value")
-//                    .build();
-//        } else {
-//            wither = MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
-//                    .returns(this.types.valueType())
-//                    .addModifiers(PUBLIC, ABSTRACT)
-//                    .addParameter(this.types.propertyType(propertySpec), "value")
-//                    .build();
-//        }
-        wither = MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
+        return MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
                 .returns(this.types.valueType())
                 .addModifiers(PUBLIC, ABSTRACT)
                 .addParameter(this.types.propertyType(propertySpec), "value")
                 .build();
-        return wither;
     }
 
     private MethodSpec createChangedMethod() {

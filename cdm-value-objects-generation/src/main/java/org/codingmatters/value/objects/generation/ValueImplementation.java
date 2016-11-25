@@ -181,25 +181,6 @@ public class ValueImplementation {
         List<MethodSpec> result = new LinkedList<>();
 
         for (PropertySpec propertySpec : propertySpecs) {
-//            if(propertySpec.typeSpec().typeKind().isValueObject()) {
-//                result.add(
-//                        MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
-//                                .returns(this.types.valueType())
-//                                .addModifiers(PUBLIC)
-//                                .addParameter(this.types.builderPropertyType(propertySpec), "value")
-//                                .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.valueBuilderType())
-//                                .build()
-//                );
-//            } else {
-//                result.add(
-//                        MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
-//                                .returns(this.types.valueType())
-//                                .addModifiers(PUBLIC)
-//                                .addParameter(this.types.propertyType(propertySpec), "value")
-//                                .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.valueBuilderType())
-//                                .build()
-//                );
-//            }
             result.add(
                     MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
                             .returns(this.types.valueType())
@@ -217,7 +198,6 @@ public class ValueImplementation {
                 .addModifiers(PUBLIC)
                 .addParameter(this.types.valueChangerType(), "changer")
                 .returns(this.types.valueType())
-//                .addStatement("return null")
                 .addStatement("return changer.configure($T.from(this)).build()", this.types.valueBuilderType())
                 .build();
     }
