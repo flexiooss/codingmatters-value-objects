@@ -178,9 +178,7 @@ public class ValueBuilder {
         }
         Object[] result = new Object[size];
         result[0] = first;
-        for(int i = 1 ; i < result.length ; i++) {
-            result[i] = others[i-1];
-        }
+        System.arraycopy(others, 0, result, 1, result.length - 1);
         return result;
     }
 }
