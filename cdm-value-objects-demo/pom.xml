@@ -43,6 +43,17 @@
                             <inputSpecification>src/main/resources/spec2.yaml</inputSpecification>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>books</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <destinationPackage>org.codingmatters.value.objects.demo.books</destinationPackage>
+                            <inputSpecification>src/main/resources/books.yaml</inputSpecification>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>

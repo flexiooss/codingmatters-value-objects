@@ -1,0 +1,27 @@
+book:
+  name: string
+  author: $person
+  bookFormat: string
+  datePublished: string
+  isbn: string
+  numberOfPages: int
+#  reviews:
+#    $list: $review
+
+person:
+  name: string
+  email: string
+  address:
+    streetAddress: string
+    postalCode: string
+    addressLocality: string
+    addressRegion: string
+    addressCountry: string
+
+review:
+  author: $person
+  datePublished: string
+  itemReviewed: $book
+  reviewBody: string
+  reviewRating:
+    ratingValue: int

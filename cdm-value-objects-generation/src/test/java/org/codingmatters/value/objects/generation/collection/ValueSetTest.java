@@ -29,7 +29,6 @@ public class ValueSetTest {
         File dest = this.dir.newFolder();
         JavaFile file = JavaFile.builder(packageName, new ValueSet(packageName).type()).build();
         file.writeTo(dest);
-        file.writeTo(System.out);
 
         this.compiled = CompiledCode.compile(dest);
     }

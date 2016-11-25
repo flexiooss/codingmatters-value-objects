@@ -41,8 +41,6 @@ public class ValueSetImplementationTest {
         javaFile
                 .writeTo(dest);
 
-        javaFile.writeTo(System.out);
-
         this.compiled = CompiledCode.compile(dest);
     }
 

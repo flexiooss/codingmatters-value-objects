@@ -9,8 +9,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.lang.reflect.Method;
-
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
 import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
@@ -61,12 +59,6 @@ public class ListPropertySpecGenerationTest {
 
     @Test
     public void listPropBuilderMethod() throws Exception {
-
-        for (Method method : this.compiled.getClass("org.generated.Val$Builder").getDeclaredMethods()) {
-            System.out.println(method);
-        }
-
-
         assertThat(this.compiled.getClass("org.generated.Val$Builder"), is(aStatic().class_()
                 .with(aPublic().method()
                         .named("listProp")
