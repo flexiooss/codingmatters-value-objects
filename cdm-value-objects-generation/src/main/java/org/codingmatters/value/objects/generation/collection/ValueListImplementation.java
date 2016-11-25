@@ -5,6 +5,7 @@ import com.squareup.javapoet.*;
 import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Created by nelt on 11/11/16.
@@ -32,6 +33,14 @@ public class ValueListImplementation {
                                 .build())
                         .varargs().addParameter(ArrayTypeName.of(TypeVariableName.get("E")), "elements")
                         .addStatement("super($T.asList($N))", Arrays.class, "elements")
+                        .build())
+                .addMethod(MethodSpec.constructorBuilder()
+                        .addModifiers(Modifier.PUBLIC)
+                        .addAnnotation(AnnotationSpec.builder(SuppressWarnings.class)
+                                .addMember("value", "$S", "unchecked")
+                                .build())
+                        .addParameter(ParameterizedTypeName.get(ClassName.get(Collection.class), TypeVariableName.get("E")), "elements")
+                        .addStatement("super($N)", "elements")
                         .build())
                 .build();
     }

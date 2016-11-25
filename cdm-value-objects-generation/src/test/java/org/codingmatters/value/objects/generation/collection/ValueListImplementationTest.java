@@ -11,6 +11,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.hamcrest.Matchers.is;
@@ -74,5 +75,17 @@ public class ValueListImplementationTest {
         Object list = constr.newInstance(new Object[]{new Object[]{"a", "b"}});
 
         assertThat(this.compiled.on(list).invoke("toArray"), is(new String [] {"a", "b"}));
+    }
+
+    @Test
+    public void constructorFromCollection() throws Exception {
+        assertThat(
+                compiled.getClass("org.generated.ValueListImpl"),
+                is(
+                        aPackagePrivate().class_().with(
+                                aConstructor().withParameters(genericType().baseClass(Collection.class).withParameters(typeParameter().named("E")))
+                        )
+                )
+        );
     }
 }

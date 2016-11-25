@@ -5,6 +5,7 @@ import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -92,10 +93,24 @@ public class ValueBuilder {
                         .addStatement("return this")
                         .build(),
                 MethodSpec.methodBuilder(propertySpec.name())
-                        .addParameter(this.types.builderPropertyType(propertySpec), propertySpec.name())
+                        .addParameter(this.types.propertyType(propertySpec), propertySpec.name())
                         .returns(this.types.valueBuilderType())
                         .addModifiers(PUBLIC)
                         .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
+                        .addStatement("return this")
+                        .build(),
+                MethodSpec.methodBuilder(propertySpec.name())
+                        .addParameter(ParameterizedTypeName.get(
+                                ClassName.get(Collection.class),
+                                this.types.propertySingleType(propertySpec)), propertySpec.name()
+                        )
+                        .returns(this.types.valueBuilderType())
+                        .addModifiers(PUBLIC)
+                        .addStatement("this.$N = new $T($N)",
+                                propertySpec.name(),
+                                this.types.propertyImplType(propertySpec),
+                                propertySpec.name()
+                        )
                         .addStatement("return this")
                         .build()
         );

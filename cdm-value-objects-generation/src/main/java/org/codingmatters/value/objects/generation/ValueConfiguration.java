@@ -83,9 +83,9 @@ public class ValueConfiguration {
 
     public TypeName propertyImplType(PropertySpec propertySpec) {
         if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
-            return ParameterizedTypeName.get(this.valueListImplementationType, this.builderSinglePropertyType(propertySpec));
+            return ParameterizedTypeName.get(this.valueListImplementationType, this.propertySingleType(propertySpec));
         } else if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
-            return ParameterizedTypeName.get(this.valueSetImplementationType, this.builderSinglePropertyType(propertySpec));
+            return ParameterizedTypeName.get(this.valueSetImplementationType, this.propertySingleType(propertySpec));
         } else {
             return this.builderSinglePropertyType(propertySpec);
         }

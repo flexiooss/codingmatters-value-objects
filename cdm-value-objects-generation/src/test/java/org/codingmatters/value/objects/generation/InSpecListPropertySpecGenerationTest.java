@@ -1,14 +1,16 @@
 package org.codingmatters.value.objects.generation;
 
 import org.codingmatters.tests.compile.CompiledCode;
+import org.codingmatters.tests.reflect.ReflectMatchers;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import java.util.Collection;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
@@ -21,7 +23,6 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 11/23/16.
  */
-@Ignore
 public class InSpecListPropertySpecGenerationTest {
 
     @Rule
@@ -33,10 +34,6 @@ public class InSpecListPropertySpecGenerationTest {
             )
             .addValue(
                     valueSpec().name("val")
-                            .addProperty(property().name("prop").type(type()
-                                    .typeRef("ref")
-                                    .typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)
-                                    .cardinality(PropertyCardinality.SINGLE)))
                             .addProperty(property().name("listProp").type(type()
                                     .typeRef("ref")
                                     .typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)
@@ -52,17 +49,23 @@ public class InSpecListPropertySpecGenerationTest {
     }
 
     @Test
-    public void ok() throws Exception {
-        System.out.println("BLABLABLABLA : " + this.compiled.getClass("org.generated.Ref"));
+    public void builderMethods() throws Exception {
         assertThat(this.compiled.getClass("org.generated.Val$Builder"), is(aStatic().class_()
                 .with(aPublic().method()
                         .named("listProp")
-                        .withParameters(this.compiled.getClass("org.generated.Ref[]"))
+                        .withParameters(typeArray(ReflectMatchers.classType(this.compiled.getClass("org.generated.Ref"))))
                         .returning(this.compiled.getClass("org.generated.Val$Builder"))
                 )
                 .with(aPublic().method()
                         .named("listProp")
-                        .withParameters(genericType().baseClass(this.compiled.getClass("org.generated.ValueList")).withParameters(typeParameter().named(String.class.getName())))
+                        .withParameters(genericType().baseClass(this.compiled.getClass("org.generated.ValueList"))
+                                .withParameters(typeParameter().named("org.generated.Ref")))
+                        .returning(this.compiled.getClass("org.generated.Val$Builder"))
+                )
+                .with(aPublic().method()
+                        .named("listProp")
+                        .withParameters(genericType().baseClass(Collection.class)
+                                .withParameters(typeParameter().named("org.generated.Ref")))
                         .returning(this.compiled.getClass("org.generated.Val$Builder"))
                 )
         ));

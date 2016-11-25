@@ -5,8 +5,8 @@ book:
   datePublished: string
   isbn: string
   numberOfPages: int
-#  reviews:
-#    $list: $review
+  reviews:
+    $list: $review
 
 person:
   name: string

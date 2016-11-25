@@ -10,6 +10,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.util.Collection;
 import java.util.HashSet;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
@@ -74,5 +75,17 @@ public class ValueSetImplementationTest {
         Object list = constr.newInstance(new Object[]{new Object[]{"a", "b", "a"}});
 
         assertThat(this.compiled.on(list).invoke("toArray"), is(new String [] {"a", "b"}));
+    }
+
+    @Test
+    public void constructorFromCollection() throws Exception {
+        assertThat(
+                compiled.getClass("org.generated.ValueSetImpl"),
+                is(
+                        aPackagePrivate().class_().with(
+                                aConstructor().withParameters(genericType().baseClass(Collection.class).withParameters(typeParameter().named("E")))
+                        )
+                )
+        );
     }
 }
