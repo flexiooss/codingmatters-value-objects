@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.generation;
 
 import org.codingmatters.tests.compile.CompiledCode;
+import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
 import org.junit.Before;
@@ -39,6 +40,19 @@ public class EmbeddedObjectPropertySpecGenerationTest {
                                     .build()
                             )
                     ))
+            )
+            .addValue(valueSpec().name("refInEmbedded")
+                    .addProperty(property().name("direct")
+                            .type(type().typeKind(TypeKind.IN_SPEC_VALUE_OBJECT).typeRef("val")))
+                    .addProperty(property().name("indirect")
+                            .type(type().typeKind(TypeKind.EMBEDDED).embeddedValueSpec(anonymousValueSpec()
+                                    .addProperty(property().name("ref")
+                                            .type(type().typeKind(TypeKind.IN_SPEC_VALUE_OBJECT).typeRef("val"))))
+                            )
+                    )
+                    .addProperty(property().name("list")
+                            .type(type().typeKind(TypeKind.IN_SPEC_VALUE_OBJECT).typeRef("val")
+                                    .cardinality(PropertyCardinality.LIST)))
             )
             .build();
     private CompiledCode compiled;

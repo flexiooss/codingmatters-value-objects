@@ -1,7 +1,6 @@
 package org.codingmatters.value.objects.generation;
 
 import org.codingmatters.tests.compile.CompiledCode;
-import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
 import org.junit.Before;
@@ -11,7 +10,6 @@ import org.junit.rules.TemporaryFolder;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.aPackagePrivate;
 import static org.codingmatters.tests.reflect.ReflectMatchers.aPublic;
-import static org.codingmatters.value.objects.spec.AnonymousValueSpec.anonymousValueSpec;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
 import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
 import static org.codingmatters.value.objects.spec.Spec.spec;
@@ -36,20 +34,6 @@ public class ValueEqualityTest {
             .addValue(valueSpec().name("noPropertyVal"))
             .addValue(valueSpec().name("complexVal")
                     .addProperty(property().name("prop").type(type().typeRef("val").typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)))
-            )
-            .addValue(valueSpec().name("recursive")
-                    .addProperty(property().name("direct")
-                            .type(type().typeKind(TypeKind.IN_SPEC_VALUE_OBJECT).typeRef("recursive")))
-                    .addProperty(property().name("indirect")
-                            .type(type().typeKind(TypeKind.EMBEDDED).embeddedValueSpec(anonymousValueSpec()
-                                    .addProperty(property().name("recursive")
-                                            .type(type().typeKind(TypeKind.IN_SPEC_VALUE_OBJECT).typeRef("recursive"))))
-//                                            .type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(String.class.getName()))))
-                            )
-                    )
-                    .addProperty(property().name("list")
-                            .type(type().typeKind(TypeKind.IN_SPEC_VALUE_OBJECT).typeRef("recursive")
-                                    .cardinality(PropertyCardinality.LIST)))
             )
             .build();
     private CompiledCode compiled;
