@@ -32,8 +32,13 @@ public class PropertyTypeSpec {
             return this;
         }
 
-        public Builder embeddedValueSpec(AnonymousValueSpec embeddedValueSpec) {
-            this.embeddedValueSpec = embeddedValueSpec;
+        public Builder embeddedValueSpec(AnonymousValueSpec spec) {
+            this.embeddedValueSpec = spec;
+            return this;
+        }
+
+        public Builder embeddedValueSpec(AnonymousValueSpec.Builder builder) {
+            this.embeddedValueSpec = builder.build();
             return this;
         }
 

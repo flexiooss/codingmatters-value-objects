@@ -72,7 +72,7 @@ public class SpecCodeGenerator {
         File packageDestination = this.packageDestination(this.rootDirectory, packagedValueSpec.packagename());
         packageDestination.mkdirs();
 
-        ValueConfiguration types = new ValueConfiguration(packagedValueSpec.packagename(), packagedValueSpec.valueSpec());
+        ValueConfiguration types = new ValueConfiguration(this.rootPackage, packagedValueSpec.packagename(), packagedValueSpec.valueSpec());
 
         TypeSpec valueInterface = new ValueInterface(types, packagedValueSpec.valueSpec().propertySpecs()).type();
         this.writeJavaFile(packageDestination, packagedValueSpec.packagename(), valueInterface);

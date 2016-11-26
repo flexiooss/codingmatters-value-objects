@@ -23,8 +23,10 @@ public class ValueConfiguration {
     private final ClassName valueListImplementationType;
     private final ClassName valueSetType;
     private final ClassName valueSetImplementationType;
+    private final String rootPackage;
 
-    public ValueConfiguration(String packageName, ValueSpec valueSpec) {
+    public ValueConfiguration(String rootPackage, String packageName, ValueSpec valueSpec) {
+        this.rootPackage = rootPackage;
         String interfaceName = capitalizedFirst(valueSpec.name());
         this.valueType = ClassName.get(packageName, interfaceName);
         this.valueImplType = ClassName.get(packageName, interfaceName + "Impl");
@@ -65,19 +67,9 @@ public class ValueConfiguration {
 
     public ClassName propertySingleType(PropertySpec propertySpec) {
         if(IN_SPEC_VALUE_OBJECT.equals(propertySpec.typeSpec().typeKind())) {
-            return ClassName.bestGuess(capitalizedFirst(propertySpec.typeSpec().typeRef()));
+            return ClassName.get(this.rootPackage, capitalizedFirst(propertySpec.typeSpec().typeRef()));
         } else {
             return ClassName.bestGuess(propertySpec.typeSpec().typeRef());
-        }
-    }
-
-    public TypeName builderPropertyType(PropertySpec propertySpec) {
-        if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
-            return ParameterizedTypeName.get(this.valueListType, this.builderSinglePropertyType(propertySpec));
-        } else if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
-            return ParameterizedTypeName.get(this.valueSetType, this.builderSinglePropertyType(propertySpec));
-        } else {
-            return this.builderSinglePropertyType(propertySpec);
         }
     }
 
