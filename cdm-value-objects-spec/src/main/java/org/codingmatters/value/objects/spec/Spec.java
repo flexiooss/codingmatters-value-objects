@@ -41,6 +41,9 @@ public class Spec {
         return valueSpecs;
     }
 
+    public ValueSpec valueSpec(String name) {
+        return this.valueSpecs.stream().filter(valueSpec -> valueSpec.name().equals(name)).findFirst().orElse(null);
+    }
     @Override
     public String toString() {
         return "Spec{" +

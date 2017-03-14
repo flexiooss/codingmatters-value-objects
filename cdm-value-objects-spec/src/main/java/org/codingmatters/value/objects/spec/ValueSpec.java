@@ -53,6 +53,10 @@ public class ValueSpec {
         return propertySpecs;
     }
 
+    public PropertySpec propertySpec(String name) {
+        return this.propertySpecs.stream().filter(propertySpec -> propertySpec.name().equals(name)).findFirst().orElse(null);
+    }
+
     @Override
     public String toString() {
         return "ValueSpec{" +

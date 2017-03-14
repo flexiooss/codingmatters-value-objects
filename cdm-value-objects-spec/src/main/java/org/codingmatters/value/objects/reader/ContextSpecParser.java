@@ -125,7 +125,7 @@ public class ContextSpecParser {
     private TypeToken parseType(String typeSpec) throws SpecSyntaxException {
         TypeToken type;
         try {
-            type = TypeToken.valueOf(typeSpec.toUpperCase());
+            type = TypeToken.parse(typeSpec);
         } catch(IllegalArgumentException e) {
             throw new SpecSyntaxException(
                     String.format("invalid type for property {context} : %s, should be one of %s, a reference to an in spec declared type ($type notation) or a fully qualified class name (default package classes cannot be used).", typeSpec, TypeToken.validTypesSpec()),

@@ -5,12 +5,17 @@ import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.TypeKind;
+import org.codingmatters.value.objects.spec.ValueSpec;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
 import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
@@ -214,4 +219,38 @@ public class SpecReaderSimpleTest {
         }
     }
 
+    @Test
+    public void basicTypesProperty() throws Exception {
+        try(InputStream in = streamFor(string()
+                .line("val:")
+                .line("  stringProp: string")
+                .line("  intProp: int")
+                .line("  longProp: long")
+                .line("  floatProp: float")
+                .line("  doubleProp: double")
+                .line("  boolProp: bool")
+                .line("  dateProp: bool")
+                .line("  timeProp: bool")
+                .line("  boolProp: bool")
+                .line("  dateProp: date")
+                .line("  timeProp: time")
+                .line("  dateTimeProp: date-time")
+                .line("  tzDateTimeProp: tz-date-time")
+                .build())) {
+            ValueSpec actual = reader.read(in).valueSpec("val");
+
+            assertThat(actual.propertySpec("stringProp").typeSpec().typeRef(), is(String.class.getName()));
+            assertThat(actual.propertySpec("intProp").typeSpec().typeRef(), is(Integer.class.getName()));
+            assertThat(actual.propertySpec("longProp").typeSpec().typeRef(), is(Long.class.getName()));
+            assertThat(actual.propertySpec("floatProp").typeSpec().typeRef(), is(Float.class.getName()));
+            assertThat(actual.propertySpec("doubleProp").typeSpec().typeRef(), is(Double.class.getName()));
+            assertThat(actual.propertySpec("boolProp").typeSpec().typeRef(), is(Boolean.class.getName()));
+            assertThat(actual.propertySpec("dateProp").typeSpec().typeRef(), is(LocalDate.class.getName()));
+            assertThat(actual.propertySpec("timeProp").typeSpec().typeRef(), is(LocalTime.class.getName()));
+            assertThat(actual.propertySpec("dateTimeProp").typeSpec().typeRef(), is(LocalDateTime.class.getName()));
+            assertThat(actual.propertySpec("tzDateTimeProp").typeSpec().typeRef(), is(ZonedDateTime.class.getName()));
+
+        }
+
+    }
 }
