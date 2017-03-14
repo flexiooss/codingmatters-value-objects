@@ -2,7 +2,7 @@ book:
   name: string
   author: $person
   bookFormat: string
-  datePublished: string
+  datePublished: date
   isbn: string
   numberOfPages: int
   reviews:
@@ -20,7 +20,7 @@ person:
 
 review:
   author: $person
-  datePublished: string
+  datePublished: date-time
   itemReviewed: $book
   reviewBody: string
   reviewRating:

@@ -4,14 +4,27 @@ import org.codingmatters.value.objects.demo.books.person.Address;
 import org.codingmatters.value.objects.demo.books.review.ReviewRating;
 import org.junit.Test;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
+
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
-
 /**
  * Created by nelt on 11/26/16.
  */
 public class BookTest {
+
+    public static final DateTimeFormatter ENGLISH_DATE_FORMATTER = new DateTimeFormatterBuilder()
+            .appendPattern("MMMM d, uuuu")
+            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+            .toFormatter()
+            ;
 
     @Test
     public void chainedBuilderAndCompleteToString() throws Exception {
@@ -21,7 +34,7 @@ public class BookTest {
                         .name("Robert C. Martin")
                         .build())
                 .bookFormat("Paperback")
-                .datePublished("August 11, 2008")
+                .datePublished(LocalDate.parse("August 11, 2008", ENGLISH_DATE_FORMATTER))
                 .isbn("978-0132350884")
                 .numberOfPages(464)
                 .reviews(
@@ -29,7 +42,7 @@ public class BookTest {
                                 .author(Person.Builder.builder()
                                         .name("John Doe")
                                         .build())
-                                .datePublished("September 23, 2008")
+                                .datePublished(LocalDateTime.parse("September 23, 2008", ENGLISH_DATE_FORMATTER))
                                 .reviewBody(
                                         "I enjoyed reading this book and after finishing it, " +
                                                 "I decided to apply the Boy Scout Rule."
@@ -46,12 +59,12 @@ public class BookTest {
                         "name=Clean Code: A Handbook of Agile Software Craftsmanship, " +
                         "author=Person{name=Robert C. Martin, email=null, address=null}, " +
                         "bookFormat=Paperback, " +
-                        "datePublished=August 11, 2008, " +
+                        "datePublished=2008-08-11, " +
                         "isbn=978-0132350884, " +
                         "numberOfPages=464, " +
                         "reviews=[Review{" +
                             "author=Person{name=John Doe, email=null, address=null}, " +
-                            "datePublished=September 23, 2008, " +
+                            "datePublished=2008-09-23T00:00, " +
                             "itemReviewed=null, " +
                             "reviewBody=I enjoyed reading this book and after finishing it, I decided to apply the Boy Scout Rule., " +
                             "reviewRating=ReviewRating{ratingValue=5}}" +
