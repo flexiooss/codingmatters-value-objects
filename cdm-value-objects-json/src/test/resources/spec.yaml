@@ -1,2 +1,4 @@
 simpleValue:
   prop: string
+  listProp:
+    $list: string
