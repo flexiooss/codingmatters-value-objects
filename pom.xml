@@ -51,6 +51,8 @@
         <module>cdm-value-objects-spec</module>
         <module>cdm-value-objects-generation</module>
         <module>cdm-value-objects-maven-plugin</module>
+        <module>cdm-value-objects-json</module>
+
         <module>cdm-value-objects-demo</module>
     </modules>
 
