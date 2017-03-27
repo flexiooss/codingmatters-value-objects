@@ -84,7 +84,8 @@ public class ValueBuilder {
                         .varargs().addParameter(ArrayTypeName.of(this.types.propertySingleType(propertySpec)), propertySpec.name())
                         .returns(this.types.valueBuilderType())
                         .addModifiers(PUBLIC)
-                        .addStatement("this.$N = new $T($N)",
+                        .addStatement("this.$N = $N != null ? new $T($N) : null",
+                                propertySpec.name(),
                                 propertySpec.name(),
                                 this.types.propertyImplType(propertySpec),
                                 propertySpec.name()
@@ -105,7 +106,8 @@ public class ValueBuilder {
                         )
                         .returns(this.types.valueBuilderType())
                         .addModifiers(PUBLIC)
-                        .addStatement("this.$N = new $T($N)",
+                        .addStatement("this.$N = $N != null ? new $T($N) : null",
+                                propertySpec.name(),
                                 propertySpec.name(),
                                 this.types.propertyImplType(propertySpec),
                                 propertySpec.name()

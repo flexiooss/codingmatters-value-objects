@@ -15,6 +15,7 @@ import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
 import static org.codingmatters.value.objects.spec.Spec.spec;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -96,6 +97,18 @@ public class ListPropertySpecGenerationTest {
         Object list2 = this.compiled.on(value2).castedTo("org.generated.Val").invoke("listProp");
 
         assertThat(this.compiled.on(list2).invoke("toArray"), is(new String [] {"a", "b", "c"}));
+    }
+
+    @Test
+    public void builderWithNullValueList() throws Exception {
+        Object builder = this.compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        this.compiled.on(builder)
+                .invoke("listProp", this.compiled.getClass("org.generated.ValueList"))
+                .with(new String [] {null});
+        Object value = this.compiled.on(builder).invoke("build");
+        Object list = this.compiled.on(value).castedTo("org.generated.Val").invoke("listProp");
+
+        assertThat(list, is(nullValue()));
     }
 
     @Test
