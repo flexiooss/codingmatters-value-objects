@@ -2,3 +2,5 @@ exampleValue:
   prop: string
   listProp:
     $list: string
+  complex:
+    sub: string
