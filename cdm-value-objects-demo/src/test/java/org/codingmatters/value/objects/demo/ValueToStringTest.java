@@ -10,12 +10,24 @@ import static org.junit.Assert.assertThat;
  */
 public class ValueToStringTest {
     @Test
-    public void simple() throws Exception {
+    public void withNull() throws Exception {
         Value value = Value.Builder.builder()
                 .stringProperty("toto")
                 .booleanProperty(true)
                 .listProperty()
                 .setProperty()
+                .build();
+
+        assertThat(value.toString(), is("Value{stringProperty=toto, booleanProperty=true, listProperty=null, setProperty=null}"));
+    }
+
+    @Test
+    public void withEmpty() throws Exception {
+        Value value = Value.Builder.builder()
+                .stringProperty("toto")
+                .booleanProperty(true)
+                .listProperty(new String [0])
+                .setProperty(new String [0])
                 .build();
 
         assertThat(value.toString(), is("Value{stringProperty=toto, booleanProperty=true, listProperty=[], setProperty=[]}"));

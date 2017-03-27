@@ -81,6 +81,12 @@ public class ValueBuilder {
     private List<MethodSpec> createMultipleSetter(PropertySpec propertySpec) {
         return Arrays.asList(
                 MethodSpec.methodBuilder(propertySpec.name())
+                        .returns(this.types.valueBuilderType())
+                        .addModifiers(PUBLIC)
+                        .addStatement("this.$N = null", propertySpec.name())
+                        .addStatement("return this")
+                        .build(),
+                MethodSpec.methodBuilder(propertySpec.name())
                         .varargs().addParameter(ArrayTypeName.of(this.types.propertySingleType(propertySpec)), propertySpec.name())
                         .returns(this.types.valueBuilderType())
                         .addModifiers(PUBLIC)
