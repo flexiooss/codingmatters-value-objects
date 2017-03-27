@@ -1,4 +1,4 @@
-simpleValue:
+exampleValue:
   prop: string
   listProp:
     $list: string

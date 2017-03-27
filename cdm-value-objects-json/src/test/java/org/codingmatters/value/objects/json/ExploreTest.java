@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import org.codingmatters.value.objects.json.value.SimpleValue;
+import org.codingmatters.value.objects.json.value.ExampleValue;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -23,7 +23,7 @@ public class ExploreTest {
     @Test
     public void simpleValueWrite() throws Exception {
         assertThat(
-                this.writeValue(SimpleValue.Builder.builder()
+                this.writeValue(ExampleValue.Builder.builder()
                         .prop("a value")
                         .listProp("a", "b", "c")
                         .build()),
@@ -35,7 +35,7 @@ public class ExploreTest {
     public void simpleReadValue() throws Exception {
         assertThat(
                 this.readValue("{\"prop\":\"a value\",\"listProp\":[\"a\",\"b\",\"c\"]}"),
-                is(SimpleValue.Builder.builder()
+                is(ExampleValue.Builder.builder()
                         .prop("a value")
                         .listProp("a", "b", "c")
                         .build())
@@ -45,7 +45,7 @@ public class ExploreTest {
 
     private JsonFactory factory = new JsonFactory();
 
-    private String writeValue(SimpleValue value) throws IOException {
+    private String writeValue(ExampleValue value) throws IOException {
         try(OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             generator.writeStartObject();
@@ -62,11 +62,11 @@ public class ExploreTest {
         }
     }
 
-    private void writeSimpleValue(SimpleValue value, JsonGenerator generator) throws IOException {
+    private void writeSimpleValue(ExampleValue value, JsonGenerator generator) throws IOException {
         generator.writeString(value.prop());
     }
 
-    private void writeSimpleArray(SimpleValue value, JsonGenerator generator) throws IOException {
+    private void writeSimpleArray(ExampleValue value, JsonGenerator generator) throws IOException {
         generator.writeStartArray();
         for (String elmt : value.listProp()) {
             generator.writeString(elmt);
@@ -74,13 +74,13 @@ public class ExploreTest {
         generator.writeEndArray();
     }
 
-    private SimpleValue readValue(String json) throws IOException {
+    private ExampleValue readValue(String json) throws IOException {
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            SimpleValue.Builder builder = SimpleValue.Builder.builder();
+            ExampleValue.Builder builder = ExampleValue.Builder.builder();
             if (parser.nextToken() != JsonToken.START_OBJECT) {
                 throw new IOException(
                         String.format("reading a %s object, was expecting %s, but was %s",
-                                SimpleValue.class.getName(), JsonToken.START_ARRAY, parser.currentToken()
+                                ExampleValue.class.getName(), JsonToken.START_ARRAY, parser.currentToken()
                         )
                 );
             }
@@ -96,7 +96,7 @@ public class ExploreTest {
         }
     }
 
-    private void readSimpleProperty(JsonParser parser, SimpleValue.Builder builder) throws IOException {
+    private void readSimpleProperty(JsonParser parser, ExampleValue.Builder builder) throws IOException {
         parser.nextToken();
         if(parser.currentToken() == JsonToken.VALUE_STRING) {
             builder.prop(parser.getText());
@@ -105,7 +105,7 @@ public class ExploreTest {
         }
     }
 
-    private void readSimpleArrayValue(JsonParser parser, SimpleValue.Builder builder) throws IOException {
+    private void readSimpleArrayValue(JsonParser parser, ExampleValue.Builder builder) throws IOException {
         parser.nextToken();
         if(parser.currentToken() == JsonToken.VALUE_NULL) {
             builder.listProp();
