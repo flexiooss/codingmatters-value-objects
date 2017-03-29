@@ -4,6 +4,7 @@ import org.codingmatters.value.objects.json.explore.ExampleValueReader;
 import org.codingmatters.value.objects.json.explore.ExampleValueWriter;
 import org.codingmatters.value.objects.json.value.ExampleValue;
 import org.codingmatters.value.objects.json.value.examplevalue.Complex;
+import org.codingmatters.value.objects.json.value.examplevalue.ComplexList;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -17,14 +18,15 @@ public class ExploreTest {
     @Test
     public void writeSimpleProperties() throws Exception {
         assertThat(
-                new ExampleValueWriter().writeValue(ExampleValue.Builder.builder()
+                new ExampleValueWriter().write(ExampleValue.Builder.builder()
                         .prop("a value")
                         .listProp("a", "b", "c")
                         .build()),
                 is("{" +
                         "\"prop\":\"a value\"," +
                         "\"listProp\":[\"a\",\"b\",\"c\"]," +
-                        "\"complex\":null" +
+                        "\"complex\":null," +
+                        "\"complexList\":null" +
                         "}")
         );
     }
@@ -32,14 +34,15 @@ public class ExploreTest {
     @Test
     public void writeNullSimpleProperties() throws Exception {
         assertThat(
-                new ExampleValueWriter().writeValue(ExampleValue.Builder.builder()
+                new ExampleValueWriter().write(ExampleValue.Builder.builder()
                         .prop(null)
                         .listProp()
                         .build()),
                 is("{" +
                         "\"prop\":null," +
                         "\"listProp\":null," +
-                        "\"complex\":null" +
+                        "\"complex\":null," +
+                        "\"complexList\":null" +
                         "}")
         );
     }
@@ -47,17 +50,26 @@ public class ExploreTest {
     @Test
     public void writeComplexProperties() throws Exception {
         assertThat(
-                new ExampleValueWriter().writeValue(ExampleValue.Builder.builder()
+                new ExampleValueWriter().write(ExampleValue.Builder.builder()
                         .prop(null)
                         .listProp()
                         .complex(Complex.Builder.builder()
                                 .sub("value")
                                 .build())
+                        .complexList(
+                                ComplexList.Builder.builder()
+                                        .sub("value1")
+                                        .build(),
+                                ComplexList.Builder.builder()
+                                        .sub("value2")
+                                        .build()
+                        )
                         .build()),
                 is("{" +
                         "\"prop\":null," +
                         "\"listProp\":null," +
-                        "\"complex\":{\"sub\":\"value\"}" +
+                        "\"complex\":{\"sub\":\"value\"}," +
+                        "\"complexList\":[{\"sub\":\"value1\"},{\"sub\":\"value2\"}]" +
                         "}")
         );
     }
@@ -68,7 +80,8 @@ public class ExploreTest {
                 new ExampleValueReader().readValue("{" +
                         "\"prop\":\"a value\"," +
                         "\"listProp\":[\"a\",\"b\",\"c\"]," +
-                        "\"complex\":null" +
+                        "\"complex\":null," +
+                        "\"complexList\":null" +
                         "}"),
                 is(ExampleValue.Builder.builder()
                         .prop("a value")
@@ -83,7 +96,8 @@ public class ExploreTest {
                 new ExampleValueReader().readValue("{" +
                         "\"prop\":null," +
                         "\"listProp\":null," +
-                        "\"complex\":null" +
+                        "\"complex\":null," +
+                        "\"complexList\":null" +
                         "}"),
                 is(ExampleValue.Builder.builder()
                         .prop(null)
@@ -98,7 +112,8 @@ public class ExploreTest {
                 new ExampleValueReader().readValue("{" +
                         "\"prop\":null," +
                         "\"listProp\":null," +
-                        "\"complex\":{\"sub\":\"value\"}" +
+                        "\"complex\":{\"sub\":\"value\"}," +
+                        "\"complexList\":[{\"sub\":\"value1\"},{\"sub\":\"value2\"}]" +
                         "}"),
                 is(ExampleValue.Builder.builder()
                         .prop(null)
@@ -106,6 +121,14 @@ public class ExploreTest {
                         .complex(Complex.Builder.builder()
                                 .sub("value")
                                 .build())
+                        .complexList(
+                                ComplexList.Builder.builder()
+                                        .sub("value1")
+                                        .build(),
+                                ComplexList.Builder.builder()
+                                        .sub("value2")
+                                        .build()
+                        )
                         .build())
         );
     }

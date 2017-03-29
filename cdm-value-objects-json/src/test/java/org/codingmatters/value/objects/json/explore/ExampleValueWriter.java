@@ -2,6 +2,7 @@ package org.codingmatters.value.objects.json.explore;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import org.codingmatters.value.objects.json.explore.examplevalue.ComplexListWriter;
 import org.codingmatters.value.objects.json.explore.examplevalue.ComplexWriter;
 import org.codingmatters.value.objects.json.value.ExampleValue;
 
@@ -16,7 +17,7 @@ public class ExampleValueWriter {
 
     private final JsonFactory factory = new JsonFactory();
 
-    public String writeValue(ExampleValue value) throws IOException {
+    public String write(ExampleValue value) throws IOException {
         try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             generator.writeStartObject();
@@ -25,17 +26,17 @@ public class ExampleValueWriter {
             generator.writeFieldName("prop");
             generator.writeString(value.prop());
 
-            // list or set property of simple elements
+            // collection property of simple elewriteValuements
             generator.writeFieldName("listProp");
             this.writeSimpleArray(value, generator);
 
             // complex property
             generator.writeFieldName("complex");
-            if(value.complex() != null) {
-                new ComplexWriter().writeValue(generator, value.complex());
-            } else {
-                generator.writeNull();
-            }
+            new ComplexWriter().write(generator, value.complex());
+
+            // complex array
+            generator.writeFieldName("complexList");
+            new ComplexListWriter().write(generator, value.complexList());
 
             generator.writeEndObject();
             generator.close();

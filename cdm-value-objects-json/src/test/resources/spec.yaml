@@ -4,3 +4,6 @@ exampleValue:
     $list: string
   complex:
     sub: string
+  complexList:
+    $list:
+      sub: string

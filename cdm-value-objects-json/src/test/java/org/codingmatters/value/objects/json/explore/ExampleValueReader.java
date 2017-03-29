@@ -3,6 +3,7 @@ package org.codingmatters.value.objects.json.explore;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import org.codingmatters.value.objects.json.explore.examplevalue.ComplexListReader;
 import org.codingmatters.value.objects.json.explore.examplevalue.ComplexReader;
 import org.codingmatters.value.objects.json.value.ExampleValue;
 
@@ -36,6 +37,8 @@ public class ExampleValueReader {
                     this.readSimpleArrayValue(parser, builder);
                 } else if ("complex".equals(fieldName)) {
                     builder.complex(new ComplexReader().readValue(parser));
+                } else if ("complexList".equals(fieldName)) {
+                    builder.complexList(new ComplexListReader().readValue(parser));
                 }
             }
             return builder.build();
