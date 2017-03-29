@@ -34,11 +34,10 @@ public class ComplexListReader {
     }
 
     public ComplexList readElement(JsonParser parser) throws IOException {
-        JsonToken firstToken = parser.currentToken();
-        if(firstToken == JsonToken.VALUE_NULL) return null;
+        if(parser.currentToken() == JsonToken.VALUE_NULL) return null;
 
         ComplexList.Builder builder = ComplexList.Builder.builder();
-        if (firstToken != JsonToken.START_OBJECT) {
+        if (parser.currentToken() != JsonToken.START_OBJECT) {
             throw new IOException(
                     String.format("reading a %s object, was expecting %s, but was %s",
                             ExampleValue.class.getName(), JsonToken.START_OBJECT, parser.currentToken()
@@ -48,18 +47,18 @@ public class ComplexListReader {
         while (parser.nextToken() != JsonToken.END_OBJECT) {
             String fieldName = parser.getCurrentName();
             if ("sub".equals(fieldName)) {
-                this.readStringProperty(parser, builder);
+                builder.sub(this.readString(parser, builder));
             }
         }
         return builder.build();
     }
 
-    private void readStringProperty(JsonParser parser, ComplexList.Builder builder) throws IOException {
+    private String readString(JsonParser parser, ComplexList.Builder builder) throws IOException {
         parser.nextToken();
         if (parser.currentToken() == JsonToken.VALUE_STRING) {
-            builder.sub(parser.getText());
+            return parser.getText();
         } else if (parser.currentToken() == JsonToken.VALUE_NULL) {
-            builder.sub(null);
+            return null;
         } else {
             throw new IOException(
                     String.format("reading property %s, was expecting %s, but was %s",
