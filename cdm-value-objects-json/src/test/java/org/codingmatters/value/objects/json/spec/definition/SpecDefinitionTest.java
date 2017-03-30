@@ -1,10 +1,10 @@
-package org.codingmatters.value.objects.json;
+package org.codingmatters.value.objects.json.spec.definition;
 
-import org.codingmatters.value.objects.json.explore.ExampleValueReader;
-import org.codingmatters.value.objects.json.explore.ExampleValueWriter;
 import org.codingmatters.value.objects.json.value.ExampleValue;
 import org.codingmatters.value.objects.json.value.examplevalue.Complex;
 import org.codingmatters.value.objects.json.value.examplevalue.ComplexList;
+import org.codingmatters.value.objects.json.value.explore.ExampleValueReader;
+import org.codingmatters.value.objects.json.value.explore.ExampleValueWriter;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -13,7 +13,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 3/25/17.
  */
-public class ExploreTest {
+public class SpecDefinitionTest {
 
     @Test
     public void writeSimpleProperties() throws Exception {

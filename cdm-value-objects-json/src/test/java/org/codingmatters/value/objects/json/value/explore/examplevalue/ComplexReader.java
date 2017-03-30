@@ -1,4 +1,4 @@
-package org.codingmatters.value.objects.json.explore.examplevalue;
+package org.codingmatters.value.objects.json.value.explore.examplevalue;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;

@@ -1,10 +1,10 @@
-package org.codingmatters.value.objects.json.explore;
+package org.codingmatters.value.objects.json.value.explore;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import org.codingmatters.value.objects.json.explore.examplevalue.ComplexListWriter;
-import org.codingmatters.value.objects.json.explore.examplevalue.ComplexWriter;
 import org.codingmatters.value.objects.json.value.ExampleValue;
+import org.codingmatters.value.objects.json.value.explore.examplevalue.ComplexListWriter;
+import org.codingmatters.value.objects.json.value.explore.examplevalue.ComplexWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

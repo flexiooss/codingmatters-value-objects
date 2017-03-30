@@ -12,6 +12,7 @@
     </parent>
 
     <artifactId>cdm-value-objects-json</artifactId>
+    <name>${project.groupId}:${project.artifactId}</name>
 
     <dependencies>
         <dependency>

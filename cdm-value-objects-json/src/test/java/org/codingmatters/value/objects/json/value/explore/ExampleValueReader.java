@@ -1,11 +1,11 @@
-package org.codingmatters.value.objects.json.explore;
+package org.codingmatters.value.objects.json.value.explore;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import org.codingmatters.value.objects.json.explore.examplevalue.ComplexListReader;
-import org.codingmatters.value.objects.json.explore.examplevalue.ComplexReader;
 import org.codingmatters.value.objects.json.value.ExampleValue;
+import org.codingmatters.value.objects.json.value.explore.examplevalue.ComplexListReader;
+import org.codingmatters.value.objects.json.value.explore.examplevalue.ComplexReader;
 
 import java.io.IOException;
 import java.util.LinkedList;
