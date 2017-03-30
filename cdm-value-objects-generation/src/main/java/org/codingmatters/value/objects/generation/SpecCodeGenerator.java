@@ -16,6 +16,7 @@ import org.codingmatters.value.objects.spec.ValueSpec;
 import java.io.File;
 import java.io.IOException;
 
+import static org.codingmatters.value.objects.generation.GenerationUtils.packageDir;
 import static org.codingmatters.value.objects.spec.PropertyCardinality.LIST;
 import static org.codingmatters.value.objects.spec.PropertyCardinality.SET;
 
@@ -35,7 +36,7 @@ public class SpecCodeGenerator {
     }
 
     public void generate() throws IOException {
-        File packageDestination = this.packageDestination(rootDirectory, this.rootPackage);
+        File packageDestination = packageDir(rootDirectory, this.rootPackage);
 
         if(this.hasPropertyWithCardinality(this.spec, LIST)) {
             TypeSpec valueListInterface = new ValueList(this.rootPackage).type();
@@ -53,10 +54,6 @@ public class SpecCodeGenerator {
         }
     }
 
-    private File packageDestination(File dir, String pack) {
-        return new File(dir, pack.replaceAll(".", "/"));
-    }
-
     private boolean hasPropertyWithCardinality(Spec spec, PropertyCardinality cardinality) {
         for (ValueSpec valueSpec : spec.valueSpecs()) {
             for (PropertySpec propertySpec : valueSpec.propertySpecs()) {
@@ -69,7 +66,7 @@ public class SpecCodeGenerator {
     }
 
     private void generateValueTypesTo(PackagedValueSpec packagedValueSpec) throws IOException {
-        File packageDestination = this.packageDestination(this.rootDirectory, packagedValueSpec.packagename());
+        File packageDestination = packageDir(this.rootDirectory, packagedValueSpec.packagename());
         packageDestination.mkdirs();
 
         ValueConfiguration types = new ValueConfiguration(this.rootPackage, packagedValueSpec.packagename(), packagedValueSpec.valueSpec());
