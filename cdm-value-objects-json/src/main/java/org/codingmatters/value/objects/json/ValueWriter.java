@@ -1,6 +1,8 @@
 package org.codingmatters.value.objects.json;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.value.objects.generation.ValueConfiguration;
 import org.codingmatters.value.objects.spec.PropertySpec;
@@ -29,6 +31,14 @@ public class ValueWriter {
                                 .addParameter(this.types.valueType(), "value")
                                 .returns(String.class)
                                 .addStatement("return null")
+                                .build()
+                )
+                .addMethod(
+                        MethodSpec.methodBuilder("write")
+                                .addModifiers(Modifier.PUBLIC)
+                                .addParameter(JsonGenerator.class, "generator")
+                                .addParameter(this.types.valueType(), "value")
+                                .returns(TypeName.VOID)
                                 .build()
                 )
                 .build();

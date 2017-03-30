@@ -30,7 +30,7 @@ public class ValueListTest {
         JavaFile file = JavaFile.builder(packageName, new ValueList(packageName).type()).build();
         file.writeTo(dest);
 
-        this.compiled = CompiledCode.compile(dest);
+        this.compiled = CompiledCode.builder().source(dest).compile();
     }
 
     @Test

@@ -30,7 +30,7 @@ public class ValueSetTest {
         JavaFile file = JavaFile.builder(packageName, new ValueSet(packageName).type()).build();
         file.writeTo(dest);
 
-        this.compiled = CompiledCode.compile(dest);
+        this.compiled = CompiledCode.builder().source(dest).compile();
     }
 
     @Test

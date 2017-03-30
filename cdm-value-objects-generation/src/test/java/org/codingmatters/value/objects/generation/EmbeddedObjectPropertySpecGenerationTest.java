@@ -60,7 +60,7 @@ public class EmbeddedObjectPropertySpecGenerationTest {
     @Before
     public void setUp() throws Exception {
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
-        this.compiled = CompiledCode.compile(this.dir.getRoot());
+        this.compiled = CompiledCode.builder().source(this.dir.getRoot()).compile();
     }
 
     @Test

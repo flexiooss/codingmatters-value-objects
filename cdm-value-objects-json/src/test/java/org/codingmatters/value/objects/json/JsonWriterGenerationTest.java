@@ -1,5 +1,6 @@
 package org.codingmatters.value.objects.json;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
@@ -16,7 +17,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.IOException;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.aClass;
-import static org.codingmatters.tests.reflect.ReflectMatchers.aMethod;
+import static org.codingmatters.tests.reflect.ReflectMatchers.aPublic;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -43,7 +44,10 @@ public class JsonWriterGenerationTest {
     public void setUp() throws Exception {
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
         new JsonFrameworkGenerator(this.spec, "org.generated", dir.getRoot()).generate();
-        this.compiled = CompiledCode.compile(this.dir.getRoot());
+        this.compiled = new CompiledCode.Builder()
+                .classpath(CompiledCode.findInClasspath(".*jackson-core-.*.jar"))
+                .source(this.dir.getRoot())
+                .compile();
     }
 
     @Test
@@ -51,7 +55,9 @@ public class JsonWriterGenerationTest {
         assertThat(
                 this.compiled.getClass("org.generated.json.ExampleValueWriter"),
                 is(aClass()
-                        .with(aMethod().named("write").withParameters(ExampleValue.class).returning(String.class))
+                        .with(aPublic().method().named("write").withParameters(ExampleValue.class).returning(String.class))
+                        // public void write(JsonGenerator generator, ExampleValue value) throws IOException
+                        .with(aPublic().method().named("write").withParameters(JsonGenerator.class, ExampleValue.class).returningVoid())
                 )
         );
     }

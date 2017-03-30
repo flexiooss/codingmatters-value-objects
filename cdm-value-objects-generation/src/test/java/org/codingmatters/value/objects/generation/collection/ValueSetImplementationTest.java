@@ -42,7 +42,7 @@ public class ValueSetImplementationTest {
         javaFile
                 .writeTo(dest);
 
-        this.compiled = CompiledCode.compile(dest);
+        this.compiled = CompiledCode.builder().source(dest).compile();
     }
 
     @Test
