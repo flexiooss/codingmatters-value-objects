@@ -1,6 +1,5 @@
 package org.codingmatters.value.objects.generation;
 
-import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.value.objects.generation.collection.ValueList;
 import org.codingmatters.value.objects.generation.collection.ValueListImplementation;
@@ -17,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.codingmatters.value.objects.generation.GenerationUtils.packageDir;
+import static org.codingmatters.value.objects.generation.GenerationUtils.writeJavaFile;
 import static org.codingmatters.value.objects.spec.PropertyCardinality.LIST;
 import static org.codingmatters.value.objects.spec.PropertyCardinality.SET;
 
@@ -40,13 +40,13 @@ public class SpecCodeGenerator {
 
         if(this.hasPropertyWithCardinality(this.spec, LIST)) {
             TypeSpec valueListInterface = new ValueList(this.rootPackage).type();
-            this.writeJavaFile(packageDestination, this.rootPackage, valueListInterface);
-            this.writeJavaFile(packageDestination, this.rootPackage, new ValueListImplementation(this.rootPackage, valueListInterface).type());
+            writeJavaFile(packageDestination, this.rootPackage, valueListInterface);
+            writeJavaFile(packageDestination, this.rootPackage, new ValueListImplementation(this.rootPackage, valueListInterface).type());
         }
         if(this.hasPropertyWithCardinality(this.spec, SET)) {
             TypeSpec valueSetInterface = new ValueSet(this.rootPackage).type();
-            this.writeJavaFile(packageDestination, this.rootPackage, valueSetInterface);
-            this.writeJavaFile(packageDestination, this.rootPackage, new ValueSetImplementation(this.rootPackage, valueSetInterface).type());
+            writeJavaFile(packageDestination, this.rootPackage, valueSetInterface);
+            writeJavaFile(packageDestination, this.rootPackage, new ValueSetImplementation(this.rootPackage, valueSetInterface).type());
         }
 
         for (PackagedValueSpec valueSpec : new SpecPreprocessor(this.spec, this.rootPackage).packagedValueSpec()) {
@@ -72,19 +72,11 @@ public class SpecCodeGenerator {
         ValueConfiguration types = new ValueConfiguration(this.rootPackage, packagedValueSpec.packagename(), packagedValueSpec.valueSpec());
 
         TypeSpec valueInterface = new ValueInterface(types, packagedValueSpec.valueSpec().propertySpecs()).type();
-        this.writeJavaFile(packageDestination, packagedValueSpec.packagename(), valueInterface);
+        writeJavaFile(packageDestination, packagedValueSpec.packagename(), valueInterface);
 
         TypeSpec valueImpl = new ValueImplementation(types, packagedValueSpec.valueSpec().propertySpecs()).type();
-        this.writeJavaFile(packageDestination, packagedValueSpec.packagename(), valueImpl);
+        writeJavaFile(packageDestination, packagedValueSpec.packagename(), valueImpl);
     }
 
-
-    private void writeJavaFile(File packageDestination, String pack, TypeSpec type) throws IOException {
-        JavaFile file = JavaFile.builder(pack, type).build();
-        file.writeTo(packageDestination);
-        if(System.getProperty("spec.code.generator.debug", "false").equals("true")) {
-            file.writeTo(System.out);
-        }
-    }
 
 }
