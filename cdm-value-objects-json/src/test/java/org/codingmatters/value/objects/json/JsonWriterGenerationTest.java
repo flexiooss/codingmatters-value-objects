@@ -3,6 +3,7 @@ package org.codingmatters.value.objects.json;
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
+import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.reader.SpecReader;
 import org.codingmatters.value.objects.spec.Spec;
 import org.generated.ExampleValue;
@@ -22,7 +23,6 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 3/30/17.
  */
-@Ignore
 public class JsonWriterGenerationTest {
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
@@ -41,19 +41,22 @@ public class JsonWriterGenerationTest {
 
     @Before
     public void setUp() throws Exception {
+        new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
         new JsonFrameworkGenerator(this.spec, "org.generated", dir.getRoot()).generate();
+        this.compiled = CompiledCode.compile(this.dir.getRoot());
     }
 
     @Test
     public void writerMethods() throws Exception {
         assertThat(
-                this.compiled.getClass("org.generated.json.ExampleValueJsonWriter"),
+                this.compiled.getClass("org.generated.json.ExampleValueWriter"),
                 is(aClass()
-                        .with(aMethod().named("write").withoutParameters().returning(String.class))
+                        .with(aMethod().named("write").withParameters(ExampleValue.class).returning(String.class))
                 )
         );
     }
 
+    @Ignore
     @Test
     public void writeSimpleProperties() throws Exception {
         ExampleValue value = ExampleValue.Builder.builder()
@@ -62,7 +65,7 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.ExampleValueWriter").newInstance();
-        String json = this.compiled.on(writer).invoke("writer", ExampleValue.class).with(value);
+        String json = this.compiled.on(writer).invoke("write", ExampleValue.class).with(value);
         assertThat(
                 json,
                 is("{" +
