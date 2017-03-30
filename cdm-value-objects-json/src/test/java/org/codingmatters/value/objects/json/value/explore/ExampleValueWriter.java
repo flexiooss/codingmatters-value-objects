@@ -2,9 +2,9 @@ package org.codingmatters.value.objects.json.value.explore;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import org.codingmatters.value.objects.json.value.ExampleValue;
 import org.codingmatters.value.objects.json.value.explore.examplevalue.ComplexListWriter;
 import org.codingmatters.value.objects.json.value.explore.examplevalue.ComplexWriter;
+import org.generated.ExampleValue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,28 +20,32 @@ public class ExampleValueWriter {
     public String write(ExampleValue value) throws IOException {
         try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
-            generator.writeStartObject();
-
-            // simple string property
-            generator.writeFieldName("prop");
-            generator.writeString(value.prop());
-
-            // collection property of simple elewriteValuements
-            generator.writeFieldName("listProp");
-            this.writeSimpleArray(value, generator);
-
-            // complex property
-            generator.writeFieldName("complex");
-            new ComplexWriter().write(generator, value.complex());
-
-            // complex array
-            generator.writeFieldName("complexList");
-            new ComplexListWriter().write(generator, value.complexList());
-
-            generator.writeEndObject();
-            generator.close();
+            this.write(generator, value);
             return out.toString();
         }
+    }
+
+    public void write(JsonGenerator generator, ExampleValue value) throws IOException {
+        generator.writeStartObject();
+
+        // simple string property
+        generator.writeFieldName("prop");
+        generator.writeString(value.prop());
+
+        // collection property of simple elewriteValuements
+        generator.writeFieldName("listProp");
+        this.writeSimpleArray(value, generator);
+
+        // complex property
+        generator.writeFieldName("complex");
+        new ComplexWriter().write(generator, value.complex());
+
+        // complex array
+        generator.writeFieldName("complexList");
+        new ComplexListWriter().write(generator, value.complexList());
+
+        generator.writeEndObject();
+        generator.close();
     }
 
     private void writeSimpleArray(ExampleValue value, JsonGenerator generator) throws IOException {

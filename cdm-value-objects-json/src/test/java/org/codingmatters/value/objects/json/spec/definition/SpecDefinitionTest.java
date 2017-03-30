@@ -1,10 +1,10 @@
 package org.codingmatters.value.objects.json.spec.definition;
 
-import org.codingmatters.value.objects.json.value.ExampleValue;
-import org.codingmatters.value.objects.json.value.examplevalue.Complex;
-import org.codingmatters.value.objects.json.value.examplevalue.ComplexList;
 import org.codingmatters.value.objects.json.value.explore.ExampleValueReader;
 import org.codingmatters.value.objects.json.value.explore.ExampleValueWriter;
+import org.generated.ExampleValue;
+import org.generated.examplevalue.Complex;
+import org.generated.examplevalue.ComplexList;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;

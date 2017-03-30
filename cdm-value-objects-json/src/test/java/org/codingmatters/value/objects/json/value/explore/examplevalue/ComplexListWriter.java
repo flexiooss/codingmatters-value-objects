@@ -1,8 +1,8 @@
 package org.codingmatters.value.objects.json.value.explore.examplevalue;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import org.codingmatters.value.objects.json.value.ValueList;
-import org.codingmatters.value.objects.json.value.examplevalue.ComplexList;
+import org.generated.ValueList;
+import org.generated.examplevalue.ComplexList;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -2,8 +2,8 @@ package org.codingmatters.value.objects.json.value.explore.examplevalue;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import org.codingmatters.value.objects.json.value.ExampleValue;
-import org.codingmatters.value.objects.json.value.examplevalue.ComplexList;
+import org.generated.ExampleValue;
+import org.generated.examplevalue.ComplexList;
 
 import java.io.IOException;
 import java.util.LinkedList;
