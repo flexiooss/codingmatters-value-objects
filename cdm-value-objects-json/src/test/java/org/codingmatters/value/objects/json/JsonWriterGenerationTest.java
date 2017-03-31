@@ -58,11 +58,16 @@ public class JsonWriterGenerationTest {
                         .with(aPublic().method().named("write")
                                 .withParameters(ExampleValue.class)
                                 .returning(String.class)
+                                .throwing(IOException.class)
                         )
                         // public void write(JsonGenerator generator, ExampleValue value) throws IOException
-                        .with(aPublic().method().named("write").withParameters(JsonGenerator.class, ExampleValue.class).returningVoid())
+                        .with(aPublic().method().named("write")
+                                .withParameters(JsonGenerator.class, ExampleValue.class)
+                                .returningVoid()
+                                .throwing(IOException.class)
+                        )
                         // private void writeStringArray(JsonGenerator generator, ValueList<String> elements) throws IOException
-//                        .with(aPrivate().method().named("writeStringArray").withParameters(classType(JsonGenerator.class), ))
+//                        .with(aPrivate().method().named("writeStringArray").withParameters(classType(JsonGenerator.class), ).throwing(IOException.class))
                 )
         );
     }
