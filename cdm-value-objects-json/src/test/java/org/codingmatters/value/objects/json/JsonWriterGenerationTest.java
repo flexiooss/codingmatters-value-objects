@@ -55,9 +55,14 @@ public class JsonWriterGenerationTest {
         assertThat(
                 this.compiled.getClass("org.generated.json.ExampleValueWriter"),
                 is(aClass()
-                        .with(aPublic().method().named("write").withParameters(ExampleValue.class).returning(String.class))
+                        .with(aPublic().method().named("write")
+                                .withParameters(ExampleValue.class)
+                                .returning(String.class)
+                        )
                         // public void write(JsonGenerator generator, ExampleValue value) throws IOException
                         .with(aPublic().method().named("write").withParameters(JsonGenerator.class, ExampleValue.class).returningVoid())
+                        // private void writeStringArray(JsonGenerator generator, ValueList<String> elements) throws IOException
+//                        .with(aPrivate().method().named("writeStringArray").withParameters(classType(JsonGenerator.class), ))
                 )
         );
     }

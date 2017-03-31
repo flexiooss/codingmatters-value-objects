@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import org.codingmatters.value.objects.json.value.explore.examplevalue.ComplexListWriter;
 import org.codingmatters.value.objects.json.value.explore.examplevalue.ComplexWriter;
 import org.generated.ExampleValue;
+import org.generated.ValueList;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class ExampleValueWriter {
 
         // collection property of simple elewriteValuements
         generator.writeFieldName("listProp");
-        this.writeSimpleArray(value, generator);
+        this.writeStringArray(generator, value.listProp());
 
         // complex property
         generator.writeFieldName("complex");
@@ -48,10 +49,10 @@ public class ExampleValueWriter {
         generator.close();
     }
 
-    private void writeSimpleArray(ExampleValue value, JsonGenerator generator) throws IOException {
-        if (value.listProp() != null) {
+    private void writeStringArray(JsonGenerator generator, ValueList<String> elements) throws IOException {
+        if (elements != null) {
             generator.writeStartArray();
-            for (String elmt : value.listProp()) {
+            for (String elmt : elements) {
                 generator.writeString(elmt);
             }
             generator.writeEndArray();
