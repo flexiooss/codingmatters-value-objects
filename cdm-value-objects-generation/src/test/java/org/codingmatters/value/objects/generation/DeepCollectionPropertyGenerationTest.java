@@ -5,7 +5,6 @@ import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -22,7 +21,6 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 4/1/17.
  */
-@Ignore
 public class DeepCollectionPropertyGenerationTest {
 
     @Rule

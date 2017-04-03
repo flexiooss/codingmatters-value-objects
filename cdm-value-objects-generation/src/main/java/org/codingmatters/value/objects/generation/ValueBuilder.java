@@ -115,10 +115,12 @@ public class ValueBuilder {
                         )
                         .returns(this.types.valueBuilderType())
                         .addModifiers(PUBLIC)
-                        .addStatement("this.$N = $N != null ? new $T($N) : null",
+                        .addStatement("this.$N = $N != null ? new $T.Builder().with($N).build() : null",
                                 propertySpec.name(),
                                 propertySpec.name(),
-                                this.types.propertyImplType(propertySpec),
+                                propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST) ?
+                                        this.types.collectionConfiguration().valueListType() :
+                                        this.types.collectionConfiguration().valueSetType(),
                                 propertySpec.name()
                         )
                         .addStatement("return this")

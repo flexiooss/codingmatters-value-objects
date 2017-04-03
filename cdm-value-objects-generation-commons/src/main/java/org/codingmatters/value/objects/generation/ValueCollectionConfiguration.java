@@ -10,14 +10,19 @@ import com.squareup.javapoet.TypeName;
 public class ValueCollectionConfiguration {
     private final ClassName valueListType;
     private final ClassName valueListImplementationType;
+    private final ClassName valueListBuilderType;
     private final ClassName valueSetType;
     private final ClassName valueSetImplementationType;
+    private final ClassName valueSetBuilderType;
 
     public ValueCollectionConfiguration(String packageName) {
         this.valueListType = ClassName.get(packageName, "ValueList");
         this.valueListImplementationType = ClassName.get(packageName, "ValueListImpl");
+        this.valueListBuilderType = this.valueListType.nestedClass("Builder");
+
         this.valueSetType = ClassName.get(packageName, "ValueSet");
         this.valueSetImplementationType = ClassName.get(packageName, "ValueSetImpl");
+        this.valueSetBuilderType = this.valueSetType.nestedClass("Builder");
     }
 
     public ClassName valueListType() {
@@ -32,6 +37,10 @@ public class ValueCollectionConfiguration {
         return ParameterizedTypeName.get(this.valueListImplementationType, type);
     }
 
+    public ClassName valueListBuilderType() {
+        return valueListBuilderType;
+    }
+
     public ClassName valueSetType() {
         return valueSetType;
     }
@@ -42,5 +51,9 @@ public class ValueCollectionConfiguration {
 
     public ParameterizedTypeName valueSetImplOfType(TypeName type) {
         return ParameterizedTypeName.get(this.valueSetImplementationType, type);
+    }
+
+    public ClassName valueSetBuilderType() {
+        return valueSetBuilderType;
     }
 }
