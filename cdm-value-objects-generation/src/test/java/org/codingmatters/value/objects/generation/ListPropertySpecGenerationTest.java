@@ -14,8 +14,7 @@ import static org.codingmatters.value.objects.spec.PropertySpec.property;
 import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
 import static org.codingmatters.value.objects.spec.Spec.spec;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -47,6 +46,35 @@ public class ListPropertySpecGenerationTest {
     public void valueListHarness() throws Exception {
         assertThat(this.compiled.getClass("org.generated.ValueList"), is(aPublic().interface_()));
         assertThat(this.compiled.getClass("org.generated.ValueListImpl"), is(aPackagePrivate().class_()));
+        assertThat(this.compiled.getClass("org.generated.ValueList$Builder"), is(aPublic().static_().class_()));
+    }
+
+    @Test
+    public void valueListBuilder() throws Exception {
+        assertThat(this.compiled.getClass("org.generated.ValueList$Builder"), is(aPublic().static_().class_()));
+        assertThat(
+                this.compiled.getClass("org.generated.ValueList$Builder"),
+                is(aPublic().static_().class_()
+                        .with(
+                                aPublic().method().named("build")
+                                .withoutParameters()
+                                .returning(
+                                        genericType().baseClass(this.compiled.getClass("org.generated.ValueList")).withParameters(typeParameter().named("E"))
+                                )
+                        )
+                )
+        );
+
+        assertThat(
+                this.compiled.getClass("org.generated.ValueList$Builder"),
+                is(aPublic().static_().class_()
+                        .with(
+                                aPublic().method().named("with")
+                                    .withParameters(typeArray(variableType().named("E")))
+                                    .returning(this.compiled.getClass("org.generated.ValueList$Builder"))
+                        )
+                )
+        );
     }
 
     @Test
@@ -127,5 +155,16 @@ public class ListPropertySpecGenerationTest {
         Object value2 = this.compiled.on(builder2).invoke("build");
 
         assertThat(value2, is(value1));
+    }
+
+    @Test
+    public void buildValueListInstance() throws Exception {
+        Object listBuilder = this.compiled.getClass("org.generated.ValueList$Builder").newInstance();
+        this.compiled.on(listBuilder)
+                .invoke("with", Object[].class)
+                .with(new Object [] {new Object [] {"a", "b", "c"}});
+        Object list = this.compiled.on(listBuilder).invoke("build");
+
+        assertThat(list, isA(this.compiled.getClass("org.generated.ValueList")));
     }
 }

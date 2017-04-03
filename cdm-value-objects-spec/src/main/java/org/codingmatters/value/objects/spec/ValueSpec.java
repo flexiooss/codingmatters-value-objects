@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * Created by nelt on 9/3/16.
  */
-public class ValueSpec {
+public class ValueSpec implements PropertyHolderSpec {
 
     static public Builder valueSpec() {
         return new Builder();
@@ -49,10 +49,12 @@ public class ValueSpec {
         return name;
     }
 
+    @Override
     public List<PropertySpec> propertySpecs() {
         return propertySpecs;
     }
 
+    @Override
     public PropertySpec propertySpec(String name) {
         return this.propertySpecs.stream().filter(propertySpec -> propertySpec.name().equals(name)).findFirst().orElse(null);
     }

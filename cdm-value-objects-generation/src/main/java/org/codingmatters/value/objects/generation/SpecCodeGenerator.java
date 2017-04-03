@@ -8,9 +8,9 @@ import org.codingmatters.value.objects.generation.collection.ValueSetImplementat
 import org.codingmatters.value.objects.generation.preprocessor.PackagedValueSpec;
 import org.codingmatters.value.objects.generation.preprocessor.SpecPreprocessor;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
+import org.codingmatters.value.objects.spec.PropertyHolderSpec;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.Spec;
-import org.codingmatters.value.objects.spec.ValueSpec;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +19,7 @@ import static org.codingmatters.value.objects.generation.GenerationUtils.package
 import static org.codingmatters.value.objects.generation.GenerationUtils.writeJavaFile;
 import static org.codingmatters.value.objects.spec.PropertyCardinality.LIST;
 import static org.codingmatters.value.objects.spec.PropertyCardinality.SET;
+import static org.codingmatters.value.objects.spec.TypeKind.EMBEDDED;
 
 /**
  * Created by nelt on 9/13/16.
@@ -55,9 +56,21 @@ public class SpecCodeGenerator {
     }
 
     private boolean hasPropertyWithCardinality(Spec spec, PropertyCardinality cardinality) {
-        for (ValueSpec valueSpec : spec.valueSpecs()) {
-            for (PropertySpec propertySpec : valueSpec.propertySpecs()) {
-                if(cardinality.equals(propertySpec.typeSpec().cardinality())) {
+        for (PropertyHolderSpec valueSpec : spec.valueSpecs()) {
+            if (this.hasPropertyWithCardinality(valueSpec, cardinality)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasPropertyWithCardinality(PropertyHolderSpec valueSpec, PropertyCardinality cardinality) {
+        for (PropertySpec propertySpec : valueSpec.propertySpecs()) {
+            if(cardinality.equals(propertySpec.typeSpec().cardinality())) {
+                return true;
+            }
+            if(propertySpec.typeSpec().typeKind() == EMBEDDED) {
+                if(this.hasPropertyWithCardinality(propertySpec.typeSpec().embeddedValueSpec(), cardinality)) {
                     return true;
                 }
             }

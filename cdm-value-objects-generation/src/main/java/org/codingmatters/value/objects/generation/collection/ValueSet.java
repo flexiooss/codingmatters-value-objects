@@ -50,6 +50,11 @@ public class ValueSet {
                         .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
                         .returns(Object[].class)
                         .build())
+                .addType(new CollectionBuilder(
+                                ClassName.get(this.packageName, "ValueSet"),
+                                ClassName.get(this.packageName, "ValueSetImpl")
+                        ).type()
+                )
                 .build();
     }
 }

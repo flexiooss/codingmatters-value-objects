@@ -17,6 +17,10 @@ public class ValueList {
     }
 
     public TypeSpec type() {
+
+        ClassName valueCollectionInterface = ClassName.get(this.packageName, "ValueList");
+        ClassName valueCollectionImpl = ClassName.get(this.packageName, "ValueListImpl");
+
         return TypeSpec.interfaceBuilder("ValueList")
                 .addSuperinterface(ParameterizedTypeName.get(ClassName.get(Iterable.class), TypeVariableName.get("E")))
                 .addModifiers(Modifier.PUBLIC)
@@ -60,6 +64,12 @@ public class ValueList {
                         .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
                         .returns(Object[].class)
                         .build())
+                .addType(new CollectionBuilder(
+                        ClassName.get(this.packageName, "ValueList"),
+                        ClassName.get(this.packageName, "ValueListImpl")
+                        ).type()
+                )
                 .build();
     }
+
 }

@@ -1,7 +1,6 @@
 package org.codingmatters.value.objects.generation;
 
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
@@ -19,11 +18,8 @@ public class ValueConfiguration {
     private final ClassName valueImplType;
     private final ClassName builderType;
     private final ClassName changerType;
-    private final ClassName valueListType;
-    private final ClassName valueListImplementationType;
-    private final ClassName valueSetType;
-    private final ClassName valueSetImplementationType;
     private final String rootPackage;
+    private final ValueCollectionConfiguration collectionConfiguration;
 
     public ValueConfiguration(String rootPackage, String packageName, ValueSpec valueSpec) {
         this.rootPackage = rootPackage;
@@ -32,10 +28,7 @@ public class ValueConfiguration {
         this.valueImplType = ClassName.get(packageName, interfaceName + "Impl");
         this.builderType = ClassName.get(packageName, interfaceName + ".Builder");
         this.changerType = ClassName.get(packageName, interfaceName + ".Changer");
-        this.valueListType = ClassName.get(packageName, "ValueList");
-        this.valueListImplementationType = ClassName.get(packageName, "ValueListImpl");
-        this.valueSetType = ClassName.get(packageName, "ValueSet");
-        this.valueSetImplementationType = ClassName.get(packageName, "ValueSetImpl");
+        this.collectionConfiguration = new ValueCollectionConfiguration(rootPackage);
     }
 
     public ClassName valueType() {
@@ -57,9 +50,9 @@ public class ValueConfiguration {
     public TypeName propertyType(PropertySpec propertySpec) {
         ClassName singleType = this.propertySingleType(propertySpec);
         if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
-            return ParameterizedTypeName.get(this.valueListType, singleType);
+            return this.collectionConfiguration.valueListOfType(singleType);
         } else if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
-            return ParameterizedTypeName.get(this.valueSetType, singleType);
+            return this.collectionConfiguration.valueSetOfType(singleType);
         } else {
             return singleType;
         }
@@ -75,9 +68,9 @@ public class ValueConfiguration {
 
     public TypeName propertyImplType(PropertySpec propertySpec) {
         if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
-            return ParameterizedTypeName.get(this.valueListImplementationType, this.propertySingleType(propertySpec));
+            return this.collectionConfiguration.valueListImplOfType(this.propertySingleType(propertySpec));
         } else if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
-            return ParameterizedTypeName.get(this.valueSetImplementationType, this.propertySingleType(propertySpec));
+            return this.collectionConfiguration.valueSetImplOfType(this.propertySingleType(propertySpec));
         } else {
             return this.builderSinglePropertyType(propertySpec);
         }
@@ -101,6 +94,10 @@ public class ValueConfiguration {
         return "with" + capitalizedFirst(propertySpec.name());
     }
 
+
+    public ValueCollectionConfiguration collectionConfiguration() {
+        return collectionConfiguration;
+    }
 
     static private String capitalizedFirst(String str) {
         return str.substring(0,1).toUpperCase() + str.substring(1);

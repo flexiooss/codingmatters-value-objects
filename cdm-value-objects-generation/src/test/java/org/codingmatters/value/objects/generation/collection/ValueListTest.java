@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.generation.collection;
 
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.tests.compile.CompiledCode;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,7 +28,12 @@ public class ValueListTest {
     public void setUp() throws Exception {
         String packageName = "org.generated";
         File dest = this.dir.newFolder();
-        JavaFile file = JavaFile.builder(packageName, new ValueList(packageName).type()).build();
+
+        TypeSpec type = new ValueList(packageName).type();
+        JavaFile file = JavaFile.builder(packageName, type).build();
+        file.writeTo(dest);
+
+        file = JavaFile.builder(packageName, new ValueListImplementation(packageName, type).type()).build();
         file.writeTo(dest);
 
         this.compiled = CompiledCode.builder().source(dest).compile();

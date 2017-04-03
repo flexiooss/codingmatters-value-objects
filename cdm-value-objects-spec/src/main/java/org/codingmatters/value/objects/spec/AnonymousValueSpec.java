@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * Created by nelt on 11/21/16.
  */
-public class AnonymousValueSpec {
+public class AnonymousValueSpec implements PropertyHolderSpec {
 
     static public Builder anonymousValueSpec() {
         return new Builder();
@@ -39,6 +39,11 @@ public class AnonymousValueSpec {
 
     public List<PropertySpec> propertySpecs() {
         return propertySpecs;
+    }
+
+    @Override
+    public PropertySpec propertySpec(String name) {
+        return this.propertySpecs.stream().filter(propertySpec -> propertySpec.name().equals(name)).findFirst().orElse(null);
     }
 
     @Override

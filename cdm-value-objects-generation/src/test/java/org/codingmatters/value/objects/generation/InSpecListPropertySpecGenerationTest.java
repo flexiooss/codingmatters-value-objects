@@ -1,7 +1,6 @@
 package org.codingmatters.value.objects.generation;
 
 import org.codingmatters.tests.compile.CompiledCode;
-import org.codingmatters.tests.reflect.ReflectMatchers;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
@@ -53,7 +52,7 @@ public class InSpecListPropertySpecGenerationTest {
         assertThat(this.compiled.getClass("org.generated.Val$Builder"), is(aStatic().class_()
                 .with(aPublic().method()
                         .named("listProp")
-                        .withParameters(typeArray(ReflectMatchers.classType(this.compiled.getClass("org.generated.Ref"))))
+                        .withParameters(typeArray(classType(this.compiled.getClass("org.generated.Ref"))))
                         .returning(this.compiled.getClass("org.generated.Val$Builder"))
                 )
                 .with(aPublic().method()
