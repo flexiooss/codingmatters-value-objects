@@ -4,6 +4,7 @@ import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 
 /**
@@ -32,11 +33,19 @@ public class CollectionBuilder {
                         .returns(ParameterizedTypeName.get(valueCollectionInterface, TypeVariableName.get("E")))
                         .addStatement("return new $T<>(this.delegate)", valueCollectionImpl)
                         .build())
+
                 .addMethod(MethodSpec.methodBuilder("with")
                         .addModifiers(Modifier.PUBLIC)
                         .varargs().addParameter(ArrayTypeName.of(TypeVariableName.get("E")), "elements")
                         .returns(this.valueCollectionInterface.nestedClass("Builder"))
                         .addStatement("if(elements != null) {this.delegate.addAll($T.asList(elements));}", Arrays.class)
+                        .addStatement("return this")
+                        .build())
+                .addMethod(MethodSpec.methodBuilder("with")
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(ParameterizedTypeName.get(ClassName.get(Collection.class), TypeVariableName.get("E")), "elements")
+                        .returns(this.valueCollectionInterface.nestedClass("Builder"))
+                        .addStatement("if(elements != null) {this.delegate.addAll(elements);}")
                         .addStatement("return this")
                         .build())
                 .build();

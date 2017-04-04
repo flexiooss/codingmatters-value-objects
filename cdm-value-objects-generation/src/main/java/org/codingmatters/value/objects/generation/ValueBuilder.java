@@ -90,13 +90,14 @@ public class ValueBuilder {
                         .varargs().addParameter(ArrayTypeName.of(this.types.propertySingleType(propertySpec)), propertySpec.name())
                         .returns(this.types.valueBuilderType())
                         .addModifiers(PUBLIC)
-                        .addStatement("this.$N = $N != null ? new $T.Builder().with($N).build() : null",
+                        .addStatement("this.$N = $N != null ? new $T.Builder<$T>().with($N).build() : null",
                                 propertySpec.name(),
                                 propertySpec.name(),
                                 propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST) ?
                                         this.types.collectionConfiguration().valueListType() :
                                         this.types.collectionConfiguration().valueSetType()
                                 ,
+                                this.types.propertySingleType(propertySpec),
                                 propertySpec.name()
                         )
                         .addStatement("return this")
@@ -115,12 +116,13 @@ public class ValueBuilder {
                         )
                         .returns(this.types.valueBuilderType())
                         .addModifiers(PUBLIC)
-                        .addStatement("this.$N = $N != null ? new $T.Builder().with($N).build() : null",
+                        .addStatement("this.$N = $N != null ? new $T.Builder<$T>().with($N).build() : null",
                                 propertySpec.name(),
                                 propertySpec.name(),
                                 propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST) ?
                                         this.types.collectionConfiguration().valueListType() :
                                         this.types.collectionConfiguration().valueSetType(),
+                                this.types.propertySingleType(propertySpec),
                                 propertySpec.name()
                         )
                         .addStatement("return this")
