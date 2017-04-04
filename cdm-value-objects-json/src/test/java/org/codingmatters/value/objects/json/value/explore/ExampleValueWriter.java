@@ -22,6 +22,7 @@ public class ExampleValueWriter {
         try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             this.write(generator, value);
+            generator.close();
             return out.toString();
         }
     }
@@ -33,7 +34,7 @@ public class ExampleValueWriter {
         generator.writeFieldName("prop");
         generator.writeString(value.prop());
 
-        // collection property of simple elewriteValuements
+        // collection property of simple elements
         generator.writeFieldName("listProp");
         this.writeStringArray(generator, value.listProp());
 
@@ -46,7 +47,6 @@ public class ExampleValueWriter {
         new ComplexListWriter().write(generator, value.complexList());
 
         generator.writeEndObject();
-        generator.close();
     }
 
     private void writeStringArray(JsonGenerator generator, ValueList<String> elements) throws IOException {
