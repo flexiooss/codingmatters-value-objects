@@ -7,6 +7,7 @@ import org.codingmatters.value.objects.exception.SpecSyntaxException;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.reader.SpecReader;
 import org.codingmatters.value.objects.spec.Spec;
+import org.generated.ArraySimpleProps;
 import org.generated.ExampleValue;
 import org.generated.SimpleProps;
 import org.generated.ValueList;
@@ -197,6 +198,74 @@ public class JsonWriterGenerationTest {
                         "\"timeProp\":\"10:15:30\"," +
                         "\"dateTimeProp\":\"2011-12-03T10:15:30\"," +
                         "\"tzDateTimeProp\":\"2011-12-03T10:15:30+01:00\"" +
+                        "}")
+        );
+    }
+
+    @Test
+    public void writeSimpleTypeArrays() throws Exception {
+        ArraySimpleProps value = new ArraySimpleProps.Builder()
+                .stringProp("str")
+                .integerProp(12)
+                .longProp(12L)
+                .floatProp(12.12f)
+                .doubleProp(12.12d)
+                .booleanProp(true)
+                .dateProp(LocalDate.parse("2011-12-03"))
+                .timeProp(LocalTime.parse("10:15:30"))
+                .dateTimeProp(LocalDateTime.parse("2011-12-03T10:15:30"))
+                .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30+01:00"))
+                .build();
+        Object writer = this.compiled.getClass("org.generated.json.ArraySimplePropsWriter").newInstance();
+        String json = this.compiled.on(writer).invoke("write", ArraySimpleProps.class).with(value);
+
+        assertThat(
+                json,
+                is("{" +
+                        "\"stringProp\":[\"str\"]," +
+                        "\"integerProp\":[12]," +
+                        "\"longProp\":[12]," +
+                        "\"floatProp\":[12.12]," +
+                        "\"doubleProp\":[12.12]," +
+                        "\"booleanProp\":[true]," +
+                        "\"dateProp\":[\"2011-12-03\"]," +
+                        "\"timeProp\":[\"10:15:30\"]," +
+                        "\"dateTimeProp\":[\"2011-12-03T10:15:30\"]," +
+                        "\"tzDateTimeProp\":[\"2011-12-03T10:15:30+01:00\"]" +
+                        "}")
+        );
+    }
+
+    @Test
+    public void writeSimpleTypeArraysWithNullElements() throws Exception {
+        ArraySimpleProps value = new ArraySimpleProps.Builder()
+                .stringProp((String) null)
+                .integerProp((Integer) null)
+                .longProp((Long) null)
+                .floatProp((Float) null)
+                .doubleProp((Double) null)
+                .booleanProp((Boolean) null)
+                .dateProp((LocalDate) null)
+                .timeProp((LocalTime) null)
+                .dateTimeProp((LocalDateTime) null)
+                .tzDateTimeProp((ZonedDateTime) null)
+                .build();
+        Object writer = this.compiled.getClass("org.generated.json.ArraySimplePropsWriter").newInstance();
+        String json = this.compiled.on(writer).invoke("write", ArraySimpleProps.class).with(value);
+
+        assertThat(
+                json,
+                is("{" +
+                        "\"stringProp\":[null]," +
+                        "\"integerProp\":[null]," +
+                        "\"longProp\":[null]," +
+                        "\"floatProp\":[null]," +
+                        "\"doubleProp\":[null]," +
+                        "\"booleanProp\":[null]," +
+                        "\"dateProp\":[null]," +
+                        "\"timeProp\":[null]," +
+                        "\"dateTimeProp\":[null]," +
+                        "\"tzDateTimeProp\":[null]" +
                         "}")
         );
     }

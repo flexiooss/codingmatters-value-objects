@@ -19,3 +19,25 @@ simpleProps:
   timeProp: time
   dateTimeProp: date-time
   tzDateTimeProp: tz-date-time
+
+arraySimpleProps:
+  stringProp:
+    $list: string
+  integerProp:
+    $list: int
+  longProp:
+    $list: long
+  floatProp:
+    $list: float
+  doubleProp:
+    $list: double
+  booleanProp:
+    $list: bool
+  dateProp:
+    $list: date
+  timeProp:
+    $list: time
+  dateTimeProp:
+    $list: date-time
+  tzDateTimeProp:
+    $list: tz-date-time

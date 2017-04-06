@@ -1,5 +1,6 @@
 package org.codingmatters.value.objects.json.property;
 
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import org.codingmatters.value.objects.spec.PropertySpec;
 
@@ -24,8 +25,8 @@ public enum SimplePropertyWriter {
         }
 
         @Override
-        public void arrayStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
-            method.addStatement("this.writeStringArray(generator, value.$L())", propertySpec.name());
+        protected void arrayElementStatement(MethodSpec.Builder method) {
+            method.addStatement("generator.writeString(element)");
         }
     },
     NUMBER(Integer.class, Long.class, Float.class, Double.class) {
@@ -35,8 +36,8 @@ public enum SimplePropertyWriter {
         }
 
         @Override
-        public void arrayStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
-            method.addStatement("generator.writeNull()");
+        protected void arrayElementStatement(MethodSpec.Builder method) {
+            method.addStatement("generator.writeNumber(element)");
         }
     },
     BOOLEAN(Boolean.class) {
@@ -46,8 +47,8 @@ public enum SimplePropertyWriter {
         }
 
         @Override
-        public void arrayStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
-            method.addStatement("generator.writeNull()");
+        protected void arrayElementStatement(MethodSpec.Builder method) {
+            method.addStatement("generator.writeBoolean(element)");
         }
     },
     DATE(LocalDate.class) {
@@ -57,8 +58,8 @@ public enum SimplePropertyWriter {
         }
 
         @Override
-        public void arrayStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
-            method.addStatement("generator.writeNull()");
+        protected void arrayElementStatement(MethodSpec.Builder method) {
+            method.addStatement("generator.writeString(element.format($T.ISO_LOCAL_DATE))", DateTimeFormatter.class);
         }
     },
     TIME(LocalTime.class) {
@@ -68,8 +69,8 @@ public enum SimplePropertyWriter {
         }
 
         @Override
-        public void arrayStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
-            method.addStatement("generator.writeNull()");
+        protected void arrayElementStatement(MethodSpec.Builder method) {
+            method.addStatement("generator.writeString(element.format($T.ISO_LOCAL_TIME))", DateTimeFormatter.class);
         }
     },
     DATE_TIME(LocalDateTime.class) {
@@ -79,8 +80,8 @@ public enum SimplePropertyWriter {
         }
 
         @Override
-        public void arrayStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
-            method.addStatement("generator.writeNull()");
+        protected void arrayElementStatement(MethodSpec.Builder method) {
+            method.addStatement("generator.writeString(element.format($T.ISO_LOCAL_DATE_TIME))", DateTimeFormatter.class);
         }
     },
     TZ_DATE_TIME(ZonedDateTime.class) {
@@ -90,8 +91,8 @@ public enum SimplePropertyWriter {
         }
 
         @Override
-        public void arrayStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
-            method.addStatement("generator.writeNull()");
+        protected void arrayElementStatement(MethodSpec.Builder method) {
+            method.addStatement("generator.writeString(element.format($T.ISO_OFFSET_DATE_TIME))", DateTimeFormatter.class);
         }
     },
 
@@ -114,10 +115,32 @@ public enum SimplePropertyWriter {
     }
 
     public abstract void singleStatement(MethodSpec.Builder method, PropertySpec propertySpec);
-    public abstract void arrayStatement(MethodSpec.Builder method, PropertySpec propertySpec);
+    public void arrayStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
+        ClassName type = null;
+        try {
+            type = ClassName.get(Class.forName(propertySpec.typeSpec().typeRef()));
+        } catch (ClassNotFoundException e) {
+            System.err.println("class not found : " + propertySpec.typeSpec().typeRef());
+        }
+
+        method.addStatement("generator.writeStartArray()");
+        method.beginControlFlow("for ($T element : value.$L())",
+                type,
+                propertySpec.name()
+        );
+        method.beginControlFlow("if(element != null)");
+        arrayElementStatement(method);
+        method.nextControlFlow("else");
+        method.addStatement("generator.writeNull()");
+        method.endControlFlow();
+        method.endControlFlow();
+        method.addStatement("generator.writeEndArray()");
+    }
+
+    protected void arrayElementStatement(MethodSpec.Builder method) {}
 
     static public SimplePropertyWriter forClass(String className) {
-        Class clazz = null;
+        Class clazz;
         try {
             clazz = Class.forName(className);
         } catch (ClassNotFoundException e) {
