@@ -12,7 +12,7 @@ import java.io.IOException;
  */
 public class ComplexReader {
 
-    public Complex readValue(JsonParser parser) throws IOException {
+    public Complex read(JsonParser parser) throws IOException {
         JsonToken firstToken = parser.nextToken();
         if(firstToken == JsonToken.VALUE_NULL) return null;
 

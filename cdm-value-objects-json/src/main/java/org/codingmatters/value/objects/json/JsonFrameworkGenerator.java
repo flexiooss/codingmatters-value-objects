@@ -43,5 +43,8 @@ public class JsonFrameworkGenerator {
 
         TypeSpec valueWriter = new ValueWriter(types, valueSpec.valueSpec().propertySpecs()).type();
         writeJavaFile(jsonDir, valueJsonPackageName, valueWriter);
+
+        TypeSpec valueReader = new ValueReader(types, valueSpec.valueSpec().propertySpecs()).type();
+        writeJavaFile(jsonDir, valueJsonPackageName, valueReader);
     }
 }

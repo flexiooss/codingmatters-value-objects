@@ -77,7 +77,7 @@ public class SpecDefinitionTest {
     @Test
     public void readSimpleProperties() throws Exception {
         assertThat(
-                new ExampleValueReader().readValue("{" +
+                new ExampleValueReader().read("{" +
                         "\"prop\":\"a value\"," +
                         "\"listProp\":[\"a\",\"b\",\"c\"]," +
                         "\"complex\":null," +
@@ -93,7 +93,7 @@ public class SpecDefinitionTest {
     @Test
     public void readNullSimpleProperties() throws Exception {
         assertThat(
-                new ExampleValueReader().readValue("{" +
+                new ExampleValueReader().read("{" +
                         "\"prop\":null," +
                         "\"listProp\":null," +
                         "\"complex\":null," +
@@ -109,7 +109,7 @@ public class SpecDefinitionTest {
     @Test
     public void readComplexProperties() throws Exception {
         assertThat(
-                new ExampleValueReader().readValue("{" +
+                new ExampleValueReader().read("{" +
                         "\"prop\":null," +
                         "\"listProp\":null," +
                         "\"complex\":{\"sub\":\"value\"}," +
