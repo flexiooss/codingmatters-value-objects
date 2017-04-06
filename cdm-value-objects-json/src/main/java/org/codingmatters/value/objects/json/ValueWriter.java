@@ -36,7 +36,6 @@ public class ValueWriter {
                         .build())
                 .addMethod(this.buildTopLevelWriteMethod())
                 .addMethod(this.buildWriteWithGeneratorMethod())
-                .addMethod(this.writeStringArrayMethod())
                 .build();
     }
 
@@ -79,7 +78,7 @@ public class ValueWriter {
         if(propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE) {
             this.writeSimpleProperty(method, propertySpec);
         } else if(propertySpec.typeSpec().typeKind().isValueObject()) {
-            this.valueObjectWriteStatements(method, propertySpec);
+            this.externalValueObjectWriteStatements(method, propertySpec);
         } else {
             System.out.println(propertySpec.typeSpec().typeKind() + " : " + propertySpec.typeSpec().typeRef());
             method.addStatement("generator.writeNull()");
@@ -97,47 +96,21 @@ public class ValueWriter {
         }
     }
 
-    private void valueObjectWriteStatements(MethodSpec.Builder method, PropertySpec propertySpec) {
-        int lastDot = propertySpec.typeSpec().typeRef().lastIndexOf(".");
+    private void externalValueObjectWriteStatements(MethodSpec.Builder method, PropertySpec propertySpec) {
+        ClassName propertyClass = this.types.propertySingleType(propertySpec);
         ClassName propertyWriter = ClassName.get(
-                propertySpec.typeSpec().typeRef().substring(0, lastDot) + ".json",
-                propertySpec.typeSpec().typeRef().substring(lastDot + 1) + "Writer"
+                propertyClass.packageName() + ".json",
+                propertyClass.simpleName() + "Writer"
         );
         if (!propertySpec.typeSpec().cardinality().isCollection()) {
             method.addStatement("new $T().write(generator, value.$L())", propertyWriter, propertySpec.name());
         } else {
-            ClassName propertyType = ClassName.get(
-                    propertySpec.typeSpec().typeRef().substring(0, propertySpec.typeSpec().typeRef().lastIndexOf(".")),
-                    propertySpec.typeSpec().typeRef().substring(propertySpec.typeSpec().typeRef().lastIndexOf(".") + 1)
-            );
             method.addStatement("generator.writeStartArray()");
-            method.beginControlFlow("for ($T element : value.$L())", propertyType, propertySpec.name())
+            method.beginControlFlow("for ($T element : value.$L())", propertyClass, propertySpec.name())
                     .addStatement("new $T().write(generator, element)", propertyWriter)
                     .endControlFlow();
             method.addStatement("generator.writeEndArray()");
         }
-    }
-
-    private MethodSpec writeStringArrayMethod() {
-        MethodSpec.Builder method = MethodSpec.methodBuilder("writeStringArray")
-                .addModifiers(Modifier.PRIVATE)
-                .addParameter(JsonGenerator.class, "generator")
-                .addParameter(this.types.collectionConfiguration().valueListOfType(ClassName.get(String.class)), "elements");
-        method
-                .beginControlFlow("if(elements != null)")
-                    .addStatement("generator.writeStartArray()")
-                    .beginControlFlow("for($T elmt : elements)", String.class)
-                        .addStatement("generator.writeString(elmt)")
-                    .endControlFlow()
-                    .addStatement("generator.writeEndArray()")
-                .nextControlFlow("else")
-                    .addStatement("generator.writeNull()")
-                .endControlFlow();
-
-        return method
-                .addException(IOException.class)
-                .returns(TypeName.VOID)
-                .build();
     }
 
 }

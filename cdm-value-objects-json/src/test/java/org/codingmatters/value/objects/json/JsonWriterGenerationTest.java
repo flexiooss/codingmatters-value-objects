@@ -7,10 +7,7 @@ import org.codingmatters.value.objects.exception.SpecSyntaxException;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.reader.SpecReader;
 import org.codingmatters.value.objects.spec.Spec;
-import org.generated.ArraySimpleProps;
-import org.generated.ExampleValue;
-import org.generated.SimpleProps;
-import org.generated.ValueList;
+import org.generated.*;
 import org.generated.examplevalue.Complex;
 import org.generated.examplevalue.ComplexList;
 import org.junit.Before;
@@ -24,7 +21,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
-import static org.codingmatters.tests.reflect.ReflectMatchers.*;
+import static org.codingmatters.tests.reflect.ReflectMatchers.aClass;
+import static org.codingmatters.tests.reflect.ReflectMatchers.aPublic;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -75,14 +73,6 @@ public class JsonWriterGenerationTest {
                                 .returningVoid()
                                 .throwing(IOException.class)
                         )
-                        // private void writeStringArray(JsonGenerator generator, ValueList<String> elements) throws IOException
-                        .with(aPrivate().method().named("writeStringArray")
-                                .withParameters(
-                                        classType(JsonGenerator.class),
-                                        genericType().baseClass(ValueList.class).withParameters(classTypeParameter(String.class))
-                                )
-                                .returningVoid()
-                                .throwing(IOException.class))
                 )
         );
     }
@@ -267,6 +257,29 @@ public class JsonWriterGenerationTest {
                         "\"dateTimeProp\":[null]," +
                         "\"tzDateTimeProp\":[null]" +
                         "}")
+        );
+    }
+
+    @Test
+    public void writeReferencedValue() throws Exception {
+        RefValue value = new RefValue.Builder()
+                .ref(new Referenced.Builder()
+                        .prop("value")
+                        .build())
+                .refs(new Referenced.Builder()
+                        .prop("value")
+                        .build())
+                .build();
+
+        Object writer = this.compiled.getClass("org.generated.json.RefValueWriter").newInstance();
+        String json = this.compiled.on(writer).invoke("write", RefValue.class).with(value);
+
+        assertThat(
+                json,
+                is("{" +
+                        "\"ref\":{\"prop\":\"value\"}," +
+                        "\"refs\":[{\"prop\":\"value\"}]}"
+                )
         );
     }
 }

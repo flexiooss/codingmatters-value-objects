@@ -41,3 +41,11 @@ arraySimpleProps:
     $list: date-time
   tzDateTimeProp:
     $list: tz-date-time
+
+refValue:
+  ref: $referenced
+  refs:
+    $list: $referenced
+
+referenced:
+  prop: string
