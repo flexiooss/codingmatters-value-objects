@@ -8,21 +8,24 @@ import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.reader.SpecReader;
 import org.codingmatters.value.objects.spec.Spec;
 import org.generated.ExampleValue;
+import org.generated.SimpleProps;
 import org.generated.ValueList;
 import org.generated.examplevalue.Complex;
 import org.generated.examplevalue.ComplexList;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 /**
  * Created by nelt on 3/30/17.
@@ -164,9 +167,37 @@ public class JsonWriterGenerationTest {
         );
     }
 
-    @Ignore
     @Test
     public void writeSimpleTypes() throws Exception {
-        fail("NYIMPL");
+        SimpleProps value = new SimpleProps.Builder()
+                .stringProp("str")
+                .integerProp(12)
+                .longProp(12L)
+                .floatProp(12.12f)
+                .doubleProp(12.12d)
+                .booleanProp(true)
+                .dateProp(LocalDate.parse("2011-12-03"))
+                .timeProp(LocalTime.parse("10:15:30"))
+                .dateTimeProp(LocalDateTime.parse("2011-12-03T10:15:30"))
+                .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30+01:00"))
+                .build();
+        Object writer = this.compiled.getClass("org.generated.json.SimplePropsWriter").newInstance();
+        String json = this.compiled.on(writer).invoke("write", SimpleProps.class).with(value);
+
+        assertThat(
+                json,
+                is("{" +
+                        "\"stringProp\":\"str\"," +
+                        "\"integerProp\":12," +
+                        "\"longProp\":12," +
+                        "\"floatProp\":12.12," +
+                        "\"doubleProp\":12.12," +
+                        "\"booleanProp\":true," +
+                        "\"dateProp\":\"2011-12-03\"," +
+                        "\"timeProp\":\"10:15:30\"," +
+                        "\"dateTimeProp\":\"2011-12-03T10:15:30\"," +
+                        "\"tzDateTimeProp\":\"2011-12-03T10:15:30+01:00\"" +
+                        "}")
+        );
     }
 }

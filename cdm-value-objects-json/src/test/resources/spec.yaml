@@ -7,3 +7,15 @@ exampleValue:
   complexList:
     $list:
       sub: string
+
+simpleProps:
+  stringProp: string
+  integerProp: int
+  longProp: long
+  floatProp: float
+  doubleProp: double
+  booleanProp: bool
+  dateProp: date
+  timeProp: time
+  dateTimeProp: date-time
+  tzDateTimeProp: tz-date-time
