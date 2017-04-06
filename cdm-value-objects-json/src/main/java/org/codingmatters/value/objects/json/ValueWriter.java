@@ -107,7 +107,11 @@ public class ValueWriter {
         } else {
             method.addStatement("generator.writeStartArray()");
             method.beginControlFlow("for ($T element : value.$L())", propertyClass, propertySpec.name())
-                    .addStatement("new $T().write(generator, element)", propertyWriter)
+                    .beginControlFlow("if(element != null)")
+                        .addStatement("new $T().write(generator, element)", propertyWriter)
+                    .nextControlFlow("else")
+                        .addStatement("generator.writeNull()")
+                    .endControlFlow()
                     .endControlFlow();
             method.addStatement("generator.writeEndArray()");
         }

@@ -282,4 +282,23 @@ public class JsonWriterGenerationTest {
                 )
         );
     }
+
+    @Test
+    public void writeNullReferencedValue() throws Exception {
+        RefValue value = new RefValue.Builder()
+                .ref(null)
+                .refs((Referenced) null)
+                .build();
+
+        Object writer = this.compiled.getClass("org.generated.json.RefValueWriter").newInstance();
+        String json = this.compiled.on(writer).invoke("write", RefValue.class).with(value);
+
+        assertThat(
+                json,
+                is("{" +
+                        "\"ref\":null," +
+                        "\"refs\":[null]}"
+                )
+        );
+    }
 }
