@@ -99,6 +99,10 @@ public class ValueConfiguration {
         return collectionConfiguration;
     }
 
+    public String package_() {
+        return rootPackage;
+    }
+
     static private String capitalizedFirst(String str) {
         return str.substring(0,1).toUpperCase() + str.substring(1);
     }
