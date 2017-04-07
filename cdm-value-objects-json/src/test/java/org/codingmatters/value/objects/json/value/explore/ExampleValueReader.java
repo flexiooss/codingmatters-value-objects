@@ -39,17 +39,17 @@ public class ExampleValueReader {
             String fieldName = parser.getCurrentName();
             switch (fieldName) {
                 case "prop":
-                    builder.prop(this.readValue(parser, JsonToken.VALUE_STRING, jsonParser -> parser.getText(), "prop"));
+                    builder.prop(this.readValue(parser, JsonToken.VALUE_STRING, jsonParser -> jsonParser.getText(), "prop"));
                     break;
                 case "listProp":
-                    builder.listProp(this.readListValue(parser, jsonParser -> parser.getText(), "listProp"));
+                    builder.listProp(this.readListValue(parser, jsonParser -> jsonParser.getText(), "listProp"));
                     break;
                 case "complex":
                     builder.complex(new ComplexReader().read(parser));
                     break;
                 case "complexList":
                     ComplexListReader reader = new ComplexListReader();
-                    builder.complexList(this.readListValue(parser, parser1 -> reader.read(parser), "complexList"));
+                    builder.complexList(this.readListValue(parser, jsonParser -> reader.read(jsonParser), "complexList"));
                     break;
             }
         }
