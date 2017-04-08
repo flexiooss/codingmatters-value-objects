@@ -123,18 +123,37 @@ public class ValueReader {
                     this.singleSimplePropertyStatement(method, propertySpec, "getText");
                 } else {
                     this.multipleSimplePropertyStatement(method, propertySpec, "getText");
-
                 }
             }
+        } else if(propertySpec.typeSpec().typeKind().isValueObject()) {
+            this.singleComplexPropertyStatement(method, propertySpec);
+        }
+    }
+
+    private void singleComplexPropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
+        ClassName propertyClass = this.types.propertySingleType(propertySpec);
+        ClassName propertyReader = ClassName.get(
+                propertyClass.packageName() + ".json",
+                propertyClass.simpleName() + "Reader"
+        );
+            /*
+                case "complex":
+                    builder.complex(new ComplexReader().read(parser));
+                    break;
+             */
+        if(! propertySpec.typeSpec().cardinality().isCollection()) {
+            method.beginControlFlow("case $S:", propertySpec.name())
+                    .addStatement("builder.$L(new $T().read(parser))", propertySpec.name(), propertyReader)
+                    .endControlFlow();
         }
     }
 
     private void multipleSimplePropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec, String parserMethod) {
-    /*
-    case "listProp":
-        builder.listProp(this.readListValue(parser, jsonParser -> jsonParser.getText(), "listProp"));
-        break;
-     */
+        /*
+        case "listProp":
+            builder.listProp(this.readListValue(parser, jsonParser -> jsonParser.getText(), "listProp"));
+            break;
+         */
         method.beginControlFlow("case $S:", propertySpec.name())
                 .addStatement("builder.$L(this.readListValue(parser, jsonParser -> jsonParser.$L(), $S))",
                         propertySpec.name(), parserMethod, propertySpec.name())
@@ -143,11 +162,11 @@ public class ValueReader {
     }
 
     private void singleSimplePropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec, String parserMethod) {
-    /*
-    case "prop":
-            builder.prop(this.readValue(parser, JsonToken.VALUE_STRING, jsonParser -> jsonParser.getText(), "prop"));
-            break;
-     */
+        /*
+        case "prop":
+                builder.prop(this.readValue(parser, JsonToken.VALUE_STRING, jsonParser -> jsonParser.getText(), "prop"));
+                break;
+         */
         method.beginControlFlow("case $S:", propertySpec.name())
                 .addStatement("builder.$L(this.readValue(parser, $T.VALUE_STRING, jsonParser -> jsonParser.$L(), $S))",
                         propertySpec.name(), JsonToken.class, parserMethod, propertySpec.name())
