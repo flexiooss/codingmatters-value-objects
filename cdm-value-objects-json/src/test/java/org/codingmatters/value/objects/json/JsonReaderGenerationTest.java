@@ -10,7 +10,6 @@ import org.codingmatters.value.objects.reader.SpecReader;
 import org.codingmatters.value.objects.spec.Spec;
 import org.generated.ExampleValue;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -105,7 +104,6 @@ public class JsonReaderGenerationTest {
         );
     }
 
-    @Ignore
     @Test
     public void readStringProperty() throws Exception {
         String json = "{" +

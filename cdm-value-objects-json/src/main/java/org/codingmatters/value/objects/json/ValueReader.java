@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.squareup.javapoet.*;
 import org.codingmatters.value.objects.generation.ValueConfiguration;
 import org.codingmatters.value.objects.spec.PropertySpec;
+import org.codingmatters.value.objects.spec.TypeKind;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
@@ -58,13 +59,86 @@ public class ValueReader {
     }
 
     private MethodSpec readWithParserMethod() {
-        return MethodSpec.methodBuilder("read")
+        MethodSpec.Builder method = MethodSpec.methodBuilder("read")
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(JsonParser.class, "parser")
                 .returns(this.types.valueType())
-                .addException(IOException.class)
-                .addStatement("return null")
-                .build();
+                .addException(IOException.class);
+
+        /*
+        JsonToken firstToken = parser.nextToken();
+        if(firstToken == JsonToken.VALUE_NULL) return null;
+        */
+        method.addStatement("$T firstToken = parser.nextToken()", JsonToken.class);
+        method.addStatement("if(firstToken == $T.VALUE_NULL) return null", JsonToken.class);
+        /*
+        if (firstToken != JsonToken.START_OBJECT) {
+            throw new IOException(
+                    String.format("reading a %s object, was expecting %s, but was %s",
+                            ExampleValue.class.getName(), JsonToken.START_OBJECT, parser.currentToken()
+                    )
+            );
+        }
+        */
+        method.beginControlFlow("if (firstToken != $T.START_OBJECT)", JsonToken.class)
+                .addStatement("" +
+                        "throw new IOException(\n" +
+                        "        String.format(\"reading a %s object, was expecting %s, but was %s\",\n" +
+                        "                $T.class.getName(), $T.START_OBJECT, parser.currentToken()\n" +
+                        "        )\n" +
+                        ")", this.types.valueType(), JsonToken.class)
+                .endControlFlow();
+        /*
+        ExampleValue.Builder builder = ExampleValue.Builder.builder();
+        while (parser.nextToken() != JsonToken.END_OBJECT) {
+            String fieldName = parser.getCurrentName();
+            switch (fieldName) {
+         */
+        method.addStatement("$T builder = $T.builder()", this.types.valueBuilderType(), this.types.valueBuilderType());
+        method.beginControlFlow("while (parser.nextToken() != $T.END_OBJECT)", JsonToken.class)
+                .addStatement("$T fieldName = parser.getCurrentName()", String.class)
+                .beginControlFlow("switch (fieldName)");
+        for (PropertySpec propertySpec : this.propertySpecs) {
+            this.propertyStatements(method, propertySpec);
+        }
+        /*
+            }
+        }
+         */
+        method.endControlFlow()
+                .endControlFlow();
+
+        /*
+        return builder.build();
+         */
+        method.addStatement("return builder.build()");
+
+        return method.build();
+    }
+
+    private void propertyStatements(MethodSpec.Builder method, PropertySpec propertySpec) {
+        if(
+                propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE &&
+                        ! propertySpec.typeSpec().cardinality().isCollection() &&
+                        propertySpec.typeSpec().typeRef().equals(String.class.getName())
+                ) {
+            if(propertySpec.typeSpec().typeRef().equals(String.class.getName())) {
+                singleSimplePropertyStatement(method, propertySpec, "getText");
+            }
+        }
+    }
+
+    private void singleSimplePropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec, String parserMethod) {
+    /*
+    case "prop":
+            builder.prop(this.readValue(parser, JsonToken.VALUE_STRING, jsonParser -> jsonParser.getText(), "prop"));
+            break;
+     */
+        method.beginControlFlow("case $S:", propertySpec.name())
+                .addStatement("builder.$L(this.readValue(parser, $T.VALUE_STRING, jsonParser -> jsonParser.$L(), $S))",
+                        propertySpec.name(), JsonToken.class, parserMethod, propertySpec.name())
+                .addStatement("break")
+                .endControlFlow();
     }
 
     private TypeSpec readerFunctionalInterface() {
