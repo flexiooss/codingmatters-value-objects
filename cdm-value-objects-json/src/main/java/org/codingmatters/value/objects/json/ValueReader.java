@@ -117,15 +117,29 @@ public class ValueReader {
     }
 
     private void propertyStatements(MethodSpec.Builder method, PropertySpec propertySpec) {
-        if(
-                propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE &&
-                        ! propertySpec.typeSpec().cardinality().isCollection() &&
-                        propertySpec.typeSpec().typeRef().equals(String.class.getName())
-                ) {
+        if(propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE) {
             if(propertySpec.typeSpec().typeRef().equals(String.class.getName())) {
-                singleSimplePropertyStatement(method, propertySpec, "getText");
+                if(! propertySpec.typeSpec().cardinality().isCollection()) {
+                    this.singleSimplePropertyStatement(method, propertySpec, "getText");
+                } else {
+                    this.multipleSimplePropertyStatement(method, propertySpec, "getText");
+
+                }
             }
         }
+    }
+
+    private void multipleSimplePropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec, String parserMethod) {
+    /*
+    case "listProp":
+        builder.listProp(this.readListValue(parser, jsonParser -> jsonParser.getText(), "listProp"));
+        break;
+     */
+        method.beginControlFlow("case $S:", propertySpec.name())
+                .addStatement("builder.$L(this.readListValue(parser, jsonParser -> jsonParser.$L(), $S))",
+                        propertySpec.name(), parserMethod, propertySpec.name())
+                .addStatement("break")
+                .endControlFlow();
     }
 
     private void singleSimplePropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec, String parserMethod) {

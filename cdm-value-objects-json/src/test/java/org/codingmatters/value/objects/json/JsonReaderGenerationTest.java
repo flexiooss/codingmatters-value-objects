@@ -42,14 +42,14 @@ public class JsonReaderGenerationTest {
 
     @Before
     public void setUp() throws Exception {
-        System.setProperty("spec.code.generator.debug", "true");
+//        System.setProperty("spec.code.generator.debug", "true");
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
         new JsonFrameworkGenerator(this.spec, "org.generated", dir.getRoot()).generate();
         this.compiled = new CompiledCode.Builder()
                 .classpath(CompiledCode.findInClasspath(".*jackson-core-.*.jar"))
                 .source(this.dir.getRoot())
                 .compile();
-        System.setProperty("spec.code.generator.debug", "false");
+//        System.setProperty("spec.code.generator.debug", "false");
     }
 
 
@@ -113,13 +113,33 @@ public class JsonReaderGenerationTest {
                 "\"complexList\":null" +
                 "}";
 
-        Object writer = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-        ExampleValue value = this.compiled.on(writer).invoke("read", String.class).with(json);
+        Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
+        ExampleValue value = this.compiled.on(reader).invoke("read", String.class).with(json);
 
         assertThat(
                 value,
                 is(ExampleValue.Builder.builder()
                         .prop("a value")
+                        .build())
+        );
+    }
+
+
+    @Test
+    public void readStringArrayProperty() throws Exception {
+        String json = "{" +
+                "\"prop\":null," +
+                "\"listProp\":[\"a\",\"b\",\"c\"]," +
+                "\"complex\":null," +
+                "\"complexList\":null" +
+                "}";
+        Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
+        ExampleValue value = this.compiled.on(reader).invoke("read", String.class).with(json);
+
+        assertThat(
+                value,
+                is(ExampleValue.Builder.builder()
+                        .listProp("a", "b", "c")
                         .build())
         );
     }
