@@ -10,6 +10,7 @@ import org.codingmatters.value.objects.reader.SpecReader;
 import org.codingmatters.value.objects.spec.Spec;
 import org.generated.ExampleValue;
 import org.generated.examplevalue.Complex;
+import org.generated.examplevalue.ComplexList;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -161,6 +162,28 @@ public class JsonReaderGenerationTest {
                 value,
                 is(ExampleValue.Builder.builder()
                         .complex(new Complex.Builder()
+                                .sub("a value")
+                                .build())
+                        .build())
+        );
+    }
+
+
+    @Test
+    public void readComplexListProperty() throws Exception {
+        String json = "{" +
+                "\"prop\":null," +
+                "\"listProp\":null," +
+                "\"complex\":null," +
+                "\"complexList\":[{\"sub\":\"a value\"}]" +
+                "}";
+        Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
+        ExampleValue value = this.compiled.on(reader).invoke("read", String.class).with(json);
+
+        assertThat(
+                value,
+                is(ExampleValue.Builder.builder()
+                        .complexList(new ComplexList.Builder()
                                 .sub("a value")
                                 .build())
                         .build())

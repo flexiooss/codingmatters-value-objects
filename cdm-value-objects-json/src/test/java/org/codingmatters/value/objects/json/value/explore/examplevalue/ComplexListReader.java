@@ -13,6 +13,7 @@ import java.io.IOException;
 public class ComplexListReader {
 
     public ComplexList read(JsonParser parser) throws IOException {
+//        parser.nextToken();
         if(parser.currentToken() == JsonToken.VALUE_NULL) return null;
 
         ComplexList.Builder builder = ComplexList.Builder.builder();

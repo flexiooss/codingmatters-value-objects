@@ -19,15 +19,15 @@ public class ExampleValueReader {
 
     public ExampleValue read(String json) throws IOException {
         try (JsonParser parser = this.factory.createParser(json.getBytes())) {
+            parser.nextToken();
             return this.read(parser);
         }
     }
 
     public ExampleValue read(JsonParser parser) throws IOException {
-        JsonToken firstToken = parser.nextToken();
-        if(firstToken == JsonToken.VALUE_NULL) return null;
+        if(parser.currentToken() == JsonToken.VALUE_NULL) return null;
 
-        if (firstToken != JsonToken.START_OBJECT) {
+        if(parser.currentToken() != JsonToken.START_OBJECT) {
             throw new IOException(
                     String.format("reading a %s object, was expecting %s, but was %s",
                             ExampleValue.class.getName(), JsonToken.START_OBJECT, parser.currentToken()
@@ -45,6 +45,7 @@ public class ExampleValueReader {
                     builder.listProp(this.readListValue(parser, jsonParser -> jsonParser.getText(), "listProp"));
                     break;
                 case "complex":
+                    parser.nextToken();
                     builder.complex(new ComplexReader().read(parser));
                     break;
                 case "complexList":

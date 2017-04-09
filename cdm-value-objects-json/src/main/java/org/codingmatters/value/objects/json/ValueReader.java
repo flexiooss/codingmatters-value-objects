@@ -44,6 +44,7 @@ public class ValueReader {
     private MethodSpec topLevelReadMethod() {
         /*
         try (JsonParser parser = this.factory.createParser(json.getBytes())) {
+            parser.nextToken();
             return this.read(parser);
         }
          */
@@ -52,8 +53,9 @@ public class ValueReader {
                 .addParameter(String.class, "json")
                 .returns(this.types.valueType())
                 .addException(IOException.class)
-                .beginControlFlow("try ($T parser = this.factory.createParser(json.getBytes()))", JsonParser.class)
-                .addStatement("return this.read(parser)")
+                .beginControlFlow("try($T parser = this.factory.createParser(json.getBytes()))", JsonParser.class)
+                    .addStatement("parser.nextToken()")
+                    .addStatement("return this.read(parser)")
                 .endControlFlow()
                 .build();
     }
@@ -66,13 +68,11 @@ public class ValueReader {
                 .addException(IOException.class);
 
         /*
-        JsonToken firstToken = parser.nextToken();
-        if(firstToken == JsonToken.VALUE_NULL) return null;
+        if(parser.currentToken() == JsonToken.VALUE_NULL) return null;
         */
-        method.addStatement("$T firstToken = parser.nextToken()", JsonToken.class);
-        method.addStatement("if(firstToken == $T.VALUE_NULL) return null", JsonToken.class);
+        method.addStatement("if(parser.currentToken() == $T.VALUE_NULL) return null", JsonToken.class);
         /*
-        if (firstToken != JsonToken.START_OBJECT) {
+        if (parser.currentToken() != JsonToken.START_OBJECT) {
             throw new IOException(
                     String.format("reading a %s object, was expecting %s, but was %s",
                             ExampleValue.class.getName(), JsonToken.START_OBJECT, parser.currentToken()
@@ -80,7 +80,7 @@ public class ValueReader {
             );
         }
         */
-        method.beginControlFlow("if (firstToken != $T.START_OBJECT)", JsonToken.class)
+        method.beginControlFlow("if(parser.currentToken() != $T.START_OBJECT)", JsonToken.class)
                 .addStatement("" +
                         "throw new IOException(\n" +
                         "        String.format(\"reading a %s object, was expecting %s, but was %s\",\n" +
@@ -126,7 +126,27 @@ public class ValueReader {
                 }
             }
         } else if(propertySpec.typeSpec().typeKind().isValueObject()) {
-            this.singleComplexPropertyStatement(method, propertySpec);
+            if(! propertySpec.typeSpec().cardinality().isCollection()) {
+                this.singleComplexPropertyStatement(method, propertySpec);
+            } else {
+                ClassName propertyClass = this.types.propertySingleType(propertySpec);
+                ClassName propertyReader = ClassName.get(
+                        propertyClass.packageName() + ".json",
+                        propertyClass.simpleName() + "Reader"
+                );
+                /*
+                    case "complexList":
+                        ComplexListReader reader = new ComplexListReader();
+                        builder.complexList(this.readListValue(parser, jsonParser -> reader.read(jsonParser), "complexList"));
+                        break;
+                 */
+                method.beginControlFlow("case $S:", propertySpec.name())
+                        .addStatement("$T reader = new $T()", propertyReader, propertyReader)
+                        .addStatement("builder.$L(this.readListValue(parser, jsonParser -> reader.read(jsonParser), $S))",
+                                propertySpec.name(), propertySpec.name())
+                        .addStatement("break")
+                        .endControlFlow();
+            }
         }
     }
 
@@ -138,12 +158,15 @@ public class ValueReader {
         );
             /*
                 case "complex":
+                    parser.nextToken();
                     builder.complex(new ComplexReader().read(parser));
                     break;
              */
         if(! propertySpec.typeSpec().cardinality().isCollection()) {
             method.beginControlFlow("case $S:", propertySpec.name())
+                    .addStatement("parser.nextToken()")
                     .addStatement("builder.$L(new $T().read(parser))", propertySpec.name(), propertyReader)
+                    .addStatement("break")
                     .endControlFlow();
         }
     }
@@ -243,8 +266,8 @@ public class ValueReader {
                 .addParameter(String.class, "propertyName")
                 .returns(ParameterizedTypeName.get(ClassName.get(List.class), TypeVariableName.get("T")))
                 .addException(IOException.class)
-                .addStatement("parser.nextToken();")
-                .addStatement("if (parser.currentToken() == $T.VALUE_NULL) return null;", JsonToken.class)
+                .addStatement("parser.nextToken()")
+                .addStatement("if (parser.currentToken() == $T.VALUE_NULL) return null", JsonToken.class)
                 .beginControlFlow("if (parser.currentToken() == $T.START_ARRAY)", JsonToken.class)
                     .addStatement("$T<T> listValue = new $T<>()", LinkedList.class, LinkedList.class)
                     .beginControlFlow("while (parser.nextToken() != $T.END_ARRAY)", JsonToken.class)
