@@ -5,13 +5,16 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.squareup.javapoet.*;
 import org.codingmatters.value.objects.generation.ValueConfiguration;
+import org.codingmatters.value.objects.json.property.SimplePropertyReader;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.TypeKind;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by nelt on 4/6/17.
@@ -118,13 +121,24 @@ public class ValueReader {
 
     private void propertyStatements(MethodSpec.Builder method, PropertySpec propertySpec) {
         if(propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE) {
-            if(propertySpec.typeSpec().typeRef().equals(String.class.getName())) {
-                if(! propertySpec.typeSpec().cardinality().isCollection()) {
-                    this.singleSimplePropertyStatement(method, propertySpec, "getText");
+            SimplePropertyReader propertyReader = SimplePropertyReader.forClassName(propertySpec.typeSpec().typeRef());
+            if(propertyReader != null) {
+                if (!propertySpec.typeSpec().cardinality().isCollection()) {
+                    this.singleSimplePropertyStatement(method, propertySpec, propertyReader);
                 } else {
-                    this.multipleSimplePropertyStatement(method, propertySpec, "getText");
+                    this.multipleSimplePropertyStatement(method, propertySpec, propertyReader);
                 }
+            } else {
+                System.err.println("NYIMPL type ref for simple propert: " + propertySpec.typeSpec().typeRef());
             }
+//            String parserMethod = this.parserMethodForType(propertySpec);
+//            if(parserMethod != null) {
+//                if (!propertySpec.typeSpec().cardinality().isCollection()) {
+//                    this.singleSimplePropertyStatement(method, propertySpec, parserMethod);
+//                } else {
+//                    this.multipleSimplePropertyStatement(method, propertySpec, parserMethod);
+//                }
+//            }
         } else if(propertySpec.typeSpec().typeKind().isValueObject()) {
             if(! propertySpec.typeSpec().cardinality().isCollection()) {
                 this.singleComplexPropertyStatement(method, propertySpec);
@@ -171,7 +185,28 @@ public class ValueReader {
         }
     }
 
-    private void multipleSimplePropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec, String parserMethod) {
+    private void singleSimplePropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec, SimplePropertyReader propertyReader) {
+        /*
+        case "prop":
+                Set<JsonToken> expectedTokens = new HashSet();
+                expectedTokens.add(JsonToken.VALUE_STRING);
+                builder.prop(this.readValue(parser, jsonParser -> jsonParser.getText(), "prop", expectedTokens));
+                break;
+         */
+        method.beginControlFlow("case $S:", propertySpec.name())
+                .addStatement("$T<$T> expectedTokens = new $T<>()", Set.class, JsonToken.class, HashSet.class);
+        for (JsonToken jsonToken : propertyReader.expectedTokens()) {
+            method.addStatement("expectedTokens.add($T.$L)", JsonToken.class, jsonToken.name());
+        }
+
+        method
+                .addStatement("builder.$L(this.readValue(parser, jsonParser -> jsonParser.$L(), $S, expectedTokens))",
+                        propertySpec.name(), propertyReader.parserMethod(), propertySpec.name())
+                .addStatement("break")
+                .endControlFlow();
+    }
+
+    private void multipleSimplePropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec, SimplePropertyReader propertyReader) {
         /*
         case "listProp":
             builder.listProp(this.readListValue(parser, jsonParser -> jsonParser.getText(), "listProp"));
@@ -179,20 +214,7 @@ public class ValueReader {
          */
         method.beginControlFlow("case $S:", propertySpec.name())
                 .addStatement("builder.$L(this.readListValue(parser, jsonParser -> jsonParser.$L(), $S))",
-                        propertySpec.name(), parserMethod, propertySpec.name())
-                .addStatement("break")
-                .endControlFlow();
-    }
-
-    private void singleSimplePropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec, String parserMethod) {
-        /*
-        case "prop":
-                builder.prop(this.readValue(parser, JsonToken.VALUE_STRING, jsonParser -> jsonParser.getText(), "prop"));
-                break;
-         */
-        method.beginControlFlow("case $S:", propertySpec.name())
-                .addStatement("builder.$L(this.readValue(parser, $T.VALUE_STRING, jsonParser -> jsonParser.$L(), $S))",
-                        propertySpec.name(), JsonToken.class, parserMethod, propertySpec.name())
+                        propertySpec.name(), propertyReader.parserMethod(), propertySpec.name())
                 .addStatement("break")
                 .endControlFlow();
     }
@@ -219,13 +241,12 @@ public class ValueReader {
 
     private MethodSpec readValueMethod() {
         /*
-        private <T> T readValue(JsonParser parser, JsonToken expectedToken, Reader<T> reader, String propertyName) throws IOException
+        private <T> T readValue(JsonParser parser, Reader<T> reader, String propertyName, Set<JsonToken> expectedTokens) throws IOException
          */
         return MethodSpec.methodBuilder("readValue")
                 .addModifiers(Modifier.PRIVATE)
                 .addTypeVariable(TypeVariableName.get("T"))
                 .addParameter(JsonParser.class, "parser")
-                .addParameter(JsonToken.class, "expectedToken")
                 .addParameter(
                         ParameterizedTypeName.get(
                                 ClassName.bestGuess("Reader"),
@@ -234,15 +255,18 @@ public class ValueReader {
                         "reader"
                 )
                 .addParameter(String.class, "propertyName")
+                .addParameter(
+                        ParameterizedTypeName.get(ClassName.get(Set.class), ClassName.get(JsonToken.class)),
+                        "expectedTokens")
                 .returns(TypeVariableName.get("T"))
                 .addException(IOException.class)
                 .addStatement("parser.nextToken()")
                 .addStatement("if (parser.currentToken() == $T.VALUE_NULL) return null", JsonToken.class)
-                .addStatement("if (parser.currentToken() == expectedToken) return reader.read(parser)")
+                .addStatement("if (expectedTokens.contains(parser.currentToken())) return reader.read(parser)")
                 .addStatement("" +
                         "throw new $T(\n" +
                         "    $T.format(\"reading property %s, was expecting %s, but was %s\",\n" +
-                        "        propertyName, expectedToken, parser.currentToken()\n" +
+                        "        propertyName, expectedTokens, parser.currentToken()\n" +
                         "    )\n" +
                         ")"
                         , IOException.class, String.class
