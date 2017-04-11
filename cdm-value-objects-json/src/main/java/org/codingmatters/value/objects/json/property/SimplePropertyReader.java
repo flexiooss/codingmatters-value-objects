@@ -2,6 +2,7 @@ package org.codingmatters.value.objects.json.property;
 
 import com.fasterxml.jackson.core.JsonToken;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,6 +23,7 @@ public enum SimplePropertyReader {
     FLOAT("getFloatValue", Float.class, JsonToken.VALUE_NUMBER_FLOAT),
     DOUBLE("getDoubleValue", Double.class, JsonToken.VALUE_NUMBER_FLOAT),
     BOOLEAN("getBooleanValue", Boolean.class, JsonToken.VALUE_TRUE, JsonToken.VALUE_FALSE),
+    DATE("getText", LocalDate.class, JsonToken.VALUE_STRING),
     ;
 
     private final Set<JsonToken> expectedToken;

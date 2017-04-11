@@ -7,10 +7,13 @@ import com.squareup.javapoet.*;
 import org.codingmatters.value.objects.generation.ValueConfiguration;
 import org.codingmatters.value.objects.json.property.SimplePropertyReader;
 import org.codingmatters.value.objects.spec.PropertySpec;
+import org.codingmatters.value.objects.spec.PropertyTypeSpec;
 import org.codingmatters.value.objects.spec.TypeKind;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.temporal.Temporal;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -199,11 +202,28 @@ public class ValueReader {
             method.addStatement("expectedTokens.add($T.$L)", JsonToken.class, jsonToken.name());
         }
 
+        if(this.isTemporal(propertySpec.typeSpec())) {
+            method
+                    .addStatement("builder.$L(this.readValue(parser, jsonParser -> $T.parse(jsonParser.$L()), $S, expectedTokens))",
+                            propertySpec.name(), LocalDate.class, propertyReader.parserMethod(), propertySpec.name()
+                    );
+        } else {
+            method
+                    .addStatement("builder.$L(this.readValue(parser, jsonParser -> jsonParser.$L(), $S, expectedTokens))",
+                            propertySpec.name(), propertyReader.parserMethod(), propertySpec.name()
+                    );
+        }
         method
-                .addStatement("builder.$L(this.readValue(parser, jsonParser -> jsonParser.$L(), $S, expectedTokens))",
-                        propertySpec.name(), propertyReader.parserMethod(), propertySpec.name())
                 .addStatement("break")
                 .endControlFlow();
+    }
+
+    private boolean isTemporal(PropertyTypeSpec typeSpec) {
+        try {
+            return Temporal.class.isAssignableFrom(Class.forName(typeSpec.typeRef()));
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 
     private void multipleSimplePropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec, SimplePropertyReader propertyReader) {
@@ -212,9 +232,17 @@ public class ValueReader {
             builder.listProp(this.readListValue(parser, jsonParser -> jsonParser.getText(), "listProp"));
             break;
          */
-        method.beginControlFlow("case $S:", propertySpec.name())
-                .addStatement("builder.$L(this.readListValue(parser, jsonParser -> jsonParser.$L(), $S))",
-                        propertySpec.name(), propertyReader.parserMethod(), propertySpec.name())
+        method.beginControlFlow("case $S:", propertySpec.name());
+        if(this.isTemporal(propertySpec.typeSpec())) {
+            method
+                    .addStatement("builder.$L(this.readListValue(parser, jsonParser -> $T.parse(jsonParser.$L()), $S))",
+                            propertySpec.name(), LocalDate.class, propertyReader.parserMethod(), propertySpec.name());
+        } else {
+            method
+                    .addStatement("builder.$L(this.readListValue(parser, jsonParser -> jsonParser.$L(), $S))",
+                            propertySpec.name(), propertyReader.parserMethod(), propertySpec.name());
+        }
+        method
                 .addStatement("break")
                 .endControlFlow();
     }
