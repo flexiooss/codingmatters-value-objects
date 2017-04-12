@@ -20,6 +20,9 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -224,9 +227,9 @@ public class JsonReaderGenerationTest {
                     .doubleProp(12.12d)
                     .booleanProp(true)
                     .dateProp(LocalDate.parse("2011-12-03"))
-//                    .timeProp(LocalTime.parse("10:15:30"))
-//                    .dateTimeProp(LocalDateTime.parse("2011-12-03T10:15:30"))
-//                    .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30+01:00"))
+                    .timeProp(LocalTime.parse("10:15:30"))
+                    .dateTimeProp(LocalDateTime.parse("2011-12-03T10:15:30"))
+                    .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30+01:00"))
                     .build()
                 )
         );
@@ -277,10 +280,10 @@ public class JsonReaderGenerationTest {
                 "\"floatProp\":[12.12]," +
                 "\"doubleProp\":[12.12]," +
                 "\"booleanProp\":[true]," +
-                "\"dateProp\":[\"2011-12-03\"]" +
-//                "\"timeProp\":[\"10:15:30\"]," +
-//                "\"dateTimeProp\":[\"2011-12-03T10:15:30\"]," +
-//                "\"tzDateTimeProp\":[\"2011-12-03T10:15:30+01:00\"]" +
+                "\"dateProp\":[\"2011-12-03\"]," +
+                "\"timeProp\":[\"10:15:30\"]," +
+                "\"dateTimeProp\":[\"2011-12-03T10:15:30\"]," +
+                "\"tzDateTimeProp\":[\"2011-12-03T10:15:30+01:00\"]" +
                 "}";
 
         Object reader = this.compiled.getClass("org.generated.json.ArraySimplePropsReader").newInstance();
@@ -297,9 +300,9 @@ public class JsonReaderGenerationTest {
                                 .doubleProp(12.12d)
                                 .booleanProp(true)
                                 .dateProp(LocalDate.parse("2011-12-03"))
-//                                .timeProp(LocalTime.parse("10:15:30"))
-//                                .dateTimeProp(LocalDateTime.parse("2011-12-03T10:15:30"))
-//                                .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30+01:00"))
+                                .timeProp(LocalTime.parse("10:15:30"))
+                                .dateTimeProp(LocalDateTime.parse("2011-12-03T10:15:30"))
+                                .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30+01:00"))
                                 .build()
                 )
         );
