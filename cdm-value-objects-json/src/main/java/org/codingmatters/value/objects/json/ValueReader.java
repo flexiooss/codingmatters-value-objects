@@ -7,12 +7,10 @@ import com.squareup.javapoet.*;
 import org.codingmatters.value.objects.generation.ValueConfiguration;
 import org.codingmatters.value.objects.json.property.SimplePropertyReader;
 import org.codingmatters.value.objects.spec.PropertySpec;
-import org.codingmatters.value.objects.spec.PropertyTypeSpec;
 import org.codingmatters.value.objects.spec.TypeKind;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
-import java.time.temporal.Temporal;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -131,7 +129,7 @@ public class ValueReader {
                     this.multipleSimplePropertyStatement(method, propertySpec, propertyReader);
                 }
             } else {
-                System.err.println("NYIMPL type ref for simple propert: " + propertySpec.typeSpec().typeRef());
+                System.err.println("NYIMPL type ref for simple property: " + propertySpec.typeSpec().typeRef());
             }
         } else if(propertySpec.typeSpec().typeKind().isValueObject()) {
             if(! propertySpec.typeSpec().cardinality().isCollection()) {
@@ -213,14 +211,6 @@ public class ValueReader {
         method
                 .addStatement("break")
                 .endControlFlow();
-    }
-
-    private boolean isTemporal(PropertyTypeSpec typeSpec) {
-        try {
-            return Temporal.class.isAssignableFrom(Class.forName(typeSpec.typeRef()));
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
     }
 
     private TypeSpec readerFunctionalInterface() {
