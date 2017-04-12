@@ -133,14 +133,6 @@ public class ValueReader {
             } else {
                 System.err.println("NYIMPL type ref for simple propert: " + propertySpec.typeSpec().typeRef());
             }
-//            String parserMethod = this.parserMethodForType(propertySpec);
-//            if(parserMethod != null) {
-//                if (!propertySpec.typeSpec().cardinality().isCollection()) {
-//                    this.singleSimplePropertyStatement(method, propertySpec, parserMethod);
-//                } else {
-//                    this.multipleSimplePropertyStatement(method, propertySpec, parserMethod);
-//                }
-//            }
         } else if(propertySpec.typeSpec().typeKind().isValueObject()) {
             if(! propertySpec.typeSpec().cardinality().isCollection()) {
                 this.singleComplexPropertyStatement(method, propertySpec);
@@ -192,8 +184,6 @@ public class ValueReader {
         case "prop":
                 Set<JsonToken> expectedTokens = new HashSet();
                 expectedTokens.add(JsonToken.VALUE_STRING);
-                builder.prop(this.readValue(parser, jsonParser -> jsonParser.getText(), "prop", expectedTokens));
-                break;
          */
         method.beginControlFlow("case $S:", propertySpec.name())
                 .addStatement("$T<$T> expectedTokens = new $T<>()", Set.class, JsonToken.class, HashSet.class);
@@ -203,6 +193,9 @@ public class ValueReader {
 
         propertyReader.addSingleStatement(method, propertySpec);
 
+        /*
+                break;
+         */
         method
                 .addStatement("break")
                 .endControlFlow();
@@ -211,11 +204,12 @@ public class ValueReader {
     private void multipleSimplePropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec, SimplePropertyReader propertyReader) {
         /*
         case "listProp":
-            builder.listProp(this.readListValue(parser, jsonParser -> jsonParser.getText(), "listProp"));
-            break;
          */
         method.beginControlFlow("case $S:", propertySpec.name());
         propertyReader.addMultipleStatement(method, propertySpec);
+        /*
+            break;
+         */
         method
                 .addStatement("break")
                 .endControlFlow();
