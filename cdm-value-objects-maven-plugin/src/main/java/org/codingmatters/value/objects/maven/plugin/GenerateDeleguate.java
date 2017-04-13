@@ -13,7 +13,7 @@ import java.io.InputStream;
 /**
  * Created by nelt on 9/16/16.
  */
-public class GenerateDeleguate implements Runnable {
+public class GenerateDeleguate {
 
     private final String destinationPackage;
     private final File inputSpecification;
@@ -25,20 +25,12 @@ public class GenerateDeleguate implements Runnable {
         this.outputDirectory = outputDirectory;
     }
 
-    @Override
-    public void run() {
+    public void run() throws SpecSyntaxException, IOException, LowLevelSyntaxException {
         this.outputDirectory.mkdirs();
         SpecReader reader = new SpecReader();
-        try {
-            try(InputStream in = new FileInputStream(this.inputSpecification)) {
-                new SpecCodeGenerator(reader.read(in), this.destinationPackage, this.outputDirectory).generate();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SpecSyntaxException e) {
-            e.printStackTrace();
-        } catch (LowLevelSyntaxException e) {
-            e.printStackTrace();
+
+        try(InputStream in = new FileInputStream(this.inputSpecification)) {
+            new SpecCodeGenerator(reader.read(in), this.destinationPackage, this.outputDirectory).generate();
         }
     }
 }

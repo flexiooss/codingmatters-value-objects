@@ -26,6 +26,7 @@ public class GenerateMojoTest {
         GenerateMojo mojo = (GenerateMojo) rule.lookupMojo("generate", pom);
         assertNotNull(mojo);
 
+        assertThat(mojo.getDestinationPackage(), is("org.generated"));
         assertThat(mojo.getInputSpecification().getAbsolutePath(), endsWith("src/main/resources/spec.yaml"));
         assertThat(mojo.getOutputDirectory().getAbsolutePath(), endsWith("target/generated-sources"));
     }
@@ -36,6 +37,7 @@ public class GenerateMojoTest {
         GenerateMojo mojo = (GenerateMojo) rule.lookupConfiguredMojo(pom.getParentFile(), "generate");
         assertNotNull(mojo);
 
+        assertThat(mojo.getDestinationPackage(), is(nullValue()));
         assertThat(mojo.getInputSpecification(), is(nullValue()));
         assertThat(mojo.getOutputDirectory().getAbsolutePath(), endsWith("target/generated-sources"));
     }

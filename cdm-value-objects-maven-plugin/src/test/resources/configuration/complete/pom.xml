@@ -16,6 +16,7 @@
                 <configuration>
                     <inputSpecification>${basedir}/src/main/resources/spec.yaml</inputSpecification>
                     <outputDirectory>${basedir}/target/generated-sources/</outputDirectory>
+                    <destinationPackage>org.generated</destinationPackage>
                 </configuration>
             </plugin>
         </plugins>
