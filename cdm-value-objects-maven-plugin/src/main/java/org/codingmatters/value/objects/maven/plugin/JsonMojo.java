@@ -9,24 +9,24 @@ import org.codingmatters.value.objects.exception.SpecSyntaxException;
 import java.io.IOException;
 
 /**
- * Created by nelt on 9/1/16.
+ * Created by nelt on 4/13/17.
  */
-@Mojo(name = "generate")
-public class GenerateMojo extends AbstractGenerationMojo {
+@Mojo(name = "json")
+public class JsonMojo  extends AbstractGenerationMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        this.getLog().info("generating value object with configuration:");
+        this.getLog().info("generating json harness for value objects with configuration:");
         this.getLog().info("\t- destination package :" + this.getDestinationPackage());
         this.getLog().info("\t- specification file  :" + this.getInputSpecification().getAbsolutePath());
         this.getLog().info("\t- to output directory : " + this.getOutputDirectory().getAbsolutePath());
 
         try {
-            new GenerateDeleguate(this.getDestinationPackage(), this.getInputSpecification(), this.getOutputDirectory()).run();
+            new GenerateJsonDeleguate(this.getDestinationPackage(), this.getInputSpecification(), this.getOutputDirectory()).run();
         } catch (SpecSyntaxException | LowLevelSyntaxException e) {
             throw new MojoFailureException("unparseable specification file : " + this.getInputSpecification().getAbsolutePath(), e);
         } catch (IOException e) {
-            throw new MojoExecutionException("something went wrong while generating value objects at " + this.getDestinationPackage(), e);
+            throw new MojoExecutionException("something went wrong while generating json harness for value objects at " + this.getDestinationPackage(), e);
         }
     }
 }

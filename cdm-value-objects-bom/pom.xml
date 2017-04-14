@@ -39,6 +39,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>cdm-value-objects-generation-main</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>cdm-value-objects-json</artifactId>
                 <version>${project.version}</version>
             </dependency>

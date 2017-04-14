@@ -15,6 +15,13 @@
 
     <name>${project.groupId}:${project.artifactId}</name>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -26,6 +33,7 @@
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
+                            <goal>json</goal>
                         </goals>
                         <configuration>
                             <destinationPackage>org.codingmatters.value.objects.demo.referenced</destinationPackage>
@@ -37,6 +45,7 @@
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
+                            <goal>json</goal>
                         </goals>
                         <configuration>
                             <destinationPackage>org.codingmatters.value.objects.demo</destinationPackage>
@@ -48,6 +57,7 @@
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
+                            <goal>json</goal>
                         </goals>
                         <configuration>
                             <destinationPackage>org.codingmatters.value.objects.demo.books</destinationPackage>
