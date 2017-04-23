@@ -1,5 +1,6 @@
 package org.codingmatters.value.objects.json;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import org.codingmatters.tests.compile.CompiledCode;
@@ -38,6 +39,8 @@ public class JsonReaderGenerationTest {
     public TemporaryFolder dir = new TemporaryFolder();
 
     private final Spec spec = loadSpec();
+
+    private final JsonFactory factory = new JsonFactory();
 
     static private Spec loadSpec() {
         try {
@@ -79,11 +82,6 @@ public class JsonReaderGenerationTest {
                 this.compiled.getClass("org.generated.json.ExampleValueReader"),
                 is(aClass()
                         .with(aPublic().method().named("read")
-                                .withParameters(String.class)
-                                .returning(ExampleValue.class)
-                                .throwing(IOException.class)
-                        )
-                        .with(aPublic().method().named("read")
                                 .withParameters(JsonParser.class)
                                 .returning(ExampleValue.class)
                                 .throwing(IOException.class)
@@ -121,16 +119,17 @@ public class JsonReaderGenerationTest {
                 "\"complex\":null," +
                 "\"complexList\":null" +
                 "}";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
+            ExampleValue value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
 
-        Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-        ExampleValue value = this.compiled.on(reader).invoke("read", String.class).with(json);
-
-        assertThat(
-                value,
-                is(ExampleValue.Builder.builder()
-                        .prop("a value")
-                        .build())
-        );
+            assertThat(
+                    value,
+                    is(ExampleValue.Builder.builder()
+                            .prop("a value")
+                            .build())
+            );
+        }
     }
 
 
@@ -142,15 +141,17 @@ public class JsonReaderGenerationTest {
                 "\"complex\":null," +
                 "\"complexList\":null" +
                 "}";
-        Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-        ExampleValue value = this.compiled.on(reader).invoke("read", String.class).with(json);
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
+            ExampleValue value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
 
-        assertThat(
-                value,
-                is(ExampleValue.Builder.builder()
-                        .listProp("a", "b", "c")
-                        .build())
-        );
+            assertThat(
+                    value,
+                    is(ExampleValue.Builder.builder()
+                            .listProp("a", "b", "c")
+                            .build())
+            );
+        }
     }
 
 
@@ -162,17 +163,19 @@ public class JsonReaderGenerationTest {
                 "\"complex\":{\"sub\":\"a value\"}," +
                 "\"complexList\":null" +
                 "}";
-        Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-        ExampleValue value = this.compiled.on(reader).invoke("read", String.class).with(json);
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
+            ExampleValue value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
 
-        assertThat(
-                value,
-                is(ExampleValue.Builder.builder()
-                        .complex(new Complex.Builder()
-                                .sub("a value")
-                                .build())
-                        .build())
-        );
+            assertThat(
+                    value,
+                    is(ExampleValue.Builder.builder()
+                            .complex(new Complex.Builder()
+                                    .sub("a value")
+                                    .build())
+                            .build())
+            );
+        }
     }
 
 
@@ -184,17 +187,19 @@ public class JsonReaderGenerationTest {
                 "\"complex\":null," +
                 "\"complexList\":[{\"sub\":\"a value\"}]" +
                 "}";
-        Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-        ExampleValue value = this.compiled.on(reader).invoke("read", String.class).with(json);
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
+            ExampleValue value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
 
-        assertThat(
-                value,
-                is(ExampleValue.Builder.builder()
-                        .complexList(new ComplexList.Builder()
-                                .sub("a value")
-                                .build())
-                        .build())
-        );
+            assertThat(
+                    value,
+                    is(ExampleValue.Builder.builder()
+                            .complexList(new ComplexList.Builder()
+                                    .sub("a value")
+                                    .build())
+                            .build())
+            );
+        }
     }
 
 
@@ -214,25 +219,27 @@ public class JsonReaderGenerationTest {
                 "\"tzDateTimeProp\":\"2011-12-03T10:15:30+01:00\"" +
                 "}";
 
-        Object reader = this.compiled.getClass("org.generated.json.SimplePropsReader").newInstance();
-        SimpleProps value = this.compiled.on(reader).invoke("read", String.class).with(json);
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.SimplePropsReader").newInstance();
+            SimpleProps value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
 
-        assertThat(
-                value,
-                is(new SimpleProps.Builder()
-                    .stringProp("str")
-                    .integerProp(12)
-                    .longProp(12L)
-                    .floatProp(12.12f)
-                    .doubleProp(12.12d)
-                    .booleanProp(true)
-                    .dateProp(LocalDate.parse("2011-12-03"))
-                    .timeProp(LocalTime.parse("10:15:30"))
-                    .dateTimeProp(LocalDateTime.parse("2011-12-03T10:15:30"))
-                    .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30+01:00"))
-                    .build()
-                )
-        );
+            assertThat(
+                    value,
+                    is(new SimpleProps.Builder()
+                            .stringProp("str")
+                            .integerProp(12)
+                            .longProp(12L)
+                            .floatProp(12.12f)
+                            .doubleProp(12.12d)
+                            .booleanProp(true)
+                            .dateProp(LocalDate.parse("2011-12-03"))
+                            .timeProp(LocalTime.parse("10:15:30"))
+                            .dateTimeProp(LocalDateTime.parse("2011-12-03T10:15:30"))
+                            .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30+01:00"))
+                            .build()
+                    )
+            );
+        }
     }
 
     @Test
@@ -240,17 +247,18 @@ public class JsonReaderGenerationTest {
         String json = "{" +
                 "\"booleanProp\":true" +
                 "}";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.SimplePropsReader").newInstance();
+            SimpleProps value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
 
-        Object reader = this.compiled.getClass("org.generated.json.SimplePropsReader").newInstance();
-        SimpleProps value = this.compiled.on(reader).invoke("read", String.class).with(json);
-
-        assertThat(
-                value,
-                is(new SimpleProps.Builder()
-                                .booleanProp(true)
-                                .build()
-                )
-        );
+            assertThat(
+                    value,
+                    is(new SimpleProps.Builder()
+                            .booleanProp(true)
+                            .build()
+                    )
+            );
+        }
     }
 
     @Test
@@ -258,17 +266,18 @@ public class JsonReaderGenerationTest {
         String json = "{" +
                 "\"booleanProp\":false" +
                 "}";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.SimplePropsReader").newInstance();
+            SimpleProps value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
 
-        Object reader = this.compiled.getClass("org.generated.json.SimplePropsReader").newInstance();
-        SimpleProps value = this.compiled.on(reader).invoke("read", String.class).with(json);
-
-        assertThat(
-                value,
-                is(new SimpleProps.Builder()
-                                .booleanProp(false)
-                                .build()
-                )
-        );
+            assertThat(
+                    value,
+                    is(new SimpleProps.Builder()
+                            .booleanProp(false)
+                            .build()
+                    )
+            );
+        }
     }
 
     @Test
@@ -285,27 +294,28 @@ public class JsonReaderGenerationTest {
                 "\"dateTimeProp\":[\"2011-12-03T10:15:30\"]," +
                 "\"tzDateTimeProp\":[\"2011-12-03T10:15:30+01:00\"]" +
                 "}";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.ArraySimplePropsReader").newInstance();
+            ArraySimpleProps value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
 
-        Object reader = this.compiled.getClass("org.generated.json.ArraySimplePropsReader").newInstance();
-        ArraySimpleProps value = this.compiled.on(reader).invoke("read", String.class).with(json);
-
-        assertThat(
-                value,
-                is(
-                        new ArraySimpleProps.Builder()
-                                .stringProp("str")
-                                .integerProp(12)
-                                .longProp(12L)
-                                .floatProp(12.12f)
-                                .doubleProp(12.12d)
-                                .booleanProp(true)
-                                .dateProp(LocalDate.parse("2011-12-03"))
-                                .timeProp(LocalTime.parse("10:15:30"))
-                                .dateTimeProp(LocalDateTime.parse("2011-12-03T10:15:30"))
-                                .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30+01:00"))
-                                .build()
-                )
-        );
+            assertThat(
+                    value,
+                    is(
+                            new ArraySimpleProps.Builder()
+                                    .stringProp("str")
+                                    .integerProp(12)
+                                    .longProp(12L)
+                                    .floatProp(12.12f)
+                                    .doubleProp(12.12d)
+                                    .booleanProp(true)
+                                    .dateProp(LocalDate.parse("2011-12-03"))
+                                    .timeProp(LocalTime.parse("10:15:30"))
+                                    .dateTimeProp(LocalDateTime.parse("2011-12-03T10:15:30"))
+                                    .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30+01:00"))
+                                    .build()
+                    )
+            );
+        }
     }
 
 

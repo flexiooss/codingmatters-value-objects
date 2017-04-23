@@ -1,6 +1,5 @@
 package org.codingmatters.value.objects.json;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.squareup.javapoet.*;
@@ -31,35 +30,10 @@ public class ValueReader {
     public TypeSpec type() {
         return TypeSpec.classBuilder(this.types.valueType().simpleName() + "Reader")
                 .addModifiers(Modifier.PUBLIC)
-                .addField(FieldSpec
-                        .builder(JsonFactory.class, "factory")
-                        .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-                        .initializer("new $T()", JsonFactory.class)
-                        .build())
-                .addMethod(this.topLevelReadMethod())
                 .addMethod(this.readWithParserMethod())
                 .addType(this.readerFunctionalInterface())
                 .addMethod(this.readValueMethod())
                 .addMethod(this.readListValueMethod())
-                .build();
-    }
-
-    private MethodSpec topLevelReadMethod() {
-        /*
-        try (JsonParser parser = this.factory.createParser(json.getBytes())) {
-            parser.nextToken();
-            return this.read(parser);
-        }
-         */
-        return MethodSpec.methodBuilder("read")
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(String.class, "json")
-                .returns(this.types.valueType())
-                .addException(IOException.class)
-                .beginControlFlow("try($T parser = this.factory.createParser(json.getBytes()))", JsonParser.class)
-                    .addStatement("parser.nextToken()")
-                    .addStatement("return this.read(parser)")
-                .endControlFlow()
                 .build();
     }
 
@@ -69,6 +43,15 @@ public class ValueReader {
                 .addParameter(JsonParser.class, "parser")
                 .returns(this.types.valueType())
                 .addException(IOException.class);
+        /*
+        if(parser.getCurrentToken() == null) {
+                parser.nextToken();
+        }
+         */
+        method
+                .beginControlFlow("if(parser.getCurrentToken() == null)")
+                .addStatement("parser.nextToken()")
+                .endControlFlow();
 
         /*
         if(parser.currentToken() == JsonToken.VALUE_NULL) return null;

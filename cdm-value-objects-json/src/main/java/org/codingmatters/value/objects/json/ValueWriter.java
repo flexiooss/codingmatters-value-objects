@@ -1,17 +1,17 @@
 package org.codingmatters.value.objects.json;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.squareup.javapoet.*;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.value.objects.generation.ValueConfiguration;
 import org.codingmatters.value.objects.json.property.SimplePropertyWriter;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.TypeKind;
 
 import javax.lang.model.element.Modifier;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -29,28 +29,7 @@ public class ValueWriter {
     public TypeSpec type() {
         return TypeSpec.classBuilder(this.types.valueType().simpleName() + "Writer")
                 .addModifiers(Modifier.PUBLIC)
-                .addField(FieldSpec
-                        .builder(JsonFactory.class, "factory")
-                        .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-                        .initializer("new $T()", JsonFactory.class)
-                        .build())
-                .addMethod(this.buildTopLevelWriteMethod())
                 .addMethod(this.buildWriteWithGeneratorMethod())
-                .build();
-    }
-
-    private MethodSpec buildTopLevelWriteMethod() {
-        return MethodSpec.methodBuilder("write")
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(this.types.valueType(), "value")
-                .returns(String.class)
-                .addException(ClassName.get(IOException.class))
-                .beginControlFlow("try($T out = new $T())", OutputStream.class, ByteArrayOutputStream.class)
-                    .addStatement("$T generator = this.factory.createGenerator(out)", JsonGenerator.class)
-                    .addStatement("this.write(generator, value)")
-                    .addStatement("generator.close()")
-                    .addStatement("return out.toString()")
-                .endControlFlow()
                 .build();
     }
 

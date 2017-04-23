@@ -1,5 +1,6 @@
 package org.codingmatters.value.objects.json;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
@@ -15,7 +16,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -34,6 +37,8 @@ public class JsonWriterGenerationTest {
     public TemporaryFolder dir = new TemporaryFolder();
 
     private final Spec spec = loadSpec();
+
+    private final JsonFactory factory = new JsonFactory();
 
     static private Spec loadSpec() {
         try {
@@ -61,11 +66,6 @@ public class JsonWriterGenerationTest {
                 this.compiled.getClass("org.generated.json.ExampleValueWriter"),
                 is(aClass()
                         .with(aPublic().method().named("write")
-                                .withParameters(ExampleValue.class)
-                                .returning(String.class)
-                                .throwing(IOException.class)
-                        )
-                        .with(aPublic().method().named("write")
                                 .withParameters(JsonGenerator.class, ExampleValue.class)
                                 .returningVoid()
                                 .throwing(IOException.class)
@@ -81,16 +81,21 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.ExampleValueWriter").newInstance();
-        String json = this.compiled.on(writer).invoke("write", ExampleValue.class).with(value);
-        assertThat(
-                json,
-                is("{" +
-                        "\"prop\":\"a value\"," +
-                        "\"listProp\":null," +
-                        "\"complex\":null," +
-                        "\"complexList\":null" +
-                        "}")
-        );
+        try(OutputStream out = new ByteArrayOutputStream()) {
+            JsonGenerator generator = this.factory.createGenerator(out);
+            this.compiled.on(writer).invoke("write", JsonGenerator.class, ExampleValue.class).with(generator, value);
+            generator.close();
+
+            assertThat(
+                    out.toString(),
+                    is("{" +
+                            "\"prop\":\"a value\"," +
+                            "\"listProp\":null," +
+                            "\"complex\":null," +
+                            "\"complexList\":null" +
+                            "}")
+            );
+        }
     }
 
     @Test
@@ -100,16 +105,21 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.ExampleValueWriter").newInstance();
-        String json = this.compiled.on(writer).invoke("write", ExampleValue.class).with(value);
-        assertThat(
-                json,
-                is("{" +
-                        "\"prop\":null," +
-                        "\"listProp\":[\"a\",\"b\",\"c\"]," +
-                        "\"complex\":null," +
-                        "\"complexList\":null" +
-                        "}")
-        );
+        try(OutputStream out = new ByteArrayOutputStream()) {
+            JsonGenerator generator = this.factory.createGenerator(out);
+            this.compiled.on(writer).invoke("write", JsonGenerator.class, ExampleValue.class).with(generator, value);
+            generator.close();
+
+            assertThat(
+                    out.toString(),
+                    is("{" +
+                            "\"prop\":null," +
+                            "\"listProp\":[\"a\",\"b\",\"c\"]," +
+                            "\"complex\":null," +
+                            "\"complexList\":null" +
+                            "}")
+            );
+        }
     }
 
 
@@ -122,16 +132,21 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.ExampleValueWriter").newInstance();
-        String json = this.compiled.on(writer).invoke("write", ExampleValue.class).with(value);
-        assertThat(
-                json,
-                is("{" +
-                        "\"prop\":null," +
-                        "\"listProp\":null," +
-                        "\"complex\":{\"sub\":\"a value\"}," +
-                        "\"complexList\":null" +
-                        "}")
-        );
+        try(OutputStream out = new ByteArrayOutputStream()) {
+            JsonGenerator generator = this.factory.createGenerator(out);
+            this.compiled.on(writer).invoke("write", JsonGenerator.class, ExampleValue.class).with(generator, value);
+            generator.close();
+
+            assertThat(
+                    out.toString(),
+                    is("{" +
+                            "\"prop\":null," +
+                            "\"listProp\":null," +
+                            "\"complex\":{\"sub\":\"a value\"}," +
+                            "\"complexList\":null" +
+                            "}")
+            );
+        }
     }
 
     @Test
@@ -143,16 +158,21 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.ExampleValueWriter").newInstance();
-        String json = this.compiled.on(writer).invoke("write", ExampleValue.class).with(value);
-        assertThat(
-                json,
-                is("{" +
-                        "\"prop\":null," +
-                        "\"listProp\":null," +
-                        "\"complex\":null," +
-                        "\"complexList\":[{\"sub\":\"a value\"}]" +
-                        "}")
-        );
+        try(OutputStream out = new ByteArrayOutputStream()) {
+            JsonGenerator generator = this.factory.createGenerator(out);
+            this.compiled.on(writer).invoke("write", JsonGenerator.class, ExampleValue.class).with(generator, value);
+            generator.close();
+
+            assertThat(
+                    out.toString(),
+                    is("{" +
+                            "\"prop\":null," +
+                            "\"listProp\":null," +
+                            "\"complex\":null," +
+                            "\"complexList\":[{\"sub\":\"a value\"}]" +
+                            "}")
+            );
+        }
     }
 
     @Test
@@ -170,23 +190,27 @@ public class JsonWriterGenerationTest {
                 .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30+01:00"))
                 .build();
         Object writer = this.compiled.getClass("org.generated.json.SimplePropsWriter").newInstance();
-        String json = this.compiled.on(writer).invoke("write", SimpleProps.class).with(value);
+        try(OutputStream out = new ByteArrayOutputStream()) {
+            JsonGenerator generator = this.factory.createGenerator(out);
+            this.compiled.on(writer).invoke("write", JsonGenerator.class, SimpleProps.class).with(generator, value);
+            generator.close();
 
-        assertThat(
-                json,
-                is("{" +
-                        "\"stringProp\":\"str\"," +
-                        "\"integerProp\":12," +
-                        "\"longProp\":12," +
-                        "\"floatProp\":12.12," +
-                        "\"doubleProp\":12.12," +
-                        "\"booleanProp\":true," +
-                        "\"dateProp\":\"2011-12-03\"," +
-                        "\"timeProp\":\"10:15:30\"," +
-                        "\"dateTimeProp\":\"2011-12-03T10:15:30\"," +
-                        "\"tzDateTimeProp\":\"2011-12-03T10:15:30+01:00\"" +
-                        "}")
-        );
+            assertThat(
+                    out.toString(),
+                    is("{" +
+                            "\"stringProp\":\"str\"," +
+                            "\"integerProp\":12," +
+                            "\"longProp\":12," +
+                            "\"floatProp\":12.12," +
+                            "\"doubleProp\":12.12," +
+                            "\"booleanProp\":true," +
+                            "\"dateProp\":\"2011-12-03\"," +
+                            "\"timeProp\":\"10:15:30\"," +
+                            "\"dateTimeProp\":\"2011-12-03T10:15:30\"," +
+                            "\"tzDateTimeProp\":\"2011-12-03T10:15:30+01:00\"" +
+                            "}")
+            );
+        }
     }
 
     @Test
@@ -204,23 +228,27 @@ public class JsonWriterGenerationTest {
                 .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30+01:00"))
                 .build();
         Object writer = this.compiled.getClass("org.generated.json.ArraySimplePropsWriter").newInstance();
-        String json = this.compiled.on(writer).invoke("write", ArraySimpleProps.class).with(value);
+        try(OutputStream out = new ByteArrayOutputStream()) {
+            JsonGenerator generator = this.factory.createGenerator(out);
+            this.compiled.on(writer).invoke("write", JsonGenerator.class, ArraySimpleProps.class).with(generator, value);
+            generator.close();
 
-        assertThat(
-                json,
-                is("{" +
-                        "\"stringProp\":[\"str\"]," +
-                        "\"integerProp\":[12]," +
-                        "\"longProp\":[12]," +
-                        "\"floatProp\":[12.12]," +
-                        "\"doubleProp\":[12.12]," +
-                        "\"booleanProp\":[true]," +
-                        "\"dateProp\":[\"2011-12-03\"]," +
-                        "\"timeProp\":[\"10:15:30\"]," +
-                        "\"dateTimeProp\":[\"2011-12-03T10:15:30\"]," +
-                        "\"tzDateTimeProp\":[\"2011-12-03T10:15:30+01:00\"]" +
-                        "}")
-        );
+            assertThat(
+                    out.toString(),
+                    is("{" +
+                            "\"stringProp\":[\"str\"]," +
+                            "\"integerProp\":[12]," +
+                            "\"longProp\":[12]," +
+                            "\"floatProp\":[12.12]," +
+                            "\"doubleProp\":[12.12]," +
+                            "\"booleanProp\":[true]," +
+                            "\"dateProp\":[\"2011-12-03\"]," +
+                            "\"timeProp\":[\"10:15:30\"]," +
+                            "\"dateTimeProp\":[\"2011-12-03T10:15:30\"]," +
+                            "\"tzDateTimeProp\":[\"2011-12-03T10:15:30+01:00\"]" +
+                            "}")
+            );
+        }
     }
 
     @Test
@@ -238,23 +266,27 @@ public class JsonWriterGenerationTest {
                 .tzDateTimeProp((ZonedDateTime) null)
                 .build();
         Object writer = this.compiled.getClass("org.generated.json.ArraySimplePropsWriter").newInstance();
-        String json = this.compiled.on(writer).invoke("write", ArraySimpleProps.class).with(value);
+        try(OutputStream out = new ByteArrayOutputStream()) {
+            JsonGenerator generator = this.factory.createGenerator(out);
+            this.compiled.on(writer).invoke("write", JsonGenerator.class, ArraySimpleProps.class).with(generator, value);
+            generator.close();
 
-        assertThat(
-                json,
-                is("{" +
-                        "\"stringProp\":[null]," +
-                        "\"integerProp\":[null]," +
-                        "\"longProp\":[null]," +
-                        "\"floatProp\":[null]," +
-                        "\"doubleProp\":[null]," +
-                        "\"booleanProp\":[null]," +
-                        "\"dateProp\":[null]," +
-                        "\"timeProp\":[null]," +
-                        "\"dateTimeProp\":[null]," +
-                        "\"tzDateTimeProp\":[null]" +
-                        "}")
-        );
+            assertThat(
+                    out.toString(),
+                    is("{" +
+                            "\"stringProp\":[null]," +
+                            "\"integerProp\":[null]," +
+                            "\"longProp\":[null]," +
+                            "\"floatProp\":[null]," +
+                            "\"doubleProp\":[null]," +
+                            "\"booleanProp\":[null]," +
+                            "\"dateProp\":[null]," +
+                            "\"timeProp\":[null]," +
+                            "\"dateTimeProp\":[null]," +
+                            "\"tzDateTimeProp\":[null]" +
+                            "}")
+            );
+        }
     }
 
     @Test
@@ -269,15 +301,19 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.RefValueWriter").newInstance();
-        String json = this.compiled.on(writer).invoke("write", RefValue.class).with(value);
+        try(OutputStream out = new ByteArrayOutputStream()) {
+            JsonGenerator generator = this.factory.createGenerator(out);
+            this.compiled.on(writer).invoke("write", JsonGenerator.class, RefValue.class).with(generator, value);
+            generator.close();
 
-        assertThat(
-                json,
-                is("{" +
-                        "\"ref\":{\"prop\":\"value\"}," +
-                        "\"refs\":[{\"prop\":\"value\"}]}"
-                )
-        );
+            assertThat(
+                    out.toString(),
+                    is("{" +
+                            "\"ref\":{\"prop\":\"value\"}," +
+                            "\"refs\":[{\"prop\":\"value\"}]}"
+                    )
+            );
+        }
     }
 
     @Test
@@ -288,14 +324,18 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.RefValueWriter").newInstance();
-        String json = this.compiled.on(writer).invoke("write", RefValue.class).with(value);
+        try(OutputStream out = new ByteArrayOutputStream()) {
+            JsonGenerator generator = this.factory.createGenerator(out);
+            this.compiled.on(writer).invoke("write", JsonGenerator.class, RefValue.class).with(generator, value);
+            generator.close();
 
-        assertThat(
-                json,
-                is("{" +
-                        "\"ref\":null," +
-                        "\"refs\":[null]}"
-                )
-        );
+            assertThat(
+                    out.toString(),
+                    is("{" +
+                            "\"ref\":null," +
+                            "\"refs\":[null]}"
+                    )
+            );
+        }
     }
 }
