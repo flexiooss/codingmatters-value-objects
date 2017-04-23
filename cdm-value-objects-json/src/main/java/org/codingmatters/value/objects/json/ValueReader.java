@@ -10,10 +10,7 @@ import org.codingmatters.value.objects.spec.TypeKind;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by nelt on 4/6/17.
@@ -28,13 +25,56 @@ public class ValueReader {
     }
 
     public TypeSpec type() {
-        return TypeSpec.classBuilder(this.types.valueType().simpleName() + "Reader")
+        TypeSpec.Builder result = TypeSpec.classBuilder(this.types.valueType().simpleName() + "Reader")
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(this.readWithParserMethod())
                 .addType(this.readerFunctionalInterface())
                 .addMethod(this.readValueMethod())
-                .addMethod(this.readListValueMethod())
-                .build();
+                .addMethod(this.readListValueMethod());
+
+        for (PropertySpec propertySpec : this.propertySpecs) {
+            if(propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE) {
+                SimplePropertyReader propertyReader = SimplePropertyReader.forClassName(propertySpec.typeSpec().typeRef());
+                if (propertyReader != null) {
+                    if (!propertySpec.typeSpec().cardinality().isCollection()) {
+                        String initializerFormat = "";
+                        List<Object> initializerArgs = new LinkedList<>();
+
+                        initializerFormat += "new $T($T.asList(";
+                        initializerArgs.add(HashSet.class);
+                        initializerArgs.add(Arrays.class);
+                        boolean first = true;
+                        for (JsonToken jsonToken : propertyReader.expectedTokens()) {
+                            if(! first) {
+                                initializerFormat += ", ";
+                            }
+                            first = false;
+
+                            initializerFormat += "$T.$L";
+                            initializerArgs.add(JsonToken.class);
+                            initializerArgs.add(jsonToken.name());
+                        }
+                        initializerFormat += "))";
+                        result.addField(
+                                FieldSpec
+                                        .builder(
+                                                ClassName.get(Set.class),
+                                                this.expectedTokenField(propertySpec),
+                                                Modifier.PRIVATE, Modifier.STATIC)
+                                        .initializer(initializerFormat, initializerArgs.toArray())
+                                        .build()
+                        );
+                    }
+                }
+            }
+        }
+
+
+        return result.build();
+    }
+
+    private String expectedTokenField(PropertySpec propertySpec) {
+        return propertySpec.name().toUpperCase() + "_EXPECTEDTOKENS";
     }
 
     private MethodSpec readWithParserMethod() {
@@ -163,14 +203,10 @@ public class ValueReader {
     private void singleSimplePropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec, SimplePropertyReader propertyReader) {
         /*
         case "prop":
-                Set<JsonToken> expectedTokens = new HashSet();
-                expectedTokens.add(JsonToken.VALUE_STRING);
+                Set<JsonToken> expectedTokens = PROP_EXPECTEDTOKENS;
          */
         method.beginControlFlow("case $S:", propertySpec.name())
-                .addStatement("$T<$T> expectedTokens = new $T<>()", Set.class, JsonToken.class, HashSet.class);
-        for (JsonToken jsonToken : propertyReader.expectedTokens()) {
-            method.addStatement("expectedTokens.add($T.$L)", JsonToken.class, jsonToken.name());
-        }
+                .addStatement("$T<$T> expectedTokens = $L", Set.class, JsonToken.class, this.expectedTokenField(propertySpec));
 
         propertyReader.addSingleStatement(method, propertySpec);
 
