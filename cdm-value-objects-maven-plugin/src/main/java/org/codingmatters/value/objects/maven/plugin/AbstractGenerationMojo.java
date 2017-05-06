@@ -10,13 +10,13 @@ import java.io.File;
  */
 public abstract class AbstractGenerationMojo extends AbstractMojo {
 
-    @Parameter(required = true)
+    @Parameter(required = true, alias = "destination-package")
     private String destinationPackage;
 
-    @Parameter(required = true)
+    @Parameter(required = true, alias = "input-spec")
     private File inputSpecification;
 
-    @Parameter(defaultValue = "${basedir}/target/generated-sources/")
+    @Parameter(defaultValue = "${basedir}/target/generated-sources/", alias="output-dir")
     private File outputDirectory;
 
     public File getInputSpecification() {

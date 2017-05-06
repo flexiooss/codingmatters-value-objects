@@ -36,8 +36,8 @@
                             <goal>json</goal>
                         </goals>
                         <configuration>
-                            <destinationPackage>org.codingmatters.value.objects.demo.referenced</destinationPackage>
-                            <inputSpecification>src/main/resources/spec1.yaml</inputSpecification>
+                            <destination-package>org.codingmatters.value.objects.demo.referenced</destination-package>
+                            <input-spec>src/main/resources/spec1.yaml</input-spec>
                         </configuration>
                     </execution>
                     <execution>
@@ -48,8 +48,8 @@
                             <goal>json</goal>
                         </goals>
                         <configuration>
-                            <destinationPackage>org.codingmatters.value.objects.demo</destinationPackage>
-                            <inputSpecification>src/main/resources/spec2.yaml</inputSpecification>
+                            <destination-package>org.codingmatters.value.objects.demo</destination-package>
+                            <input-spec>src/main/resources/spec2.yaml</input-spec>
                         </configuration>
                     </execution>
                     <execution>
@@ -60,8 +60,8 @@
                             <goal>json</goal>
                         </goals>
                         <configuration>
-                            <destinationPackage>org.codingmatters.value.objects.demo.books</destinationPackage>
-                            <inputSpecification>src/main/resources/books.yaml</inputSpecification>
+                            <destination-package>org.codingmatters.value.objects.demo.books</destination-package>
+                            <input-spec>src/main/resources/books.yaml</input-spec>
                         </configuration>
                     </execution>
                 </executions>
