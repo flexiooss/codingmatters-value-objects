@@ -54,14 +54,12 @@ public class JsonReaderGenerationTest {
 
     @Before
     public void setUp() throws Exception {
-//        System.setProperty("spec.code.generator.debug", "true");
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
         new JsonFrameworkGenerator(this.spec, "org.generated", dir.getRoot()).generate();
         this.compiled = new CompiledCode.Builder()
-                .classpath(CompiledCode.findInClasspath(".*jackson-core-.*.jar"))
+                .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))
                 .source(this.dir.getRoot())
                 .compile();
-//        System.setProperty("spec.code.generator.debug", "false");
     }
 
 

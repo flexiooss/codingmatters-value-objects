@@ -55,7 +55,7 @@ public class JsonWriterGenerationTest {
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
         new JsonFrameworkGenerator(this.spec, "org.generated", dir.getRoot()).generate();
         this.compiled = new CompiledCode.Builder()
-                .classpath(CompiledCode.findInClasspath(".*jackson-core-.*.jar"))
+                .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))
                 .source(this.dir.getRoot())
                 .compile();
     }
