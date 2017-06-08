@@ -49,3 +49,12 @@ refValue:
 
 referenced:
   prop: string
+
+enumProperties:
+  single:
+    $enum:
+      $type: java.time.DayOfWeek
+  multiple:
+    $list:
+      $enum:
+        $type: java.time.DayOfWeek

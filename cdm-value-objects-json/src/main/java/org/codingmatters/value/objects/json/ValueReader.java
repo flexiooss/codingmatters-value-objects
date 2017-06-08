@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.squareup.javapoet.*;
 import org.codingmatters.value.objects.generation.ValueConfiguration;
-import org.codingmatters.value.objects.json.property.SimplePropertyReader;
+import org.codingmatters.value.objects.json.property.SimplePropertyReaderProducer;
+import org.codingmatters.value.objects.json.property.SimplePropertyReaders;
+import org.codingmatters.value.objects.json.property.statement.EnumPropertyStatement;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.TypeKind;
 
@@ -33,44 +35,63 @@ public class ValueReader {
                 .addMethod(this.readListValueMethod());
 
         for (PropertySpec propertySpec : this.propertySpecs) {
-            if(propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE) {
-                SimplePropertyReader propertyReader = SimplePropertyReader.forClassName(propertySpec.typeSpec().typeRef());
-                if (propertyReader != null) {
-                    if (!propertySpec.typeSpec().cardinality().isCollection()) {
-                        String initializerFormat = "";
-                        List<Object> initializerArgs = new LinkedList<>();
-
-                        initializerFormat += "new $T($T.asList(";
-                        initializerArgs.add(HashSet.class);
-                        initializerArgs.add(Arrays.class);
-                        boolean first = true;
-                        for (JsonToken jsonToken : propertyReader.expectedTokens()) {
-                            if(! first) {
-                                initializerFormat += ", ";
-                            }
-                            first = false;
-
-                            initializerFormat += "$T.$L";
-                            initializerArgs.add(JsonToken.class);
-                            initializerArgs.add(jsonToken.name());
-                        }
-                        initializerFormat += "))";
-                        result.addField(
-                                FieldSpec
-                                        .builder(
-                                                ClassName.get(Set.class),
-                                                this.expectedTokenField(propertySpec),
-                                                Modifier.PRIVATE, Modifier.STATIC)
-                                        .initializer(initializerFormat, initializerArgs.toArray())
-                                        .build()
-                        );
-                    }
-                }
+            SimplePropertyReaderProducer propertyReaderProducer = this.propertyReaderProducer(propertySpec);
+            if(propertyReaderProducer != null) {
+                this.addPropertyReaderStatements(result, propertySpec, propertyReaderProducer);
             }
         }
 
 
         return result.build();
+    }
+
+    private SimplePropertyReaderProducer propertyReaderProducer(PropertySpec propertySpec) {
+        SimplePropertyReaderProducer propertyReaderProducer = null;
+        if(propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE) {
+            propertyReaderProducer = SimplePropertyReaders.forClassName(propertySpec.typeSpec().typeRef()).producer();
+        } else if(propertySpec.typeSpec().typeKind() == TypeKind.ENUM) {
+            //"getText", String.class, JsonToken.VALUE_STRING
+            propertyReaderProducer = new SimplePropertyReaderProducer(
+                    new HashSet<>(Arrays.asList(JsonToken.VALUE_STRING)),
+                    "getText",
+                    new EnumPropertyStatement()
+            );
+        }
+        return propertyReaderProducer;
+    }
+
+    private void addPropertyReaderStatements(TypeSpec.Builder result, PropertySpec propertySpec, SimplePropertyReaderProducer propertyReader) {
+        if (propertyReader != null) {
+            if (!propertySpec.typeSpec().cardinality().isCollection()) {
+                String initializerFormat = "";
+                List<Object> initializerArgs = new LinkedList<>();
+
+                initializerFormat += "new $T($T.asList(";
+                initializerArgs.add(HashSet.class);
+                initializerArgs.add(Arrays.class);
+                boolean first = true;
+                for (JsonToken jsonToken : propertyReader.expectedTokens()) {
+                    if(! first) {
+                        initializerFormat += ", ";
+                    }
+                    first = false;
+
+                    initializerFormat += "$T.$L";
+                    initializerArgs.add(JsonToken.class);
+                    initializerArgs.add(jsonToken.name());
+                }
+                initializerFormat += "))";
+                result.addField(
+                        FieldSpec
+                                .builder(
+                                        ClassName.get(Set.class),
+                                        this.expectedTokenField(propertySpec),
+                                        Modifier.PRIVATE, Modifier.STATIC)
+                                .initializer(initializerFormat, initializerArgs.toArray())
+                                .build()
+                );
+            }
+        }
     }
 
     private String expectedTokenField(PropertySpec propertySpec) {
@@ -143,13 +164,17 @@ public class ValueReader {
     }
 
     private void propertyStatements(MethodSpec.Builder method, PropertySpec propertySpec) {
-        if(propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE) {
-            SimplePropertyReader propertyReader = SimplePropertyReader.forClassName(propertySpec.typeSpec().typeRef());
-            if(propertyReader != null) {
+        if(propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE || propertySpec.typeSpec().typeKind() == TypeKind.ENUM) {
+            SimplePropertyReaderProducer propertyReaderProducer = this.propertyReaderProducer(propertySpec);
+//            SimplePropertyReaders propertyReader = propertySpec.typeSpec().typeKind() == TypeKind.ENUM ?
+//                    null :
+//                    SimplePropertyReaders.forClassName(propertySpec.typeSpec().typeRef());
+
+            if(propertyReaderProducer!= null) {
                 if (!propertySpec.typeSpec().cardinality().isCollection()) {
-                    this.singleSimplePropertyStatement(method, propertySpec, propertyReader);
+                    this.singleSimplePropertyStatement(method, propertySpec, propertyReaderProducer);
                 } else {
-                    this.multipleSimplePropertyStatement(method, propertySpec, propertyReader);
+                    this.multipleSimplePropertyStatement(method, propertySpec, propertyReaderProducer);
                 }
             } else {
                 System.err.println("NYIMPL type ref for simple property: " + propertySpec.typeSpec().typeRef());
@@ -200,7 +225,7 @@ public class ValueReader {
         }
     }
 
-    private void singleSimplePropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec, SimplePropertyReader propertyReader) {
+    private void singleSimplePropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec, SimplePropertyReaderProducer propertyReaderProducer) {
         /*
         case "prop":
                 Set<JsonToken> expectedTokens = PROP_EXPECTEDTOKENS;
@@ -208,7 +233,7 @@ public class ValueReader {
         method.beginControlFlow("case $S:", propertySpec.name())
                 .addStatement("$T<$T> expectedTokens = $L", Set.class, JsonToken.class, this.expectedTokenField(propertySpec));
 
-        propertyReader.addSingleStatement(method, propertySpec);
+        propertyReaderProducer.addSingleStatement(method, propertySpec);
 
         /*
                 break;
@@ -218,12 +243,12 @@ public class ValueReader {
                 .endControlFlow();
     }
 
-    private void multipleSimplePropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec, SimplePropertyReader propertyReader) {
+    private void multipleSimplePropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec, SimplePropertyReaderProducer propertyReaderProducer) {
         /*
         case "listProp":
          */
         method.beginControlFlow("case $S:", propertySpec.name());
-        propertyReader.addMultipleStatement(method, propertySpec);
+        propertyReaderProducer.addMultipleStatement(method, propertySpec);
         /*
             break;
          */
@@ -322,4 +347,5 @@ public class ValueReader {
                 )
                 .build();
     }
+
 }

@@ -56,6 +56,8 @@ public class ValueWriter {
         method.beginControlFlow("if(value.$L() != null)", propertySpec.name());
         if(propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE) {
             this.writeSimpleProperty(method, propertySpec);
+        } else if(propertySpec.typeSpec().typeKind() == TypeKind.ENUM) {
+            this.writeEnumValue(method, propertySpec);
         } else if(propertySpec.typeSpec().typeKind().isValueObject()) {
             this.externalValueObjectWriteStatements(method, propertySpec);
         } else {
@@ -72,6 +74,14 @@ public class ValueWriter {
             SimplePropertyWriter.forClass(propertySpec.typeSpec().typeRef()).singleStatement(method, propertySpec);
         } else {
             SimplePropertyWriter.forClass(propertySpec.typeSpec().typeRef()).arrayStatement(method, propertySpec);
+        }
+    }
+
+    private void writeEnumValue(MethodSpec.Builder method, PropertySpec propertySpec) {
+        if (!propertySpec.typeSpec().cardinality().isCollection()) {
+            SimplePropertyWriter.ENUM.singleStatement(method, propertySpec);
+        } else {
+            SimplePropertyWriter.ENUM.arrayStatement(method, propertySpec);
         }
     }
 

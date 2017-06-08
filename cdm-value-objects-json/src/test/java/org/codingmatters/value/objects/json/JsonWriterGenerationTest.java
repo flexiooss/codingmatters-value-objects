@@ -19,10 +19,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.aClass;
 import static org.codingmatters.tests.reflect.ReflectMatchers.aPublic;
@@ -338,4 +335,30 @@ public class JsonWriterGenerationTest {
             );
         }
     }
+
+    @Test
+    public void writeOutsideEnumValue() throws Exception {
+        EnumProperties value = new EnumProperties.Builder()
+                .single(DayOfWeek.MONDAY)
+                .multiple(DayOfWeek.MONDAY, DayOfWeek.TUESDAY)
+                .build();
+
+        Object writer = this.compiled.getClass("org.generated.json.EnumPropertiesWriter").newInstance();
+        try(OutputStream out = new ByteArrayOutputStream()) {
+            JsonGenerator generator = this.factory.createGenerator(out);
+            this.compiled.on(writer).invoke("write", JsonGenerator.class, EnumProperties.class).with(generator, value);
+            generator.close();
+
+            assertThat(
+                    out.toString(),
+                    is("{" +
+                            "\"single\":\"MONDAY\"," +
+                            "\"multiple\":[\"MONDAY\",\"TUESDAY\"]" +
+                            "}"
+                    )
+            );
+        }
+    }
+
+
 }

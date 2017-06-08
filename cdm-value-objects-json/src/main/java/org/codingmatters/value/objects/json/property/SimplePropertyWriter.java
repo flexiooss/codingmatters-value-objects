@@ -106,6 +106,18 @@ public enum SimplePropertyWriter {
         public void arrayStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
             method.addStatement("generator.writeNull()");
         }
+    },
+
+    ENUM() {
+        @Override
+        public void singleStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
+            method.addStatement("generator.writeString(value.$L().name())", propertySpec.name());
+        }
+
+        @Override
+        protected void arrayElementStatement(MethodSpec.Builder method) {
+            method.addStatement("generator.writeString(element.name())");
+        }
     };
 
     private final Set<Class> classes;
