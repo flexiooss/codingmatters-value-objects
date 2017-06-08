@@ -109,6 +109,6 @@ public class ValueConfiguration {
     }
 
     public String enumTypeName(String name) {
-        return this.capitalizedFirst(name) + "Values";
+        return this.capitalizedFirst(name);
     }
 }

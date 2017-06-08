@@ -85,17 +85,17 @@ public class EnumPropertySpecGenerationTest {
 
     @Test
     public void enumWithValues() throws Exception {
-        assertThat(this.compiled.getClass("org.generated.ValWithRaw$SingleValues").isEnum(), is(true));
+        assertThat(this.compiled.getClass("org.generated.ValWithRaw$Single").isEnum(), is(true));
 
         assertThat(compiled.getClass("org.generated.ValWithRaw"), is(anInstance().public_().interface_()
                 .with(anInstance().method().named("single")
-                        .returning(this.compiled.getClass("org.generated.ValWithRaw$SingleValues")))
+                        .returning(this.compiled.getClass("org.generated.ValWithRaw$Single")))
         ));
         assertThat(compiled.getClass("org.generated.ValWithRawImpl"), is(aPackagePrivate().class_()
-                .with(anInstance().method().named("single").returning(this.compiled.getClass("org.generated.ValWithRaw$SingleValues")))
+                .with(anInstance().method().named("single").returning(this.compiled.getClass("org.generated.ValWithRaw$Single")))
         ));
         assertThat(compiled.getClass("org.generated.ValWithRaw$Builder"), is(aStatic().public_().class_()
-                .with(anInstance().method().named("single").withParameters(this.compiled.getClass("org.generated.ValWithRaw$SingleValues")))
+                .with(anInstance().method().named("single").withParameters(this.compiled.getClass("org.generated.ValWithRaw$Single")))
         ));
 
         assertThat(compiled.getClass("org.generated.ValWithRaw"), is(anInstance().public_().interface_().with(anInstance().method().named("list"))));
