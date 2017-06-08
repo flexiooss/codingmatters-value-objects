@@ -20,6 +20,9 @@ public class EnumPropertyStatement implements PropertyStatement {
                         propertySpec.name()
                 )
                 .nextControlFlow("catch($T e)", IllegalArgumentException.class)
+                .addStatement("" +
+                        "throw new IOException(\"error reading enum property $L, value is not one of the enum constants.\", e)",
+                        propertySpec.name())
                 .endControlFlow();
     }
 
@@ -34,6 +37,9 @@ public class EnumPropertyStatement implements PropertyStatement {
                         propertySpec.name()
                 )
                 .nextControlFlow("catch($T e)", IllegalArgumentException.class)
+                .addStatement("" +
+                                "throw new IOException(\"error reading enum property $L, value is not one of the enum constants.\", e)",
+                        propertySpec.name())
                 .endControlFlow();
     }
 }
