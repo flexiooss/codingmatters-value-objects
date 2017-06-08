@@ -110,7 +110,7 @@ public class ContextSpecParser {
 
             List<String> values = new LinkedList<>();
             for (String val : valueString.split(",")) {
-                values.add(val);
+                values.add(val.trim());
             }
             return PropertyTypeSpec.type()
                     .typeKind(TypeKind.ENUM)

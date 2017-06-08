@@ -29,14 +29,25 @@ public class EnumPropertySpecGenerationTest {
     public TemporaryFolder dir = new TemporaryFolder();
 
     private final Spec spec  = spec()
-            .addValue(valueSpec().name("val")
+            .addValue(valueSpec().name("valWithRef")
                     .addProperty(property().name("single").type(type()
-                            .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                            .typeKind(TypeKind.ENUM)
                             .typeRef("org.outside.MyEnum")
                             .cardinality(PropertyCardinality.SINGLE)))
                     .addProperty(property().name("list").type(type()
-                            .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                            .typeKind(TypeKind.ENUM)
                             .typeRef("org.outside.MyEnum")
+                            .cardinality(PropertyCardinality.LIST)
+                    ))
+            )
+            .addValue(valueSpec().name("valWithRaw")
+                    .addProperty(property().name("single").type(type()
+                            .typeKind(TypeKind.ENUM)
+                            .enumValues("a", "b")
+                            .cardinality(PropertyCardinality.SINGLE)))
+                    .addProperty(property().name("list").type(type()
+                            .typeKind(TypeKind.ENUM)
+                            .enumValues("a", "b")
                             .cardinality(PropertyCardinality.LIST)
                     ))
             )
@@ -55,20 +66,40 @@ public class EnumPropertySpecGenerationTest {
     }
 
     @Test
-    public void multipleProperty_multipleMethods() throws Exception {
-        assertThat(compiled.getClass("org.generated.Val"), is(anInstance().public_().interface_()
+    public void enumWithRefProperties() throws Exception {
+        assertThat(compiled.getClass("org.generated.ValWithRef"), is(anInstance().public_().interface_()
                 .with(anInstance().method().named("single").returning(this.compiled.getClass("org.outside.MyEnum")))
         ));
-        assertThat(compiled.getClass("org.generated.ValImpl"), is(aPackagePrivate().class_()
+        assertThat(compiled.getClass("org.generated.ValWithRefImpl"), is(aPackagePrivate().class_()
                 .with(anInstance().method().named("single").returning(this.compiled.getClass("org.outside.MyEnum")))
         ));
-        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aStatic().public_().class_()
+        assertThat(compiled.getClass("org.generated.ValWithRef$Builder"), is(aStatic().public_().class_()
                 .with(anInstance().method().named("single").withParameters(this.compiled.getClass("org.outside.MyEnum")))
         ));
 
 
-        assertThat(compiled.getClass("org.generated.Val"), is(anInstance().public_().interface_().with(anInstance().method().named("list"))));
-        assertThat(compiled.getClass("org.generated.ValImpl"), is(aPackagePrivate().class_().with(anInstance().method().named("list"))));
-        assertThat(compiled.getClass("org.generated.Val$Builder"), is(aStatic().public_().class_().with(anInstance().method().named("list"))));
+        assertThat(compiled.getClass("org.generated.ValWithRef"), is(anInstance().public_().interface_().with(anInstance().method().named("list"))));
+        assertThat(compiled.getClass("org.generated.ValWithRefImpl"), is(aPackagePrivate().class_().with(anInstance().method().named("list"))));
+        assertThat(compiled.getClass("org.generated.ValWithRef$Builder"), is(aStatic().public_().class_().with(anInstance().method().named("list"))));
+    }
+
+    @Test
+    public void enumWithValues() throws Exception {
+        assertThat(this.compiled.getClass("org.generated.ValWithRaw$SingleValues").isEnum(), is(true));
+
+        assertThat(compiled.getClass("org.generated.ValWithRaw"), is(anInstance().public_().interface_()
+                .with(anInstance().method().named("single")
+                        .returning(this.compiled.getClass("org.generated.ValWithRaw$SingleValues")))
+        ));
+        assertThat(compiled.getClass("org.generated.ValWithRawImpl"), is(aPackagePrivate().class_()
+                .with(anInstance().method().named("single").returning(this.compiled.getClass("org.generated.ValWithRaw$SingleValues")))
+        ));
+        assertThat(compiled.getClass("org.generated.ValWithRaw$Builder"), is(aStatic().public_().class_()
+                .with(anInstance().method().named("single").withParameters(this.compiled.getClass("org.generated.ValWithRaw$SingleValues")))
+        ));
+
+        assertThat(compiled.getClass("org.generated.ValWithRaw"), is(anInstance().public_().interface_().with(anInstance().method().named("list"))));
+        assertThat(compiled.getClass("org.generated.ValWithRawImpl"), is(aPackagePrivate().class_().with(anInstance().method().named("list"))));
+        assertThat(compiled.getClass("org.generated.ValWithRaw$Builder"), is(aStatic().public_().class_().with(anInstance().method().named("list"))));
     }
 }

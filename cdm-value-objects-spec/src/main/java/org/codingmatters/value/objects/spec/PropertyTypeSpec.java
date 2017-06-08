@@ -109,12 +109,13 @@ public class PropertyTypeSpec {
         return Objects.equals(typeRef, that.typeRef) &&
                 typeKind == that.typeKind &&
                 cardinality == that.cardinality &&
-                Objects.equals(embeddedValueSpec, that.embeddedValueSpec);
+                Objects.equals(embeddedValueSpec, that.embeddedValueSpec) &&
+                Objects.equals(enumValues, that.enumValues);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(typeRef, typeKind, cardinality, embeddedValueSpec);
+        return Objects.hash(typeRef, typeKind, cardinality, embeddedValueSpec, enumValues);
     }
 
     @Override
@@ -124,6 +125,7 @@ public class PropertyTypeSpec {
                 ", typeKind=" + typeKind +
                 ", cardinality=" + cardinality +
                 ", embeddedValueSpec=" + embeddedValueSpec +
+                ", enumValues=" + enumValues +
                 '}';
     }
 }
