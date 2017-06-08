@@ -3,6 +3,8 @@ package org.codingmatters.value.objects.reader;
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
 import org.codingmatters.value.objects.spec.*;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
@@ -23,6 +25,7 @@ public class ContextSpecParser {
     public static final String SET_MARK = "$set";
     public static final String VALUE_OBJECT_MARK = "$value-object";
     public static final String TYPE_MARK = "$type";
+    public static final String ENUM_MARK = "$enum";
 
     private final Map<String, ?> root;
     private Stack<String> context;
@@ -78,6 +81,8 @@ public class ContextSpecParser {
             } else if (value instanceof Map && ((Map) value).containsKey(VALUE_OBJECT_MARK)) {
                 typeSpec = this.typeForString((String) ((Map) value).get(VALUE_OBJECT_MARK))
                         .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT);
+            } else if (value instanceof Map && ((Map) value).containsKey(ENUM_MARK)) {
+                typeSpec = this.enumTypeSpec(value);
             } else if (value instanceof Map && ((Map) value).containsKey(TYPE_MARK)) {
                 typeSpec = this.typeForString((String) ((Map) value).get(TYPE_MARK));
             } else if(value instanceof Map) {
@@ -95,6 +100,29 @@ public class ContextSpecParser {
                     ;
         } finally {
             this.context.pop();
+        }
+    }
+
+    private PropertyTypeSpec.Builder enumTypeSpec(Object value) throws SpecSyntaxException {
+        PropertyTypeSpec.Builder typeSpec;
+        if(((Map)value).get(ENUM_MARK) != null && ((Map)value).get(ENUM_MARK) instanceof String) {
+            String valueString = (String) ((Map) value).get(ENUM_MARK);
+
+            List<String> values = new LinkedList<>();
+            for (String val : valueString.split(",")) {
+                values.add(val);
+            }
+            return PropertyTypeSpec.type()
+                    .typeKind(TypeKind.ENUM)
+                    .enumValues(values.toArray(new String[values.size()]));
+        } else if(((Map)value).get(ENUM_MARK) != null && ((Map)value).get(ENUM_MARK) instanceof Map
+                && ((Map)((Map)value).get(ENUM_MARK)).containsKey(TYPE_MARK)
+                && ((Map)((Map)value).get(ENUM_MARK)).get(TYPE_MARK) instanceof String) {
+            return PropertyTypeSpec.type()
+                    .typeKind(TypeKind.ENUM)
+                    .typeRef((String) ((Map)((Map)value).get(ENUM_MARK)).get(TYPE_MARK));
+        } else {
+            throw new SpecSyntaxException(String.format("malformed enum specification for property {context}: %s", value), this.context);
         }
     }
 

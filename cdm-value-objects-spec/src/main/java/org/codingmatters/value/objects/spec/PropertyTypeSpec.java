@@ -1,5 +1,8 @@
 package org.codingmatters.value.objects.spec;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -16,6 +19,7 @@ public class PropertyTypeSpec {
         private TypeKind typeKind;
         private PropertyCardinality cardinality = PropertyCardinality.SINGLE;
         private AnonymousValueSpec embeddedValueSpec;
+        private List<String> enumValues = new LinkedList<>();
 
         public Builder typeRef(String type) {
             this.typeRef = type;
@@ -42,21 +46,39 @@ public class PropertyTypeSpec {
             return this;
         }
 
+        public Builder enumValues(String ... enumValues) {
+            this.enumValues.clear();
+            if(enumValues != null) {
+                for (String enumValue : enumValues) {
+                    this.enumValues.add(enumValue);
+                }
+            }
+            return this;
+        }
+
         public PropertyTypeSpec build() {
-            return new PropertyTypeSpec(this.typeRef, this.typeKind, this.cardinality, this.embeddedValueSpec);
+            return new PropertyTypeSpec(
+                    this.typeRef,
+                    this.typeKind,
+                    this.cardinality,
+                    this.embeddedValueSpec,
+                    new ArrayList<>(this.enumValues)
+            );
         }
     }
 
     private final String typeRef;
     private final TypeKind typeKind;
     private final PropertyCardinality cardinality;
-    private AnonymousValueSpec embeddedValueSpec;
+    private final AnonymousValueSpec embeddedValueSpec;
+    private final List<String> enumValues;
 
-    private PropertyTypeSpec(String typeRef, TypeKind typeKind, PropertyCardinality cardinality, AnonymousValueSpec embeddedValueSpec) {
+    private PropertyTypeSpec(String typeRef, TypeKind typeKind, PropertyCardinality cardinality, AnonymousValueSpec embeddedValueSpec, List<String> enumValues) {
         this.typeRef = typeRef;
         this.typeKind = typeKind;
         this.cardinality = cardinality;
         this.embeddedValueSpec = embeddedValueSpec;
+        this.enumValues = enumValues;
     }
 
     public String typeRef() {
@@ -73,6 +95,10 @@ public class PropertyTypeSpec {
 
     public AnonymousValueSpec embeddedValueSpec() {
         return embeddedValueSpec;
+    }
+
+    public String [] enumValues() {
+        return this.enumValues.toArray(new String[this.enumValues.size()]);
     }
 
     @Override
