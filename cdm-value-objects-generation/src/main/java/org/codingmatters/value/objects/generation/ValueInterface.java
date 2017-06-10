@@ -100,7 +100,7 @@ public class ValueInterface {
         List<TypeSpec> result = new LinkedList<>();
 
         for (PropertySpec propertySpec : propertySpecs) {
-            if(TypeKind.ENUM.equals(propertySpec.typeSpec().typeKind()) && propertySpec.typeSpec().typeRef() == null) {
+            if(TypeKind.ENUM.equals(propertySpec.typeSpec().typeKind()) && propertySpec.typeSpec().isInSpecEnum()) {
                 result.add(this.createEnum(propertySpec));
             }
         }

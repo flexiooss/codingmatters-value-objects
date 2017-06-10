@@ -60,7 +60,7 @@ public class ValueConfiguration {
     public ClassName propertySingleType(PropertySpec propertySpec) {
         if(IN_SPEC_VALUE_OBJECT.equals(propertySpec.typeSpec().typeKind())) {
             return ClassName.get(this.rootPackage, capitalizedFirst(propertySpec.typeSpec().typeRef()));
-        } else if(ENUM.equals(propertySpec.typeSpec().typeKind()) && propertySpec.typeSpec().typeRef() == null) {
+        } else if(ENUM.equals(propertySpec.typeSpec().typeKind()) && propertySpec.typeSpec().isInSpecEnum()) {
             return ClassName.bestGuess(this.enumTypeName(propertySpec.name()));
         } else {
             return ClassName.bestGuess(propertySpec.typeSpec().typeRef());

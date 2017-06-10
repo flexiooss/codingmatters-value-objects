@@ -19,6 +19,7 @@ public class PropertyTypeSpec {
         private TypeKind typeKind;
         private PropertyCardinality cardinality = PropertyCardinality.SINGLE;
         private AnonymousValueSpec embeddedValueSpec;
+        private boolean isInSpecEnum = false;
         private List<String> enumValues = new LinkedList<>();
 
         public Builder typeRef(String type) {
@@ -47,6 +48,7 @@ public class PropertyTypeSpec {
         }
 
         public Builder enumValues(String ... enumValues) {
+            this.isInSpecEnum = true;
             this.enumValues.clear();
             if(enumValues != null) {
                 for (String enumValue : enumValues) {
@@ -62,6 +64,7 @@ public class PropertyTypeSpec {
                     this.typeKind,
                     this.cardinality,
                     this.embeddedValueSpec,
+                    this.isInSpecEnum,
                     new ArrayList<>(this.enumValues)
             );
         }
@@ -71,13 +74,15 @@ public class PropertyTypeSpec {
     private final TypeKind typeKind;
     private final PropertyCardinality cardinality;
     private final AnonymousValueSpec embeddedValueSpec;
+    private final boolean isInSpecEnum;
     private final List<String> enumValues;
 
-    private PropertyTypeSpec(String typeRef, TypeKind typeKind, PropertyCardinality cardinality, AnonymousValueSpec embeddedValueSpec, List<String> enumValues) {
+    private PropertyTypeSpec(String typeRef, TypeKind typeKind, PropertyCardinality cardinality, AnonymousValueSpec embeddedValueSpec, boolean isInSpecEnum, List<String> enumValues) {
         this.typeRef = typeRef;
         this.typeKind = typeKind;
         this.cardinality = cardinality;
         this.embeddedValueSpec = embeddedValueSpec;
+        this.isInSpecEnum = isInSpecEnum;
         this.enumValues = enumValues;
     }
 
@@ -97,6 +102,10 @@ public class PropertyTypeSpec {
         return embeddedValueSpec;
     }
 
+    public boolean isInSpecEnum() {
+        return isInSpecEnum;
+    }
+
     public String [] enumValues() {
         return this.enumValues.toArray(new String[this.enumValues.size()]);
     }
@@ -106,7 +115,8 @@ public class PropertyTypeSpec {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PropertyTypeSpec that = (PropertyTypeSpec) o;
-        return Objects.equals(typeRef, that.typeRef) &&
+        return isInSpecEnum == that.isInSpecEnum &&
+                Objects.equals(typeRef, that.typeRef) &&
                 typeKind == that.typeKind &&
                 cardinality == that.cardinality &&
                 Objects.equals(embeddedValueSpec, that.embeddedValueSpec) &&
@@ -115,7 +125,7 @@ public class PropertyTypeSpec {
 
     @Override
     public int hashCode() {
-        return Objects.hash(typeRef, typeKind, cardinality, embeddedValueSpec, enumValues);
+        return Objects.hash(typeRef, typeKind, cardinality, embeddedValueSpec, isInSpecEnum, enumValues);
     }
 
     @Override
@@ -125,6 +135,7 @@ public class PropertyTypeSpec {
                 ", typeKind=" + typeKind +
                 ", cardinality=" + cardinality +
                 ", embeddedValueSpec=" + embeddedValueSpec +
+                ", isInSpecEnum=" + isInSpecEnum +
                 ", enumValues=" + enumValues +
                 '}';
     }
