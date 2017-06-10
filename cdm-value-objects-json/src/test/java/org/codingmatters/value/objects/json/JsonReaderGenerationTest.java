@@ -9,10 +9,7 @@ import org.codingmatters.value.objects.exception.SpecSyntaxException;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.reader.SpecReader;
 import org.codingmatters.value.objects.spec.Spec;
-import org.generated.ArraySimpleProps;
-import org.generated.EnumProperties;
-import org.generated.ExampleValue;
-import org.generated.SimpleProps;
+import org.generated.*;
 import org.generated.examplevalue.Complex;
 import org.generated.examplevalue.ComplexList;
 import org.junit.Before;
@@ -20,6 +17,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.time.*;
 import java.util.List;
@@ -278,15 +277,6 @@ public class JsonReaderGenerationTest {
 
     @Test
     public void readOutsideSpecEnumValue() throws Exception {
-//        File java = new File(this.dir.getRoot(), "org.generated.json.EnumPropertiesReader".replaceAll("\\.", "/") + ".java");
-//        try(FileReader reader = new FileReader(java)) {
-//            char[] buffer = new char[1024];
-//            for(int read = reader.read(buffer) ; read != -1 ; read = reader.read(buffer)) {
-//                System.out.print(new String(buffer, 0, read));
-//            }
-//        }
-//        System.out.printf("-----------------------------------------------");
-
         String json = "{" +
                 "\"single\":\"MONDAY\"," +
                 "\"multiple\":[\"MONDAY\",\"TUESDAY\"]" +
@@ -300,6 +290,37 @@ public class JsonReaderGenerationTest {
                     is(new EnumProperties.Builder()
                             .single(DayOfWeek.MONDAY)
                             .multiple(DayOfWeek.MONDAY, DayOfWeek.TUESDAY)
+                            .build()
+                    )
+            );
+        }
+    }
+
+
+    @Test
+    public void readInSpecEnumValue() throws Exception {
+        File java = new File(this.dir.getRoot(), "org.generated.json.InSpecEnumPropertiesReader".replaceAll("\\.", "/") + ".java");
+        try(FileReader reader = new FileReader(java)) {
+            char[] buffer = new char[1024];
+            for(int read = reader.read(buffer) ; read != -1 ; read = reader.read(buffer)) {
+                System.out.print(new String(buffer, 0, read));
+            }
+        }
+        System.out.printf("-----------------------------------------------");
+
+        String json = "{" +
+                "\"single\":\"A\"," +
+                "\"multiple\":[\"A\",\"B\"]" +
+                "}";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.InSpecEnumPropertiesReader").newInstance();
+            InSpecEnumProperties value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+
+            assertThat(
+                    value,
+                    is(new InSpecEnumProperties.Builder()
+                            .single(InSpecEnumProperties.Single.A)
+                            .multiple(InSpecEnumProperties.Multiple.A, InSpecEnumProperties.Multiple.B)
                             .build()
                     )
             );

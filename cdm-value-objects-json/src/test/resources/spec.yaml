@@ -58,3 +58,10 @@ enumProperties:
     $list:
       $enum:
         $type: java.time.DayOfWeek
+
+inSpecEnumProperties:
+  single:
+    $enum: A, B, C
+  multiple:
+    $list:
+      $enum: A, B, C

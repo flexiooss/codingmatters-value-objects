@@ -360,5 +360,29 @@ public class JsonWriterGenerationTest {
         }
     }
 
+    @Test
+    public void writeInSpecEnumValue() throws Exception {
+        InSpecEnumProperties value = new InSpecEnumProperties.Builder()
+                .single(InSpecEnumProperties.Single.A)
+                .multiple(InSpecEnumProperties.Multiple.A, InSpecEnumProperties.Multiple.B)
+                .build();
+
+        Object writer = this.compiled.getClass("org.generated.json.InSpecEnumPropertiesWriter").newInstance();
+        try(OutputStream out = new ByteArrayOutputStream()) {
+            JsonGenerator generator = this.factory.createGenerator(out);
+            this.compiled.on(writer).invoke("write", JsonGenerator.class, InSpecEnumProperties.class).with(generator, value);
+            generator.close();
+
+            assertThat(
+                    out.toString(),
+                    is("{" +
+                            "\"single\":\"A\"," +
+                            "\"multiple\":[\"A\",\"B\"]" +
+                            "}"
+                    )
+            );
+        }
+    }
+
 
 }

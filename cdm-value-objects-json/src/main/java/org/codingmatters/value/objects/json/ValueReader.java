@@ -54,7 +54,7 @@ public class ValueReader {
             propertyReaderProducer = new SimplePropertyReaderProducer(
                     new HashSet<>(Arrays.asList(JsonToken.VALUE_STRING)),
                     "getText",
-                    new EnumPropertyStatement()
+                    new EnumPropertyStatement(this.types)
             );
         }
         return propertyReaderProducer;
@@ -166,10 +166,6 @@ public class ValueReader {
     private void propertyStatements(MethodSpec.Builder method, PropertySpec propertySpec) {
         if(propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE || propertySpec.typeSpec().typeKind() == TypeKind.ENUM) {
             SimplePropertyReaderProducer propertyReaderProducer = this.propertyReaderProducer(propertySpec);
-//            SimplePropertyReaders propertyReader = propertySpec.typeSpec().typeKind() == TypeKind.ENUM ?
-//                    null :
-//                    SimplePropertyReaders.forClassName(propertySpec.typeSpec().typeRef());
-
             if(propertyReaderProducer!= null) {
                 if (!propertySpec.typeSpec().cardinality().isCollection()) {
                     this.singleSimplePropertyStatement(method, propertySpec, propertyReaderProducer);

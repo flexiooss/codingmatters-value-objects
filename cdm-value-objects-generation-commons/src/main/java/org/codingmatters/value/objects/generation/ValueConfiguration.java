@@ -67,16 +67,6 @@ public class ValueConfiguration {
         }
     }
 
-    public TypeName propertyImplType(PropertySpec propertySpec) {
-        if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
-            return this.collectionConfiguration.valueListImplOfType(this.propertySingleType(propertySpec));
-        } else if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
-            return this.collectionConfiguration.valueSetImplOfType(this.propertySingleType(propertySpec));
-        } else {
-            return this.builderSinglePropertyType(propertySpec);
-        }
-    }
-
     private TypeName builderSinglePropertyType(PropertySpec propertySpec) {
         if(propertySpec.typeSpec().typeKind().isValueObject()) {
             String valueType1;
@@ -100,15 +90,28 @@ public class ValueConfiguration {
         return collectionConfiguration;
     }
 
-    public String package_() {
-        return rootPackage;
-    }
-
     static private String capitalizedFirst(String str) {
         return str.substring(0,1).toUpperCase() + str.substring(1);
     }
 
     public String enumTypeName(String name) {
         return this.capitalizedFirst(name);
+    }
+
+    public ClassName propertyClass(PropertySpec propertySpec) {
+        if(propertySpec.typeSpec().isInSpecEnum()) {
+            return this.valueType().nestedClass(this.enumTypeName(propertySpec.name()));
+        } else {
+            return this.classNameForTypeRef(propertySpec);
+        }
+    }
+
+    public ClassName classNameForTypeRef(PropertySpec propertySpec) {
+        try {
+            return ClassName.get(Class.forName(propertySpec.typeSpec().typeRef()));
+        } catch (ClassNotFoundException e) {
+            System.err.println("class not found : " + propertySpec.typeSpec().typeRef());
+            return null;
+        }
     }
 }

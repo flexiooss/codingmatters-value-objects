@@ -73,7 +73,8 @@ public class ValueWriter {
         if (!propertySpec.typeSpec().cardinality().isCollection()) {
             SimplePropertyWriter.forClass(propertySpec.typeSpec().typeRef()).singleStatement(method, propertySpec);
         } else {
-            SimplePropertyWriter.forClass(propertySpec.typeSpec().typeRef()).arrayStatement(method, propertySpec);
+            ClassName type = this.types.propertyClass(propertySpec);
+            SimplePropertyWriter.forClass(propertySpec.typeSpec().typeRef()).arrayStatement(method, propertySpec, type);
         }
     }
 
@@ -81,7 +82,7 @@ public class ValueWriter {
         if (!propertySpec.typeSpec().cardinality().isCollection()) {
             SimplePropertyWriter.ENUM.singleStatement(method, propertySpec);
         } else {
-            SimplePropertyWriter.ENUM.arrayStatement(method, propertySpec);
+            SimplePropertyWriter.ENUM.arrayStatement(method, propertySpec, this.types.propertyClass(propertySpec));
         }
     }
 

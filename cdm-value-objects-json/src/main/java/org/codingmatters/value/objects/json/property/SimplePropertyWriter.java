@@ -103,7 +103,7 @@ public enum SimplePropertyWriter {
         }
 
         @Override
-        public void arrayStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
+        public void arrayStatement(MethodSpec.Builder method, PropertySpec propertySpec, ClassName type) {
             method.addStatement("generator.writeNull()");
         }
     },
@@ -127,14 +127,8 @@ public enum SimplePropertyWriter {
     }
 
     public abstract void singleStatement(MethodSpec.Builder method, PropertySpec propertySpec);
-    public void arrayStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
-        ClassName type = null;
-        try {
-            type = ClassName.get(Class.forName(propertySpec.typeSpec().typeRef()));
-        } catch (ClassNotFoundException e) {
-            System.err.println("class not found : " + propertySpec.typeSpec().typeRef());
-        }
 
+    public void arrayStatement(MethodSpec.Builder method, PropertySpec propertySpec, ClassName type) {
         method.addStatement("generator.writeStartArray()");
         method.beginControlFlow("for ($T element : value.$L())",
                 type,
