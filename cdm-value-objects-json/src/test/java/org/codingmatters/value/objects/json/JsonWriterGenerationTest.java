@@ -33,13 +33,13 @@ public class JsonWriterGenerationTest {
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
 
-    private final Spec spec = loadSpec();
+    private Spec spec;
 
     private final JsonFactory factory = new JsonFactory();
 
-    static private Spec loadSpec() {
+    static private Spec loadSpec(String resource) {
         try {
-            return new SpecReader().read(Thread.currentThread().getContextClassLoader().getResourceAsStream("spec.yaml"));
+            return new SpecReader().read(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource));
         } catch (IOException | SpecSyntaxException | LowLevelSyntaxException e) {
             throw new RuntimeException("error loading spec", e);
         }
@@ -49,8 +49,15 @@ public class JsonWriterGenerationTest {
 
     @Before
     public void setUp() throws Exception {
+        Spec refSpec = loadSpec("ref.yaml");
+        new SpecCodeGenerator(refSpec, "org.generated.ref", dir.getRoot()).generate();
+        new JsonFrameworkGenerator(refSpec, "org.generated.ref", dir.getRoot()).generate();
+
+        this.spec = loadSpec("spec.yaml");
+
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
         new JsonFrameworkGenerator(this.spec, "org.generated", dir.getRoot()).generate();
+
         this.compiled = new CompiledCode.Builder()
                 .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))
                 .source(this.dir.getRoot())

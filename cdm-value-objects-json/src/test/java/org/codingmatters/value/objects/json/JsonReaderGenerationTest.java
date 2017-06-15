@@ -35,13 +35,13 @@ public class JsonReaderGenerationTest {
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
 
-    private final Spec spec = loadSpec();
+    private Spec spec;
 
     private final JsonFactory factory = new JsonFactory();
 
-    static private Spec loadSpec() {
+    static private Spec loadSpec(String resource) {
         try {
-            return new SpecReader().read(Thread.currentThread().getContextClassLoader().getResourceAsStream("spec.yaml"));
+            return new SpecReader().read(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource));
         } catch (IOException | SpecSyntaxException | LowLevelSyntaxException e) {
             throw new RuntimeException("error loading spec", e);
         }
@@ -50,7 +50,12 @@ public class JsonReaderGenerationTest {
     private CompiledCode compiled;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() throws Exception {Spec refSpec = loadSpec("ref.yaml");
+        new SpecCodeGenerator(refSpec, "org.generated.ref", dir.getRoot()).generate();
+        new JsonFrameworkGenerator(refSpec, "org.generated.ref", dir.getRoot()).generate();
+
+        this.spec = loadSpec("spec.yaml");
+
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
         new JsonFrameworkGenerator(this.spec, "org.generated", dir.getRoot()).generate();
         this.compiled = new CompiledCode.Builder()
@@ -299,15 +304,6 @@ public class JsonReaderGenerationTest {
 
     @Test
     public void readInSpecEnumValue() throws Exception {
-        File java = new File(this.dir.getRoot(), "org.generated.json.InSpecEnumPropertiesReader".replaceAll("\\.", "/") + ".java");
-        try(FileReader reader = new FileReader(java)) {
-            char[] buffer = new char[1024];
-            for(int read = reader.read(buffer) ; read != -1 ; read = reader.read(buffer)) {
-                System.out.print(new String(buffer, 0, read));
-            }
-        }
-        System.out.printf("-----------------------------------------------");
-
         String json = "{" +
                 "\"single\":\"A\"," +
                 "\"multiple\":[\"A\",\"B\"]" +
@@ -325,6 +321,24 @@ public class JsonReaderGenerationTest {
                     )
             );
         }
+    }
+
+    private void printClassFile(String className) throws IOException {
+        File java = new File(this.dir.getRoot(), className.replaceAll("\\.", "/") + ".java");
+        try(FileReader reader = new FileReader(java)) {
+            StringBuilder content = new StringBuilder();
+            char[] buffer = new char[1024];
+            for(int read = reader.read(buffer) ; read != -1 ; read = reader.read(buffer)) {
+                content.append(buffer, 0, read);
+            }
+            int lineNo = 0;
+            for (String line : content.toString().split("\n")) {
+                lineNo ++;
+                System.out.printf("%04d - %s%n", lineNo, line);
+            }
+
+        }
+        System.out.printf("-----------------------------------------------\n");
     }
 
     @Test
@@ -365,82 +379,89 @@ public class JsonReaderGenerationTest {
         }
     }
 
+    @Test
+    public void readSimpleTypeArraysWithNullElements() throws Exception {
+        this.printClassFile("org.generated.json.ArraySimplePropsReader");
 
+        String json = "{" +
+                "\"stringProp\":[null]," +
+                "\"integerProp\":[null]," +
+                "\"longProp\":[null]," +
+                "\"floatProp\":[null]," +
+                "\"doubleProp\":[null]," +
+                "\"booleanProp\":[null]," +
+                "\"dateProp\":[null]," +
+                "\"timeProp\":[null]," +
+                "\"dateTimeProp\":[null]," +
+                "\"tzDateTimeProp\":[null]" +
+                "}";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.ArraySimplePropsReader").newInstance();
+            ArraySimpleProps value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
 
+            assertThat(
+                    value,
+                    is(
+                            new ArraySimpleProps.Builder()
+                                    .stringProp((String) null)
+                                    .integerProp((Integer) null)
+                                    .longProp((Long) null)
+                                    .floatProp((Float) null)
+                                    .doubleProp((Double) null)
+                                    .booleanProp((Boolean) null)
+                                    .dateProp((LocalDate) null)
+                                    .timeProp((LocalTime) null)
+                                    .dateTimeProp((LocalDateTime) null)
+                                    .tzDateTimeProp((ZonedDateTime) null)
+                                    .build()
+                    )
+            );
+        }
+    }
 
-//    @Test
-//    public void writeSimpleTypeArraysWithNullElements() throws Exception {
-//        ArraySimpleProps value = new ArraySimpleProps.Builder()
-//                .stringProp((String) null)
-//                .integerProp((Integer) null)
-//                .longProp((Long) null)
-//                .floatProp((Float) null)
-//                .doubleProp((Double) null)
-//                .booleanProp((Boolean) null)
-//                .dateProp((LocalDate) null)
-//                .timeProp((LocalTime) null)
-//                .dateTimeProp((LocalDateTime) null)
-//                .tzDateTimeProp((ZonedDateTime) null)
-//                .build();
-//        Object writer = this.compiled.getClass("org.generated.json.ArraySimplePropsWriter").newInstance();
-//        String json = this.compiled.on(writer).invoke("write", ArraySimpleProps.class).with(value);
-//
-//        assertThat(
-//                json,
-//                is("{" +
-//                        "\"stringProp\":[null]," +
-//                        "\"integerProp\":[null]," +
-//                        "\"longProp\":[null]," +
-//                        "\"floatProp\":[null]," +
-//                        "\"doubleProp\":[null]," +
-//                        "\"booleanProp\":[null]," +
-//                        "\"dateProp\":[null]," +
-//                        "\"timeProp\":[null]," +
-//                        "\"dateTimeProp\":[null]," +
-//                        "\"tzDateTimeProp\":[null]" +
-//                        "}")
-//        );
-//    }
-//
-//    @Test
-//    public void writeReferencedValue() throws Exception {
-//        RefValue value = new RefValue.Builder()
-//                .ref(new Referenced.Builder()
-//                        .prop("value")
-//                        .build())
-//                .refs(new Referenced.Builder()
-//                        .prop("value")
-//                        .build())
-//                .build();
-//
-//        Object writer = this.compiled.getClass("org.generated.json.RefValueWriter").newInstance();
-//        String json = this.compiled.on(writer).invoke("write", RefValue.class).with(value);
-//
-//        assertThat(
-//                json,
-//                is("{" +
-//                        "\"ref\":{\"prop\":\"value\"}," +
-//                        "\"refs\":[{\"prop\":\"value\"}]}"
-//                )
-//        );
-//    }
-//
-//    @Test
-//    public void writeNullReferencedValue() throws Exception {
-//        RefValue value = new RefValue.Builder()
-//                .ref(null)
-//                .refs((Referenced) null)
-//                .build();
-//
-//        Object writer = this.compiled.getClass("org.generated.json.RefValueWriter").newInstance();
-//        String json = this.compiled.on(writer).invoke("write", RefValue.class).with(value);
-//
-//        assertThat(
-//                json,
-//                is("{" +
-//                        "\"ref\":null," +
-//                        "\"refs\":[null]}"
-//                )
-//        );
-//    }
+    @Test
+    public void readReferencedValue() throws Exception {
+        String json = "{" +
+                "\"ref\":{\"prop\":\"value\"}," +
+                "\"refs\":[{\"prop\":\"value\"}]" +
+                "}";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.RefValueReader").newInstance();
+            RefValue value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+            assertThat(
+                    value,
+                    is(
+                            new RefValue.Builder()
+                                    .ref(new Referenced.Builder()
+                                            .prop("value")
+                                            .build())
+                                    .refs(new Referenced.Builder()
+                                            .prop("value")
+                                            .build())
+                                    .build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void readNullReferencedValue() throws Exception {
+        String json = "{" +
+                "\"ref\":null," +
+                "\"refs\":[null]" +
+                "}";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.RefValueReader").newInstance();
+            RefValue value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+            assertThat(
+                    value,
+                    is(
+                            new RefValue.Builder()
+                                    .ref(null)
+                                    .refs((Referenced) null)
+                                    .build()
+                    )
+            );
+        }
+    }
 }

@@ -65,3 +65,7 @@ inSpecEnumProperties:
   multiple:
     $list:
       $enum: A, B, C
+
+valueObjectProps:
+  prop:
+    $value-object: org.generated.ref.ExtReferenced

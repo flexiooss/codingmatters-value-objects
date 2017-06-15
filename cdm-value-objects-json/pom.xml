@@ -52,27 +52,48 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>ref</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <includeProjectDependencies>false</includeProjectDependencies>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <executableDependency>
+                                <groupId>org.codingmatters.value.objects</groupId>
+                                <artifactId>cdm-value-objects-generation-main</artifactId>
+                            </executableDependency>
+                            <mainClass>org.codingmatters.value.objects.generation.main.Generate</mainClass>
+                            <arguments>
+                                <argument>${basedir}/src/test/resources/ref.yaml</argument>
+                                <argument>org.generated.ref</argument>
+                                <argument>${basedir}/target/generated-test-sources</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>spec</id>
                         <phase>generate-test-sources</phase>
                         <goals>
                             <goal>java</goal>
                         </goals>
+                        <configuration>
+                            <includeProjectDependencies>false</includeProjectDependencies>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <executableDependency>
+                                <groupId>org.codingmatters.value.objects</groupId>
+                                <artifactId>cdm-value-objects-generation-main</artifactId>
+                            </executableDependency>
+                            <mainClass>org.codingmatters.value.objects.generation.main.Generate</mainClass>
+                            <arguments>
+                                <argument>${basedir}/src/test/resources/spec.yaml</argument>
+                                <argument>org.generated</argument>
+                                <argument>${basedir}/target/generated-test-sources</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <includeProjectDependencies>false</includeProjectDependencies>
-                    <includePluginDependencies>true</includePluginDependencies>
-                    <executableDependency>
-                        <groupId>org.codingmatters.value.objects</groupId>
-                        <artifactId>cdm-value-objects-generation-main</artifactId>
-                    </executableDependency>
-                    <mainClass>org.codingmatters.value.objects.generation.main.Generate</mainClass>
-                    <arguments>
-                        <argument>${basedir}/src/test/resources/spec.yaml</argument>
-                        <argument>org.generated</argument>
-                        <argument>${basedir}/target/generated-test-sources</argument>
-                    </arguments>
-                </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>org.codingmatters.value.objects</groupId>

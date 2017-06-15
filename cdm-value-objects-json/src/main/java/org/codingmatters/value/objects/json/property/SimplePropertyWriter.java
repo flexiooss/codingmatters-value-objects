@@ -99,11 +99,13 @@ public enum SimplePropertyWriter {
     NYIMPL() {
         @Override
         public void singleStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
+            System.err.println("WARN : property " + propertySpec.name() + " has no simple writer (" + propertySpec.toString() + ")");
             method.addStatement("generator.writeNull()");
         }
 
         @Override
         public void arrayStatement(MethodSpec.Builder method, PropertySpec propertySpec, ClassName type) {
+            System.err.println("WARN : property " + propertySpec.name() + " has no simple writer (" + propertySpec.toString() + ")");
             method.addStatement("generator.writeNull()");
         }
     },
