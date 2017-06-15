@@ -11,6 +11,7 @@ import org.codingmatters.value.objects.spec.Spec;
 import org.generated.*;
 import org.generated.examplevalue.Complex;
 import org.generated.examplevalue.ComplexList;
+import org.generated.ref.ExtReferenced;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -338,6 +339,28 @@ public class JsonWriterGenerationTest {
                     is("{" +
                             "\"ref\":null," +
                             "\"refs\":[null]}"
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void writeExternalReferenceValue() throws Exception {
+        ValueObjectProps value = ValueObjectProps.Builder.builder()
+                .prop(ExtReferenced.Builder.builder()
+                        .prop("val")
+                        .build())
+                .build();
+
+        Object writer = this.compiled.getClass("org.generated.json.ValueObjectPropsWriter").newInstance();
+        try(OutputStream out = new ByteArrayOutputStream()) {
+            JsonGenerator generator = this.factory.createGenerator(out);
+            this.compiled.on(writer).invoke("write", JsonGenerator.class, ValueObjectProps.class).with(generator, value);
+            generator.close();
+
+            assertThat(
+                    out.toString(),
+                    is("{\"prop\":{\"prop\":\"val\"}}"
                     )
             );
         }

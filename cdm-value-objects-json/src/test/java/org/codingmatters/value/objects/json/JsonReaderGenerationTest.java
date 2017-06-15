@@ -12,6 +12,7 @@ import org.codingmatters.value.objects.spec.Spec;
 import org.generated.*;
 import org.generated.examplevalue.Complex;
 import org.generated.examplevalue.ComplexList;
+import org.generated.ref.ExtReferenced;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -459,6 +460,26 @@ public class JsonReaderGenerationTest {
                             new RefValue.Builder()
                                     .ref(null)
                                     .refs((Referenced) null)
+                                    .build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void readExternalReferenceValue() throws Exception {
+        String json = "{\"prop\":{\"prop\":\"val\"}}";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.ValueObjectPropsReader").newInstance();
+            ValueObjectProps value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+
+            assertThat(
+                    value,
+                    is(
+                            ValueObjectProps.Builder.builder()
+                                    .prop(ExtReferenced.Builder.builder()
+                                            .prop("val")
+                                            .build())
                                     .build()
                     )
             );
