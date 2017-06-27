@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThat;
 public class QuickBuilderTest {
     @Test
     public void simple() throws Exception {
-        Value value = Value.Builder.builder()
+        Value value = Value.builder()
                 .stringProperty("toto")
                 .booleanProperty(true)
                 .build();
@@ -28,12 +28,12 @@ public class QuickBuilderTest {
 
     @Test
     public void complex() throws Exception {
-        ComplexValue value = ComplexValue.Builder.builder()
-                .recursiveProperty(ComplexValue.Builder.builder().build())
-                .inSpecProperty(Value.Builder.builder().stringProperty("toto").build())
+        ComplexValue value = ComplexValue.builder()
+                .recursiveProperty(ComplexValue.builder().build())
+                .inSpecProperty(Value.builder().stringProperty("toto").build())
                 .build();
 
-        ComplexValue v2 = value.withInSpecProperty(Value.Builder.builder().stringProperty("titi").build());
+        ComplexValue v2 = value.withInSpecProperty(Value.builder().stringProperty("titi").build());
 
         assertThat(v2, is(not(value)));
         assertThat(v2.inSpecProperty().stringProperty(), is("titi"));

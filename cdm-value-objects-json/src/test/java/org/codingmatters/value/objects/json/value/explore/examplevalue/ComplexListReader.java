@@ -16,7 +16,7 @@ public class ComplexListReader {
 //        parser.nextToken();
         if(parser.currentToken() == JsonToken.VALUE_NULL) return null;
 
-        ComplexList.Builder builder = ComplexList.Builder.builder();
+        ComplexList.Builder builder = ComplexList.builder();
         if (parser.currentToken() != JsonToken.START_OBJECT) {
             throw new IOException(
                     String.format("reading a %s object, was expecting %s, but was %s",

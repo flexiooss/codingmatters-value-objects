@@ -34,7 +34,7 @@ public class ExampleValueReader {
                     )
             );
         }
-        ExampleValue.Builder builder = ExampleValue.Builder.builder();
+        ExampleValue.Builder builder = ExampleValue.builder();
         while (parser.nextToken() != JsonToken.END_OBJECT) {
             String fieldName = parser.getCurrentName();
             switch (fieldName) {

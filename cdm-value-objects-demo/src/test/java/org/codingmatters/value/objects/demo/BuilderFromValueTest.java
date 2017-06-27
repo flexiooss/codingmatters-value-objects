@@ -13,29 +13,29 @@ public class BuilderFromValueTest {
 
     @Test
     public void simpleValue() throws Exception {
-        Value value = Value.Builder.builder()
+        Value value = Value.builder()
                 .stringProperty("toto")
                 .booleanProperty(true)
                 .build();
 
-        assertThat(Value.Builder.from(value).build(), is(value));
+        assertThat(Value.from(value).build(), is(value));
     }
 
     @Test
     public void complexValue() throws Exception {
-        ComplexValue value = ComplexValue.Builder.builder()
-                .recursiveProperty(ComplexValue.Builder.builder().build())
-                .inSpecProperty(Value.Builder.builder().stringProperty("toto").build())
+        ComplexValue value = ComplexValue.builder()
+                .recursiveProperty(ComplexValue.builder().build())
+                .inSpecProperty(Value.builder().stringProperty("toto").build())
                 .build();
 
-        assertThat(ComplexValue.Builder.from(value).build(), is(value));
+        assertThat(ComplexValue.from(value).build(), is(value));
     }
 
     @Test
     public void externalValue() throws Exception {
-        ComplexValue value = ComplexValue.Builder.builder().outSpecProperty(ReferencedValue.Builder.builder().build()).build();
+        ComplexValue value = ComplexValue.builder().outSpecProperty(ReferencedValue.builder().build()).build();
 
-        assertThat(ComplexValue.Builder.from(value).build(), is(value));
+        assertThat(ComplexValue.from(value).build(), is(value));
     }
 
 }

@@ -136,12 +136,12 @@ public class ValueReader {
                         ")", this.types.valueType(), JsonToken.class)
                 .endControlFlow();
         /*
-        ExampleValue.Builder builder = ExampleValue.Builder.builder();
+        ExampleValue.Builder builder = ExampleValue.builder();
         while (parser.nextToken() != JsonToken.END_OBJECT) {
             String fieldName = parser.getCurrentName();
             switch (fieldName) {
          */
-        method.addStatement("$T builder = $T.builder()", this.types.valueBuilderType(), this.types.valueBuilderType());
+        method.addStatement("$T builder = $T.builder()", this.types.valueBuilderType(), this.types.valueType());
         method.beginControlFlow("while (parser.nextToken() != $T.END_OBJECT)", JsonToken.class)
                 .addStatement("$T fieldName = parser.getCurrentName()", String.class)
                 .beginControlFlow("switch (fieldName)");

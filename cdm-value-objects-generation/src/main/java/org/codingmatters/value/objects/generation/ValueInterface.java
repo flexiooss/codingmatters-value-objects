@@ -1,5 +1,6 @@
 package org.codingmatters.value.objects.generation;
 
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.value.objects.spec.PropertySpec;
@@ -44,6 +45,8 @@ public class ValueInterface {
 
     public TypeSpec type() {
         return TypeSpec.interfaceBuilder(this.types.valueType())
+                .addMethod(this.createBuilderMethod())
+                .addMethod(this.createBuilderFromValueMethod())
                 .addModifiers(PUBLIC)
                 .addTypes(this.enums)
                 .addMethods(this.getters)
@@ -52,6 +55,40 @@ public class ValueInterface {
                 .addMethod(this.changedMethod)
                 .addType(this.valueBuilder.type())
                 .addType(this.valueChanger.type())
+                .build();
+    }
+
+
+
+    private MethodSpec createBuilderMethod() {
+        return MethodSpec.methodBuilder("builder")
+                .addModifiers(STATIC, PUBLIC)
+                .returns(ClassName.bestGuess("Builder"))
+                .addStatement("return new $T()", this.types.valueBuilderType())
+                .build();
+    }
+
+
+    private MethodSpec createBuilderFromValueMethod() {
+        List<Object> bindings = new LinkedList<>();
+
+        String statement = "return new $T()\n";
+        bindings.add(this.types.valueBuilderType());
+
+        for (PropertySpec propertySpec : this.propertySpecs) {
+            statement += "." + propertySpec.name() + "(value." + propertySpec.name() + "())\n";
+        }
+
+        return MethodSpec.methodBuilder("from")
+                .addModifiers(STATIC, PUBLIC)
+                .addParameter(this.types.valueType(), "value")
+                .returns(this.types.valueBuilderType())
+                .beginControlFlow("if(value != null)")
+                .addStatement(statement, bindings.toArray())
+                .endControlFlow()
+                .beginControlFlow("else")
+                .addStatement("return null")
+                .endControlFlow()
                 .build();
     }
 

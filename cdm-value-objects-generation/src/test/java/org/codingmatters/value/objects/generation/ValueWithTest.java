@@ -59,7 +59,7 @@ public class ValueWithTest {
 
     @Test
     public void simpleValue() throws Exception {
-        Object aBuilder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        Object aBuilder = compiled.onClass("org.generated.Val").invoke("builder");
         compiled.on(aBuilder).invoke("prop1", String.class).with("v1");
         compiled.on(aBuilder).invoke("prop2", String.class).with("v2");
         Object aValue = compiled.on(aBuilder).invoke("build");
@@ -72,12 +72,12 @@ public class ValueWithTest {
 
     @Test
     public void complex() throws Exception {
-        Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        Object builder = compiled.onClass("org.generated.Val").invoke("builder");
         compiled.on(builder).invoke("prop1", String.class).with("v1");
         compiled.on(builder).invoke("prop2", String.class).with("v2");
         Object builded = compiled.on(builder).invoke("build");
 
-        Object complexBuilder = compiled.onClass("org.generated.ComplexVal$Builder").invoke("builder");
+        Object complexBuilder = compiled.onClass("org.generated.ComplexVal").invoke("builder");
         compiled.on(complexBuilder).invoke("prop", compiled.getClass("org.generated.Val")).with(builded);
         Object complexValue = compiled.on(complexBuilder).invoke("build");
 

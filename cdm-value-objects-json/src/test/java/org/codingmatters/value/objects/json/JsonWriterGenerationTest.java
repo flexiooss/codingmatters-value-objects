@@ -81,7 +81,7 @@ public class JsonWriterGenerationTest {
 
     @Test
     public void writeStringProperty() throws Exception {
-        ExampleValue value = ExampleValue.Builder.builder()
+        ExampleValue value = ExampleValue.builder()
                 .prop("a value")
                 .build();
 
@@ -105,7 +105,7 @@ public class JsonWriterGenerationTest {
 
     @Test
     public void writeStringArrayProperty() throws Exception {
-        ExampleValue value = ExampleValue.Builder.builder()
+        ExampleValue value = ExampleValue.builder()
                 .listProp("a", "b", "c")
                 .build();
 
@@ -130,7 +130,7 @@ public class JsonWriterGenerationTest {
 
     @Test
     public void writeComplexProperty() throws Exception {
-        ExampleValue value = ExampleValue.Builder.builder()
+        ExampleValue value = ExampleValue.builder()
                 .complex(new Complex.Builder()
                         .sub("a value")
                         .build())
@@ -156,7 +156,7 @@ public class JsonWriterGenerationTest {
 
     @Test
     public void writeComplexListProperty() throws Exception {
-        ExampleValue value = ExampleValue.Builder.builder()
+        ExampleValue value = ExampleValue.builder()
                 .complexList(new ComplexList.Builder()
                         .sub("a value")
                         .build())
@@ -346,8 +346,8 @@ public class JsonWriterGenerationTest {
 
     @Test
     public void writeExternalReferenceValue() throws Exception {
-        ValueObjectProps value = ValueObjectProps.Builder.builder()
-                .prop(ExtReferenced.Builder.builder()
+        ValueObjectProps value = ValueObjectProps.builder()
+                .prop(ExtReferenced.builder()
                         .prop("val")
                         .build())
                 .build();

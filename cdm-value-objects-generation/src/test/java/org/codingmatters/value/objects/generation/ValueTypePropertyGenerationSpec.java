@@ -96,9 +96,9 @@ public class ValueTypePropertyGenerationSpec {
 
     @Test
     public void valueBuilding() throws Exception {
-        Object referenced = compiled.on(compiled.onClass("org.generated.Val2$Builder").invoke("builder")).invoke("build");
+        Object referenced = compiled.on(compiled.onClass("org.generated.Val2").invoke("builder")).invoke("build");
 
-        Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        Object builder = compiled.onClass("org.generated.Val").invoke("builder");
         compiled.on(builder).invoke("inSpecValue", compiled.getClass("org.generated.Val2")).with(referenced);
         Object value = compiled.on(builder).invoke("build");
 
@@ -108,7 +108,7 @@ public class ValueTypePropertyGenerationSpec {
 
     @Test
     public void valueBuildingWithNullBuilder() throws Exception {
-        Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        Object builder = compiled.onClass("org.generated.Val").invoke("builder");
         Object value = compiled.on(builder).invoke("build");
 
         assertThat(value, is(notNullValue(compiled.getClass("org.generated.ValImpl"))));
@@ -117,9 +117,9 @@ public class ValueTypePropertyGenerationSpec {
 
     @Test
     public void valueBuildingWithExternallyDefinedValueObject() throws Exception {
-        Object referenced = compiled.on(compiled.onClass("org.external.value.ExternalValue$Builder").invoke("builder")).invoke("build");
+        Object referenced = compiled.on(compiled.onClass("org.external.value.ExternalValue").invoke("builder")).invoke("build");
 
-        Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        Object builder = compiled.onClass("org.generated.Val").invoke("builder");
         compiled.on(builder).invoke("outSpecValue", compiled.getClass("org.external.value.ExternalValue")).with(referenced);
         Object value = compiled.on(builder).invoke("build");
 

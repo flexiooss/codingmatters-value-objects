@@ -78,7 +78,7 @@ public class ValueChangerFrameworkTest {
         );
         compiled = compiled.withCompiled(testCodeDir.getRoot());
 
-        Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        Object builder = compiled.onClass("org.generated.Val").invoke("builder");
         compiled.on(builder).invoke("prop", String.class).with("unchanged");
         Object value = compiled.on(builder).invoke("build");
 

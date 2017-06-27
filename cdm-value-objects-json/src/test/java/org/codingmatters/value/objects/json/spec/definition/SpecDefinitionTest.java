@@ -18,7 +18,7 @@ public class SpecDefinitionTest {
     @Test
     public void writeSimpleProperties() throws Exception {
         assertThat(
-                new ExampleValueWriter().write(ExampleValue.Builder.builder()
+                new ExampleValueWriter().write(ExampleValue.builder()
                         .prop("a value")
                         .listProp("a", "b", "c")
                         .build()),
@@ -34,7 +34,7 @@ public class SpecDefinitionTest {
     @Test
     public void writeNullSimpleProperties() throws Exception {
         assertThat(
-                new ExampleValueWriter().write(ExampleValue.Builder.builder()
+                new ExampleValueWriter().write(ExampleValue.builder()
                         .prop(null)
                         .listProp()
                         .build()),
@@ -50,17 +50,17 @@ public class SpecDefinitionTest {
     @Test
     public void writeComplexProperties() throws Exception {
         assertThat(
-                new ExampleValueWriter().write(ExampleValue.Builder.builder()
+                new ExampleValueWriter().write(ExampleValue.builder()
                         .prop(null)
                         .listProp()
-                        .complex(Complex.Builder.builder()
+                        .complex(Complex.builder()
                                 .sub("value")
                                 .build())
                         .complexList(
-                                ComplexList.Builder.builder()
+                                ComplexList.builder()
                                         .sub("value1")
                                         .build(),
-                                ComplexList.Builder.builder()
+                                ComplexList.builder()
                                         .sub("value2")
                                         .build()
                         )
@@ -83,7 +83,7 @@ public class SpecDefinitionTest {
                         "\"complex\":null," +
                         "\"complexList\":null" +
                         "}"),
-                is(ExampleValue.Builder.builder()
+                is(ExampleValue.builder()
                         .prop("a value")
                         .listProp("a", "b", "c")
                         .build())
@@ -99,7 +99,7 @@ public class SpecDefinitionTest {
                         "\"complex\":null," +
                         "\"complexList\":null" +
                         "}"),
-                is(ExampleValue.Builder.builder()
+                is(ExampleValue.builder()
                         .prop(null)
                         .listProp()
                         .build())
@@ -115,17 +115,17 @@ public class SpecDefinitionTest {
                         "\"complex\":{\"sub\":\"value\"}," +
                         "\"complexList\":[{\"sub\":\"value1\"},{\"sub\":\"value2\"}]" +
                         "}"),
-                is(ExampleValue.Builder.builder()
+                is(ExampleValue.builder()
                         .prop(null)
                         .listProp()
-                        .complex(Complex.Builder.builder()
+                        .complex(Complex.builder()
                                 .sub("value")
                                 .build())
                         .complexList(
-                                ComplexList.Builder.builder()
+                                ComplexList.builder()
                                         .sub("value1")
                                         .build(),
-                                ComplexList.Builder.builder()
+                                ComplexList.builder()
                                         .sub("value2")
                                         .build()
                         )

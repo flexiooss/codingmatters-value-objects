@@ -28,9 +28,9 @@ public class BookTest {
 
     @Test
     public void chainedBuilderAndCompleteToString() throws Exception {
-        Book cleanCode = Book.Builder.builder()
+        Book cleanCode = Book.builder()
                 .name("Clean Code: A Handbook of Agile Software Craftsmanship")
-                .author(Person.Builder.builder()
+                .author(Person.builder()
                         .name("Robert C. Martin")
                         .build())
                 .bookFormat("Paperback")
@@ -38,8 +38,8 @@ public class BookTest {
                 .isbn("978-0132350884")
                 .numberOfPages(464)
                 .reviews(
-                        Review.Builder.builder()
-                                .author(Person.Builder.builder()
+                        Review.builder()
+                                .author(Person.builder()
                                         .name("John Doe")
                                         .build())
                                 .datePublished(LocalDateTime.parse("September 23, 2008", ENGLISH_DATE_FORMATTER))
@@ -47,7 +47,7 @@ public class BookTest {
                                         "I enjoyed reading this book and after finishing it, " +
                                                 "I decided to apply the Boy Scout Rule."
                                 )
-                                .reviewRating(ReviewRating.Builder.builder()
+                                .reviewRating(ReviewRating.builder()
                                         .ratingValue(5)
                                         .build())
                                 .build()
@@ -74,13 +74,13 @@ public class BookTest {
 
     @Test
     public void equalityOnValue() throws Exception {
-        Person sameValueAsJohn = Person.Builder.builder()
+        Person sameValueAsJohn = Person.builder()
                 .name("John Doe")
                 .build();
-        Person john = Person.Builder.builder()
+        Person john = Person.builder()
                 .name("John Doe")
                 .build();
-        Person jane = Person.Builder.builder()
+        Person jane = Person.builder()
                 .name("Jane Doe")
                 .build();
 
@@ -90,9 +90,9 @@ public class BookTest {
 
     @Test
     public void singlePropertyChange() throws Exception {
-        Person john = Person.Builder.builder()
+        Person john = Person.builder()
                 .name("John")
-                .address(Address.Builder.builder()
+                .address(Address.builder()
                         .postalCode("25000")
                         .build())
                 .build();
@@ -107,9 +107,9 @@ public class BookTest {
 
     @Test
     public void bulkChange() throws Exception {
-        Person john = Person.Builder.builder()
+        Person john = Person.builder()
                 .name("John")
-                .address(Address.Builder.builder()
+                .address(Address.builder()
                         .postalCode("25000")
                         .build())
                 .build();

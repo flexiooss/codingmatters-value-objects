@@ -20,8 +20,8 @@ public class ValueBuilder {
 
     private final List<FieldSpec> fields;
     private final List<MethodSpec> setters;
-    private final MethodSpec builderMethod;
-    private final MethodSpec builderFromValueMethod;
+//    private final MethodSpec builderMethod;
+//    private final MethodSpec builderFromValueMethod;
     private final MethodSpec buildMethod;
 
     public ValueBuilder(ValueConfiguration types, List<PropertySpec> propertySpecs) {
@@ -30,16 +30,16 @@ public class ValueBuilder {
 
         this.fields = this.createFields();
         this.setters = this.createSetters();
-        this.builderMethod = this.createBuilderMethod();
-        this.builderFromValueMethod = this.createBuilderFromValueMethod();
+//        this.builderMethod = this.createBuilderMethod();
+//        this.builderFromValueMethod = this.createBuilderFromValueMethod();
         this.buildMethod = this.createBuildMethod();
     }
 
     public TypeSpec type() {
         return TypeSpec.classBuilder("Builder")
                 .addModifiers(PUBLIC, STATIC)
-                .addMethod(this.builderMethod)
-                .addMethod(this.builderFromValueMethod)
+//                .addMethod(this.builderMethod)
+//                .addMethod(this.builderFromValueMethod)
                 .addMethod(this.buildMethod)
                 .addFields(this.fields)
                 .addMethods(this.setters)
@@ -130,36 +130,36 @@ public class ValueBuilder {
         );
     }
 
-    private MethodSpec createBuilderMethod() {
-        return MethodSpec.methodBuilder("builder")
-                .addModifiers(STATIC, PUBLIC)
-                .returns(ClassName.bestGuess("Builder"))
-                .addStatement("return new $T()", this.types.valueBuilderType())
-                .build();
-    }
-
-    private MethodSpec createBuilderFromValueMethod() {
-        List<Object> bindings = new LinkedList<>();
-
-        String statement = "return new $T()\n";
-        bindings.add(this.types.valueBuilderType());
-
-        for (PropertySpec propertySpec : this.propertySpecs) {
-            statement += "." + propertySpec.name() + "(value." + propertySpec.name() + "())\n";
-        }
-
-        return MethodSpec.methodBuilder("from")
-                .addModifiers(STATIC, PUBLIC)
-                .addParameter(this.types.valueType(), "value")
-                .returns(this.types.valueBuilderType())
-                .beginControlFlow("if(value != null)")
-                .addStatement(statement, bindings.toArray())
-                .endControlFlow()
-                .beginControlFlow("else")
-                .addStatement("return null")
-                .endControlFlow()
-                .build();
-    }
+//    private MethodSpec createBuilderMethod() {
+//        return MethodSpec.methodBuilder("builder")
+//                .addModifiers(STATIC, PUBLIC)
+//                .returns(ClassName.bestGuess("Builder"))
+//                .addStatement("return new $T()", this.types.valueBuilderType())
+//                .build();
+//    }
+//
+//    private MethodSpec createBuilderFromValueMethod() {
+//        List<Object> bindings = new LinkedList<>();
+//
+//        String statement = "return new $T()\n";
+//        bindings.add(this.types.valueBuilderType());
+//
+//        for (PropertySpec propertySpec : this.propertySpecs) {
+//            statement += "." + propertySpec.name() + "(value." + propertySpec.name() + "())\n";
+//        }
+//
+//        return MethodSpec.methodBuilder("from")
+//                .addModifiers(STATIC, PUBLIC)
+//                .addParameter(this.types.valueType(), "value")
+//                .returns(this.types.valueBuilderType())
+//                .beginControlFlow("if(value != null)")
+//                .addStatement(statement, bindings.toArray())
+//                .endControlFlow()
+//                .beginControlFlow("else")
+//                .addStatement("return null")
+//                .endControlFlow()
+//                .build();
+//    }
 
     private MethodSpec createBuildMethod() {
         String constructorParametersFormat = null;

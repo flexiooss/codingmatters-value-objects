@@ -186,7 +186,7 @@ public class ValueImplementation {
                             .returns(this.types.valueType())
                             .addModifiers(PUBLIC)
                             .addParameter(this.types.propertyType(propertySpec), "value")
-                            .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.valueBuilderType())
+                            .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.valueType())
                             .build()
             );
         }
@@ -198,7 +198,7 @@ public class ValueImplementation {
                 .addModifiers(PUBLIC)
                 .addParameter(this.types.valueChangerType(), "changer")
                 .returns(this.types.valueType())
-                .addStatement("return changer.configure($T.from(this)).build()", this.types.valueBuilderType())
+                .addStatement("return changer.configure($T.from(this)).build()", this.types.valueType())
                 .build();
     }
 }

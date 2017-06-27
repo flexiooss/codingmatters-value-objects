@@ -11,7 +11,7 @@ import static org.junit.Assert.assertThat;
 public class ValueToStringTest {
     @Test
     public void withNull() throws Exception {
-        Value value = Value.Builder.builder()
+        Value value = Value.builder()
                 .stringProperty("toto")
                 .booleanProperty(true)
                 .listProperty()
@@ -23,7 +23,7 @@ public class ValueToStringTest {
 
     @Test
     public void withEmpty() throws Exception {
-        Value value = Value.Builder.builder()
+        Value value = Value.builder()
                 .stringProperty("toto")
                 .booleanProperty(true)
                 .listProperty(new String [0])

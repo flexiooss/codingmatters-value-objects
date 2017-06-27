@@ -101,7 +101,7 @@ public class JavaTypePropertySpecGenerationTest {
 
     @Test
     public void valueBuilding() throws Exception {
-        Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        Object builder = compiled.onClass("org.generated.Val").invoke("builder");
         compiled.on(builder).invoke("prop", String.class).with("prop value");
         Object value = compiled.on(builder).invoke("build");
 

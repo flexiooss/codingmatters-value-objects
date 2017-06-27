@@ -66,11 +66,6 @@ public class ValueSpecGenerationTest {
     public void valueBuilder() throws Exception {
         assertThat(compiled.getClass("org.generated.Val$Builder"), is(
                 aPublic().static_().class_()
-                    .with(aPublic().static_().method()
-                            .named("builder")
-                            .withoutParameters()
-                            .returning(compiled.getClass("org.generated.Val$Builder"))
-                    )
                     .with(aPublic().method()
                             .named("build")
                             .withoutParameters()
@@ -81,14 +76,14 @@ public class ValueSpecGenerationTest {
 
     @Test
     public void valueBuilder_builder_returnsABuilder() throws Exception {
-        Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        Object builder = compiled.onClass("org.generated.Val").invoke("builder");
 
-        assertThat(builder, is(notNullValue(compiled.getClass("org.generated.Val$Builder"))));
+        assertThat(builder, is(notNullValue(compiled.getClass("org.generated.Val"))));
     }
 
     @Test
     public void valueBuilder_build_returnsAnImplementationInstance() throws Exception {
-        Object builder = compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        Object builder = compiled.onClass("org.generated.Val").invoke("builder");
         Object value = compiled.on(builder).invoke("build");
 
         assertThat(value, is(notNullValue(compiled.getClass("org.generated.ValImpl"))));

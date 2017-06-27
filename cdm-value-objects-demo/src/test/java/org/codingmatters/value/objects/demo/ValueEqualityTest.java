@@ -12,9 +12,9 @@ import static org.junit.Assert.assertThat;
 public class ValueEqualityTest {
     @Test
     public void simpleValue() throws Exception {
-        Value aValue = Value.Builder.builder().stringProperty("toto").booleanProperty(true).build();
-        Value theSameValue = Value.Builder.builder().stringProperty("toto").booleanProperty(true).build();
-        Value anotherValue = Value.Builder.builder().stringProperty("titi").booleanProperty(false).build();
+        Value aValue = Value.builder().stringProperty("toto").booleanProperty(true).build();
+        Value theSameValue = Value.builder().stringProperty("toto").booleanProperty(true).build();
+        Value anotherValue = Value.builder().stringProperty("titi").booleanProperty(false).build();
 
         assertThat(aValue, is(aValue));
         assertThat(aValue, is(theSameValue));
@@ -23,9 +23,9 @@ public class ValueEqualityTest {
 
     @Test
     public void complexValue() throws Exception {
-        ComplexValue aValue = ComplexValue.Builder.builder().inSpecProperty(Value.Builder.builder().stringProperty("toto").build()).build();
-        ComplexValue theSameValue = ComplexValue.Builder.builder().inSpecProperty(Value.Builder.builder().stringProperty("toto").build()).build();
-        ComplexValue anotherValue = ComplexValue.Builder.builder().inSpecProperty(Value.Builder.builder().stringProperty("titi").build()).build();
+        ComplexValue aValue = ComplexValue.builder().inSpecProperty(Value.builder().stringProperty("toto").build()).build();
+        ComplexValue theSameValue = ComplexValue.builder().inSpecProperty(Value.builder().stringProperty("toto").build()).build();
+        ComplexValue anotherValue = ComplexValue.builder().inSpecProperty(Value.builder().stringProperty("titi").build()).build();
 
         assertThat(aValue, is(aValue));
         assertThat(aValue, is(theSameValue));

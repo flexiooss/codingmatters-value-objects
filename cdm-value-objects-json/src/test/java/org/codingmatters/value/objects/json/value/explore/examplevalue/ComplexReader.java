@@ -13,10 +13,9 @@ import java.io.IOException;
 public class ComplexReader {
 
     public Complex read(JsonParser parser) throws IOException {
-//        JsonToken firstToken = parser.nextToken();
         if(parser.currentToken() == JsonToken.VALUE_NULL) return null;
 
-        Complex.Builder builder = Complex.Builder.builder();
+        Complex.Builder builder = Complex.builder();
         if(parser.currentToken() != JsonToken.START_OBJECT) {
             throw new IOException(
                     String.format("reading a %s object, was expecting %s, but was %s",

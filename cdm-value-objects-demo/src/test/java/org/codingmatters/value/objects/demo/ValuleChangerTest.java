@@ -11,7 +11,7 @@ import static org.junit.Assert.assertThat;
 public class ValuleChangerTest {
     @Test
     public void simple() throws Exception {
-        Value value = Value.Builder.builder()
+        Value value = Value.builder()
                 .stringProperty("unchanged")
                 .booleanProperty(true)
                 .build();

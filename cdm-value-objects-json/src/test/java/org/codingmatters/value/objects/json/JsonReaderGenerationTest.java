@@ -126,7 +126,7 @@ public class JsonReaderGenerationTest {
 
             assertThat(
                     value,
-                    is(ExampleValue.Builder.builder()
+                    is(ExampleValue.builder()
                             .prop("a value")
                             .build())
             );
@@ -148,7 +148,7 @@ public class JsonReaderGenerationTest {
 
             assertThat(
                     value,
-                    is(ExampleValue.Builder.builder()
+                    is(ExampleValue.builder()
                             .listProp("a", "b", "c")
                             .build())
             );
@@ -170,7 +170,7 @@ public class JsonReaderGenerationTest {
 
             assertThat(
                     value,
-                    is(ExampleValue.Builder.builder()
+                    is(ExampleValue.builder()
                             .complex(new Complex.Builder()
                                     .sub("a value")
                                     .build())
@@ -194,7 +194,7 @@ public class JsonReaderGenerationTest {
 
             assertThat(
                     value,
-                    is(ExampleValue.Builder.builder()
+                    is(ExampleValue.builder()
                             .complexList(new ComplexList.Builder()
                                     .sub("a value")
                                     .build())
@@ -476,8 +476,8 @@ public class JsonReaderGenerationTest {
             assertThat(
                     value,
                     is(
-                            ValueObjectProps.Builder.builder()
-                                    .prop(ExtReferenced.Builder.builder()
+                            ValueObjectProps.builder()
+                                    .prop(ExtReferenced.builder()
                                             .prop("val")
                                             .build())
                                     .build()

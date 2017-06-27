@@ -83,7 +83,7 @@ public class SetPropertySpecGenerationTest {
 
     @Test
     public void builderWithValueArray() throws Exception {
-        Object builder = this.compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        Object builder = this.compiled.onClass("org.generated.Val").invoke("builder");
         this.compiled.on(builder).invoke("setProp", String[].class).with(new Object [] {new String [] {"a", "b", "c"}});
         Object value = this.compiled.on(builder).invoke("build");
         Object list = this.compiled.on(value).castedTo("org.generated.Val").invoke("setProp");
@@ -93,12 +93,12 @@ public class SetPropertySpecGenerationTest {
 
     @Test
     public void builderWithValueSet() throws Exception {
-        Object builder1 = this.compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        Object builder1 = this.compiled.onClass("org.generated.Val").invoke("builder");
         this.compiled.on(builder1).invoke("setProp", String[].class).with(new Object [] {new String [] {"a", "b", "c"}});
         Object value1 = this.compiled.on(builder1).invoke("build");
         Object list1 = this.compiled.on(value1).castedTo("org.generated.Val").invoke("setProp");
 
-        Object builder2 = this.compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        Object builder2 = this.compiled.onClass("org.generated.Val").invoke("builder");
         this.compiled.on(builder2).invoke("setProp", this.compiled.getClass("org.generated.ValueSet")).with(list1);
         Object value2 = this.compiled.on(builder2).invoke("build");
         Object list2 = this.compiled.on(value2).castedTo("org.generated.Val").invoke("setProp");
@@ -108,11 +108,11 @@ public class SetPropertySpecGenerationTest {
 
     @Test
     public void equalsWithSet() throws Exception {
-        Object builder1 = this.compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        Object builder1 = this.compiled.onClass("org.generated.Val").invoke("builder");
         this.compiled.on(builder1).invoke("setProp", String[].class).with(new Object [] {new String [] {"a", "b", "c"}});
         Object value1 = this.compiled.on(builder1).invoke("build");
 
-        Object builder2 = this.compiled.onClass("org.generated.Val$Builder").invoke("builder");
+        Object builder2 = this.compiled.onClass("org.generated.Val").invoke("builder");
         this.compiled.on(builder2).invoke("setProp", String[].class).with(new Object [] {new String [] {"a", "b", "c"}});
         Object value2 = this.compiled.on(builder2).invoke("build");
 
