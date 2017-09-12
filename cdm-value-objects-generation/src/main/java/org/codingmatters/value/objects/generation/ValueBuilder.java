@@ -3,11 +3,13 @@ package org.codingmatters.value.objects.generation;
 import com.squareup.javapoet.*;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
+import org.codingmatters.value.objects.spec.TypeKind;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static javax.lang.model.element.Modifier.*;
 
@@ -20,8 +22,6 @@ public class ValueBuilder {
 
     private final List<FieldSpec> fields;
     private final List<MethodSpec> setters;
-//    private final MethodSpec builderMethod;
-//    private final MethodSpec builderFromValueMethod;
     private final MethodSpec buildMethod;
 
     public ValueBuilder(ValueConfiguration types, List<PropertySpec> propertySpecs) {
@@ -30,8 +30,6 @@ public class ValueBuilder {
 
         this.fields = this.createFields();
         this.setters = this.createSetters();
-//        this.builderMethod = this.createBuilderMethod();
-//        this.builderFromValueMethod = this.createBuilderFromValueMethod();
         this.buildMethod = this.createBuildMethod();
     }
 
@@ -60,25 +58,45 @@ public class ValueBuilder {
 
         for (PropertySpec propertySpec : this.propertySpecs) {
             if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SINGLE)) {
-                setters.add(this.createSingleSetter(propertySpec));
+                setters.addAll(this.createSingleSetter(propertySpec));
             } else {
-                setters.addAll(this.createMultipleSetter(propertySpec));
+                setters.addAll(this.createMultipleSetters(propertySpec));
             }
         }
         return setters;
     }
 
-    private MethodSpec createSingleSetter(PropertySpec propertySpec) {
-        return MethodSpec.methodBuilder(propertySpec.name())
-                .addParameter(this.types.propertyType(propertySpec), propertySpec.name())
-                .returns(this.types.valueBuilderType())
-                .addModifiers(PUBLIC)
-                .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
-                .addStatement("return this")
-                .build();
+    private List<MethodSpec> createSingleSetter(PropertySpec propertySpec) {
+        LinkedList<MethodSpec> result = new LinkedList<>();
+        result.add(
+                MethodSpec.methodBuilder(propertySpec.name())
+                    .addParameter(this.types.propertyType(propertySpec), propertySpec.name())
+                    .returns(this.types.valueBuilderType())
+                    .addModifiers(PUBLIC)
+                    .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
+                    .addStatement("return this")
+                    .build()
+        );
+        if(propertySpec.typeSpec().typeKind().equals(TypeKind.IN_SPEC_VALUE_OBJECT)) {
+            ClassName propertyType = this.types.propertySingleType(propertySpec);
+            result.add(
+                    MethodSpec.methodBuilder(propertySpec.name())
+                            .addParameter(
+                                    ParameterizedTypeName.get(ClassName.get(Consumer.class), propertyType.nestedClass("Builder")),
+                                    propertySpec.name()
+                            )
+                            .returns(this.types.valueBuilderType())
+                            .addModifiers(PUBLIC)
+                            .addStatement("$T.Builder builder = $T.builder()", propertyType, propertyType)
+                            .addStatement("$N.accept(builder)", propertySpec.name())
+                            .addStatement("return this.$N(builder.build())", propertySpec.name())
+                            .build()
+            );
+        }
+        return result;
     }
 
-    private List<MethodSpec> createMultipleSetter(PropertySpec propertySpec) {
+    private List<MethodSpec> createMultipleSetters(PropertySpec propertySpec) {
         return Arrays.asList(
                 MethodSpec.methodBuilder(propertySpec.name())
                         .returns(this.types.valueBuilderType())
@@ -129,37 +147,6 @@ public class ValueBuilder {
                         .build()
         );
     }
-
-//    private MethodSpec createBuilderMethod() {
-//        return MethodSpec.methodBuilder("builder")
-//                .addModifiers(STATIC, PUBLIC)
-//                .returns(ClassName.bestGuess("Builder"))
-//                .addStatement("return new $T()", this.types.valueBuilderType())
-//                .build();
-//    }
-//
-//    private MethodSpec createBuilderFromValueMethod() {
-//        List<Object> bindings = new LinkedList<>();
-//
-//        String statement = "return new $T()\n";
-//        bindings.add(this.types.valueBuilderType());
-//
-//        for (PropertySpec propertySpec : this.propertySpecs) {
-//            statement += "." + propertySpec.name() + "(value." + propertySpec.name() + "())\n";
-//        }
-//
-//        return MethodSpec.methodBuilder("from")
-//                .addModifiers(STATIC, PUBLIC)
-//                .addParameter(this.types.valueType(), "value")
-//                .returns(this.types.valueBuilderType())
-//                .beginControlFlow("if(value != null)")
-//                .addStatement(statement, bindings.toArray())
-//                .endControlFlow()
-//                .beginControlFlow("else")
-//                .addStatement("return null")
-//                .endControlFlow()
-//                .build();
-//    }
 
     private MethodSpec createBuildMethod() {
         String constructorParametersFormat = null;

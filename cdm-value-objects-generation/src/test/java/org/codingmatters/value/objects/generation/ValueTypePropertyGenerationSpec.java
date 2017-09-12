@@ -8,6 +8,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import java.util.function.Consumer;
+
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
 import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
@@ -69,6 +71,18 @@ public class ValueTypePropertyGenerationSpec {
                         .with(aMethod()
                                 .named("recursiveValue")
                                 .withParameters(compiled.getClass("org.generated.Val"))
+                                .returning(compiled.getClass("org.generated.Val$Builder"))
+                        )
+                ));
+    }
+
+    @Test
+    public void builder_setterForValueProperty_withAValueBuilderConsumerArgument() throws Exception {
+        assertThat(compiled.getClass("org.generated.Val$Builder"),
+                is(aStatic().public_().class_()
+                        .with(aMethod()
+                                .named("recursiveValue")
+                                .withParameters(genericType().baseClass(Consumer.class).withParameters(classTypeParameter(compiled.getClass("org.generated.Val$Builder"))))
                                 .returning(compiled.getClass("org.generated.Val$Builder"))
                         )
                 ));
