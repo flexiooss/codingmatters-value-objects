@@ -3,7 +3,6 @@ package org.codingmatters.value.objects.generation;
 import com.squareup.javapoet.*;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
-import org.codingmatters.value.objects.spec.TypeKind;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,8 +35,6 @@ public class ValueBuilder {
     public TypeSpec type() {
         return TypeSpec.classBuilder("Builder")
                 .addModifiers(PUBLIC, STATIC)
-//                .addMethod(this.builderMethod)
-//                .addMethod(this.builderFromValueMethod)
                 .addMethod(this.buildMethod)
                 .addFields(this.fields)
                 .addMethods(this.setters)
@@ -77,7 +74,7 @@ public class ValueBuilder {
                     .addStatement("return this")
                     .build()
         );
-        if(propertySpec.typeSpec().typeKind().equals(TypeKind.IN_SPEC_VALUE_OBJECT)) {
+        if(propertySpec.typeSpec().typeKind().isValueObject()) {
             ClassName propertyType = this.types.propertySingleType(propertySpec);
             result.add(
                     MethodSpec.methodBuilder(propertySpec.name())
