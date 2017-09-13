@@ -125,4 +125,22 @@ public class BookTest {
         assertThat("email property has changed", changed.email(), is("john@doe.com"));
         assertThat("others are left unchanged ", changed.address(), is(john.address()));
     }
+
+    @Test
+    public void consumerBuilder() throws Exception {
+        Book book = Book.builder()
+                .author(author -> author.name("Arthur Miller"))
+                .reviews(
+                        reviews -> reviews.reviewBody("quite good"),
+                        reviews -> reviews.reviewBody("very good"),
+                        reviews -> reviews.reviewBody("quite nice")
+                )
+                .build();
+
+        assertThat(book.author().name(), is("Arthur Miller"));
+        assertThat(book.reviews().size(), is(3));
+        assertThat(book.reviews().get(0).reviewBody(), is("quite good"));
+        assertThat(book.reviews().get(1).reviewBody(), is("very good"));
+        assertThat(book.reviews().get(2).reviewBody(), is("quite nice"));
+    }
 }

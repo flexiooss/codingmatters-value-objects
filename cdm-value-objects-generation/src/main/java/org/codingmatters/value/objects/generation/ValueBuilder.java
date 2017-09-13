@@ -4,7 +4,6 @@ import com.squareup.javapoet.*;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -94,13 +93,17 @@ public class ValueBuilder {
     }
 
     private List<MethodSpec> createMultipleSetters(PropertySpec propertySpec) {
-        return Arrays.asList(
+        List<MethodSpec> result = new LinkedList<>();
+
+        result.add(
                 MethodSpec.methodBuilder(propertySpec.name())
                         .returns(this.types.valueBuilderType())
                         .addModifiers(PUBLIC)
                         .addStatement("this.$N = null", propertySpec.name())
                         .addStatement("return this")
-                        .build(),
+                        .build()
+        );
+        result.add(
                 MethodSpec.methodBuilder(propertySpec.name())
                         .varargs().addParameter(ArrayTypeName.of(this.types.propertySingleType(propertySpec)), propertySpec.name())
                         .returns(this.types.valueBuilderType())
@@ -116,14 +119,18 @@ public class ValueBuilder {
                                 propertySpec.name()
                         )
                         .addStatement("return this")
-                        .build(),
+                        .build()
+        );
+        result.add(
                 MethodSpec.methodBuilder(propertySpec.name())
                         .addParameter(this.types.propertyType(propertySpec), propertySpec.name())
                         .returns(this.types.valueBuilderType())
                         .addModifiers(PUBLIC)
                         .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
                         .addStatement("return this")
-                        .build(),
+                        .build()
+        );
+        result.add(
                 MethodSpec.methodBuilder(propertySpec.name())
                         .addParameter(ParameterizedTypeName.get(
                                 ClassName.get(Collection.class),
@@ -143,6 +150,38 @@ public class ValueBuilder {
                         .addStatement("return this")
                         .build()
         );
+
+        if(propertySpec.typeSpec().typeKind().isValueObject()) {
+            ClassName propertyType = this.types.propertySingleType(propertySpec);
+            String varargParameterName = propertySpec.name() + "Elements";
+            result.add(
+                    MethodSpec.methodBuilder(propertySpec.name())
+                            .varargs().addParameter(
+                                    ArrayTypeName.of(ParameterizedTypeName.get(ClassName.get(Consumer.class), propertyType.nestedClass("Builder"))),
+                            varargParameterName
+                            )
+                            .returns(this.types.valueBuilderType())
+                            .addModifiers(PUBLIC)
+                            .beginControlFlow("if($N != null)", varargParameterName)
+                                .addStatement("$T elements = new $T()",
+                                        ParameterizedTypeName.get(ClassName.get(LinkedList.class), propertyType),
+                                        ParameterizedTypeName.get(ClassName.get(LinkedList.class), propertyType))
+                                .beginControlFlow("for($T $N : $N)",
+                                        ParameterizedTypeName.get(ClassName.get(Consumer.class), propertyType.nestedClass("Builder")),
+                                        propertySpec.name(),
+                                        varargParameterName)
+                                    .addStatement("$T.Builder builder = $T.builder()", propertyType, propertyType)
+                                    .addStatement("$N.accept(builder)", propertySpec.name())
+                                    .addStatement("elements.add(builder.build())", propertySpec.name())
+                                .endControlFlow()
+                            .addStatement("this.$N(elements.toArray(new $T[elements.size()]))", propertySpec.name(), propertyType)
+                            .endControlFlow()
+                            .addStatement("return this")
+                            .build()
+            );
+        }
+
+        return result;
     }
 
     private MethodSpec createBuildMethod() {

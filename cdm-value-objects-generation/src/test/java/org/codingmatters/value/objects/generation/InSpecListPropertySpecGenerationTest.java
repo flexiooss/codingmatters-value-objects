@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.generation;
 
 import org.codingmatters.tests.compile.CompiledCode;
+import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
@@ -10,6 +11,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.util.Collection;
+import java.util.function.Consumer;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
@@ -26,6 +28,9 @@ public class InSpecListPropertySpecGenerationTest {
 
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
+
+    @Rule
+    public FileHelper fileHelper = new FileHelper();
 
     private final Spec spec  = spec()
             .addValue(
@@ -66,6 +71,20 @@ public class InSpecListPropertySpecGenerationTest {
                         .withParameters(genericType().baseClass(Collection.class)
                                 .withParameters(typeParameter().named("org.generated.Ref")))
                         .returning(this.compiled.getClass("org.generated.Val$Builder"))
+                )
+        ));
+    }
+
+    @Test
+    public void builderMethod_withConsumer() throws Exception {
+//        this.fileHelper.printJavaContent("", this.dir.getRoot());
+//        this.fileHelper.printFile(this.dir.getRoot(), "Val.java");
+
+        assertThat(this.compiled.getClass("org.generated.Val$Builder"), is(aStatic().class_()
+                .with(aMethod()
+                        .named("listProp")
+                        .withParameters(typeArray(genericType().baseClass(Consumer.class).withParameters(classTypeParameter(compiled.getClass("org.generated.Ref$Builder")))))
+                        .returning(compiled.getClass("org.generated.Val$Builder"))
                 )
         ));
     }
