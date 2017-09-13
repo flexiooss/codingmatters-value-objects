@@ -6,7 +6,8 @@ import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.ValueSpec;
 
-import static org.codingmatters.value.objects.spec.TypeKind.*;
+import static org.codingmatters.value.objects.spec.TypeKind.ENUM;
+import static org.codingmatters.value.objects.spec.TypeKind.IN_SPEC_VALUE_OBJECT;
 
 /**
  * Created by nelt on 9/28/16.
@@ -64,20 +65,6 @@ public class ValueConfiguration {
             return ClassName.bestGuess(this.enumTypeName(propertySpec.name()));
         } else {
             return ClassName.bestGuess(propertySpec.typeSpec().typeRef());
-        }
-    }
-
-    private TypeName builderSinglePropertyType(PropertySpec propertySpec) {
-        if(propertySpec.typeSpec().typeKind().isValueObject()) {
-            String valueType1;
-            if(propertySpec.typeSpec().typeKind().equals(EXTERNAL_VALUE_OBJECT)) {
-                valueType1 = propertySpec.typeSpec().typeRef();
-            } else {
-                valueType1 = capitalizedFirst(propertySpec.typeSpec().typeRef());
-            }
-            return ClassName.bestGuess(valueType1 + ".Builder");
-        } else {
-            return propertySingleType(propertySpec);
         }
     }
 

@@ -458,7 +458,7 @@ public class JsonReaderGenerationTest {
                     value,
                     is(
                             new RefValue.Builder()
-                                    .ref(null)
+                                    .ref((Referenced) null)
                                     .refs((Referenced) null)
                                     .build()
                     )

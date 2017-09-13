@@ -324,7 +324,7 @@ public class JsonWriterGenerationTest {
     @Test
     public void writeNullReferencedValue() throws Exception {
         RefValue value = new RefValue.Builder()
-                .ref(null)
+                .ref((Referenced) null)
                 .refs((Referenced) null)
                 .build();
 
