@@ -30,6 +30,7 @@ public class ValueReader {
         TypeSpec.Builder result = TypeSpec.classBuilder(this.types.valueType().simpleName() + "Reader")
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(this.readWithParserMethod())
+                .addMethod(this.readArrayWithParserMethod())
                 .addType(this.readerFunctionalInterface())
                 .addMethod(this.readValueMethod())
                 .addMethod(this.readListValueMethod());
@@ -96,6 +97,52 @@ public class ValueReader {
 
     private String expectedTokenField(PropertySpec propertySpec) {
         return propertySpec.name().toUpperCase() + "_EXPECTEDTOKENS";
+    }
+
+//    static private List<Job> readListValue(JsonParser parser) throws IOException {
+//        parser.nextToken();
+//        if (parser.currentToken() == JsonToken.VALUE_NULL) return null;
+//        if (parser.currentToken() == JsonToken.START_ARRAY) {
+//            LinkedList<Job> listValue = new LinkedList<>();
+//            while (parser.nextToken() != JsonToken.END_ARRAY) {
+//                if(parser.currentToken() == JsonToken.VALUE_NULL) {
+//                    listValue.add(null);
+//                } else {
+//                    listValue.add(new JobReader().read(parser));
+//                }
+//            }
+//            return listValue;
+//        }
+//        throw new IOException("failed reading Job list");
+//    }
+
+    private MethodSpec readArrayWithParserMethod() {
+        MethodSpec.Builder method = MethodSpec.methodBuilder("readArray")
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(JsonParser.class, "parser")
+                .returns(ArrayTypeName.of(this.types.valueType()))
+                .addException(IOException.class);
+
+        method
+                .addStatement("parser.nextToken()")
+                .addStatement("if (parser.currentToken() == JsonToken.VALUE_NULL) return null")
+                .beginControlFlow("if (parser.currentToken() == JsonToken.START_ARRAY)")
+                    .addStatement("LinkedList<$T> listValue = new LinkedList<>()", this.types.valueType())
+                    .beginControlFlow("while (parser.nextToken() != JsonToken.END_ARRAY)")
+                        .beginControlFlow("if(parser.currentToken() == JsonToken.VALUE_NULL)")
+                            .addStatement("listValue.add(null)")
+                        .nextControlFlow("else")
+                            .addStatement("listValue.add(this.read(parser))")
+                        .endControlFlow()
+                    .endControlFlow()
+                    .addStatement("return listValue.toArray(new $T[listValue.size()])", this.types.valueType())
+                .endControlFlow()
+                .addStatement("throw new IOException(String.format($S, parser.currentToken()))",
+                        "failed reading " + this.types.valueType() + " array, current token was %s"
+                )
+                 ;
+
+        return method.build();
     }
 
     private MethodSpec readWithParserMethod() {

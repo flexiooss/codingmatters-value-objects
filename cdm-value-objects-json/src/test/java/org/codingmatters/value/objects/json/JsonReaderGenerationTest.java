@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import org.codingmatters.tests.compile.CompiledCode;
+import org.codingmatters.tests.reflect.ReflectMatchers;
 import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -85,6 +86,11 @@ public class JsonReaderGenerationTest {
                         .with(aPublic().method().named("read")
                                 .withParameters(JsonParser.class)
                                 .returning(ExampleValue.class)
+                                .throwing(IOException.class)
+                        )
+                        .with(aPublic().method().named("readArray")
+                                .withParameters(JsonParser.class)
+                                .returning(ReflectMatchers.typeArray(classType(ExampleValue.class)))
                                 .throwing(IOException.class)
                         )
                         .with(aPrivate().method().named("readValue")
@@ -482,6 +488,53 @@ public class JsonReaderGenerationTest {
                                             .build())
                                     .build()
                     )
+            );
+        }
+    }
+
+    @Test
+    public void readArray() throws Exception {
+        String json = "[{" +
+                "\"prop\":\"a value\"" +
+                "}, {" +
+                "\"prop\":\"another value\"" +
+                "}]";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
+            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+
+            assertThat(
+                    value,
+                    arrayContaining(
+                            ExampleValue.builder().prop("a value").build(),
+                            ExampleValue.builder().prop("another value").build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void readEmptyArray() throws Exception {
+        String json = "[]";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
+            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+
+            assertThat(
+                    value,
+                    emptyArray()
+            );
+        }
+    }@Test
+    public void readNullArray() throws Exception {
+        String json = "null";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
+            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+
+            assertThat(
+                    value,
+                    is(nullValue())
             );
         }
     }
