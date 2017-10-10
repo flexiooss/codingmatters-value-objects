@@ -1,0 +1,72 @@
+package org.codingmatters.value.objects.demo.books;
+
+import org.codingmatters.value.objects.demo.books.fake.OptionalBook;
+import org.codingmatters.value.objects.demo.books.person.Address;
+import org.codingmatters.value.objects.demo.books.review.ReviewRating;
+import org.junit.Test;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import static org.codingmatters.value.objects.demo.books.BookTest.ENGLISH_DATE_FORMATTER;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+public class OptionalBookTest {
+    private Book book = Book.builder()
+            .name("Clean Code: A Handbook of Agile Software Craftsmanship")
+            .author(Person.builder()
+                    .name("Robert C. Martin")
+                    .build())
+            .bookFormat("Paperback")
+            .datePublished(LocalDate.parse("August 11, 2008", ENGLISH_DATE_FORMATTER))
+            .isbn("978-0132350884")
+            .numberOfPages(464)
+            .reviews(
+                    Review.builder()
+                            .author(Person.builder()
+                                    .name("John Doe")
+                                    .build())
+                            .datePublished(LocalDateTime.parse("September 23, 2008", ENGLISH_DATE_FORMATTER))
+                            .reviewBody(
+                                    "I enjoyed reading this book and after finishing it, " +
+                                            "I decided to apply the Boy Scout Rule."
+                            )
+                            .reviewRating(ReviewRating.builder()
+                                    .ratingValue(5)
+                                    .build())
+                            .build()
+            )
+            .build();
+
+    @Test
+    public void optionalLeafs() throws Exception {
+        OptionalBook oBook = OptionalBook.of(this.book);
+
+        assertThat(oBook.author().name().isPresent(), is(true));
+        assertThat(oBook.author().name().get(), is("Robert C. Martin"));
+
+        assertThat(oBook.author().address().isPresent(), is(false));
+    }
+
+    @Test
+    public void complexPropertiesHaveOptionalBehaviour() throws Exception {
+        assertThat(
+                OptionalBook.of(this.book).author().address().orElse(Address.builder()
+                        .streetAddress("1000 5th Ave")
+                        .addressLocality("New York")
+                        .addressRegion("NY")
+                        .postalCode("10028")
+                        .addressCountry("USA")
+                        .build()).toString(),
+                is("Address{streetAddress=1000 5th Ave, postalCode=10028, addressLocality=New York, addressRegion=NY, addressCountry=USA}")
+        );
+    }
+
+    @Test
+    public void trainWithoutWreck() throws Exception {
+        assertThat(OptionalBook.of(this.book).author().address().streetAddress().isPresent(), is(false));
+
+        assertThat(OptionalBook.of(null).author().address().streetAddress().isPresent(), is(false));
+    }
+}
