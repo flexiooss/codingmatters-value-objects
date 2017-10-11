@@ -14,6 +14,14 @@ import java.util.function.Supplier;
 
 public class OptionalBook {
 
+    private Optional<String> name;
+    private OptionalPerson author;
+    private Optional<String> bookFormat;
+    private Optional<LocalDate> localDate;
+    private Optional<String> isbn;
+    private Optional<Integer> numberOfPages;
+    private ValueList<OptionalReview> reviews;
+
     static public OptionalBook of(Book book) {
         return new OptionalBook(book);
     }
@@ -22,40 +30,47 @@ public class OptionalBook {
 
     private OptionalBook(Book book) {
         this.optional = Optional.ofNullable(book);
-    }
-
-
-    public Optional<String> name() {
-        return Optional.ofNullable(this.isPresent() ? this.get().name() : null);
-    }
-
-    public OptionalPerson author() {
-        return OptionalPerson.of(this.isPresent() ? this.get().author() : null);
-    }
-
-
-    public Optional<String> bookFormat() {
-        return Optional.ofNullable(this.isPresent() ? this.get().bookFormat() : null);
-    }
-
-    public Optional<LocalDate> datePublished() {
-        return Optional.ofNullable(this.isPresent() ? this.get().datePublished() : null);
-    }
-
-    public Optional<String> isbn() {
-        return Optional.ofNullable(this.isPresent() ? this.get().isbn() : null);
-    }
-
-    public Optional<Integer> numberOfPages() {
-        return Optional.ofNullable(this.isPresent() ? this.get().numberOfPages() : null);
-    }
-
-    public ValueList<OptionalReview> reviews() {
+        this.name = Optional.ofNullable(this.isPresent() ? this.get().name() : null);
+        this.author = OptionalPerson.of(this.isPresent() ? this.get().author() : null);
+        this.bookFormat = Optional.ofNullable(this.isPresent() ? this.get().bookFormat() : null);
+        this.localDate = Optional.ofNullable(this.isPresent() ? this.get().datePublished() : null);
+        this.isbn = Optional.ofNullable(this.isPresent() ? this.get().isbn() : null);
+        this.numberOfPages = Optional.ofNullable(this.isPresent() ? this.get().numberOfPages() : null);
         ValueList.Builder<OptionalReview> builder = new ValueList.Builder<OptionalReview>();
         for (Review review : this.isPresent() ? this.get().reviews() : Collections.<Review>emptyList()) {
             builder.with(OptionalReview.of(review));
         }
-        return builder.build();
+        this.reviews = builder.build();
+    }
+
+
+    public Optional<String> name() {
+        return this.name;
+    }
+
+    public OptionalPerson author() {
+        return this.author;
+    }
+
+
+    public Optional<String> bookFormat() {
+        return this.bookFormat;
+    }
+
+    public Optional<LocalDate> datePublished() {
+        return this.localDate;
+    }
+
+    public Optional<String> isbn() {
+        return this.isbn;
+    }
+
+    public Optional<Integer> numberOfPages() {
+        return this.numberOfPages;
+    }
+
+    public ValueList<OptionalReview> reviews() {
+        return this.reviews;
     }
 
 
