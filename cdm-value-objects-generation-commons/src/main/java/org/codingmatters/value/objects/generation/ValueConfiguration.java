@@ -18,6 +18,7 @@ public class ValueConfiguration {
     private final ClassName valueImplType;
     private final ClassName builderType;
     private final ClassName changerType;
+    private final ClassName optionalValueType;
     private final String rootPackage;
     private final ValueCollectionConfiguration collectionConfiguration;
 
@@ -28,6 +29,7 @@ public class ValueConfiguration {
         this.valueImplType = ClassName.get(packageName, interfaceName + "Impl");
         this.builderType = ClassName.get(packageName, interfaceName + ".Builder");
         this.changerType = ClassName.get(packageName, interfaceName + ".Changer");
+        this.optionalValueType = ClassName.get(packageName + ".optional", "Optional" + interfaceName);
         this.collectionConfiguration = new ValueCollectionConfiguration(rootPackage);
     }
 
@@ -45,6 +47,10 @@ public class ValueConfiguration {
 
     public ClassName valueChangerType() {
         return changerType;
+    }
+
+    public ClassName optionalValueType() {
+        return optionalValueType;
     }
 
     public TypeName propertyType(PropertySpec propertySpec) {
