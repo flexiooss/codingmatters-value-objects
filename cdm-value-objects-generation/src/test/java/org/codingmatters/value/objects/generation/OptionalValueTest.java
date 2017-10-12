@@ -31,7 +31,6 @@ public class OptionalValueTest {
             .addValue(
                     valueSpec().name("val")
                             .addProperty(property().name("stringProp").type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(String.class.getName())))
-                            .addProperty(property().name("intProp").type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(String.class.getName())))
             )
             .build();
     private ClassLoaderHelper classes;
@@ -81,6 +80,19 @@ public class OptionalValueTest {
                                 .withType(genericType().baseClass(Optional.class)
                                         .withParameters(typeParameter().aClass(String.class))
                                 )
+                        )
+                )
+        );
+    }
+
+    @Test
+    public void optionalGetter() throws Exception {
+        assertThat(
+                this.classes.get("org.generated.optional.OptionalVal").get(),
+                is(aPublic().class_()
+                        .with(aPublic().method().named("stringProp")
+                                .returning(genericType().baseClass(Optional.class)
+                                        .withParameters(typeParameter().aClass(String.class)))
                         )
                 )
         );

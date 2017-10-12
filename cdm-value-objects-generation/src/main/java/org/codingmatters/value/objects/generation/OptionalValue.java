@@ -22,6 +22,7 @@ public class OptionalValue {
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(this.construcor())
                 .addFields(this.fields())
+                .addMethods(this.optionalGetters())
                 .build();
     }
 
@@ -64,6 +65,24 @@ public class OptionalValue {
             }
         }
 
+
+        return results;
+    }
+
+    private Iterable<MethodSpec> optionalGetters() {
+        List<MethodSpec> results = new LinkedList<>();
+
+        for (PropertySpec propertySpec : this.propertySpecs) {
+            if(! propertySpec.typeSpec().typeKind().isValueObject()) {
+                if(! propertySpec.typeSpec().cardinality().isCollection()) {
+                    results.add(MethodSpec.methodBuilder(propertySpec.name())
+                            .addModifiers(Modifier.PUBLIC)
+                            .returns(ParameterizedTypeName.get(ClassName.get(Optional.class), this.types.propertyType(propertySpec)))
+                            .addStatement("return this.$L", propertySpec.name())
+                            .build());
+                }
+            }
+        }
 
         return results;
     }
