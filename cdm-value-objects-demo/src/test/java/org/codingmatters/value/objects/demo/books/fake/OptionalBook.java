@@ -82,19 +82,19 @@ public class OptionalBook {
         return optional.isPresent();
     }
 
-    public void ifPresent(Consumer<? super Book> consumer) {
+    public void ifPresent(Consumer<Book> consumer) {
         optional.ifPresent(consumer);
     }
 
-    public Optional<Book> filter(Predicate<? super Book> predicate) {
+    public Optional<Book> filter(Predicate<Book> predicate) {
         return optional.filter(predicate);
     }
 
-    public <U> Optional<U> map(Function<? super Book, ? extends U> function) {
+    public <U> Optional<U> map(Function<Book, ? extends U> function) {
         return optional.map(function);
     }
 
-    public <U> Optional<U> flatMap(Function<? super Book, Optional<U>> function) {
+    public <U> Optional<U> flatMap(Function<Book, Optional<U>> function) {
         return optional.flatMap(function);
     }
 
@@ -102,7 +102,7 @@ public class OptionalBook {
         return optional.orElse(book);
     }
 
-    public Book orElseGet(Supplier<? extends Book> supplier) {
+    public Book orElseGet(Supplier<Book> supplier) {
         return optional.orElseGet(supplier);
     }
 

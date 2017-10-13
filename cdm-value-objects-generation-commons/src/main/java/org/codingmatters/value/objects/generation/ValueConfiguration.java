@@ -64,11 +64,32 @@ public class ValueConfiguration {
         }
     }
 
+    public TypeName propertyOptionalType(PropertySpec propertySpec) {
+        ClassName singleType = this.propertySingleOptionalType(propertySpec);
+        if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
+            return this.collectionConfiguration.valueListOfType(singleType);
+        } else if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
+            return this.collectionConfiguration.valueSetOfType(singleType);
+        } else {
+            return singleType;
+        }
+    }
+
     public ClassName propertySingleType(PropertySpec propertySpec) {
         if(IN_SPEC_VALUE_OBJECT.equals(propertySpec.typeSpec().typeKind())) {
             return ClassName.get(this.rootPackage, capitalizedFirst(propertySpec.typeSpec().typeRef()));
         } else if(ENUM.equals(propertySpec.typeSpec().typeKind()) && propertySpec.typeSpec().isInSpecEnum()) {
             return ClassName.bestGuess(this.enumTypeName(propertySpec.name()));
+        } else {
+            return ClassName.bestGuess(propertySpec.typeSpec().typeRef());
+        }
+    }
+
+    public ClassName propertySingleOptionalType(PropertySpec propertySpec) {
+        if(IN_SPEC_VALUE_OBJECT.equals(propertySpec.typeSpec().typeKind())) {
+            return ClassName.get(this.rootPackage + ".optional", "Optional" + capitalizedFirst(propertySpec.typeSpec().typeRef()));
+        } else if(ENUM.equals(propertySpec.typeSpec().typeKind()) && propertySpec.typeSpec().isInSpecEnum()) {
+            return ClassName.bestGuess("Optional" + this.enumTypeName(propertySpec.name()));
         } else {
             return ClassName.bestGuess(propertySpec.typeSpec().typeRef());
         }

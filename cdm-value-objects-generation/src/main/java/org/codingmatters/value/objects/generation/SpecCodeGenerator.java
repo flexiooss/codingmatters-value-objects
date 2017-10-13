@@ -90,8 +90,8 @@ public class SpecCodeGenerator {
         TypeSpec valueImpl = new ValueImplementation(types, packagedValueSpec.valueSpec().propertySpecs()).type();
         writeJavaFile(packageDestination, packagedValueSpec.packagename(), valueImpl);
 
-        TypeSpec optional = new OptionalValue(types, packagedValueSpec.valueSpec().propertySpecs()).type();
-        writeJavaFile(packageDestination, packagedValueSpec.packagename() + ".optional", optional);
+//        TypeSpec optional = new OptionalValue(types, packagedValueSpec.valueSpec().propertySpecs()).type();
+//        writeJavaFile(packageDestination, packagedValueSpec.packagename() + ".optional", optional);
     }
 
 
