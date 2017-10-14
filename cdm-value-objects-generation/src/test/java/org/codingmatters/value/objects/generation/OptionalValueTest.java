@@ -4,20 +4,23 @@ import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.tests.compile.helpers.ClassLoaderHelper;
 import org.codingmatters.tests.compile.helpers.helpers.ObjectHelper;
+import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
+import static org.codingmatters.value.objects.spec.AnonymousValueSpec.anonymousValueSpec;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
 import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
 import static org.codingmatters.value.objects.spec.Spec.spec;
@@ -25,7 +28,6 @@ import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-@Ignore
 public class OptionalValueTest {
 
     @Rule
@@ -38,6 +40,17 @@ public class OptionalValueTest {
                     valueSpec().name("val")
                             .addProperty(property().name("stringProp").type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(String.class.getName())))
                             .addProperty(property().name("valProp").type(type().typeKind(TypeKind.IN_SPEC_VALUE_OBJECT).typeRef("Val")))
+                            .addProperty(property().name("enumProp").type(type().typeKind(TypeKind.ENUM).enumValues("A", "B")))
+                            .addProperty(property().name("container")
+                                    .type(type().typeKind(TypeKind.EMBEDDED)
+                                            .embeddedValueSpec(anonymousValueSpec()
+                                                    .addProperty(property().name("listProp").type(type()
+                                                            .typeRef(String.class.getName())
+                                                            .typeKind(TypeKind.JAVA_TYPE)
+                                                            .cardinality(PropertyCardinality.LIST))
+                                                    )
+                                            ))
+                            )
             )
             .build();
     private ClassLoaderHelper classes;
@@ -47,6 +60,7 @@ public class OptionalValueTest {
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
 
         this.fileHelper.printJavaContent("", this.dir.getRoot());
+//        this.fileHelper.printFile(this.dir.getRoot(), "Val.java");
         this.fileHelper.printFile(this.dir.getRoot(), "OptionalVal.java");
 
         this.classes = CompiledCode.builder()
@@ -137,33 +151,52 @@ public class OptionalValueTest {
                                 .withParameters(
                                         genericType().baseClass(Function.class).withParameters(
                                                 typeParameter().aClass(this.classes.get("org.generated.Val").get()),
-
-                                                typeParameter().aType(genericType().baseClass(Optional.class).withParameters(typeParameter().named("U")))
-//                                                typeParameter().aType(genericType().baseClass(Optional.class)
-//                                                        .withParameters(typeParameter().named("U"))
-//                                                )
+                                                typeParameter().aType(
+                                                        genericType().baseClass(Optional.class)
+                                                                .withParameters(typeParameter().named("U"))
+                                                )
                                         )
                                 )
                         )
+                        .with(aPublic().method()
+                                .named("orElse")
+                                .returning(this.classes.get("org.generated.Val").get())
+                                .withParameters(this.classes.get("org.generated.Val").get())
+                        )
+                        .with(aPublic().method()
+                                .named("orElseGet")
+                                .returning(this.classes.get("org.generated.Val").get())
+                                .withParameters(genericType().baseClass(Supplier.class)
+                                        .withParameters(typeParameter().aClass(this.classes.get("org.generated.Val").get()))
+                                )
+                        )
+
+                        /*
+                        public <X extends Throwable> Book orElseThrow(Supplier<? extends X> supplier) throws X {
+                            return optional.orElseThrow(supplier);
+                        }
+                        */
+                        // TODO better test with wildcard : see https://github.com/nelt/codingmatters-reflect-unit/issues/8
+                        .with(aPublic().method()
+                                .named("orElseGet")
+//                                .withVariable(variableType().named("X extends Throwable"))
+                                .returning(this.classes.get("org.generated.Val").get())
+                                .withParameters(genericType().baseClass(Supplier.class)
+//                                        .withParameters(typeParameter().wildcard().upperBound(variableType().named("X")))
+                                )
+//                                .throwing(variableType().named("X"))
+                        )
                 )
         );
-        /*
-        public <U> Optional<U> flatMap(Function<Book, Optional<U>> function) {
-            return optional.flatMap(function);
-        }
 
-        public Book orElse(Book book) {
-            return optional.orElse(book);
+        Method method = null;
+        for (Method m : this.classes.get("org.generated.optional.OptionalVal").get().getMethods()) {
+            if(m.getName().equals("orElseThrow")) {
+                method = m;
+            }
         }
+        System.out.println(method);
 
-        public Book orElseGet(Supplier<Book> supplier) {
-            return optional.orElseGet(supplier);
-        }
-
-        public <X extends Throwable> Book orElseThrow(Supplier<? extends X> supplier) throws X {
-            return optional.orElseThrow(supplier);
-        }
-        */
     }
 
     @Test
@@ -181,8 +214,16 @@ public class OptionalValueTest {
                                         .withParameters(typeParameter().aClass(String.class))
                                 )
                         )
-                        .with(aPrivate().field().final_().named("valProp")
+                        .with(aPrivate().field().final_().named("enumProp")
+                                .withType(genericType().baseClass(Optional.class)
+                                        .withParameters(typeParameter().aClass(this.classes.get("org.generated.Val$EnumProp").get()))
+                                )
+                        )
+                        .with(aPrivate().field().named("valProp")
                                 .withType(this.classes.get("org.generated.optional.OptionalVal").get())
+                        )
+                        .with(aPrivate().field().named("container")
+                                .withType(this.classes.get("org.generated.val.optional.OptionalContainer").get())
                         )
                 )
         );
@@ -196,6 +237,11 @@ public class OptionalValueTest {
                         .with(aPublic().method().named("stringProp")
                                 .returning(genericType().baseClass(Optional.class)
                                         .withParameters(typeParameter().aClass(String.class)))
+                        )
+                        .with(aPublic().method().named("enumProp")
+                                .returning(genericType().baseClass(Optional.class)
+                                        .withParameters(typeParameter().aClass(this.classes.get("org.generated.Val$EnumProp").get()))
+                                )
                         )
                         .with(aPublic().method().named("valProp")
                                 .returning(this.classes.get("org.generated.optional.OptionalVal").get())
@@ -235,5 +281,21 @@ public class OptionalValueTest {
         assertThat(optProp.call("isPresent").get(), is(true));
         assertThat(optProp.call("stringProp").call("isPresent").get(), is(true));
         assertThat(optProp.call("stringProp").call("get").get(), is("test"));
+    }
+
+    @Test
+    public void valueObjectRecursive() throws Exception {
+        ObjectHelper val = this.classes.get("org.generated.Val").call("builder")
+                .call("valProp", this.classes.get("org.generated.Val").get())
+                .with(this.classes.get("org.generated.Val").call("builder")
+                        .call("stringProp", String.class).with("test")
+                        .call("build").get())
+                .call("stringProp", String.class).with("test")
+                .call("build");
+        ObjectHelper opt = this.classes.get("org.generated.optional.OptionalVal")
+                .call("of", this.classes.get("org.generated.Val").get()).with(val.get());
+
+        assertThat(opt.call("valProp").call("valProp").call("isPresent").get(), is(false));
+        assertThat(opt.call("valProp").call("valProp").call("valProp").call("isPresent").get(), is(false));
     }
 }

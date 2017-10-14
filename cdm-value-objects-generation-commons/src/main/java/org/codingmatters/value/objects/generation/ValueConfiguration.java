@@ -79,15 +79,16 @@ public class ValueConfiguration {
         if(IN_SPEC_VALUE_OBJECT.equals(propertySpec.typeSpec().typeKind())) {
             return ClassName.get(this.rootPackage, capitalizedFirst(propertySpec.typeSpec().typeRef()));
         } else if(ENUM.equals(propertySpec.typeSpec().typeKind()) && propertySpec.typeSpec().isInSpecEnum()) {
-            return ClassName.bestGuess(this.enumTypeName(propertySpec.name()));
+            return this.valueType().nestedClass(this.enumTypeName(propertySpec.name()));
         } else {
             return ClassName.bestGuess(propertySpec.typeSpec().typeRef());
         }
     }
 
     public ClassName propertySingleOptionalType(PropertySpec propertySpec) {
-        if(IN_SPEC_VALUE_OBJECT.equals(propertySpec.typeSpec().typeKind())) {
-            return ClassName.get(this.rootPackage + ".optional", "Optional" + capitalizedFirst(propertySpec.typeSpec().typeRef()));
+        if(propertySpec.typeSpec().typeKind().isValueObject()) {
+            ClassName rawType = this.propertySingleType(propertySpec);
+            return ClassName.get(rawType.packageName() + ".optional", "Optional" + rawType.simpleName());
         } else if(ENUM.equals(propertySpec.typeSpec().typeKind()) && propertySpec.typeSpec().isInSpecEnum()) {
             return ClassName.bestGuess("Optional" + this.enumTypeName(propertySpec.name()));
         } else {
