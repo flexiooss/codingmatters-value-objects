@@ -3,6 +3,11 @@ book:
   author: $person
   bookFormat: string
   datePublished: date
+  kind:
+    $enum: TEXTBOOK, AUDIOBOOK
+  tags:
+    $set:
+      $enum: CHILDREN, SCIENCE, LITERATURE
   isbn: string
   numberOfPages: int
   reviews:

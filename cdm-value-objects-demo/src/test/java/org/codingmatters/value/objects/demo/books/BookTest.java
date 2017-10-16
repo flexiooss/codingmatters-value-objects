@@ -34,6 +34,8 @@ public class BookTest {
                         .name("Robert C. Martin")
                         .build())
                 .bookFormat("Paperback")
+                .kind(Book.Kind.TEXTBOOK)
+                .tags(Book.Tags.LITERATURE, Book.Tags.SCIENCE)
                 .datePublished(LocalDate.parse("August 11, 2008", ENGLISH_DATE_FORMATTER))
                 .isbn("978-0132350884")
                 .numberOfPages(464)
@@ -57,9 +59,13 @@ public class BookTest {
         assertThat(cleanCode.toString(), is(
                 "Book{" +
                         "name=Clean Code: A Handbook of Agile Software Craftsmanship, " +
-                        "author=Person{name=Robert C. Martin, email=null, address=null}, " +
+                        "author=Person{" +
+                            "name=Robert C. Martin, email=null, address=null" +
+                        "}, " +
                         "bookFormat=Paperback, " +
                         "datePublished=2008-08-11, " +
+                        "kind=TEXTBOOK, " +
+                        "tags=[LITERATURE, SCIENCE], " +
                         "isbn=978-0132350884, " +
                         "numberOfPages=464, " +
                         "reviews=[Review{" +
@@ -67,8 +73,9 @@ public class BookTest {
                             "datePublished=2008-09-23T00:00, " +
                             "itemReviewed=null, " +
                             "reviewBody=I enjoyed reading this book and after finishing it, I decided to apply the Boy Scout Rule., " +
-                            "reviewRating=ReviewRating{ratingValue=5}}" +
-                        "]}"
+                            "reviewRating=ReviewRating{ratingValue=5}" +
+                        "}]" +
+                    "}"
         ));
     }
 

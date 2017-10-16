@@ -55,7 +55,7 @@ public class ValueImplementation {
                 .addMethod(this.equalsMethod)
                 .addMethod(this.hashCodeMethod)
                 .addMethod(this.toStringMethod)
-
+                .addMethod(this.optMethod())
                 .build();
     }
 
@@ -199,6 +199,14 @@ public class ValueImplementation {
                 .addParameter(this.types.valueChangerType(), "changer")
                 .returns(this.types.valueType())
                 .addStatement("return changer.configure($T.from(this)).build()", this.types.valueType())
+                .build();
+    }
+
+    private MethodSpec optMethod() {
+        return MethodSpec.methodBuilder("opt")
+                .addModifiers(PUBLIC)
+                .returns(this.types.optionalValueType())
+                .addStatement("return $T.of(this)", this.types.optionalValueType())
                 .build();
     }
 }

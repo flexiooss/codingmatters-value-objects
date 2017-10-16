@@ -1,6 +1,6 @@
 package org.codingmatters.value.objects.demo.books;
 
-import org.codingmatters.value.objects.demo.books.fake.OptionalBook;
+import org.codingmatters.value.objects.demo.books.optional.OptionalBook;
 import org.codingmatters.value.objects.demo.books.person.Address;
 import org.codingmatters.value.objects.demo.books.review.ReviewRating;
 import org.junit.Test;
@@ -19,6 +19,8 @@ public class OptionalBookTest {
                     .name("Robert C. Martin")
                     .build())
             .bookFormat("Paperback")
+            .kind(Book.Kind.TEXTBOOK)
+            .tags(Book.Tags.LITERATURE, Book.Tags.SCIENCE)
             .datePublished(LocalDate.parse("August 11, 2008", ENGLISH_DATE_FORMATTER))
             .isbn("978-0132350884")
             .numberOfPages(464)
@@ -41,7 +43,7 @@ public class OptionalBookTest {
 
     @Test
     public void optionalLeafs() throws Exception {
-        OptionalBook oBook = OptionalBook.of(this.book);
+        OptionalBook oBook = this.book.opt();
 
         assertThat(oBook.author().name().isPresent(), is(true));
         assertThat(oBook.author().name().get(), is("Robert C. Martin"));
@@ -50,9 +52,14 @@ public class OptionalBookTest {
     }
 
     @Test
+    public void optionalEnum() throws Exception {
+        assertThat(this.book.opt().kind().isPresent(), is(true));
+    }
+
+    @Test
     public void complexPropertiesHaveOptionalBehaviour() throws Exception {
         assertThat(
-                OptionalBook.of(this.book).author().address().orElse(Address.builder()
+                this.book.opt().author().address().orElse(Address.builder()
                         .streetAddress("1000 5th Ave")
                         .addressLocality("New York")
                         .addressRegion("NY")
@@ -66,7 +73,6 @@ public class OptionalBookTest {
     @Test
     public void trainWithoutWreck() throws Exception {
         assertThat(OptionalBook.of(this.book).author().address().streetAddress().isPresent(), is(false));
-
         assertThat(OptionalBook.of(null).author().address().streetAddress().isPresent(), is(false));
     }
 }

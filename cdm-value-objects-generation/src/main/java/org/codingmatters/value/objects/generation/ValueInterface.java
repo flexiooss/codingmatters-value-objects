@@ -53,12 +53,11 @@ public class ValueInterface {
                 .addMethods(this.withers)
                 .addMethod(this.hashCode)
                 .addMethod(this.changedMethod)
+                .addMethod(this.optMethod())
                 .addType(this.valueBuilder.type())
                 .addType(this.valueChanger.type())
                 .build();
     }
-
-
 
     private MethodSpec createBuilderMethod() {
         return MethodSpec.methodBuilder("builder")
@@ -154,4 +153,12 @@ public class ValueInterface {
 
         return result.build();
     }
+
+    private MethodSpec optMethod() {
+        return MethodSpec.methodBuilder("opt")
+                .addModifiers(ABSTRACT, PUBLIC)
+                .returns(this.types.optionalValueType())
+                .build();
+    }
+
 }

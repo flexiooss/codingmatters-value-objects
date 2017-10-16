@@ -60,8 +60,9 @@ public class OptionalValueTest {
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
 
         this.fileHelper.printJavaContent("", this.dir.getRoot());
-//        this.fileHelper.printFile(this.dir.getRoot(), "Val.java");
         this.fileHelper.printFile(this.dir.getRoot(), "OptionalVal.java");
+        this.fileHelper.printFile(this.dir.getRoot(), "Val.java");
+        this.fileHelper.printFile(this.dir.getRoot(), "ValImpl.java");
 
         this.classes = CompiledCode.builder()
                 .source(this.dir.getRoot())
@@ -83,6 +84,19 @@ public class OptionalValueTest {
                 this.classes.get("org.generated.optional.OptionalVal").get(),
                 is(aPublic().class_()
                         .with(aPrivate().constructor().withParameters(this.classes.get("org.generated.Val").get()))
+                )
+        );
+    }
+
+    @Test
+    public void optValueMethod() throws Exception {
+        assertThat(
+                this.classes.get("org.generated.Val").get(),
+                is(aPublic().interface_()
+                        .with(aPublic().method()
+                                .named("opt")
+                                .returning(this.classes.get("org.generated.optional.OptionalVal").get())
+                        )
                 )
         );
     }
@@ -273,9 +287,8 @@ public class OptionalValueTest {
                             .call("build").get())
                 .call("stringProp", String.class).with("test")
                 .call("build");
-        ObjectHelper opt = this.classes.get("org.generated.optional.OptionalVal")
-                .call("of", this.classes.get("org.generated.Val").get()).with(val.get());
 
+        ObjectHelper opt = val.as("org.generated.Val").call("opt");
         ObjectHelper optProp = opt.call("valProp");
 
         assertThat(optProp.call("isPresent").get(), is(true));
