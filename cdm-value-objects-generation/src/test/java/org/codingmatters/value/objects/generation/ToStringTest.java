@@ -3,6 +3,7 @@ package org.codingmatters.value.objects.generation;
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.tests.compile.helpers.ClassLoaderHelper;
 import org.codingmatters.tests.compile.helpers.helpers.ClassHelper;
+import org.codingmatters.tests.compile.helpers.helpers.ObjectHelper;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
@@ -10,8 +11,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import java.lang.reflect.Array;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.aPackagePrivate;
 import static org.codingmatters.tests.reflect.ReflectMatchers.aPublic;
@@ -69,15 +68,16 @@ public class ToStringTest {
     public void simple() throws Exception {
         ClassHelper enum3 = classes.get("org.generated.Val$Prop3");
         ClassHelper enum4 = classes.get("org.generated.Val$Prop4");
-        Object prop4Value = Array.newInstance(enum4.get(), 2);
-        Array.set(prop4Value, 0, enum4.call("valueOf", String.class).with("A").get());
-        Array.set(prop4Value, 1, enum4.call("valueOf", String.class).with("B").get());
+        ObjectHelper prop4Value = enum4.array().newArray(
+                enum4.call("valueOf", String.class).with("A").get(),
+                enum4.call("valueOf", String.class).with("B").get()
+        );
 
         Object aValue = classes.get("org.generated.Val").call("builder")
                 .call("prop1", String.class).with("v1")
                 .call("prop2", String.class).with("v2")
                 .call("prop3", enum3.get()).with(enum3.call("valueOf", String.class).with("A").get())
-                .call("prop4", enum4.array().get()).with(prop4Value)
+                .call("prop4", enum4.array().get()).with(prop4Value.get())
                 .call("build").get();
 
         assertThat(aValue.toString(), is("Val{prop1=v1, prop2=v2, prop3=A, prop4=[A, B]}"));
