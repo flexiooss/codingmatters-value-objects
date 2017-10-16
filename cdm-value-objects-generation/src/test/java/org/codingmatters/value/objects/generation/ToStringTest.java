@@ -36,7 +36,7 @@ public class ToStringTest {
                     .addProperty(property().name("prop2").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
                     .addProperty(property().name("prop3").type(type().typeKind(TypeKind.ENUM).enumValues("A", "B", "C")))
                     .addProperty(property().name("prop4").type(type().typeKind(TypeKind.ENUM).enumValues("A", "B", "C")
-                            .cardinality(PropertyCardinality.SET)))
+                            .cardinality(PropertyCardinality.LIST)))
             )
             .addValue(valueSpec().name("noPropertyVal"))
             .addValue(valueSpec().name("complexVal")
