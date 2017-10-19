@@ -35,15 +35,13 @@ public class OptionalCollectionHelper {
                         "optional")
                         .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
                         .build())
-                .addMethod(MethodSpec.constructorBuilder()
-                        .addModifiers(Modifier.PUBLIC)
-                        .addParameter(this.valueCollection, "elements")
-                        .addStatement("this.optional = $T.ofNullable(elements)", Optional.class)
-                        .build())
                 .addMethods(this.optionalHelper.optionalMethods(ParameterizedTypeName.get(this.valueCollection, TypeVariableName.get("E"))))
                 ;
 
         return result;
     }
 
+    public ClassName valueCollection() {
+        return valueCollection;
+    }
 }

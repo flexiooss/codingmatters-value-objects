@@ -2,6 +2,7 @@ package org.codingmatters.value.objects.generation;
 
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.tests.compile.CompiledCode;
+import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
@@ -53,6 +54,8 @@ public class EnumPropertySpecGenerationTest {
             )
             .build();
     private CompiledCode compiled;
+    @Rule
+    public FileHelper fileHelper = new FileHelper();
 
     @Before
     public void setUp() throws Exception {
@@ -62,6 +65,10 @@ public class EnumPropertySpecGenerationTest {
                 .addEnumConstant("V2")
                 .build());
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
+
+
+        this.fileHelper.printJavaContent("", this.dir.getRoot());
+        this.fileHelper.printFile(this.dir.getRoot(), "OptionalVal.java");
         this.compiled = CompiledCode.builder().source(this.dir.getRoot()).compile();
     }
 

@@ -1,10 +1,13 @@
 package org.codingmatters.value.objects.generation;
 
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.ValueSpec;
+
+import java.util.Optional;
 
 import static org.codingmatters.value.objects.spec.TypeKind.ENUM;
 import static org.codingmatters.value.objects.spec.TypeKind.IN_SPEC_VALUE_OBJECT;
@@ -67,7 +70,7 @@ public class ValueConfiguration {
     public TypeName propertyOptionalType(PropertySpec propertySpec) {
         ClassName singleType = this.propertySingleType(propertySpec);
         if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
-            return this.collectionConfiguration.optionalValueListOfType(singleType);
+            return this.collectionConfiguration.optionalValueListOfType(singleType, this.propertySingleOptionalType(propertySpec));
         } else if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
             return this.collectionConfiguration.optionalValueSetOfType(singleType);
         } else {
@@ -85,14 +88,14 @@ public class ValueConfiguration {
         }
     }
 
-    public ClassName propertySingleOptionalType(PropertySpec propertySpec) {
+    public TypeName propertySingleOptionalType(PropertySpec propertySpec) {
+        ClassName rawType = this.propertySingleType(propertySpec);
         if(propertySpec.typeSpec().typeKind().isValueObject()) {
-            ClassName rawType = this.propertySingleType(propertySpec);
             return ClassName.get(rawType.packageName() + ".optional", "Optional" + rawType.simpleName());
         } else if(ENUM.equals(propertySpec.typeSpec().typeKind()) && propertySpec.typeSpec().isInSpecEnum()) {
-            return ClassName.bestGuess("Optional" + this.enumTypeName(propertySpec.name()));
+            return ParameterizedTypeName.get(ClassName.get(Optional.class), rawType);
         } else {
-            return ClassName.bestGuess(propertySpec.typeSpec().typeRef());
+            return ParameterizedTypeName.get(ClassName.get(Optional.class), rawType);
         }
     }
 

@@ -79,7 +79,18 @@ public class OptionalBookTest {
     @Test
     public void optionalCollection() throws Exception {
         assertThat(this.book.opt().reviews().isPresent(), is(true));
-        assertThat(this.book.opt().reviews().get().get(0).opt().author().name().isPresent(), is(true));
+        assertThat(this.book.opt().reviews().get(0).author().name().isPresent(), is(true));
+        assertThat(this.book.opt().reviews().get(0).author().name().get(), is("John Doe"));
 
+        assertThat(this.book.opt().reviews().get(1).isPresent(), is(false));
+        assertThat(this.book.opt().reviews().get(1).author().name().isPresent(), is(false));
+    }
+
+    @Test
+    public void optionalEnums() throws Exception {
+        assertThat(this.book.opt().kind().isPresent(), is(true));
+        assertThat(this.book.opt().kind().get(), is(Book.Kind.TEXTBOOK));
+
+        assertThat(this.book.opt().tags().isPresent(), is(true));
     }
 }

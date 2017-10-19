@@ -60,12 +60,26 @@ public class OptionalValue {
                             propertySpec.name());
                 }
             } else {
-                result.addStatement("this.$L = new $T<>(value != null ? value.$L() : null)",
-                        propertySpec.name(),
-                        propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST) ?
-                                ClassName.get(this.types.rootPackage() + ".optional", "OptionalValueList") :
-                                ClassName.get(this.types.rootPackage() + ".optional", "OptionalValueSet"),
-                        propertySpec.name());
+                if(propertySpec.typeSpec().cardinality() == PropertyCardinality.LIST) {
+                    if (propertySpec.typeSpec().typeKind().isValueObject()) {
+                        result.addStatement("this.$L = new $T<>(value != null ? value.$L() : null, e -> $T.of(e))",
+                                propertySpec.name(),
+                                ClassName.get(this.types.rootPackage() + ".optional", "OptionalValueList"),
+                                propertySpec.name(),
+                                this.types.propertySingleOptionalType(propertySpec));
+                    } else {
+                        result.addStatement("this.$L = new $T<>(value != null ? value.$L() : null, e -> $T.ofNullable(e))",
+                                propertySpec.name(),
+                                ClassName.get(this.types.rootPackage() + ".optional", "OptionalValueList"),
+                                propertySpec.name(),
+                                Optional.class);
+                    }
+                } else {
+                    result.addStatement("this.$L = new $T<>(value != null ? value.$L() : null)",
+                            propertySpec.name(),
+                            ClassName.get(this.types.rootPackage() + ".optional", "OptionalValueSet"),
+                            propertySpec.name());
+                }
             }
         }
 

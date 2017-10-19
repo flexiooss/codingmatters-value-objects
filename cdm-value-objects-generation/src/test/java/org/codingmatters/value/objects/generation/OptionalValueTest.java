@@ -63,7 +63,7 @@ public class OptionalValueTest {
     public void setUp() throws Exception {
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
 
-        this.fileHelper.printJavaContent("", this.dir.getRoot());
+//        this.fileHelper.printJavaContent("", this.dir.getRoot());
 //        this.fileHelper.printFile(this.dir.getRoot(), "OptionalVal.java");
 //        this.fileHelper.printFile(this.dir.getRoot(), "Val.java");
 //        this.fileHelper.printFile(this.dir.getRoot(), "ValImpl.java");
@@ -71,7 +71,7 @@ public class OptionalValueTest {
 //        this.fileHelper.printFile(this.dir.getRoot(), "OptionalValueSet.java");
 //        this.fileHelper.printFile(this.dir.getRoot(), "OptionalContainer.java");
 //        this.fileHelper.printFile(this.dir.getRoot(), "Container.java");
-        this.fileHelper.printFile(this.dir.getRoot(), "OptionalValueList.java");
+//        this.fileHelper.printFile(this.dir.getRoot(), "OptionalValueList.java");
 
         this.classes = CompiledCode.builder()
                 .source(this.dir.getRoot())
@@ -268,8 +268,16 @@ public class OptionalValueTest {
     public void optionalValueCollectionsClass() throws Exception {
         assertThat(
                 this.classes.get("org.generated.optional.OptionalValueList").get(),
-                is(aPublic().class_().withParameter(variableType().named("E"))
-                        .with(aPublic().constructor().withParameters(this.classes.get("org.generated.ValueList").get()))
+                is(aPublic().class_()
+                        .withParameter(variableType().named("E"))
+                        .withParameter(variableType().named("O"))
+                        .with(aPublic().constructor()
+                                .withParameters(
+                                        classType(this.classes.get("org.generated.ValueList").get()),
+                                        genericType().baseClass(Function.class)
+                                                .withParameters(typeParameter().named("E"), typeParameter().named("O"))
+                                )
+                        )
                 )
         );
         assertThat(
@@ -365,6 +373,20 @@ public class OptionalValueTest {
                                                 )
 //                                .throwing(variableType().named("X"))
                                 )
+                )
+        );
+    }
+
+    @Test
+    public void optionalValueListElementAccessor() throws Exception {
+        assertThat(
+                this.classes.get("org.generated.optional.OptionalValueList").get(),
+                is(aPublic().class_()
+                        .with(aPublic().method()
+                                .named("get")
+                                .withParameters(int.class)
+                                .returning(variableType().named("O"))
+                        )
                 )
         );
     }
@@ -556,6 +578,11 @@ public class OptionalValueTest {
 
         assertThat(opt.call("listProp").call("isPresent").get(), is(true));
         assertThat(opt.call("listProp").call("get").call("toString").get(), is("[A, B]"));
+
+        assertThat(opt.call("listProp").call("get", int.class).with(0).call("isPresent").get(), is(true));
+        assertThat(opt.call("listProp").call("get", int.class).with(0).call("get").get(), is("A"));
+        assertThat(opt.call("listProp").call("get", int.class).with(1).call("isPresent").get(), is(true));
+        assertThat(opt.call("listProp").call("get", int.class).with(2).call("isPresent").get(), is(false));
 
         assertThat(opt.call("setProp").call("isPresent").get(), is(false));
     }

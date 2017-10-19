@@ -1,7 +1,11 @@
 package org.codingmatters.value.objects.generation.collection;
 
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+
+import javax.lang.model.element.Modifier;
+import java.util.Optional;
 
 public class OptionalValueSet {
     private final String packageName;
@@ -15,8 +19,12 @@ public class OptionalValueSet {
     }
 
     public TypeSpec type() {
-        TypeSpec.Builder result = this.optionalCollectionHelper.baseOptionalCass();
-
-        return result.build();
+        return this.optionalCollectionHelper.baseOptionalCass()
+                .addMethod(MethodSpec.constructorBuilder()
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(this.optionalCollectionHelper.valueCollection(), "elements")
+                        .addStatement("this.optional = $T.ofNullable(elements)", Optional.class)
+                        .build())
+                .build();
     }
 }

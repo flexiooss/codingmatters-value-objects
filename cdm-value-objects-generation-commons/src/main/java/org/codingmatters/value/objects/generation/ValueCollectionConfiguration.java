@@ -37,8 +37,8 @@ public class ValueCollectionConfiguration {
         return ParameterizedTypeName.get(this.valueListType, type);
     }
 
-    public ParameterizedTypeName optionalValueListOfType(TypeName type) {
-        return ParameterizedTypeName.get(this.optionalValueListType, type);
+    public ParameterizedTypeName optionalValueListOfType(TypeName type, TypeName optionalType) {
+        return ParameterizedTypeName.get(this.optionalValueListType, type, optionalType);
     }
 
     public ParameterizedTypeName valueListImplOfType(TypeName type) {
