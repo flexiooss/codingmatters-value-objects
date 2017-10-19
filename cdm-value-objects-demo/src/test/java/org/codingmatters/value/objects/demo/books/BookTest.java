@@ -10,8 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 /**
  * Created by nelt on 11/26/16.
@@ -56,7 +55,8 @@ public class BookTest {
                 )
                 .build();
 
-        assertThat(cleanCode.toString(), is(
+
+        assertThat(cleanCode.toString(), isOneOf(
                 "Book{" +
                         "name=Clean Code: A Handbook of Agile Software Craftsmanship, " +
                         "author=Person{" +
@@ -75,7 +75,26 @@ public class BookTest {
                             "reviewBody=I enjoyed reading this book and after finishing it, I decided to apply the Boy Scout Rule., " +
                             "reviewRating=ReviewRating{ratingValue=5}" +
                         "}]" +
-                    "}"
+                    "}",
+                "Book{" +
+                        "name=Clean Code: A Handbook of Agile Software Craftsmanship, " +
+                        "author=Person{" +
+                            "name=Robert C. Martin, email=null, address=null" +
+                        "}, " +
+                        "bookFormat=Paperback, " +
+                        "datePublished=2008-08-11, " +
+                        "kind=TEXTBOOK, " +
+                        "tags=[SCIENCE, LITERATURE], " +
+                        "isbn=978-0132350884, " +
+                        "numberOfPages=464, " +
+                        "reviews=[Review{" +
+                            "author=Person{name=John Doe, email=null, address=null}, " +
+                            "datePublished=2008-09-23T00:00, " +
+                            "itemReviewed=null, " +
+                            "reviewBody=I enjoyed reading this book and after finishing it, I decided to apply the Boy Scout Rule., " +
+                            "reviewRating=ReviewRating{ratingValue=5}" +
+                        "}]" +
+                        "}"
         ));
     }
 
