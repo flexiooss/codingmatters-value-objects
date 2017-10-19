@@ -1,10 +1,7 @@
 package org.codingmatters.value.objects.generation;
 
 import com.squareup.javapoet.TypeSpec;
-import org.codingmatters.value.objects.generation.collection.ValueList;
-import org.codingmatters.value.objects.generation.collection.ValueListImplementation;
-import org.codingmatters.value.objects.generation.collection.ValueSet;
-import org.codingmatters.value.objects.generation.collection.ValueSetImplementation;
+import org.codingmatters.value.objects.generation.collection.*;
 import org.codingmatters.value.objects.generation.preprocessor.PackagedValueSpec;
 import org.codingmatters.value.objects.generation.preprocessor.SpecPreprocessor;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
@@ -43,11 +40,14 @@ public class SpecCodeGenerator {
             TypeSpec valueListInterface = new ValueList(this.rootPackage).type();
             writeJavaFile(packageDestination, this.rootPackage, valueListInterface);
             writeJavaFile(packageDestination, this.rootPackage, new ValueListImplementation(this.rootPackage, valueListInterface).type());
+            writeJavaFile(packageDestination, this.rootPackage + ".optional", new OptionalValueList(this.rootPackage, valueListInterface).type());
+
         }
         if(this.hasPropertyWithCardinality(this.spec, SET)) {
             TypeSpec valueSetInterface = new ValueSet(this.rootPackage).type();
             writeJavaFile(packageDestination, this.rootPackage, valueSetInterface);
             writeJavaFile(packageDestination, this.rootPackage, new ValueSetImplementation(this.rootPackage, valueSetInterface).type());
+            writeJavaFile(packageDestination, this.rootPackage + ".optional", new OptionalValueSet(this.rootPackage, valueSetInterface).type());
         }
 
         for (PackagedValueSpec valueSpec : new SpecPreprocessor(this.spec, this.rootPackage).packagedValueSpec()) {
@@ -90,8 +90,9 @@ public class SpecCodeGenerator {
         TypeSpec valueImpl = new ValueImplementation(types, packagedValueSpec.valueSpec().propertySpecs()).type();
         writeJavaFile(packageDestination, packagedValueSpec.packagename(), valueImpl);
 
-        TypeSpec optional = new OptionalValue(types, packagedValueSpec.valueSpec().propertySpecs()).type();
-        writeJavaFile(packageDestination, packagedValueSpec.packagename() + ".optional", optional);
+        for (TypeSpec optionalType : new OptionalValue(types, packagedValueSpec.valueSpec().propertySpecs()).types()) {
+            writeJavaFile(packageDestination, packagedValueSpec.packagename() + ".optional", optionalType);
+        }
     }
 
 

@@ -65,13 +65,13 @@ public class ValueConfiguration {
     }
 
     public TypeName propertyOptionalType(PropertySpec propertySpec) {
-        ClassName singleType = this.propertySingleOptionalType(propertySpec);
+        ClassName singleType = this.propertySingleType(propertySpec);
         if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
-            return this.collectionConfiguration.valueListOfType(singleType);
+            return this.collectionConfiguration.optionalValueListOfType(singleType);
         } else if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
-            return this.collectionConfiguration.valueSetOfType(singleType);
+            return this.collectionConfiguration.optionalValueSetOfType(singleType);
         } else {
-            return singleType;
+            return this.propertySingleOptionalType(propertySpec);
         }
     }
 
@@ -128,5 +128,9 @@ public class ValueConfiguration {
             System.err.println("class not found : " + propertySpec.typeSpec().typeRef());
             return null;
         }
+    }
+
+    public String rootPackage() {
+        return rootPackage;
     }
 }

@@ -12,7 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -49,6 +48,11 @@ public class OptionalValueTest {
                                                             .typeKind(TypeKind.JAVA_TYPE)
                                                             .cardinality(PropertyCardinality.LIST))
                                                     )
+                                                    .addProperty(property().name("setProp").type(type()
+                                                            .typeRef(String.class.getName())
+                                                            .typeKind(TypeKind.JAVA_TYPE)
+                                                            .cardinality(PropertyCardinality.SET))
+                                                    )
                                             ))
                             )
             )
@@ -60,9 +64,14 @@ public class OptionalValueTest {
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
 
         this.fileHelper.printJavaContent("", this.dir.getRoot());
-        this.fileHelper.printFile(this.dir.getRoot(), "OptionalVal.java");
-        this.fileHelper.printFile(this.dir.getRoot(), "Val.java");
-        this.fileHelper.printFile(this.dir.getRoot(), "ValImpl.java");
+//        this.fileHelper.printFile(this.dir.getRoot(), "OptionalVal.java");
+//        this.fileHelper.printFile(this.dir.getRoot(), "Val.java");
+//        this.fileHelper.printFile(this.dir.getRoot(), "ValImpl.java");
+//        this.fileHelper.printFile(this.dir.getRoot(), "OptionalValueList.java");
+//        this.fileHelper.printFile(this.dir.getRoot(), "OptionalValueSet.java");
+//        this.fileHelper.printFile(this.dir.getRoot(), "OptionalContainer.java");
+//        this.fileHelper.printFile(this.dir.getRoot(), "Container.java");
+        this.fileHelper.printFile(this.dir.getRoot(), "OptionalValueList.java");
 
         this.classes = CompiledCode.builder()
                 .source(this.dir.getRoot())
@@ -202,15 +211,6 @@ public class OptionalValueTest {
                         )
                 )
         );
-
-        Method method = null;
-        for (Method m : this.classes.get("org.generated.optional.OptionalVal").get().getMethods()) {
-            if(m.getName().equals("orElseThrow")) {
-                method = m;
-            }
-        }
-        System.out.println(method);
-
     }
 
     @Test
@@ -265,6 +265,240 @@ public class OptionalValueTest {
     }
 
     @Test
+    public void optionalValueCollectionsClass() throws Exception {
+        assertThat(
+                this.classes.get("org.generated.optional.OptionalValueList").get(),
+                is(aPublic().class_().withParameter(variableType().named("E"))
+                        .with(aPublic().constructor().withParameters(this.classes.get("org.generated.ValueList").get()))
+                )
+        );
+        assertThat(
+                this.classes.get("org.generated.optional.OptionalValueSet").get(),
+                is(aPublic().class_().withParameter(variableType().named("E"))
+                        .with(aPublic().constructor().withParameters(this.classes.get("org.generated.ValueSet").get()))
+                )
+        );
+    }
+
+    @Test
+    public void optionalListOptionalMethods() throws Exception {
+        assertThat(
+                this.classes.get("org.generated.optional.OptionalValueList").get(),
+                is(aPublic().class_()
+                                .with(aPublic().method()
+                                        .named("get")
+                                        .returning(this.classes.get("org.generated.ValueList").get())
+                                )
+                                .with(aPublic().method()
+                                        .named("isPresent")
+                                        .returning(boolean.class)
+                                )
+                                .with(aPublic().method()
+                                        .named("ifPresent")
+                                        .returningVoid()
+                                        .withParameters(genericType()
+                                                .baseClass(Consumer.class)
+                                                .withParameters(typeParameter().aClass(this.classes.get("org.generated.ValueList").get()))
+                                        )
+                                )
+                                .with(aPublic().method()
+                                        .named("filter")
+                                        .returning(genericType()
+                                                .baseClass(Optional.class)
+                                                .withParameters(typeParameter().aClass(this.classes.get("org.generated.ValueList").get()))
+                                        )
+                                        .withParameters(genericType()
+                                                .baseClass(Predicate.class)
+                                                .withParameters(typeParameter().aClass(this.classes.get("org.generated.ValueList").get()))
+                                        )
+                                )
+                                .with(aPublic().method()
+                                        .named("map")
+                                        .withVariable(variableType().named("U"))
+                                        .returning(genericType().baseClass(Optional.class).withParameters(typeParameter().named("U")))
+                                        .withParameters(
+                                                genericType().baseClass(Function.class).withParameters(
+                                                        typeParameter().aClass(this.classes.get("org.generated.ValueList").get()),
+                                                        typeParameter().upperBound(variableType().named("U"))
+                                                )
+                                        )
+                                )
+                                .with(aPublic().method()
+                                        .named("flatMap")
+                                        .withVariable(variableType().named("U"))
+                                        .returning(genericType().baseClass(Optional.class).withParameters(typeParameter().named("U")))
+                                        .withParameters(
+                                                genericType().baseClass(Function.class).withParameters(
+                                                        typeParameter().aClass(this.classes.get("org.generated.ValueList").get()),
+                                                        typeParameter().aType(
+                                                                genericType().baseClass(Optional.class)
+                                                                        .withParameters(typeParameter().named("U"))
+                                                        )
+                                                )
+                                        )
+                                )
+                                .with(aPublic().method()
+                                        .named("orElse")
+                                        .returning(this.classes.get("org.generated.ValueList").get())
+                                        .withParameters(this.classes.get("org.generated.ValueList").get())
+                                )
+                                .with(aPublic().method()
+                                        .named("orElseGet")
+                                        .returning(this.classes.get("org.generated.ValueList").get())
+                                        .withParameters(genericType().baseClass(Supplier.class)
+                                                .withParameters(typeParameter().aClass(this.classes.get("org.generated.ValueList").get()))
+                                        )
+                                )
+
+                        /*
+                        public <X extends Throwable> Book orElseThrow(Supplier<? extends X> supplier) throws X {
+                            return optional.orElseThrow(supplier);
+                        }
+                        */
+                                // TODO better test with wildcard : see https://github.com/nelt/codingmatters-reflect-unit/issues/8
+                                .with(aPublic().method()
+                                                .named("orElseGet")
+//                                .withVariable(variableType().named("X extends Throwable"))
+                                                .returning(this.classes.get("org.generated.ValueList").get())
+                                                .withParameters(genericType().baseClass(Supplier.class)
+//                                        .withParameters(typeParameter().wildcard().upperBound(variableType().named("X")))
+                                                )
+//                                .throwing(variableType().named("X"))
+                                )
+                )
+        );
+    }
+
+    @Test
+    public void optionalSetOptionalMethods() throws Exception {
+        assertThat(
+                this.classes.get("org.generated.optional.OptionalValueSet").get(),
+                is(aPublic().class_()
+                                .with(aPublic().method()
+                                        .named("get")
+                                        .returning(this.classes.get("org.generated.ValueSet").get())
+                                )
+                                .with(aPublic().method()
+                                        .named("isPresent")
+                                        .returning(boolean.class)
+                                )
+                                .with(aPublic().method()
+                                        .named("ifPresent")
+                                        .returningVoid()
+                                        .withParameters(genericType()
+                                                .baseClass(Consumer.class)
+                                                .withParameters(typeParameter().aClass(this.classes.get("org.generated.ValueSet").get()))
+                                        )
+                                )
+                                .with(aPublic().method()
+                                        .named("filter")
+                                        .returning(genericType()
+                                                .baseClass(Optional.class)
+                                                .withParameters(typeParameter().aClass(this.classes.get("org.generated.ValueSet").get()))
+                                        )
+                                        .withParameters(genericType()
+                                                .baseClass(Predicate.class)
+                                                .withParameters(typeParameter().aClass(this.classes.get("org.generated.ValueSet").get()))
+                                        )
+                                )
+                                .with(aPublic().method()
+                                        .named("map")
+                                        .withVariable(variableType().named("U"))
+                                        .returning(genericType().baseClass(Optional.class).withParameters(typeParameter().named("U")))
+                                        .withParameters(
+                                                genericType().baseClass(Function.class).withParameters(
+                                                        typeParameter().aClass(this.classes.get("org.generated.ValueSet").get()),
+                                                        typeParameter().upperBound(variableType().named("U"))
+                                                )
+                                        )
+                                )
+                                .with(aPublic().method()
+                                        .named("flatMap")
+                                        .withVariable(variableType().named("U"))
+                                        .returning(genericType().baseClass(Optional.class).withParameters(typeParameter().named("U")))
+                                        .withParameters(
+                                                genericType().baseClass(Function.class).withParameters(
+                                                        typeParameter().aClass(this.classes.get("org.generated.ValueSet").get()),
+                                                        typeParameter().aType(
+                                                                genericType().baseClass(Optional.class)
+                                                                        .withParameters(typeParameter().named("U"))
+                                                        )
+                                                )
+                                        )
+                                )
+                                .with(aPublic().method()
+                                        .named("orElse")
+                                        .returning(this.classes.get("org.generated.ValueSet").get())
+                                        .withParameters(this.classes.get("org.generated.ValueSet").get())
+                                )
+                                .with(aPublic().method()
+                                        .named("orElseGet")
+                                        .returning(this.classes.get("org.generated.ValueSet").get())
+                                        .withParameters(genericType().baseClass(Supplier.class)
+                                                .withParameters(typeParameter().aClass(this.classes.get("org.generated.ValueSet").get()))
+                                        )
+                                )
+
+                        /*
+                        public <X extends Throwable> Book orElseThrow(Supplier<? extends X> supplier) throws X {
+                            return optional.orElseThrow(supplier);
+                        }
+                        */
+                                // TODO better test with wildcard : see https://github.com/nelt/codingmatters-reflect-unit/issues/8
+                                .with(aPublic().method()
+                                                .named("orElseGet")
+//                                .withVariable(variableType().named("X extends Throwable"))
+                                                .returning(this.classes.get("org.generated.ValueSet").get())
+                                                .withParameters(genericType().baseClass(Supplier.class)
+//                                        .withParameters(typeParameter().wildcard().upperBound(variableType().named("X")))
+                                                )
+//                                .throwing(variableType().named("X"))
+                                )
+                )
+        );
+    }
+
+    @Test
+    public void collectionMethodsAndFields() throws Exception {
+        assertThat(
+                this.classes.get("org.generated.val.optional.OptionalContainer").get(),
+                is(aPublic().class_()
+                        .with(aPublic().method()
+                                .named("listProp")
+                                .returning(genericType()
+                                        .baseClass(this.classes.get("org.generated.optional.OptionalValueList").get())
+                                        .withParameters(typeParameter().aClass(String.class)))
+                        )
+                        .with(aPrivate().field().final_()
+                                .named("listProp")
+                                .withType(genericType()
+                                        .baseClass(this.classes.get("org.generated.optional.OptionalValueList").get())
+                                        .withParameters(typeParameter().aClass(String.class))
+                                )
+                        )
+                )
+        );
+        assertThat(
+                this.classes.get("org.generated.val.optional.OptionalContainer").get(),
+                is(aPublic().class_()
+                        .with(aPublic().method()
+                                .named("setProp")
+                                .returning(genericType()
+                                        .baseClass(this.classes.get("org.generated.optional.OptionalValueSet").get())
+                                        .withParameters(typeParameter().aClass(String.class)))
+                        )
+                        .with(aPrivate().field().final_()
+                                .named("setProp")
+                                .withType(genericType()
+                                        .baseClass(this.classes.get("org.generated.optional.OptionalValueSet").get())
+                                        .withParameters(typeParameter().aClass(String.class))
+                                )
+                        )
+                )
+        );
+    }
+
+    @Test
     public void simpleProperty() throws Exception {
         ObjectHelper val = this.classes.get("org.generated.Val").call("builder")
                 .call("stringProp", String.class).with("test")
@@ -310,5 +544,19 @@ public class OptionalValueTest {
 
         assertThat(opt.call("valProp").call("valProp").call("isPresent").get(), is(false));
         assertThat(opt.call("valProp").call("valProp").call("valProp").call("isPresent").get(), is(false));
+    }
+
+    @Test
+    public void collectionProperty() throws Exception {
+        ObjectHelper container = this.classes.get("org.generated.val.Container").call("builder")
+                .call("listProp", String[].class)
+                    .with(new Object [] {new String [] {"A", "B"}})
+                .call("build");
+        ObjectHelper opt = container.as("org.generated.val.Container").call("opt");
+
+        assertThat(opt.call("listProp").call("isPresent").get(), is(true));
+        assertThat(opt.call("listProp").call("get").call("toString").get(), is("[A, B]"));
+
+        assertThat(opt.call("setProp").call("isPresent").get(), is(false));
     }
 }

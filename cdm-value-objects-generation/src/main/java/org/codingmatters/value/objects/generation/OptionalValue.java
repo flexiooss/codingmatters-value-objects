@@ -1,35 +1,39 @@
 package org.codingmatters.value.objects.generation;
 
 import com.squareup.javapoet.*;
+import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 
 import javax.lang.model.element.Modifier;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public class OptionalValue {
     private final ValueConfiguration types;
     private final List<PropertySpec> propertySpecs;
+    private final OptionalHelper optionalHelper;
 
     public OptionalValue(ValueConfiguration types, List<PropertySpec> propertySpecs) {
         this.types = types;
         this.propertySpecs = propertySpecs;
+        this.optionalHelper = new OptionalHelper();
     }
 
-    public TypeSpec type() {
-        return TypeSpec.classBuilder(this.types.optionalValueType())
+    public List<TypeSpec> types() {
+        List<TypeSpec> result = new LinkedList<>();
+
+        result.add(TypeSpec.classBuilder(this.types.optionalValueType())
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(this.staticConstrucor())
                 .addMethod(this.construcor())
                 .addFields(this.fields())
                 .addMethods(this.optionalGetters())
                 .addMethods(this.optionalMethods())
-                .build();
+                .build()
+        );
+
+        return result;
     }
 
     private MethodSpec staticConstrucor() {
@@ -50,10 +54,18 @@ public class OptionalValue {
         for (PropertySpec propertySpec : this.propertySpecs) {
             if (!propertySpec.typeSpec().cardinality().isCollection()) {
                 if (!propertySpec.typeSpec().typeKind().isValueObject()) {
-                    result.addStatement("this.$L = $T.ofNullable(value != null ? value.$L() : null)", propertySpec.name(), Optional.class, propertySpec.name());
-//                } else {
-//                    result.addStatement("this.$L = value != null ? $T.of(value.$L()) : null", propertySpec.name(), this.types.propertyOptionalType(propertySpec), propertySpec.name());
+                    result.addStatement("this.$L = $T.ofNullable(value != null ? value.$L() : null)",
+                            propertySpec.name(),
+                            Optional.class,
+                            propertySpec.name());
                 }
+            } else {
+                result.addStatement("this.$L = new $T<>(value != null ? value.$L() : null)",
+                        propertySpec.name(),
+                        propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST) ?
+                                ClassName.get(this.types.rootPackage() + ".optional", "OptionalValueList") :
+                                ClassName.get(this.types.rootPackage() + ".optional", "OptionalValueSet"),
+                        propertySpec.name());
             }
         }
 
@@ -83,9 +95,15 @@ public class OptionalValue {
                             this.types.propertyOptionalType(propertySpec),
                             propertySpec.name())
                             .addModifiers(Modifier.PRIVATE)
-                            .initializer("null")
+                            .initializer("this.$L", propertySpec.name())
                             .build());
                 }
+            } else {
+                results.add(FieldSpec.builder(
+                        this.types.propertyOptionalType(propertySpec),
+                        propertySpec.name())
+                        .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+                        .build());
             }
         }
 
@@ -118,6 +136,12 @@ public class OptionalValue {
                             .addStatement("return this.$L", propertySpec.name())
                             .build());
                 }
+            } else {
+                results.add(MethodSpec.methodBuilder(propertySpec.name())
+                        .addModifiers(Modifier.PUBLIC)
+                        .returns(this.types.propertyOptionalType(propertySpec))
+                        .addStatement("return this.$L", propertySpec.name())
+                        .build());
             }
         }
 
@@ -125,65 +149,9 @@ public class OptionalValue {
     }
 
     private Iterable<MethodSpec> optionalMethods() {
-        List<MethodSpec> results = new LinkedList<>();
-
-        results.add(MethodSpec.methodBuilder("get")
-                .addModifiers(Modifier.PUBLIC)
-                .returns(this.types.valueType())
-                .addStatement("return this.optional.get()")
-                .build());
-        results.add(MethodSpec.methodBuilder("isPresent")
-                .addModifiers(Modifier.PUBLIC)
-                .returns(boolean.class)
-                .addStatement("return this.optional.isPresent()")
-                .build());
-        results.add(MethodSpec.methodBuilder("ifPresent")
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(ParameterizedTypeName.get(ClassName.get(Consumer.class), this.types.valueType()), "consumer")
-                .addStatement("this.optional.ifPresent(consumer)")
-                .build());
-        results.add(MethodSpec.methodBuilder("filter")
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(ParameterizedTypeName.get(ClassName.get(Predicate.class), this.types.valueType()), "predicate")
-                .returns(ParameterizedTypeName.get(ClassName.get(Optional.class), this.types.valueType()))
-                .addStatement("return this.optional.filter(predicate)")
-                .build());
-        results.add(MethodSpec.methodBuilder("map")
-                .addModifiers(Modifier.PUBLIC)
-                .addTypeVariable(TypeVariableName.get("U"))
-                .addParameter(ParameterizedTypeName.get(ClassName.get(Function.class), this.types.valueType(), TypeVariableName.get("? extends U")), "function")
-                .returns(ParameterizedTypeName.get(ClassName.get(Optional.class), TypeVariableName.get("U")))
-                .addStatement("return this.optional.map(function)")
-                .build());
-        results.add(MethodSpec.methodBuilder("flatMap")
-                .addModifiers(Modifier.PUBLIC)
-                .addTypeVariable(TypeVariableName.get("U"))
-                .addParameter(ParameterizedTypeName.get(ClassName.get(Function.class), this.types.valueType(), ParameterizedTypeName.get(ClassName.get(Optional.class), TypeVariableName.get("U"))), "function")
-                .returns(ParameterizedTypeName.get(ClassName.get(Optional.class), TypeVariableName.get("U")))
-                .addStatement("return this.optional.flatMap(function)")
-                .build());
-        results.add(MethodSpec.methodBuilder("orElse")
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(this.types.valueType(), "value")
-                .returns(this.types.valueType())
-                .addStatement("return this.optional.orElse(value)")
-                .build());
-        results.add(MethodSpec.methodBuilder("orElseGet")
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(ParameterizedTypeName.get(ClassName.get(Supplier.class), this.types.valueType()), "supplier")
-                .returns(this.types.valueType())
-                .addStatement("return this.optional.orElseGet(supplier)")
-                .build());
-        results.add(MethodSpec.methodBuilder("orElseThrow")
-                .addModifiers(Modifier.PUBLIC)
-                .addTypeVariable(TypeVariableName.get("X", ClassName.get(Throwable.class)))
-                .addParameter(
-                        ParameterizedTypeName.get(ClassName.get(Supplier.class), WildcardTypeName.subtypeOf(TypeVariableName.get("X"))),
-                        "supplier")
-                .returns(this.types.valueType())
-                .addException(TypeVariableName.get("X"))
-                .addStatement("return this.optional.orElseThrow(supplier)")
-                .build());
+        ClassName valueType = this.types.valueType();
+        List<MethodSpec> results = this.optionalHelper.optionalMethods(valueType);
         return results;
     }
+
 }

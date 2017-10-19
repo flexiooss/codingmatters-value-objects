@@ -9,18 +9,22 @@ import com.squareup.javapoet.TypeName;
  */
 public class ValueCollectionConfiguration {
     private final ClassName valueListType;
+    private final ClassName optionalValueListType;
     private final ClassName valueListImplementationType;
     private final ClassName valueListBuilderType;
     private final ClassName valueSetType;
+    private final ClassName optionalValueSetType;
     private final ClassName valueSetImplementationType;
     private final ClassName valueSetBuilderType;
 
     public ValueCollectionConfiguration(String packageName) {
         this.valueListType = ClassName.get(packageName, "ValueList");
+        this.optionalValueListType = ClassName.get(packageName + ".optional", "OptionalValueList");
         this.valueListImplementationType = ClassName.get(packageName, "ValueListImpl");
         this.valueListBuilderType = this.valueListType.nestedClass("Builder");
 
         this.valueSetType = ClassName.get(packageName, "ValueSet");
+        this.optionalValueSetType = ClassName.get(packageName + ".optional", "OptionalValueSet");
         this.valueSetImplementationType = ClassName.get(packageName, "ValueSetImpl");
         this.valueSetBuilderType = this.valueSetType.nestedClass("Builder");
     }
@@ -31,6 +35,10 @@ public class ValueCollectionConfiguration {
 
     public ParameterizedTypeName valueListOfType(TypeName type) {
         return ParameterizedTypeName.get(this.valueListType, type);
+    }
+
+    public ParameterizedTypeName optionalValueListOfType(TypeName type) {
+        return ParameterizedTypeName.get(this.optionalValueListType, type);
     }
 
     public ParameterizedTypeName valueListImplOfType(TypeName type) {
@@ -47,6 +55,10 @@ public class ValueCollectionConfiguration {
 
     public ParameterizedTypeName valueSetOfType(TypeName type) {
         return ParameterizedTypeName.get(this.valueSetType, type);
+    }
+
+    public ParameterizedTypeName optionalValueSetOfType(TypeName type) {
+        return ParameterizedTypeName.get(this.optionalValueSetType, type);
     }
 
     public ParameterizedTypeName valueSetImplOfType(TypeName type) {

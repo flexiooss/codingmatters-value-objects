@@ -75,4 +75,14 @@ public class OptionalBookTest {
         assertThat(OptionalBook.of(this.book).author().address().streetAddress().isPresent(), is(false));
         assertThat(OptionalBook.of(null).author().address().streetAddress().isPresent(), is(false));
     }
+
+    @Test
+    public void optionalCollection() throws Exception {
+        OptionalBook oBook = this.book.opt();
+        if(oBook.reviews().isPresent() && ! oBook.reviews().get().isEmpty()) {
+            if(oBook.reviews().get().get(0).opt().author().name().isPresent()) {
+                System.out.println("YEP");
+            }
+        }
+    }
 }
