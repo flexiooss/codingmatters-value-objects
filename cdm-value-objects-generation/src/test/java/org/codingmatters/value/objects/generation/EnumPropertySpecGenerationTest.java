@@ -3,6 +3,7 @@ package org.codingmatters.value.objects.generation;
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.tests.compile.FileHelper;
+import org.codingmatters.tests.compile.helpers.ClassLoaderHelper;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
@@ -53,9 +54,10 @@ public class EnumPropertySpecGenerationTest {
                     ))
             )
             .build();
-    private CompiledCode compiled;
+
     @Rule
     public FileHelper fileHelper = new FileHelper();
+    private ClassLoaderHelper classes;
 
     @Before
     public void setUp() throws Exception {
@@ -69,44 +71,44 @@ public class EnumPropertySpecGenerationTest {
 
         this.fileHelper.printJavaContent("", this.dir.getRoot());
         this.fileHelper.printFile(this.dir.getRoot(), "OptionalVal.java");
-        this.compiled = CompiledCode.builder().source(this.dir.getRoot()).compile();
+        this.classes = CompiledCode.builder().source(this.dir.getRoot()).compile().classLoader();
     }
 
     @Test
     public void enumWithRefProperties() throws Exception {
-        assertThat(compiled.getClass("org.generated.ValWithRef"), is(anInstance().public_().interface_()
-                .with(anInstance().method().named("single").returning(this.compiled.getClass("org.outside.MyEnum")))
+        assertThat(classes.get("org.generated.ValWithRef").get(), is(anInstance().public_().interface_()
+                .with(anInstance().method().named("single").returning(classes.get("org.outside.MyEnum").get()))
         ));
-        assertThat(compiled.getClass("org.generated.ValWithRefImpl"), is(aPackagePrivate().class_()
-                .with(anInstance().method().named("single").returning(this.compiled.getClass("org.outside.MyEnum")))
+        assertThat(classes.get("org.generated.ValWithRefImpl").get(), is(aPackagePrivate().class_()
+                .with(anInstance().method().named("single").returning(classes.get("org.outside.MyEnum").get()))
         ));
-        assertThat(compiled.getClass("org.generated.ValWithRef$Builder"), is(aStatic().public_().class_()
-                .with(anInstance().method().named("single").withParameters(this.compiled.getClass("org.outside.MyEnum")))
+        assertThat(classes.get("org.generated.ValWithRef$Builder").get(), is(aStatic().public_().class_()
+                .with(anInstance().method().named("single").withParameters(classes.get("org.outside.MyEnum").get()))
         ));
 
 
-        assertThat(compiled.getClass("org.generated.ValWithRef"), is(anInstance().public_().interface_().with(anInstance().method().named("list"))));
-        assertThat(compiled.getClass("org.generated.ValWithRefImpl"), is(aPackagePrivate().class_().with(anInstance().method().named("list"))));
-        assertThat(compiled.getClass("org.generated.ValWithRef$Builder"), is(aStatic().public_().class_().with(anInstance().method().named("list"))));
+        assertThat(classes.get("org.generated.ValWithRef").get(), is(anInstance().public_().interface_().with(anInstance().method().named("list"))));
+        assertThat(classes.get("org.generated.ValWithRefImpl").get(), is(aPackagePrivate().class_().with(anInstance().method().named("list"))));
+        assertThat(classes.get("org.generated.ValWithRef$Builder").get(), is(aStatic().public_().class_().with(anInstance().method().named("list"))));
     }
 
     @Test
     public void enumWithValues() throws Exception {
-        assertThat(this.compiled.getClass("org.generated.ValWithRaw$Single").isEnum(), is(true));
+        assertThat(classes.get("org.generated.ValWithRaw$Single").get().isEnum(), is(true));
 
-        assertThat(compiled.getClass("org.generated.ValWithRaw"), is(anInstance().public_().interface_()
+        assertThat(classes.get("org.generated.ValWithRaw").get(), is(anInstance().public_().interface_()
                 .with(anInstance().method().named("single")
-                        .returning(this.compiled.getClass("org.generated.ValWithRaw$Single")))
+                        .returning(classes.get("org.generated.ValWithRaw$Single").get()))
         ));
-        assertThat(compiled.getClass("org.generated.ValWithRawImpl"), is(aPackagePrivate().class_()
-                .with(anInstance().method().named("single").returning(this.compiled.getClass("org.generated.ValWithRaw$Single")))
+        assertThat(classes.get("org.generated.ValWithRawImpl").get(), is(aPackagePrivate().class_()
+                .with(anInstance().method().named("single").returning(classes.get("org.generated.ValWithRaw$Single").get()))
         ));
-        assertThat(compiled.getClass("org.generated.ValWithRaw$Builder"), is(aStatic().public_().class_()
-                .with(anInstance().method().named("single").withParameters(this.compiled.getClass("org.generated.ValWithRaw$Single")))
+        assertThat(classes.get("org.generated.ValWithRaw$Builder").get(), is(aStatic().public_().class_()
+                .with(anInstance().method().named("single").withParameters(classes.get("org.generated.ValWithRaw$Single").get()))
         ));
 
-        assertThat(compiled.getClass("org.generated.ValWithRaw"), is(anInstance().public_().interface_().with(anInstance().method().named("list"))));
-        assertThat(compiled.getClass("org.generated.ValWithRawImpl"), is(aPackagePrivate().class_().with(anInstance().method().named("list"))));
-        assertThat(compiled.getClass("org.generated.ValWithRaw$Builder"), is(aStatic().public_().class_().with(anInstance().method().named("list"))));
+        assertThat(classes.get("org.generated.ValWithRaw").get(), is(anInstance().public_().interface_().with(anInstance().method().named("list"))));
+        assertThat(classes.get("org.generated.ValWithRawImpl").get(), is(aPackagePrivate().class_().with(anInstance().method().named("list"))));
+        assertThat(classes.get("org.generated.ValWithRaw$Builder").get(), is(aStatic().public_().class_().with(anInstance().method().named("list"))));
     }
 }
