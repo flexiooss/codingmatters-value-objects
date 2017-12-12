@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import org.codingmatters.tests.compile.CompiledCode;
+import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.tests.reflect.ReflectMatchers;
 import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
@@ -36,6 +37,9 @@ import static org.junit.Assert.assertThat;
 public class JsonReaderGenerationTest {
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
+
+    @Rule
+    public FileHelper fileHelper = new FileHelper();
 
     private Spec spec;
 
@@ -200,11 +204,64 @@ public class JsonReaderGenerationTest {
 
             assertThat(
                     value,
-                    is(ExampleValue.builder()
-                            .complexList(new ComplexList.Builder()
-                                    .sub("a value")
-                                    .build())
+                    is(new ComplexList.Builder()
+                            .sub("a value")
                             .build())
+            );
+        }
+    }
+
+
+    @Test
+    public void readComplexEmptyListProperty() throws Exception {
+        String json = "{" +
+                "\"prop\":null," +
+                "\"listProp\":null," +
+                "\"complex\":null," +
+                "\"complexList\":[]" +
+                "}";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
+            ExampleValue value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+
+            assertThat(
+                    value,
+                    is(ExampleValue.builder()
+                            .complexList(new ComplexList[0])
+                            .build())
+            );
+        }
+    }
+
+    @Test
+    public void readArrayComplexList() throws Exception {
+        String json = "[{\"sub\":\"a value\"}]";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            ComplexList[] value = (ComplexList[]) this.compiled.classLoader().get("org.generated.examplevalue.json.ComplexListReader").newInstance()
+                    .call("readArray", JsonParser.class).with(parser)
+                    .get();
+
+            assertThat(
+                    value,
+                    is(arrayContaining(new ComplexList.Builder()
+                            .sub("a value")
+                            .build()
+                    ))
+            );
+        }
+    }
+
+    @Test
+    public void readArrayEmptyComplexList() throws Exception {
+        String json = "[]";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            ComplexList[] value = (ComplexList[]) this.compiled.classLoader().get("org.generated.examplevalue.json.ComplexListReader").newInstance()
+                    .call("readArray", JsonParser.class).with(parser)
+                    .get();
+
+            assertThat(
+                    value,
+                    is(new ComplexList[0])
             );
         }
     }
