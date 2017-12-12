@@ -13,6 +13,7 @@ import org.codingmatters.value.objects.spec.TypeKind;
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by nelt on 4/6/17.
@@ -33,7 +34,10 @@ public class ValueReader {
                 .addMethod(this.readArrayWithParserMethod())
                 .addType(this.readerFunctionalInterface())
                 .addMethod(this.readValueMethod())
-                .addMethod(this.readListValueMethod());
+                .addMethod(this.readListValueMethod())
+                .addMethod(this.consumeUnexpectedProperty())
+                .addMethod(this.normalizeFieldName())
+                ;
 
         for (PropertySpec propertySpec : this.propertySpecs) {
             SimplePropertyReaderProducer propertyReaderProducer = this.propertyReaderProducer(propertySpec);
@@ -42,6 +46,79 @@ public class ValueReader {
             }
         }
 
+
+        return result.build();
+    }
+
+    private MethodSpec consumeUnexpectedProperty() {
+        MethodSpec.Builder result = MethodSpec.methodBuilder("consumeUnexpectedProperty")
+                .addModifiers(Modifier.PRIVATE)
+                .addParameter(ClassName.get(JsonParser.class), "parser")
+                .returns(TypeName.VOID)
+                .addException(ClassName.get(IOException.class))
+                ;
+        /*
+        parser.nextToken();
+        if (parser.currentToken() == JsonToken.VALUE_NULL) return;
+        if (parser.currentToken() == JsonToken.START_ARRAY) {
+          parser.nextToken();
+          while (parser.currentToken() != JsonToken.END_ARRAY) {
+            this.consumeUnexpectedProperty(parser);
+          }
+        }
+        if (parser.currentToken() == JsonToken.START_OBJECT) {
+          parser.nextToken();
+          while (parser.currentToken() != JsonToken.END_OBJECT) {
+            this.consumeUnexpectedProperty(parser);
+          }
+        }
+         */
+        result.addStatement("parser.nextToken()");
+        result.beginControlFlow("if (parser.currentToken() == $T.VALUE_NULL)", JsonToken.class)
+                .addStatement("return")
+                .endControlFlow();
+        result.beginControlFlow("if (parser.currentToken() == $T.START_ARRAY)", JsonToken.class)
+                .addStatement("parser.nextToken()")
+                .beginControlFlow("while (parser.currentToken() != $T.END_ARRAY)", JsonToken.class)
+                    .addStatement("this.consumeUnexpectedProperty(parser)")
+                .endControlFlow()
+                .endControlFlow();
+        result.beginControlFlow("if (parser.currentToken() == $T.START_OBJECT)", JsonToken.class)
+                .addStatement("parser.nextToken()")
+                .beginControlFlow("while (parser.currentToken() != $T.END_OBJECT)", JsonToken.class)
+                    .addStatement("this.consumeUnexpectedProperty(parser)")
+                .endControlFlow()
+                .endControlFlow();
+
+
+        return result.build();
+    }
+
+
+
+    private MethodSpec normalizeFieldName() {
+        MethodSpec.Builder result = MethodSpec.methodBuilder("normalizeFieldName")
+                .addModifiers(Modifier.PRIVATE)
+                .addParameter(String.class, "fieldName")
+                .returns(String.class)
+                ;
+
+        /*
+        if(fieldName == null) return null;
+        if(fieldName.trim().equals("")) return "";
+        fieldName = Arrays.stream(fieldName.split("(\\s|-)+")).map(s -> s.substring(0, 1).toUpperCase() + s.substring(1)).collect(Collectors.joining());
+        fieldName =  fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
+        return fieldName;
+         */
+        result.addStatement("if(fieldName == null) return null");
+        result.addStatement("if(fieldName.trim().equals(\"\")) return \"\"");
+        result.addStatement("fieldName = $T.stream(fieldName.split($S)).map(s -> s.substring(0, 1).toUpperCase() + s.substring(1)).collect($T.joining())",
+                Arrays.class,
+                "(\\s|-)+",
+                Collectors.class
+        );
+        result.addStatement("fieldName =  fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1)");
+        result.addStatement("return fieldName");
 
         return result.build();
     }
@@ -98,23 +175,6 @@ public class ValueReader {
     private String expectedTokenField(PropertySpec propertySpec) {
         return propertySpec.name().toUpperCase() + "_EXPECTEDTOKENS";
     }
-
-//    static private List<Job> readListValue(JsonParser parser) throws IOException {
-//        parser.nextToken();
-//        if (parser.currentToken() == JsonToken.VALUE_NULL) return null;
-//        if (parser.currentToken() == JsonToken.START_ARRAY) {
-//            LinkedList<Job> listValue = new LinkedList<>();
-//            while (parser.nextToken() != JsonToken.END_ARRAY) {
-//                if(parser.currentToken() == JsonToken.VALUE_NULL) {
-//                    listValue.add(null);
-//                } else {
-//                    listValue.add(new JobReader().read(parser));
-//                }
-//            }
-//            return listValue;
-//        }
-//        throw new IOException("failed reading Job list");
-//    }
 
     private MethodSpec readArrayWithParserMethod() {
         MethodSpec.Builder method = MethodSpec.methodBuilder("readArray")
@@ -190,11 +250,15 @@ public class ValueReader {
          */
         method.addStatement("$T builder = $T.builder()", this.types.valueBuilderType(), this.types.valueType());
         method.beginControlFlow("while (parser.nextToken() != $T.END_OBJECT)", JsonToken.class)
-                .addStatement("$T fieldName = parser.getCurrentName()", String.class)
+                .addStatement("$T fieldName = this.normalizeFieldName(parser.getCurrentName())", String.class)
                 .beginControlFlow("switch (fieldName)");
         for (PropertySpec propertySpec : this.propertySpecs) {
             this.propertyStatements(method, propertySpec);
         }
+        method.beginControlFlow("default:")
+                .addStatement("this.consumeUnexpectedProperty(parser)")
+                .endControlFlow()
+            ;
         /*
             }
         }

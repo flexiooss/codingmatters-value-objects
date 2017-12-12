@@ -204,9 +204,11 @@ public class JsonReaderGenerationTest {
 
             assertThat(
                     value,
-                    is(new ComplexList.Builder()
+                    is(ExampleValue.builder().complexList(new ComplexList.Builder()
                             .sub("a value")
-                            .build())
+                            .build()
+                            ).build()
+                    )
             );
         }
     }
@@ -582,7 +584,9 @@ public class JsonReaderGenerationTest {
                     emptyArray()
             );
         }
-    }@Test
+    }
+
+    @Test
     public void readNullArray() throws Exception {
         String json = "null";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
@@ -595,4 +599,137 @@ public class JsonReaderGenerationTest {
             );
         }
     }
+
+
+    @Test
+    public void readArrayWithUnexpectedSimpleProperty() throws Exception {
+        String json = "[{" +
+                "\"prop\":\"a value\", \"unexpected\":\"property\"" +
+                "}, {" +
+                "\"prop\":\"another value\"" +
+                "}]";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
+            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+
+            assertThat(
+                    value,
+                    arrayContaining(
+                            ExampleValue.builder().prop("a value").build(),
+                            ExampleValue.builder().prop("another value").build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void readArrayWithUnexpectedEmptyArrayProperty() throws Exception {
+        String json = "[{" +
+                "\"prop\":\"a value\", \"unexpected\":[]" +
+                "}, {" +
+                "\"prop\":\"another value\"" +
+                "}]";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
+            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+
+            assertThat(
+                    value,
+                    arrayContaining(
+                            ExampleValue.builder().prop("a value").build(),
+                            ExampleValue.builder().prop("another value").build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void readArrayWithUnexpectedArrayProperty() throws Exception {
+        String json = "[{" +
+                "\"prop\":\"a value\", \"unexpected\":[\"array\", \"property\"]" +
+                "}, {" +
+                "\"prop\":\"another value\"" +
+                "}]";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
+            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+
+            assertThat(
+                    value,
+                    arrayContaining(
+                            ExampleValue.builder().prop("a value").build(),
+                            ExampleValue.builder().prop("another value").build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void readArrayWithUnexpectedEmptyObjectProperty() throws Exception {
+        String json = "[{" +
+                "\"prop\":\"a value\", \"unexpected\":{}" +
+                "}, {" +
+                "\"prop\":\"another value\"" +
+                "}]";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
+            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+
+            assertThat(
+                    value,
+                    arrayContaining(
+                            ExampleValue.builder().prop("a value").build(),
+                            ExampleValue.builder().prop("another value").build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void readArrayWithUnexpectedObjectProperty() throws Exception {
+        String json = "[{" +
+                "\"prop\":\"a value\", \"unexpected\":{\"object\": \"property\"}" +
+                "}, {" +
+                "\"prop\":\"another value\"" +
+                "}]";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
+            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+
+            assertThat(
+                    value,
+                    arrayContaining(
+                            ExampleValue.builder().prop("a value").build(),
+                            ExampleValue.builder().prop("another value").build()
+                    )
+            );
+        }
+    }
+
+
+    @Test
+    public void readUnormalizedPropertie() throws Exception {
+        String[] jsons = new String[] {
+                "{\"StringProp\":\"str\"}",
+                "{\"string prop\":\"str\"}",
+                "{\"string-prop\":\"str\"}"
+        };
+
+        for (String json : jsons) {
+            try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+                Object reader = this.compiled.getClass("org.generated.json.SimplePropsReader").newInstance();
+                SimpleProps value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+                assertThat(
+                        json,
+                        value,
+                        is(new SimpleProps.Builder()
+                                .stringProp("str")
+
+                                .build()
+                        )
+                );
+            }
+        }
+    }
+
 }
