@@ -59,35 +59,29 @@ public class ValueReader {
                 ;
         /*
         parser.nextToken();
-        if (parser.currentToken() == JsonToken.VALUE_NULL) return;
-        if (parser.currentToken() == JsonToken.START_ARRAY) {
-          parser.nextToken();
-          while (parser.currentToken() != JsonToken.END_ARRAY) {
-            this.consumeUnexpectedProperty(parser);
-          }
-        }
-        if (parser.currentToken() == JsonToken.START_OBJECT) {
-          parser.nextToken();
-          while (parser.currentToken() != JsonToken.END_OBJECT) {
-            this.consumeUnexpectedProperty(parser);
-          }
+        if(parser.currentToken().isStructStart()) {
+          int level = 1;
+          do {
+            parser.nextToken();
+            if (parser.currentToken().isStructStart()) {
+              level++;
+            } else if (parser.currentToken().isStructEnd()) {
+              level--;
+            }
+          } while(level > 0);
         }
          */
         result.addStatement("parser.nextToken()");
-        result.beginControlFlow("if (parser.currentToken() == $T.VALUE_NULL)", JsonToken.class)
-                .addStatement("return")
-                .endControlFlow();
-        result.beginControlFlow("if (parser.currentToken() == $T.START_ARRAY)", JsonToken.class)
-                .addStatement("parser.nextToken()")
-                .beginControlFlow("while (parser.currentToken() != $T.END_ARRAY)", JsonToken.class)
-                    .addStatement("this.consumeUnexpectedProperty(parser)")
-                .endControlFlow()
-                .endControlFlow();
-        result.beginControlFlow("if (parser.currentToken() == $T.START_OBJECT)", JsonToken.class)
-                .addStatement("parser.nextToken()")
-                .beginControlFlow("while (parser.currentToken() != $T.END_OBJECT)", JsonToken.class)
-                    .addStatement("this.consumeUnexpectedProperty(parser)")
-                .endControlFlow()
+        result.beginControlFlow("if(parser.currentToken().isStructStart())")
+                .addStatement("int level = 1")
+                    .beginControlFlow("do")
+                    .addStatement("parser.nextToken()")
+                        .beginControlFlow("if (parser.currentToken().isStructStart())")
+                            .addStatement("level++")
+                        .nextControlFlow("if (parser.currentToken().isStructEnd())")
+                            .addStatement("level--")
+                        .endControlFlow()
+                    .endControlFlow("while(level > 0)")
                 .endControlFlow();
 
 
@@ -102,14 +96,6 @@ public class ValueReader {
                 .addParameter(String.class, "fieldName")
                 .returns(String.class)
                 ;
-
-        /*
-        if(fieldName == null) return null;
-        if(fieldName.trim().equals("")) return "";
-        fieldName = Arrays.stream(fieldName.split("(\\s|-)+")).map(s -> s.substring(0, 1).toUpperCase() + s.substring(1)).collect(Collectors.joining());
-        fieldName =  fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
-        return fieldName;
-         */
         result.addStatement("if(fieldName == null) return null");
         result.addStatement("if(fieldName.trim().equals(\"\")) return \"\"");
         result.addStatement("fieldName = $T.stream(fieldName.split($S)).map(s -> s.substring(0, 1).toUpperCase() + s.substring(1)).collect($T.joining())",

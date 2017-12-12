@@ -706,9 +706,30 @@ public class JsonReaderGenerationTest {
         }
     }
 
+    @Test
+    public void readArrayWithUnexpectedDeepObjectProperty() throws Exception {
+        String json = "[{" +
+                "\"prop\":\"a value\", \"unexpected\":{\"object\": \"property\", \"nested\": {\"deep\": {\"object\": \"value\"}}}" +
+                "}, {" +
+                "\"prop\":\"another value\"" +
+                "}]";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
+            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+
+            assertThat(
+                    value,
+                    arrayContaining(
+                            ExampleValue.builder().prop("a value").build(),
+                            ExampleValue.builder().prop("another value").build()
+                    )
+            );
+        }
+    }
+
 
     @Test
-    public void readUnormalizedPropertie() throws Exception {
+    public void readUnormalizedProperties() throws Exception {
         String[] jsons = new String[] {
                 "{\"StringProp\":\"str\"}",
                 "{\"string prop\":\"str\"}",
