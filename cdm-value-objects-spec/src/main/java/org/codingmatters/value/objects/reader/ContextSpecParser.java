@@ -3,10 +3,7 @@ package org.codingmatters.value.objects.reader;
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
 import org.codingmatters.value.objects.spec.*;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
@@ -22,6 +19,7 @@ public class ContextSpecParser {
     private static final Pattern FULLY_QUALIFIED_CLASS_NAME_PATTERN = Pattern.compile(JAVA_IDENTIFIER_PATTERN.pattern() + "(\\." + JAVA_IDENTIFIER_PATTERN.pattern() + ")+");
 
     public static final String LIST_MARK = "$list";
+    public static final String HINTS_MARK = "$hints";
     public static final String SET_MARK = "$set";
     public static final String VALUE_OBJECT_MARK = "$value-object";
     public static final String TYPE_MARK = "$type";
@@ -94,9 +92,21 @@ public class ContextSpecParser {
 
             typeSpec.cardinality(cardinality);
 
+            HashSet<String> hints = new HashSet<>();
+            if(value instanceof Map && ((Map) value).containsKey(HINTS_MARK)) {
+                if(((Map) value).get(HINTS_MARK) instanceof Collection) {
+                    for (Object hint : ((Collection) ((Map) value).get(HINTS_MARK))) {
+                        hints.add(String.valueOf(hint));
+                    }
+                } else {
+                    hints.add(String.valueOf(((Map) value).get(HINTS_MARK)));
+                }
+            }
+
             return property()
                     .name(name)
                     .type(typeSpec)
+                    .hints(hints)
                     ;
         } finally {
             this.context.pop();

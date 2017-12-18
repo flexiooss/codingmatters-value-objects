@@ -16,7 +16,7 @@ import static org.codingmatters.value.objects.spec.TypeKind.IN_SPEC_VALUE_OBJECT
  * Created by nelt on 9/28/16.
  */
 public class ValueConfiguration {
-
+    private final ValueSpec valueSpec;
     private final ClassName valueType;
     private final ClassName valueImplType;
     private final ClassName builderType;
@@ -27,6 +27,7 @@ public class ValueConfiguration {
 
     public ValueConfiguration(String rootPackage, String packageName, ValueSpec valueSpec) {
         this.rootPackage = rootPackage;
+        this.valueSpec = valueSpec;
         String interfaceName = capitalizedFirst(valueSpec.name());
         this.valueType = ClassName.get(packageName, interfaceName);
         this.valueImplType = ClassName.get(packageName, interfaceName + "Impl");
@@ -64,6 +65,16 @@ public class ValueConfiguration {
             return this.collectionConfiguration.valueSetOfType(singleType);
         } else {
             return singleType;
+        }
+    }
+
+    public TypeName collectionRawType(PropertySpec propertySpec) {
+        if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
+            return this.collectionConfiguration.rawValueList();
+        } else if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
+            return this.collectionConfiguration.rawValueSet();
+        } else {
+            return null;
         }
     }
 
@@ -135,5 +146,9 @@ public class ValueConfiguration {
 
     public String rootPackage() {
         return rootPackage;
+    }
+
+    public ValueSpec valueSpec() {
+        return valueSpec;
     }
 }

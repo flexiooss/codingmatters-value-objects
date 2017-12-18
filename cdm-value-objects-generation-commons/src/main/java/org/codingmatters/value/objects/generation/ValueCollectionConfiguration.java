@@ -68,4 +68,12 @@ public class ValueCollectionConfiguration {
     public ClassName valueSetBuilderType() {
         return valueSetBuilderType;
     }
+
+    public TypeName rawValueList() {
+        return this.valueListType;
+    }
+
+    public TypeName rawValueSet() {
+        return this.valueSetType;
+    }
 }
