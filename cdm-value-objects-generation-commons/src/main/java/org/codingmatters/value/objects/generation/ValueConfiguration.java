@@ -119,8 +119,11 @@ public class ValueConfiguration {
         return collectionConfiguration;
     }
 
-    static private String capitalizedFirst(String str) {
+    static public String capitalizedFirst(String str) {
         return str.substring(0,1).toUpperCase() + str.substring(1);
+    }
+    static public String uncapitalizedFirst(String str) {
+        return str.substring(0,1).toLowerCase() + str.substring(1);
     }
 
     public String enumTypeName(String name) {
