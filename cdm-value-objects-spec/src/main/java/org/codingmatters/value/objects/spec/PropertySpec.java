@@ -60,7 +60,7 @@ public class PropertySpec {
 
     public String[] hints(String prefix) {
         if(! prefix.endsWith(":")) {
-            prefix = prefix += ":";
+            prefix = prefix + ":";
         }
         LinkedList<String> result = new LinkedList<>();
         for (String hint : this.hints) {
