@@ -13,6 +13,8 @@ import org.codingmatters.value.objects.spec.TypeKind;
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
 
 /**
  * Created by nelt on 3/30/17.
@@ -51,7 +53,7 @@ public class ValueWriter {
     }
 
     private void writePropertyStatements(MethodSpec.Builder method, PropertySpec propertySpec) {
-        method.addStatement("generator.writeFieldName($S)", propertySpec.name());
+        method.addStatement("generator.writeFieldName($S)", this.fieldName(propertySpec));
 
         method.beginControlFlow("if(value.$L() != null)", propertySpec.name());
         if(propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE) {
@@ -67,6 +69,15 @@ public class ValueWriter {
         method.nextControlFlow("else")
                 .addStatement("generator.writeNull()")
                 .endControlFlow();
+    }
+
+    private String fieldName(PropertySpec propertySpec) {
+        Optional<Matcher> hint = propertySpec.matchingHint("property:raw\\(([^)]*)\\)");
+        if(hint.isPresent()) {
+            return hint.get().group(1);
+        } else {
+            return propertySpec.name();
+        }
     }
 
     private void writeSimpleProperty(MethodSpec.Builder method, PropertySpec propertySpec) {

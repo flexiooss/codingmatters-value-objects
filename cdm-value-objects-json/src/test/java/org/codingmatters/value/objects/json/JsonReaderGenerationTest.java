@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.tests.compile.FileHelper;
+import org.codingmatters.tests.compile.helpers.ClassLoaderHelper;
+import org.codingmatters.tests.compile.helpers.helpers.ObjectHelper;
 import org.codingmatters.tests.reflect.ReflectMatchers;
 import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
@@ -20,8 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.time.*;
 import java.util.List;
@@ -54,6 +54,7 @@ public class JsonReaderGenerationTest {
     }
 
     private CompiledCode compiled;
+    private ClassLoaderHelper classes;
 
     @Before
     public void setUp() throws Exception {Spec refSpec = loadSpec("ref.yaml");
@@ -68,13 +69,15 @@ public class JsonReaderGenerationTest {
                 .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))
                 .source(this.dir.getRoot())
                 .compile();
+        this.classes = this.compiled.classLoader();
     }
-
 
     @Test
     public void readerSignature() throws Exception {
+        this.fileHelper.printJavaContent("", this.dir.getRoot());
+        this.fileHelper.printFile(this.dir.getRoot(), "ExampleValueReader.java");
         assertThat(
-                this.compiled.getClass("org.generated.json.ExampleValueReader$Reader"),
+                this.classes.get("org.generated.json.ExampleValueReader$Reader").get(),
                 is(aPrivate().static_().interface_()
                         .withParameter(variableType().named("T"))
                         .with(aPublic().method().named("read")
@@ -85,7 +88,7 @@ public class JsonReaderGenerationTest {
                 )
         );
         assertThat(
-                this.compiled.getClass("org.generated.json.ExampleValueReader"),
+                this.classes.get("org.generated.json.ExampleValueReader").get(),
                 is(aClass()
                         .with(aPublic().method().named("read")
                                 .withParameters(JsonParser.class)
@@ -131,11 +134,11 @@ public class JsonReaderGenerationTest {
                 "\"complexList\":null" +
                 "}";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-            ExampleValue value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.ExampleValueReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.get(),
                     is(ExampleValue.builder()
                             .prop("a value")
                             .build())
@@ -153,11 +156,11 @@ public class JsonReaderGenerationTest {
                 "\"complexList\":null" +
                 "}";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-            ExampleValue value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.ExampleValueReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.get(),
                     is(ExampleValue.builder()
                             .listProp("a", "b", "c")
                             .build())
@@ -175,11 +178,11 @@ public class JsonReaderGenerationTest {
                 "\"complexList\":null" +
                 "}";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-            ExampleValue value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.ExampleValueReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.get(),
                     is(ExampleValue.builder()
                             .complex(new Complex.Builder()
                                     .sub("a value")
@@ -199,11 +202,11 @@ public class JsonReaderGenerationTest {
                 "\"complexList\":[{\"sub\":\"a value\"}]" +
                 "}";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-            ExampleValue value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.ExampleValueReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.get(),
                     is(ExampleValue.builder().complexList(new ComplexList.Builder()
                             .sub("a value")
                             .build()
@@ -223,11 +226,11 @@ public class JsonReaderGenerationTest {
                 "\"complexList\":[]" +
                 "}";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-            ExampleValue value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.ExampleValueReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.get(),
                     is(ExampleValue.builder()
                             .complexList(new ComplexList[0])
                             .build())
@@ -239,7 +242,7 @@ public class JsonReaderGenerationTest {
     public void readArrayComplexList() throws Exception {
         String json = "[{\"sub\":\"a value\"}]";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            ComplexList[] value = (ComplexList[]) this.compiled.classLoader().get("org.generated.examplevalue.json.ComplexListReader").newInstance()
+            ComplexList[] value = (ComplexList[]) this.classes.get("org.generated.examplevalue.json.ComplexListReader").newInstance()
                     .call("readArray", JsonParser.class).with(parser)
                     .get();
 
@@ -257,7 +260,7 @@ public class JsonReaderGenerationTest {
     public void readArrayEmptyComplexList() throws Exception {
         String json = "[]";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            ComplexList[] value = (ComplexList[]) this.compiled.classLoader().get("org.generated.examplevalue.json.ComplexListReader").newInstance()
+            ComplexList[] value = (ComplexList[]) this.classes.get("org.generated.examplevalue.json.ComplexListReader").newInstance()
                     .call("readArray", JsonParser.class).with(parser)
                     .get();
 
@@ -286,11 +289,11 @@ public class JsonReaderGenerationTest {
                 "}";
 
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.SimplePropsReader").newInstance();
-            SimpleProps value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.SimplePropsReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.get(),
                     is(new SimpleProps.Builder()
                             .stringProp("str")
                             .integerProp(12)
@@ -314,11 +317,11 @@ public class JsonReaderGenerationTest {
                 "\"booleanProp\":true" +
                 "}";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.SimplePropsReader").newInstance();
-            SimpleProps value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.SimplePropsReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.get(),
                     is(new SimpleProps.Builder()
                             .booleanProp(true)
                             .build()
@@ -333,11 +336,11 @@ public class JsonReaderGenerationTest {
                 "\"booleanProp\":false" +
                 "}";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.SimplePropsReader").newInstance();
-            SimpleProps value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.SimplePropsReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.get(),
                     is(new SimpleProps.Builder()
                             .booleanProp(false)
                             .build()
@@ -353,11 +356,11 @@ public class JsonReaderGenerationTest {
                 "\"multiple\":[\"MONDAY\",\"TUESDAY\"]" +
                 "}";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.EnumPropertiesReader").newInstance();
-            EnumProperties value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.EnumPropertiesReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.get(),
                     is(new EnumProperties.Builder()
                             .single(DayOfWeek.MONDAY)
                             .multiple(DayOfWeek.MONDAY, DayOfWeek.TUESDAY)
@@ -375,11 +378,11 @@ public class JsonReaderGenerationTest {
                 "\"multiple\":[\"A\",\"B\"]" +
                 "}";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.InSpecEnumPropertiesReader").newInstance();
-            InSpecEnumProperties value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.InSpecEnumPropertiesReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.get(),
                     is(new InSpecEnumProperties.Builder()
                             .single(InSpecEnumProperties.Single.A)
                             .multiple(InSpecEnumProperties.Multiple.A, InSpecEnumProperties.Multiple.B)
@@ -387,24 +390,6 @@ public class JsonReaderGenerationTest {
                     )
             );
         }
-    }
-
-    private void printClassFile(String className) throws IOException {
-        File java = new File(this.dir.getRoot(), className.replaceAll("\\.", "/") + ".java");
-        try(FileReader reader = new FileReader(java)) {
-            StringBuilder content = new StringBuilder();
-            char[] buffer = new char[1024];
-            for(int read = reader.read(buffer) ; read != -1 ; read = reader.read(buffer)) {
-                content.append(buffer, 0, read);
-            }
-            int lineNo = 0;
-            for (String line : content.toString().split("\n")) {
-                lineNo ++;
-                System.out.printf("%04d - %s%n", lineNo, line);
-            }
-
-        }
-        System.out.printf("-----------------------------------------------\n");
     }
 
     @Test
@@ -422,11 +407,11 @@ public class JsonReaderGenerationTest {
                 "\"tzDateTimeProp\":[\"2011-12-03T10:15:30+01:00\"]" +
                 "}";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.ArraySimplePropsReader").newInstance();
-            ArraySimpleProps value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.ArraySimplePropsReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.get(),
                     is(
                             new ArraySimpleProps.Builder()
                                     .stringProp("str")
@@ -447,8 +432,6 @@ public class JsonReaderGenerationTest {
 
     @Test
     public void readSimpleTypeArraysWithNullElements() throws Exception {
-        this.printClassFile("org.generated.json.ArraySimplePropsReader");
-
         String json = "{" +
                 "\"stringProp\":[null]," +
                 "\"integerProp\":[null]," +
@@ -462,11 +445,11 @@ public class JsonReaderGenerationTest {
                 "\"tzDateTimeProp\":[null]" +
                 "}";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.ArraySimplePropsReader").newInstance();
-            ArraySimpleProps value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.ArraySimplePropsReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.get(),
                     is(
                             new ArraySimpleProps.Builder()
                                     .stringProp((String) null)
@@ -492,10 +475,10 @@ public class JsonReaderGenerationTest {
                 "\"refs\":[{\"prop\":\"value\"}]" +
                 "}";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.RefValueReader").newInstance();
-            RefValue value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.RefValueReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
             assertThat(
-                    value,
+                    value.get(),
                     is(
                             new RefValue.Builder()
                                     .ref(new Referenced.Builder()
@@ -517,10 +500,10 @@ public class JsonReaderGenerationTest {
                 "\"refs\":[null]" +
                 "}";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.RefValueReader").newInstance();
-            RefValue value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.RefValueReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
             assertThat(
-                    value,
+                    value.get(),
                     is(
                             new RefValue.Builder()
                                     .ref((Referenced) null)
@@ -535,11 +518,11 @@ public class JsonReaderGenerationTest {
     public void readExternalReferenceValue() throws Exception {
         String json = "{\"prop\":{\"prop\":\"val\"}}";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.ValueObjectPropsReader").newInstance();
-            ValueObjectProps value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.ValueObjectPropsReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.get(),
                     is(
                             ValueObjectProps.builder()
                                     .prop(ExtReferenced.builder()
@@ -559,11 +542,11 @@ public class JsonReaderGenerationTest {
                 "\"prop\":\"another value\"" +
                 "}]";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.ExampleValueReader").newInstance();
+            ObjectHelper value = reader.call("readArray", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.asArray().get(),
                     arrayContaining(
                             ExampleValue.builder().prop("a value").build(),
                             ExampleValue.builder().prop("another value").build()
@@ -576,11 +559,11 @@ public class JsonReaderGenerationTest {
     public void readEmptyArray() throws Exception {
         String json = "[]";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.ExampleValueReader").newInstance();
+            ObjectHelper value = reader.call("readArray", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.asArray().get(),
                     emptyArray()
             );
         }
@@ -590,11 +573,11 @@ public class JsonReaderGenerationTest {
     public void readNullArray() throws Exception {
         String json = "null";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.ExampleValueReader").newInstance();
+            ObjectHelper value = reader.call("readArray", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.get(),
                     is(nullValue())
             );
         }
@@ -603,17 +586,18 @@ public class JsonReaderGenerationTest {
 
     @Test
     public void readArrayWithUnexpectedSimpleProperty() throws Exception {
+        this.fileHelper.printFile(this.dir.getRoot(), "ExampleValueReader.java");
         String json = "[{" +
                 "\"prop\":\"a value\", \"unexpected\":\"property\"" +
                 "}, {" +
                 "\"prop\":\"another value\"" +
                 "}]";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.ExampleValueReader").newInstance();
+            ObjectHelper value = reader.call("readArray", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.asArray().get(),
                     arrayContaining(
                             ExampleValue.builder().prop("a value").build(),
                             ExampleValue.builder().prop("another value").build()
@@ -630,11 +614,11 @@ public class JsonReaderGenerationTest {
                 "\"prop\":\"another value\"" +
                 "}]";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.ExampleValueReader").newInstance();
+            ObjectHelper value = reader.call("readArray", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.asArray().get(),
                     arrayContaining(
                             ExampleValue.builder().prop("a value").build(),
                             ExampleValue.builder().prop("another value").build()
@@ -651,11 +635,11 @@ public class JsonReaderGenerationTest {
                 "\"prop\":\"another value\"" +
                 "}]";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.ExampleValueReader").newInstance();
+            ObjectHelper value = reader.call("readArray", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.asArray().get(),
                     arrayContaining(
                             ExampleValue.builder().prop("a value").build(),
                             ExampleValue.builder().prop("another value").build()
@@ -672,11 +656,11 @@ public class JsonReaderGenerationTest {
                 "\"prop\":\"another value\"" +
                 "}]";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.ExampleValueReader").newInstance();
+            ObjectHelper value = reader.call("readArray", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.asArray().get(),
                     arrayContaining(
                             ExampleValue.builder().prop("a value").build(),
                             ExampleValue.builder().prop("another value").build()
@@ -693,11 +677,11 @@ public class JsonReaderGenerationTest {
                 "\"prop\":\"another value\"" +
                 "}]";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.ExampleValueReader").newInstance();
+            ObjectHelper value = reader.call("readArray", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.asArray().get(),
                     arrayContaining(
                             ExampleValue.builder().prop("a value").build(),
                             ExampleValue.builder().prop("another value").build()
@@ -714,11 +698,11 @@ public class JsonReaderGenerationTest {
                 "\"prop\":\"another value\"" +
                 "}]";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-            Object reader = this.compiled.getClass("org.generated.json.ExampleValueReader").newInstance();
-            ExampleValue [] value = this.compiled.on(reader).invoke("readArray", JsonParser.class).with(parser);
+            ObjectHelper reader = this.classes.get("org.generated.json.ExampleValueReader").newInstance();
+            ObjectHelper value = reader.call("readArray", JsonParser.class).with(parser);
 
             assertThat(
-                    value,
+                    value.asArray().get(),
                     arrayContaining(
                             ExampleValue.builder().prop("a value").build(),
                             ExampleValue.builder().prop("another value").build()
@@ -738,11 +722,11 @@ public class JsonReaderGenerationTest {
 
         for (String json : jsons) {
             try(JsonParser parser = this.factory.createParser(json.getBytes())) {
-                Object reader = this.compiled.getClass("org.generated.json.SimplePropsReader").newInstance();
-                SimpleProps value = this.compiled.on(reader).invoke("read", JsonParser.class).with(parser);
+                ObjectHelper reader = this.classes.get("org.generated.json.SimplePropsReader").newInstance();
+                ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
                 assertThat(
                         json,
-                        value,
+                        value.get(),
                         is(new SimpleProps.Builder()
                                 .stringProp("str")
 
@@ -750,6 +734,24 @@ public class JsonReaderGenerationTest {
                         )
                 );
             }
+        }
+    }
+
+    @Test
+    public void rawPropertyNameHint() throws Exception {
+        String json = "{\"Raw Property Name\":\"value\"}";
+
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            ObjectHelper reader = this.classes.get("org.generated.json.HintsReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
+            assertThat(
+                    json,
+                    value.get(),
+                    is(Hints.builder()
+                            .propName("value")
+                            .build()
+                    )
+            );
         }
     }
 

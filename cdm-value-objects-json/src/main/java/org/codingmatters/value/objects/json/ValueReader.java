@@ -13,6 +13,7 @@ import org.codingmatters.value.objects.spec.TypeKind;
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 /**
@@ -36,8 +37,11 @@ public class ValueReader {
                 .addMethod(this.readValueMethod())
                 .addMethod(this.readListValueMethod())
                 .addMethod(this.consumeUnexpectedProperty())
-                .addMethod(this.normalizeFieldName())
                 ;
+
+        if(! this.propertySpecs.isEmpty()) {
+            result.addType(this.tokensEnum());
+        }
 
         for (PropertySpec propertySpec : this.propertySpecs) {
             SimplePropertyReaderProducer propertyReaderProducer = this.propertyReaderProducer(propertySpec);
@@ -49,6 +53,88 @@ public class ValueReader {
 
         return result.build();
     }
+
+    private TypeSpec tokensEnum() {
+        TypeSpec.Builder result = TypeSpec.enumBuilder("Token");
+        result
+                .addField(FieldSpec.builder(String.class, "name", Modifier.PRIVATE, Modifier.FINAL)
+                        .build()
+                )
+                .addField(FieldSpec.builder(String.class, "rawName", Modifier.PRIVATE, Modifier.FINAL)
+                        .build()
+                )
+                .addMethod(MethodSpec.constructorBuilder()
+                        .addParameter(String.class, "name")
+                        .addParameter(String.class, "rawName")
+                        .addStatement("this.name = name")
+                        .addStatement("this.rawName = rawName")
+                        .build())
+        ;
+        result.addMethod(this.enumNormalizeFieldName());
+
+        for (PropertySpec propertySpec : this.propertySpecs) {
+            result.addEnumConstant(
+                    this.enumConstant(propertySpec),
+                    TypeSpec.anonymousClassBuilder("$S, $S",
+                            propertySpec.name(),
+                            this.rawName(propertySpec)
+                    ).build()
+            );
+        }
+
+        result.addMethod(MethodSpec.methodBuilder("from")
+                .addModifiers(Modifier.STATIC, Modifier.PUBLIC)
+                .addParameter(String.class, "str")
+                .returns(ClassName.bestGuess("Token"))
+                .beginControlFlow("for(Token token : Token.values())")
+                    .beginControlFlow("if(token.name.equals(str))")
+                        .addStatement("return token")
+                    .nextControlFlow("else if(token.rawName.equals(str))")
+                        .addStatement("return token")
+                    .nextControlFlow("else if(token.name.equals(normalizeFieldName(str)))")
+                        .addStatement("return token")
+                    .nextControlFlow("else if(token.rawName.equals(normalizeFieldName(str)))")
+                        .addStatement("return token")
+                    .endControlFlow()
+                .endControlFlow()
+                .addStatement("return null")
+                .build());
+
+        return result.build();
+    }
+
+    private String rawName(PropertySpec propertySpec) {
+        Optional<Matcher> hint = propertySpec.matchingHint("property:raw\\(([^)]*)\\)");
+        if(hint.isPresent()) {
+            return hint.get().group(1);
+        } else {
+            return propertySpec.name();
+        }
+    }
+
+    private String enumConstant(PropertySpec propertySpec) {
+        return propertySpec.name().toUpperCase();
+    }
+
+    private MethodSpec enumNormalizeFieldName() {
+        MethodSpec.Builder result = MethodSpec.methodBuilder("normalizeFieldName")
+                .addModifiers(Modifier.STATIC, Modifier.PRIVATE)
+                .addParameter(String.class, "fieldName")
+                .returns(String.class)
+                ;
+        result.addStatement("if(fieldName == null) return null");
+        result.addStatement("if(fieldName.trim().equals(\"\")) return \"\"");
+        result.addStatement("fieldName = $T.stream(fieldName.split($S)).map(s -> s.substring(0, 1).toUpperCase() + s.substring(1)).collect($T.joining())",
+                Arrays.class,
+                "(\\s|-)+",
+                Collectors.class
+        );
+        result.addStatement("fieldName =  fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1)");
+        result.addStatement("return fieldName");
+
+        return result.build();
+    }
+
 
     private MethodSpec consumeUnexpectedProperty() {
         MethodSpec.Builder result = MethodSpec.methodBuilder("consumeUnexpectedProperty")
@@ -84,27 +170,6 @@ public class ValueReader {
                     .endControlFlow("while(level > 0)")
                 .endControlFlow();
 
-
-        return result.build();
-    }
-
-
-
-    private MethodSpec normalizeFieldName() {
-        MethodSpec.Builder result = MethodSpec.methodBuilder("normalizeFieldName")
-                .addModifiers(Modifier.PRIVATE)
-                .addParameter(String.class, "fieldName")
-                .returns(String.class)
-                ;
-        result.addStatement("if(fieldName == null) return null");
-        result.addStatement("if(fieldName.trim().equals(\"\")) return \"\"");
-        result.addStatement("fieldName = $T.stream(fieldName.split($S)).map(s -> s.substring(0, 1).toUpperCase() + s.substring(1)).collect($T.joining())",
-                Arrays.class,
-                "(\\s|-)+",
-                Collectors.class
-        );
-        result.addStatement("fieldName =  fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1)");
-        result.addStatement("return fieldName");
 
         return result.build();
     }
@@ -228,16 +293,11 @@ public class ValueReader {
                         "        )\n" +
                         ")", this.types.valueType(), JsonToken.class)
                 .endControlFlow();
-        /*
-        ExampleValue.Builder builder = ExampleValue.builder();
-        while (parser.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = parser.getCurrentName();
-            switch (fieldName) {
-         */
         method.addStatement("$T builder = $T.builder()", this.types.valueBuilderType(), this.types.valueType());
         method.beginControlFlow("while (parser.nextToken() != $T.END_OBJECT)", JsonToken.class)
-                .addStatement("$T fieldName = this.normalizeFieldName(parser.getCurrentName())", String.class)
-                .beginControlFlow("switch (fieldName)");
+                .addStatement("Token token = Token.from(parser.getCurrentName())")
+                .beginControlFlow("if(token != null)")
+                    .beginControlFlow("switch (token)");
         for (PropertySpec propertySpec : this.propertySpecs) {
             this.propertyStatements(method, propertySpec);
         }
@@ -245,16 +305,12 @@ public class ValueReader {
                 .addStatement("this.consumeUnexpectedProperty(parser)")
                 .endControlFlow()
             ;
-        /*
-            }
-        }
-         */
         method.endControlFlow()
+                .nextControlFlow("else") // token == null
+                    .addStatement("this.consumeUnexpectedProperty(parser)")
+                .endControlFlow()
                 .endControlFlow();
 
-        /*
-        return builder.build();
-         */
         method.addStatement("return builder.build()");
 
         return method.build();
@@ -287,7 +343,7 @@ public class ValueReader {
                         builder.complexList(this.readListValue(parser, jsonParser -> reader.read(jsonParser), "complexList"));
                         break;
                  */
-                method.beginControlFlow("case $S:", propertySpec.name())
+                method.beginControlFlow("case $L:", this.enumConstant(propertySpec))
                         .addStatement("$T reader = new $T()", propertyReader, propertyReader)
                         .addStatement("builder.$L(this.readListValue(parser, jsonParser -> reader.read(jsonParser), $S))",
                                 propertySpec.name(), propertySpec.name())
@@ -310,7 +366,7 @@ public class ValueReader {
                     break;
              */
         if(! propertySpec.typeSpec().cardinality().isCollection()) {
-            method.beginControlFlow("case $S:", propertySpec.name())
+            method.beginControlFlow("case $L:", this.enumConstant(propertySpec))
                     .addStatement("parser.nextToken()")
                     .addStatement("builder.$L(new $T().read(parser))", propertySpec.name(), propertyReader)
                     .addStatement("break")
@@ -323,7 +379,7 @@ public class ValueReader {
         case "prop":
                 Set<JsonToken> expectedTokens = PROP_EXPECTEDTOKENS;
          */
-        method.beginControlFlow("case $S:", propertySpec.name())
+        method.beginControlFlow("case $L:", this.enumConstant(propertySpec))
                 .addStatement("$T<$T> expectedTokens = $L", Set.class, JsonToken.class, this.expectedTokenField(propertySpec));
 
         propertyReaderProducer.addSingleStatement(method, propertySpec);
@@ -340,7 +396,7 @@ public class ValueReader {
         /*
         case "listProp":
          */
-        method.beginControlFlow("case $S:", propertySpec.name());
+        method.beginControlFlow("case $L:", this.enumConstant(propertySpec));
         propertyReaderProducer.addMultipleStatement(method, propertySpec);
         /*
             break;
@@ -406,7 +462,6 @@ public class ValueReader {
     }
 
     private MethodSpec readListValueMethod() {
-        //private <T> List<T> readListValue(JsonParser parser, Reader<T> reader, String propertyName) throws IOException
         return MethodSpec.methodBuilder("readListValue")
                 .addModifiers(Modifier.PRIVATE)
                 .addTypeVariable(TypeVariableName.get("T"))

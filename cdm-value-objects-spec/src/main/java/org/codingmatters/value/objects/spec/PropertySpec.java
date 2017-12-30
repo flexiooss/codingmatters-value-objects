@@ -1,6 +1,8 @@
 package org.codingmatters.value.objects.spec;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by nelt on 9/3/16.
@@ -69,6 +71,17 @@ public class PropertySpec {
             }
         }
         return result.toArray(new String[result.size()]);
+    }
+
+    public Optional<Matcher> matchingHint(String pattern) {
+        Pattern p = Pattern.compile(pattern);
+        for (String hint : this.hints) {
+            Matcher matcher = p.matcher(hint);
+            if(matcher.matches()) {
+                return Optional.of(matcher);
+            }
+        }
+        return Optional.ofNullable(null);
     }
 
     @Override

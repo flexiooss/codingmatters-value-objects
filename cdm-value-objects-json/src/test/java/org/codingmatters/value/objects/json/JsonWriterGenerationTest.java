@@ -3,6 +3,8 @@ package org.codingmatters.value.objects.json;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import org.codingmatters.tests.compile.CompiledCode;
+import org.codingmatters.tests.compile.helpers.ClassLoaderHelper;
+import org.codingmatters.tests.compile.helpers.helpers.ObjectHelper;
 import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
@@ -47,6 +49,7 @@ public class JsonWriterGenerationTest {
     }
 
     private CompiledCode compiled;
+    private ClassLoaderHelper classes;
 
     @Before
     public void setUp() throws Exception {
@@ -63,6 +66,7 @@ public class JsonWriterGenerationTest {
                 .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))
                 .source(this.dir.getRoot())
                 .compile();
+        this.classes = this.compiled.classLoader();
     }
 
     @Test
@@ -415,4 +419,22 @@ public class JsonWriterGenerationTest {
     }
 
 
+    @Test
+    public void rawPropertyNameHint() throws Exception {
+        Hints value = Hints.builder().propName("value").build();
+        ObjectHelper writer = this.classes.get("org.generated.json.HintsWriter").newInstance();
+        try(OutputStream out = new ByteArrayOutputStream()) {
+            JsonGenerator generator = this.factory.createGenerator(out);
+            writer.call("write", JsonGenerator.class, Hints.class).with(generator, value);
+            generator.close();
+
+            assertThat(
+                    out.toString(),
+                    is("{" +
+                            "\"Raw Property Name\":\"value\"" +
+                            "}"
+                    )
+            );
+        }
+    }
 }

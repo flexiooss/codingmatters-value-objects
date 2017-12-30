@@ -69,3 +69,10 @@ inSpecEnumProperties:
 valueObjectProps:
   prop:
     $value-object: org.generated.ref.ExtReferenced
+
+
+hints:
+  propName:
+    $type: string
+    $hints:
+      - property:raw(Raw Property Name)
