@@ -76,3 +76,5 @@ hints:
     $type: string
     $hints:
       - property:raw(Raw Property Name)
+
+noprop:

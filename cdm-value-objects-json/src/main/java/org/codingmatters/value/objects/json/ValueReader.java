@@ -37,11 +37,8 @@ public class ValueReader {
                 .addMethod(this.readValueMethod())
                 .addMethod(this.readListValueMethod())
                 .addMethod(this.consumeUnexpectedProperty())
+                .addType(this.tokensEnum())
                 ;
-
-        if(! this.propertySpecs.isEmpty()) {
-            result.addType(this.tokensEnum());
-        }
 
         for (PropertySpec propertySpec : this.propertySpecs) {
             SimplePropertyReaderProducer propertyReaderProducer = this.propertyReaderProducer(propertySpec);
@@ -69,6 +66,13 @@ public class ValueReader {
                         .addStatement("this.name = name")
                         .addStatement("this.rawName = rawName")
                         .build())
+                .addEnumConstant(
+                        "__UNKNOWN__",
+                        TypeSpec.anonymousClassBuilder("$S, $S",
+                                "__UNKNOWN__",
+                                "__UNKNOWN__"
+                        ).build()
+                )
         ;
         result.addMethod(this.enumNormalizeFieldName());
 
@@ -97,7 +101,7 @@ public class ValueReader {
                         .addStatement("return token")
                     .endControlFlow()
                 .endControlFlow()
-                .addStatement("return null")
+                .addStatement("return __UNKNOWN__")
                 .build());
 
         return result.build();
