@@ -118,6 +118,16 @@ public class ValueConfiguration {
         }
     }
 
+    public TypeName collectionRawType(PropertySpec propertySpec) {
+        if (propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
+            return this.collectionConfiguration.rawValueList();
+        } else if (propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
+            return this.collectionConfiguration.rawValueSet();
+        } else {
+            return null;
+        }
+    }
+
 
     public String rootPackage() {
         return rootPackage;
