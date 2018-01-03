@@ -5,7 +5,9 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.value.objects.spec.PropertySpec;
+import org.codingmatters.value.objects.spec.TypeKind;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -97,13 +99,6 @@ public class ValueImplementation {
     }
 
     private MethodSpec createEquals() {
-        /*
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PropertySpec that = (PropertySpec) o;
-        return Objects.equals(name, that.name) &&
-                Objects.equals(type, that.type);
-         */
 
         String statement;
         List<Object> bindings= new LinkedList<>();
@@ -121,7 +116,11 @@ public class ValueImplementation {
                 started = true;
 
                 statement += "$T.equals(this." + propertySpec.name() + ", that." + propertySpec.name() + ")";
-                bindings.add(ClassName.get(Objects.class));
+                if(this.isByteArrayType(propertySpec)) {
+                    bindings.add(ClassName.get(Arrays.class));
+                } else {
+                    bindings.add(ClassName.get(Objects.class));
+                }
             }
 
         } else {
@@ -139,28 +138,32 @@ public class ValueImplementation {
                 .build();
     }
 
+    private boolean isByteArrayType(PropertySpec propertySpec) {
+        return propertySpec.typeSpec().typeKind().equals(TypeKind.JAVA_TYPE) && propertySpec.typeSpec().typeRef().equals(byte[].class.getName());
+    }
+
     private MethodSpec createHashCode() {
 
         String statement = propertySpecs.stream()
                 .map(propertySpec -> "this." + propertySpec.name())
                 .collect(Collectors.joining(
                         ", ",
-                        "return $T.hash(",
-                        ")"
+                        "return $T.deepHashCode(new $T[]{",
+                        "})"
                 ));
 
         return MethodSpec.methodBuilder("hashCode")
                 .addModifiers(PUBLIC)
                 .returns(int.class)
                 .addAnnotation(ClassName.get(Override.class))
-                .addStatement(statement, ClassName.get(Objects.class))
+                .addStatement(statement, Arrays.class, Object.class)
                 .build();
     }
 
     private MethodSpec createToString() {
         String statement =
                 propertySpecs.stream()
-                        .map(propertySpec -> "\"" + propertySpec.name() + "=\" + this." + propertySpec.name() + " +\n")
+                        .map(propertySpec -> "\"" + propertySpec.name() + "=\" + $T.toString(this." + propertySpec.name() + ") +\n")
                         .collect(Collectors.joining(
                                 "\", \" + ",
                                 "return \"" + this.types.valueType().simpleName() + "{\" +\n",
@@ -168,11 +171,22 @@ public class ValueImplementation {
                                 )
                         )
                 ;
+
+        Object [] args = new Object[propertySpecs.size()];
+        for (int i = 0; i < propertySpecs.size() ; i++) {
+            PropertySpec propertySpec = propertySpecs.get(i);
+            if(this.isByteArrayType(propertySpec)) {
+                args[i] = Arrays.class;
+            } else {
+                args[i] = Objects.class;
+            }
+        }
+
         return MethodSpec.methodBuilder("toString")
                 .addModifiers(PUBLIC)
                 .returns(String.class)
                 .addAnnotation(Override.class)
-                .addStatement(statement)
+                .addStatement(statement, args)
                 .build();
     }
 

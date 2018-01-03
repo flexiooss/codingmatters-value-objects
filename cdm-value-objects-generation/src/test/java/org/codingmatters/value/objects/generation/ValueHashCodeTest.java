@@ -1,6 +1,9 @@
 package org.codingmatters.value.objects.generation;
 
 import org.codingmatters.tests.compile.CompiledCode;
+import org.codingmatters.tests.compile.FileHelper;
+import org.codingmatters.tests.compile.helpers.ClassLoaderHelper;
+import org.codingmatters.tests.compile.helpers.helpers.ObjectHelper;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
 import org.junit.Before;
@@ -27,28 +30,32 @@ public class ValueHashCodeTest {
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
 
+    @Rule
+    public FileHelper fileHelper = new FileHelper();
+
     private final Spec spec = spec()
             .addValue(valueSpec().name("val")
                     .addProperty(property().name("prop1").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
                     .addProperty(property().name("prop2").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
+                    .addProperty(property().name("binary").type(type().typeRef(byte[].class.getName()).typeKind(TypeKind.JAVA_TYPE)))
             )
             .addValue(valueSpec().name("noPropertyVal"))
             .addValue(valueSpec().name("complexVal")
                     .addProperty(property().name("prop").type(type().typeRef("val").typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)))
             )
             .build();
-    private CompiledCode compiled;
 
+    private ClassLoaderHelper classes;
 
     @Before
     public void setUp() throws Exception {
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
-        this.compiled = CompiledCode.builder().source(this.dir.getRoot()).compile();
+        this.classes = CompiledCode.builder().source(this.dir.getRoot()).compile().classLoader();
     }
 
     @Test
     public void signature() throws Exception {
-        assertThat(compiled.getClass("org.generated.ValImpl"),
+        assertThat(classes.get("org.generated.ValImpl").get(),
                 is(aPackagePrivate().class_()
                         .with(aPublic().method()
                                 .named("hashCode")
@@ -61,69 +68,78 @@ public class ValueHashCodeTest {
 
     @Test
     public void hashCodeIsStable() throws Exception {
-        Object builder = compiled.onClass("org.generated.Val").invoke("builder");
-        compiled.on(builder).invoke("prop1", String.class).with("v1");
-        compiled.on(builder).invoke("prop2", String.class).with("v2");
-        Object value = compiled.on(builder).invoke("build");
+        ObjectHelper value = classes.get("org.generated.Val").call("builder")
+                .call("prop1", String.class).with("v1")
+                .call("binary", byte[].class).with("binary".getBytes())
+                .call("build");
 
-        int hash1 = compiled.on(value).castedTo("org.generated.Val").invoke("hashCode");
-        int hash2 = compiled.on(value).castedTo("org.generated.Val").invoke("hashCode");
+        int hash1 = (int) value.as("org.generated.Val").call("hashCode").get();
+        int hash2 = (int) value.as("org.generated.Val").call("hashCode").get();
 
         assertEquals(hash1, hash2);
     }
 
     @Test
     public void hashCodeEqualsWhenSameValue() throws Exception {
-        Object aBuilder = compiled.onClass("org.generated.Val").invoke("builder");
-        compiled.on(aBuilder).invoke("prop1", String.class).with("v");
-        Object aValue = compiled.on(aBuilder).invoke("build");
+        this.fileHelper.printFile(this.dir.getRoot(), "ValImpl.java");
 
-        Object anotherBuilder = compiled.onClass("org.generated.Val").invoke("builder");
-        compiled.on(anotherBuilder).invoke("prop1", String.class).with("v");
-        Object anotherValue = compiled.on(anotherBuilder).invoke("build");
+        ObjectHelper aValue = classes.get("org.generated.Val").call("builder")
+                .call("prop1", String.class).with("v")
+                .call("binary", byte[].class).with("binary".getBytes())
+                .call("build");
 
-        assertThat(aValue.hashCode(), is(anotherValue.hashCode()));
+        ObjectHelper anotherValue = classes.get("org.generated.Val").call("builder")
+                .call("prop1", String.class).with("v")
+                .call("binary", byte[].class).with("binary".getBytes())
+                .call("build");
+
+        System.out.println(aValue.get());
+        System.out.println(anotherValue.get());
+
+        assertThat(aValue.get().hashCode(), is(anotherValue.get().hashCode()));
     }
 
     @Test
     public void hashCodeDifferentWhenDifferentValue() throws Exception {
-        Object aBuilder = compiled.onClass("org.generated.Val").invoke("builder");
-        compiled.on(aBuilder).invoke("prop1", String.class).with("v1");
-        Object aValue = compiled.on(aBuilder).invoke("build");
+        ObjectHelper aValue = classes.get("org.generated.Val").call("builder")
+                .call("prop1", String.class).with("v1")
+                .call("binary", byte[].class).with("a value".getBytes())
+                .call("build");
 
-        Object anotherBuilder = compiled.onClass("org.generated.Val").invoke("builder");
-        compiled.on(anotherBuilder).invoke("prop1", String.class).with("v2");
-        Object anotherValue = compiled.on(anotherBuilder).invoke("build");
+        ObjectHelper anotherValue = classes.get("org.generated.Val").call("builder")
+                .call("prop1", String.class).with("v2")
+                .call("binary", byte[].class).with("not the same".getBytes())
+                .call("build");
 
-        assertThat(aValue.hashCode(), is(not(anotherValue.hashCode())));
+        assertThat(aValue.get().hashCode(), is(not(anotherValue.get().hashCode())));
     }
 
     @Test
     public void noPropertyValueHash() throws Exception {
-        Object aBuilder = compiled.onClass("org.generated.NoPropertyVal").invoke("builder");
-        Object aValue = compiled.on(aBuilder).invoke("build");
+        ObjectHelper aValue = classes.get("org.generated.NoPropertyVal").call("builder")
+                .call("build");
 
-        Object anotherBuilder = compiled.onClass("org.generated.NoPropertyVal").invoke("builder");
-        Object anotherValue = compiled.on(anotherBuilder).invoke("build");
+        ObjectHelper anotherValue = classes.get("org.generated.NoPropertyVal").call("builder")
+                .call("build");
 
-        assertThat(aValue.hashCode(), is(anotherValue.hashCode()));
+        assertThat(aValue.get().hashCode(), is(anotherValue.get().hashCode()));
     }
 
     @Test
     public void complexValue() throws Exception {
-        Object builder = compiled.onClass("org.generated.Val").invoke("builder");
-        compiled.on(builder).invoke("prop1", String.class).with("v1");
-        compiled.on(builder).invoke("prop2", String.class).with("v2");
-        Object builded = compiled.on(builder).invoke("build");
+        ObjectHelper builded = classes.get("org.generated.Val").call("builder")
+                .call("prop1", String.class).with("v1")
+                .call("prop2", String.class).with("v2")
+                .call("build");
 
-        Object complexBuilder = compiled.onClass("org.generated.ComplexVal").invoke("builder");
-        compiled.on(complexBuilder).invoke("prop", compiled.getClass("org.generated.Val")).with(builded);
-        Object complexValue = compiled.on(complexBuilder).invoke("build");
+        ObjectHelper complexValue = classes.get("org.generated.ComplexVal").call("builder")
+                .call("prop", classes.get("org.generated.Val").get()).with(builded.get())
+                .call("build");
 
-        Object sameComplexBuilder = compiled.onClass("org.generated.ComplexVal").invoke("builder");
-        compiled.on(sameComplexBuilder).invoke("prop", compiled.getClass("org.generated.Val")).with(builded);
-        Object sameComplexValue = compiled.on(sameComplexBuilder).invoke("build");
+        ObjectHelper sameComplexValue = classes.get("org.generated.ComplexVal").call("builder")
+                .call("prop", classes.get("org.generated.Val").get()).with(builded.get())
+                .call("build");
 
-        assertThat(complexValue.hashCode(), is(sameComplexValue.hashCode()));
+        assertThat(complexValue.get().hashCode(), is(sameComplexValue.get().hashCode()));
     }
 }

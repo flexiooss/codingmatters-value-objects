@@ -78,3 +78,6 @@ hints:
       - property:raw(Raw Property Name)
 
 noprop:
+
+binary:
+  prop: bytes

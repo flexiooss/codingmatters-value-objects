@@ -15,6 +15,7 @@ public enum TypeToken {
     INT(Integer.class.getName()), LONG(Long.class.getName()),
     FLOAT(Float.class.getName()), DOUBLE(Double.class.getName()),
     BOOL(Boolean.class.getName()),
+    BYTES(byte[].class.getName()),
     DATE(LocalDate.class.getName()), TIME(LocalTime.class.getName()),
     DATE_TIME(LocalDateTime.class.getName()), TZ_DATE_TIME(ZonedDateTime.class.getName())
     ;

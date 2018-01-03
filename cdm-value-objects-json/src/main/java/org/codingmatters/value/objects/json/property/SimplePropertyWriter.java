@@ -51,7 +51,17 @@ public enum SimplePropertyWriter {
             method.addStatement("generator.writeBoolean(element)");
         }
     },
-    DATE(LocalDate.class) {
+    BINARY(byte[].class) {
+        @Override
+        public void singleStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
+            method.addStatement("generator.writeBinary(value.$L())", propertySpec.name());
+        }
+
+        @Override
+        protected void arrayElementStatement(MethodSpec.Builder method) {
+            method.addStatement("generator.writeBinary(element)");
+        }
+    },DATE(LocalDate.class) {
         @Override
         public void singleStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
             method.addStatement("generator.writeString(value.$L().format($T.ISO_LOCAL_DATE))", propertySpec.name(), DateTimeFormatter.class);
@@ -96,6 +106,18 @@ public enum SimplePropertyWriter {
         }
     },
 
+    ENUM() {
+        @Override
+        public void singleStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
+            method.addStatement("generator.writeString(value.$L().name())", propertySpec.name());
+        }
+
+        @Override
+        protected void arrayElementStatement(MethodSpec.Builder method) {
+            method.addStatement("generator.writeString(element.name())");
+        }
+    },
+
     NYIMPL() {
         @Override
         public void singleStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
@@ -108,19 +130,9 @@ public enum SimplePropertyWriter {
             System.err.println("WARN : property " + propertySpec.name() + " has no simple writer (" + propertySpec.toString() + ")");
             method.addStatement("generator.writeNull()");
         }
-    },
+    }
 
-    ENUM() {
-        @Override
-        public void singleStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
-            method.addStatement("generator.writeString(value.$L().name())", propertySpec.name());
-        }
-
-        @Override
-        protected void arrayElementStatement(MethodSpec.Builder method) {
-            method.addStatement("generator.writeString(element.name())");
-        }
-    };
+    ;
 
     private final Set<Class> classes;
 

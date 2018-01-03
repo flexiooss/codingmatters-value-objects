@@ -98,7 +98,7 @@ public class ValueWriter {
     }
 
     private void externalValueObjectWriteStatements(MethodSpec.Builder method, PropertySpec propertySpec) {
-        ClassName propertyClass = this.types.propertySingleType(propertySpec);
+        ClassName propertyClass = this.types.valueObjectSingleType(propertySpec);
         ClassName propertyWriter = ClassName.get(
                 propertyClass.packageName() + ".json",
                 propertyClass.simpleName() + "Writer"

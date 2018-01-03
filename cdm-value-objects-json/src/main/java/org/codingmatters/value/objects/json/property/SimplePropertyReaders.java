@@ -22,6 +22,7 @@ public enum SimplePropertyReaders {
     FLOAT("getFloatValue", Float.class, JsonToken.VALUE_NUMBER_FLOAT),
     DOUBLE("getDoubleValue", Double.class, JsonToken.VALUE_NUMBER_FLOAT),
     BOOLEAN("getBooleanValue", Boolean.class, JsonToken.VALUE_TRUE, JsonToken.VALUE_FALSE),
+    BINARY("getBinaryValue", byte[].class, JsonToken.VALUE_STRING),
     DATE("getText", LocalDate.class, new TemporalPropertyStatement(LocalDate.class), JsonToken.VALUE_STRING),
     TIME("getText", LocalTime.class, new TemporalPropertyStatement(LocalTime.class), JsonToken.VALUE_STRING),
     DATE_TIME("getText", LocalDateTime.class, new TemporalPropertyStatement(LocalDateTime.class), JsonToken.VALUE_STRING),

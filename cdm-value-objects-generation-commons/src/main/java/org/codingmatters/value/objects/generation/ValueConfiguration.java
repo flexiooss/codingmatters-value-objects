@@ -1,5 +1,6 @@
 package org.codingmatters.value.objects.generation;
 
+import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
@@ -37,6 +38,99 @@ public class ValueConfiguration {
         this.collectionConfiguration = new ValueCollectionConfiguration(rootPackage);
     }
 
+    public TypeName propertyType(PropertySpec propertySpec) {
+        TypeName singleType = this.propertySingleType(propertySpec);
+        if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
+            return this.collectionConfiguration.valueListOfType(singleType);
+        } else if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
+            return this.collectionConfiguration.valueSetOfType(singleType);
+        } else {
+            return singleType;
+        }
+    }
+
+    public TypeName propertyOptionalType(PropertySpec propertySpec) {
+        TypeName singleType = this.propertySingleType(propertySpec);
+        if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
+            return this.collectionConfiguration.optionalValueListOfType(singleType, this.propertySingleOptionalType(propertySpec));
+        } else if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
+            return this.collectionConfiguration.optionalValueSetOfType(singleType);
+        } else {
+            return this.propertySingleOptionalType(propertySpec);
+        }
+    }
+
+    public TypeName propertySingleType(PropertySpec propertySpec) {
+        if(IN_SPEC_VALUE_OBJECT.equals(propertySpec.typeSpec().typeKind())) {
+            return ClassName.get(this.rootPackage, capitalizedFirst(propertySpec.typeSpec().typeRef()));
+        } else if(ENUM.equals(propertySpec.typeSpec().typeKind()) && propertySpec.typeSpec().isInSpecEnum()) {
+            return this.valueType().nestedClass(this.enumTypeName(propertySpec.name()));
+        } else {
+            if(propertySpec.typeSpec().typeRef().equals(byte[].class.getName())) {
+                return ArrayTypeName.of(byte.class);
+            } else {
+                return ClassName.bestGuess(propertySpec.typeSpec().typeRef());
+            }
+        }
+    }
+
+    public ClassName valueObjectSingleType(PropertySpec propertySpec) {
+        if(IN_SPEC_VALUE_OBJECT.equals(propertySpec.typeSpec().typeKind())) {
+            return ClassName.get(this.rootPackage, capitalizedFirst(propertySpec.typeSpec().typeRef()));
+        } else {
+            return ClassName.bestGuess(propertySpec.typeSpec().typeRef());
+        }
+    }
+
+    public TypeName propertySingleOptionalType(PropertySpec propertySpec) {
+        TypeName rawType = this.propertySingleType(propertySpec);
+        if(propertySpec.typeSpec().typeKind().isValueObject()) {
+            if(IN_SPEC_VALUE_OBJECT.equals(propertySpec.typeSpec().typeKind())) {
+                return ClassName.get(this.rootPackage + ".optional", "Optional" + capitalizedFirst(propertySpec.typeSpec().typeRef()));
+            } else {
+                int lastDot = propertySpec.typeSpec().typeRef().lastIndexOf('.');
+                if(lastDot == -1) {
+                    return ClassName.get("optional", "Optional" + propertySpec.typeSpec().typeRef());
+                } else {
+                    return ClassName.get(
+                            propertySpec.typeSpec().typeRef().substring(0, lastDot) + ".optional",
+                            "Optional" + propertySpec.typeSpec().typeRef().substring(lastDot + 1));
+                }
+            }
+        } else if(ENUM.equals(propertySpec.typeSpec().typeKind()) && propertySpec.typeSpec().isInSpecEnum()) {
+            return ParameterizedTypeName.get(ClassName.get(Optional.class), rawType);
+        } else {
+            return ParameterizedTypeName.get(ClassName.get(Optional.class), rawType);
+        }
+    }
+
+
+    public ClassName propertyClass(PropertySpec propertySpec) {
+        if(propertySpec.typeSpec().isInSpecEnum()) {
+            return this.valueType().nestedClass(this.enumTypeName(propertySpec.name()));
+        } else {
+            try {
+                return ClassName.get(Class.forName(propertySpec.typeSpec().typeRef()));
+            } catch (ClassNotFoundException e) {
+                System.err.println("class not found : " + propertySpec.typeSpec().typeRef());
+                return null;
+            }
+        }
+    }
+
+
+    public String rootPackage() {
+        return rootPackage;
+    }
+
+    public ValueSpec valueSpec() {
+        return valueSpec;
+    }
+
+    public ValueCollectionConfiguration collectionConfiguration() {
+        return collectionConfiguration;
+    }
+
     public ClassName valueType() {
         return valueType;
     }
@@ -57,101 +151,19 @@ public class ValueConfiguration {
         return optionalValueType;
     }
 
-    public TypeName propertyType(PropertySpec propertySpec) {
-        ClassName singleType = this.propertySingleType(propertySpec);
-        if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
-            return this.collectionConfiguration.valueListOfType(singleType);
-        } else if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
-            return this.collectionConfiguration.valueSetOfType(singleType);
-        } else {
-            return singleType;
-        }
-    }
 
-    public TypeName collectionRawType(PropertySpec propertySpec) {
-        if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
-            return this.collectionConfiguration.rawValueList();
-        } else if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
-            return this.collectionConfiguration.rawValueSet();
-        } else {
-            return null;
-        }
-    }
 
-    public TypeName propertyOptionalType(PropertySpec propertySpec) {
-        ClassName singleType = this.propertySingleType(propertySpec);
-        if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST)) {
-            return this.collectionConfiguration.optionalValueListOfType(singleType, this.propertySingleOptionalType(propertySpec));
-        } else if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
-            return this.collectionConfiguration.optionalValueSetOfType(singleType);
-        } else {
-            return this.propertySingleOptionalType(propertySpec);
-        }
-    }
-
-    public ClassName propertySingleType(PropertySpec propertySpec) {
-        if(IN_SPEC_VALUE_OBJECT.equals(propertySpec.typeSpec().typeKind())) {
-            return ClassName.get(this.rootPackage, capitalizedFirst(propertySpec.typeSpec().typeRef()));
-        } else if(ENUM.equals(propertySpec.typeSpec().typeKind()) && propertySpec.typeSpec().isInSpecEnum()) {
-            return this.valueType().nestedClass(this.enumTypeName(propertySpec.name()));
-        } else {
-            return ClassName.bestGuess(propertySpec.typeSpec().typeRef());
-        }
-    }
-
-    public TypeName propertySingleOptionalType(PropertySpec propertySpec) {
-        ClassName rawType = this.propertySingleType(propertySpec);
-        if(propertySpec.typeSpec().typeKind().isValueObject()) {
-            return ClassName.get(rawType.packageName() + ".optional", "Optional" + rawType.simpleName());
-        } else if(ENUM.equals(propertySpec.typeSpec().typeKind()) && propertySpec.typeSpec().isInSpecEnum()) {
-            return ParameterizedTypeName.get(ClassName.get(Optional.class), rawType);
-        } else {
-            return ParameterizedTypeName.get(ClassName.get(Optional.class), rawType);
-        }
-    }
 
     public String witherMethodName(PropertySpec propertySpec) {
         return "with" + capitalizedFirst(propertySpec.name());
-    }
-
-
-    public ValueCollectionConfiguration collectionConfiguration() {
-        return collectionConfiguration;
-    }
-
-    static public String capitalizedFirst(String str) {
-        return str.substring(0,1).toUpperCase() + str.substring(1);
-    }
-    static public String uncapitalizedFirst(String str) {
-        return str.substring(0,1).toLowerCase() + str.substring(1);
     }
 
     public String enumTypeName(String name) {
         return this.capitalizedFirst(name);
     }
 
-    public ClassName propertyClass(PropertySpec propertySpec) {
-        if(propertySpec.typeSpec().isInSpecEnum()) {
-            return this.valueType().nestedClass(this.enumTypeName(propertySpec.name()));
-        } else {
-            return this.classNameForTypeRef(propertySpec);
-        }
-    }
 
-    public ClassName classNameForTypeRef(PropertySpec propertySpec) {
-        try {
-            return ClassName.get(Class.forName(propertySpec.typeSpec().typeRef()));
-        } catch (ClassNotFoundException e) {
-            System.err.println("class not found : " + propertySpec.typeSpec().typeRef());
-            return null;
-        }
-    }
-
-    public String rootPackage() {
-        return rootPackage;
-    }
-
-    public ValueSpec valueSpec() {
-        return valueSpec;
+    private static String capitalizedFirst(String str) {
+        return str.substring(0,1).toUpperCase() + str.substring(1);
     }
 }

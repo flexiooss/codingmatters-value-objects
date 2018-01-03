@@ -74,7 +74,7 @@ public class ValueBuilder {
                     .build()
         );
         if(propertySpec.typeSpec().typeKind().isValueObject()) {
-            ClassName propertyType = this.types.propertySingleType(propertySpec);
+            ClassName propertyType = this.types.valueObjectSingleType(propertySpec);
             result.add(
                     MethodSpec.methodBuilder(propertySpec.name())
                             .addParameter(
@@ -152,7 +152,7 @@ public class ValueBuilder {
         );
 
         if(propertySpec.typeSpec().typeKind().isValueObject()) {
-            ClassName propertyType = this.types.propertySingleType(propertySpec);
+            ClassName propertyType = this.types.valueObjectSingleType(propertySpec);
             String varargParameterName = propertySpec.name() + "Elements";
             result.add(
                     MethodSpec.methodBuilder(propertySpec.name())

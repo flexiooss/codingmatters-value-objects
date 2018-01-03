@@ -24,6 +24,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.time.*;
+import java.util.Base64;
 import java.util.List;
 import java.util.Set;
 
@@ -528,6 +529,27 @@ public class JsonReaderGenerationTest {
                                     .prop(ExtReferenced.builder()
                                             .prop("val")
                                             .build())
+                                    .build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void readBinary() throws Exception {
+        String json = String.format("{\"prop\":\"%s\"}", new String(Base64.getEncoder().encode("binary".getBytes())));
+
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            ObjectHelper reader = this.classes.get("org.generated.json.BinaryReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
+
+            assertThat(value.as("org.generated.Binary").call("prop").get(), is("binary".getBytes()));
+
+            assertThat(
+                    value.get(),
+                    is(
+                            Binary.builder()
+                                    .prop("binary".getBytes())
                                     .build()
                     )
             );

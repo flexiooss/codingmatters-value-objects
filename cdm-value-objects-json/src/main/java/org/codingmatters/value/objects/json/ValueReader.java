@@ -336,7 +336,7 @@ public class ValueReader {
             if(! propertySpec.typeSpec().cardinality().isCollection()) {
                 this.singleComplexPropertyStatement(method, propertySpec);
             } else {
-                ClassName propertyClass = this.types.propertySingleType(propertySpec);
+                ClassName propertyClass = this.types.valueObjectSingleType(propertySpec);
                 ClassName propertyReader = ClassName.get(
                         propertyClass.packageName() + ".json",
                         propertyClass.simpleName() + "Reader"
@@ -358,7 +358,7 @@ public class ValueReader {
     }
 
     private void singleComplexPropertyStatement(MethodSpec.Builder method, PropertySpec propertySpec) {
-        ClassName propertyClass = this.types.propertySingleType(propertySpec);
+        ClassName propertyClass = this.types.valueObjectSingleType(propertySpec);
         ClassName propertyReader = ClassName.get(
                 propertyClass.packageName() + ".json",
                 propertyClass.simpleName() + "Reader"

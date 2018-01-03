@@ -12,3 +12,5 @@ complexValue:
   outSpecProperty:
     $value-object: org.codingmatters.value.objects.demo.referenced.ReferencedValue
 
+valueWithBinary:
+  binary: bytes

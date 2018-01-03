@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.*;
+import java.util.Base64;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.aClass;
 import static org.codingmatters.tests.reflect.ReflectMatchers.aPublic;
@@ -218,6 +219,25 @@ public class JsonWriterGenerationTest {
                             "\"dateTimeProp\":\"2011-12-03T10:15:30\"," +
                             "\"tzDateTimeProp\":\"2011-12-03T10:15:30+01:00\"" +
                             "}")
+            );
+        }
+    }
+
+    @Test
+    public void writeBinary() throws Exception {
+        Binary value = Binary.builder()
+                .prop("binary".getBytes())
+                .build();
+
+        Object writer = this.compiled.getClass("org.generated.json.BinaryWriter").newInstance();
+        try(OutputStream out = new ByteArrayOutputStream()) {
+            JsonGenerator generator = this.factory.createGenerator(out);
+            this.compiled.on(writer).invoke("write", JsonGenerator.class, Binary.class).with(generator, value);
+            generator.close();
+
+            assertThat(
+                    out.toString(),
+                    is(String.format("{\"prop\":\"%s\"}", new String(Base64.getEncoder().encode("binary".getBytes()))))
             );
         }
     }
