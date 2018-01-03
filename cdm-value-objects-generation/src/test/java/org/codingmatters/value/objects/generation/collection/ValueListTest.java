@@ -10,6 +10,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.stream.Stream;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.hamcrest.Matchers.is;
@@ -81,5 +82,13 @@ public class ValueListTest {
                 //Object[] toArray()
                 .with(aMethod().named("toArray").withoutParameters().returning(Object[].class))
         ));
+
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
+                .with(aMethod().named("stream")
+                        .withoutParameters()
+                        .returning(genericType().baseClass(Stream.class).withParameters(typeParameter().named("E"))
+                        ))
+        ));
+
     }
 }
