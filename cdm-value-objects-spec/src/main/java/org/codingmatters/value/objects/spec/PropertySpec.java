@@ -29,7 +29,12 @@ public class PropertySpec {
         }
 
         public Builder hints(Set<String> hints) {
-            this.hints = new HashSet<>(hints);
+            if(hints != null && ! hints.isEmpty()) {
+                if(this.hints == null) {
+                    this.hints = new HashSet<>(hints);
+                }
+                this.hints.addAll(hints);
+            }
             return this;
         }
 
