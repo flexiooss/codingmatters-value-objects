@@ -24,6 +24,7 @@ public class ContextSpecParser {
     public static final String VALUE_OBJECT_MARK = "$value-object";
     public static final String TYPE_MARK = "$type";
     public static final String ENUM_MARK = "$enum";
+    public static final String PROTOCOL_MARK = "$conforms-to";
 
     private final Map<String, ?> root;
     private Stack<String> context;
@@ -36,7 +37,7 @@ public class ContextSpecParser {
         this.context = new Stack<>();
         Spec.Builder spec = spec();
         for (String valueName : root.keySet()) {
-            spec.addValue(createValueSpec(valueName));
+            spec.addValue(this.createValueSpec(valueName));
         }
         return spec.build();
     }
@@ -47,11 +48,23 @@ public class ContextSpecParser {
         Map<String, ?> properties = (Map<String, ?>) root.get(valueName);
         if(properties != null) {
             for (String propertyName : properties.keySet()) {
-                Object propertyValue = properties.get(propertyName);
-                value.addProperty(this.createPropertySpec(propertyName, propertyValue));
+                if(PROTOCOL_MARK.equals(propertyName)) {
+                    value.addConformsTo(this.protocolList(properties.get(propertyName)));
+                } else {
+                    value.addProperty(this.createPropertySpec(propertyName, properties.get(propertyName)));
+                }
             }
         }
         return value;
+    }
+
+    private String[] protocolList(Object value) {
+        if(value == null) return new String[0];
+        if(value instanceof List) {
+            return (String[]) ((List)value).stream().map(o -> o.toString()).toArray(i -> new String[i]);
+        } else {
+            return new String[] {value.toString()};
+        }
     }
 
 

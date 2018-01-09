@@ -25,6 +25,7 @@ public class ValueInterface {
     private final MethodSpec changedMethod;
     private final MethodSpec hashCode;
     private final List<TypeSpec> enums;
+    private List<ClassName> protocols;
 
     public ValueInterface(ValueConfiguration types, List<PropertySpec> propertySpecs) {
         this.types = types;
@@ -41,6 +42,7 @@ public class ValueInterface {
                 .build();
 
         this.enums = this.createEnums();
+        this.protocols = this.createProtocols();
     }
 
     public TypeSpec type() {
@@ -56,6 +58,7 @@ public class ValueInterface {
                 .addMethod(this.optMethod())
                 .addType(this.valueBuilder.type())
                 .addType(this.valueChanger.type())
+                .addSuperinterfaces(this.protocols)
                 .build();
     }
 
@@ -159,6 +162,18 @@ public class ValueInterface {
                 .addModifiers(ABSTRACT, PUBLIC)
                 .returns(this.types.optionalValueType())
                 .build();
+    }
+
+
+
+    private List<ClassName> createProtocols() {
+        List<ClassName> result = new LinkedList<>();
+
+        for (String protocol : this.types.valueSpec().protocols()) {
+            result.add(ClassName.bestGuess(protocol));
+        }
+
+        return result;
     }
 
 }

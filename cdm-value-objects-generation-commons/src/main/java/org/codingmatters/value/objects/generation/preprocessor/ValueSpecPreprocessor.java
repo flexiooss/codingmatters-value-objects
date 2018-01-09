@@ -27,7 +27,8 @@ public class ValueSpecPreprocessor {
         List<PackagedValueSpec> result = new LinkedList<>();
 
         ValueSpec.Builder valueSpecBuilder = ValueSpec.valueSpec()
-                .name(valueSpec.name());
+                .name(valueSpec.name())
+                .addConformsTo(valueSpec.protocols().toArray(new String[valueSpec.protocols().size()]));
         for (PropertySpec propertySpec : valueSpec.propertySpecs()) {
             if(EMBEDDED.equals(propertySpec.typeSpec().typeKind())) {
                 String embeddedPackage = this.packageName + "." + valueSpec.name().toLowerCase();
