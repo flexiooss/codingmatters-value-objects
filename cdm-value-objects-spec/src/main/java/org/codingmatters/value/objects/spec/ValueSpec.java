@@ -1,9 +1,6 @@
 package org.codingmatters.value.objects.spec;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by nelt on 9/3/16.
@@ -17,7 +14,7 @@ public class ValueSpec implements PropertyHolderSpec {
     static public class Builder {
         private String name;
         private List<PropertySpec> propertySpecs = new LinkedList<>();
-        private List<String> protocols = new LinkedList<>();
+        private HashSet<String> protocols = new HashSet<>();
 
         public Builder name(String name) {
             this.name = name;
