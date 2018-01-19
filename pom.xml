@@ -73,6 +73,8 @@
 
         <module>cdm-value-objects-generation-main</module>
 
+        <module>cdm-value-objects-values</module>
+
         <module>cdm-value-objects-demo</module>
     </modules>
 
