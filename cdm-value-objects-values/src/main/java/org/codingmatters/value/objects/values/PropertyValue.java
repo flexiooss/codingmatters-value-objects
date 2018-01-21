@@ -41,6 +41,7 @@ public interface PropertyValue {
         return multiple(type, builders);
     }
 
+
     class Builder {
         private Type type = Type.OBJECT;
         private Object raw = null;
@@ -116,6 +117,7 @@ public interface PropertyValue {
     Cardinality cardinality();
 
     Object rawValue();
+    boolean isNullValue();
 
     interface Value {
         String stringValue();
@@ -127,6 +129,8 @@ public interface PropertyValue {
 
         boolean isa(Type type);
         Type type();
+
+        boolean isNull();
     }
 
     Value single();

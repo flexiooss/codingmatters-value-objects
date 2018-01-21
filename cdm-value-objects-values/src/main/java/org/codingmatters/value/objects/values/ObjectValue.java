@@ -35,6 +35,6 @@ public interface ObjectValue {
     }
 
     boolean has(String property);
-
     PropertyValue property(String property);
+    String [] propertyNames();
 }

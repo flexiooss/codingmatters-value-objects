@@ -60,6 +60,11 @@ class PropertyValueImpl implements PropertyValue {
         }
 
         @Override
+        public boolean isNull() {
+            return this.value == null;
+        }
+
+        @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
@@ -106,6 +111,19 @@ class PropertyValueImpl implements PropertyValue {
     @Override
     public Object rawValue() {
         return this.value;
+    }
+
+    @Override
+    public boolean isNullValue() {
+        if(Cardinality.MULTIPLE.equals(this.cardinality)) {
+            return this.value == null;
+        } else {
+            return this.value == null ||
+                            this.value.length == 0 ||
+                            this.value[0] == null ||
+                            this.value[0].isNull()
+                    ;
+        }
     }
 
     @Override
