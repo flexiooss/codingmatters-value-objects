@@ -1,5 +1,7 @@
 package org.codingmatters.value.objects.values;
 
+import org.codingmatters.value.objects.values.optional.OptionalObjectValue;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -33,6 +35,8 @@ public interface ObjectValue {
         }
 
     }
+
+    OptionalObjectValue opt();
 
     boolean has(String property);
     PropertyValue property(String property);

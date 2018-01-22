@@ -145,7 +145,7 @@ public interface PropertyValue {
 
         public abstract Builder set(Builder builder, Object value);
 
-        static Type fromObject(Object o) throws UnsupportedTypeException {
+        static public Type fromObject(Object o) throws UnsupportedTypeException {
             if(o == null) return STRING;
             if(o instanceof String) {
                 return STRING;

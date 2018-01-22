@@ -1,5 +1,7 @@
 package org.codingmatters.value.objects.values;
 
+import org.codingmatters.value.objects.values.optional.OptionalObjectValue;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +15,11 @@ class ObjectValueImpl implements ObjectValue {
 
     public String[] properties() {
         return this.properties.keySet().toArray(new String[this.properties.size()]);
+    }
+
+    @Override
+    public OptionalObjectValue opt() {
+        return null;
     }
 
     @Override
