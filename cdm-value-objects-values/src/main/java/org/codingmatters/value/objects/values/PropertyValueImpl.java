@@ -50,6 +50,11 @@ class PropertyValueImpl implements PropertyValue {
         }
 
         @Override
+        public Object rawValue() {
+            return this.value;
+        }
+
+        @Override
         public boolean isa(Type type) {
             return this.type.equals(type);
         }

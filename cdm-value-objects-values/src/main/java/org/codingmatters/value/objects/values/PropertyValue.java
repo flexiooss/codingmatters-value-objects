@@ -106,7 +106,69 @@ public interface PropertyValue {
     }
 
     enum Type {
-        STRING, LONG, DOUBLE, BOOLEAN, BYTES, OBJECT
+        STRING {
+            @Override
+            public Builder set(Builder builder, Object value) {
+                return builder.stringValue((String) value);
+            }
+        },
+        LONG {
+            @Override
+            public Builder set(Builder builder, Object value) {
+                return builder.longValue((Long) value);
+            }
+        },
+        DOUBLE {
+            @Override
+            public Builder set(Builder builder, Object value) {
+                return builder.doubleValue((Double) value);
+            }
+        },
+        BOOLEAN {
+            @Override
+            public Builder set(Builder builder, Object value) {
+                return builder.booleanValue((Boolean) value);
+            }
+        },
+        BYTES {
+            @Override
+            public Builder set(Builder builder, Object value) {
+                return builder.bytesValue((byte[]) value);
+            }
+        },
+        OBJECT {
+            @Override
+            public Builder set(Builder builder, Object value) {
+                return builder.objectValue((ObjectValue) value);
+            }
+        };
+
+        public abstract Builder set(Builder builder, Object value);
+
+        static Type fromObject(Object o) throws UnsupportedTypeException {
+            if(o == null) return STRING;
+            if(o instanceof String) {
+                return STRING;
+            } else if(o instanceof Long || o instanceof Integer) {
+                return LONG;
+            } else if(o instanceof Double || o instanceof Float) {
+                return DOUBLE;
+            } else if(o instanceof Boolean) {
+                return BOOLEAN;
+            } else if(o instanceof byte[]) {
+                return BYTES;
+            } else if(o instanceof ObjectValue){
+                return OBJECT;
+            } else {
+                throw new UnsupportedTypeException("unsupported type : " + o.getClass());
+            }
+        }
+
+        static public class UnsupportedTypeException extends Exception {
+            public UnsupportedTypeException(String msg) {
+                super(msg);
+            }
+        }
     }
 
     enum Cardinality {
@@ -126,6 +188,7 @@ public interface PropertyValue {
         Boolean booleanValue();
         byte[] bytesValue();
         ObjectValue objectValue();
+        Object rawValue();
 
         boolean isa(Type type);
         Type type();
