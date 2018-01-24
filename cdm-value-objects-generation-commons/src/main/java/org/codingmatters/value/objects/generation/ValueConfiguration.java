@@ -69,7 +69,18 @@ public class ValueConfiguration {
             if(propertySpec.typeSpec().typeRef().equals(byte[].class.getName())) {
                 return ArrayTypeName.of(byte.class);
             } else {
-                return ClassName.bestGuess(propertySpec.typeSpec().typeRef());
+                try {
+                    return ClassName.bestGuess(propertySpec.typeSpec().typeRef());
+                } catch(IllegalArgumentException e) {
+                    System.err.println("#######");
+                    System.err.println("#######");
+                    System.err.println("#######");
+                    System.err.println(propertySpec);
+                    System.err.println("#######");
+                    System.err.println("#######");
+                    System.err.println("#######");
+                    throw e;
+                }
             }
         }
     }
