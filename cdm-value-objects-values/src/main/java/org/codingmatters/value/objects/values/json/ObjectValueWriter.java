@@ -40,10 +40,10 @@ public class ObjectValueWriter {
                 generator.writeBinary(value.bytesValue());
                 break;
             case DATE:
-                generator.writeString(value.datetimeValue().format(DateTimeFormatter.ISO_LOCAL_DATE));
+                generator.writeString(value.dateValue().format(DateTimeFormatter.ISO_LOCAL_DATE));
                 break;
             case TIME:
-                generator.writeString(value.datetimeValue().format(DateTimeFormatter.ISO_LOCAL_TIME));
+                generator.writeString(value.timeValue().format(DateTimeFormatter.ISO_LOCAL_TIME));
                 break;
             case DATETIME:
                 generator.writeString(value.datetimeValue().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
