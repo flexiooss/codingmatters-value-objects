@@ -5,6 +5,7 @@ import org.codingmatters.value.objects.values.ObjectValue;
 import org.codingmatters.value.objects.values.PropertyValue;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 
 public class ObjectValueWriter {
     public void write(JsonGenerator generator, ObjectValue value) throws IOException {
@@ -37,6 +38,15 @@ public class ObjectValueWriter {
                 break;
             case BYTES:
                 generator.writeBinary(value.bytesValue());
+                break;
+            case DATE:
+                generator.writeString(value.datetimeValue().format(DateTimeFormatter.ISO_LOCAL_DATE));
+                break;
+            case TIME:
+                generator.writeString(value.datetimeValue().format(DateTimeFormatter.ISO_LOCAL_TIME));
+                break;
+            case DATETIME:
+                generator.writeString(value.datetimeValue().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                 break;
             case OBJECT:
                 this.writeObject(generator, value.objectValue());

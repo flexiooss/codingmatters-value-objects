@@ -1,5 +1,8 @@
 package org.codingmatters.value.objects.values;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 
 class PropertyValueImpl implements PropertyValue {
@@ -41,6 +44,24 @@ class PropertyValueImpl implements PropertyValue {
         public byte[] bytesValue() {
             assert this.type.equals(Type.BYTES);
             return (byte[]) this.value;
+        }
+
+        @Override
+        public LocalDate dateValue() {
+            assert this.type.equals(Type.DATE);
+            return (LocalDate) this.value;
+        }
+
+        @Override
+        public LocalTime timeValue() {
+            assert this.type.equals(Type.TIME);
+            return (LocalTime) this.value;
+        }
+
+        @Override
+        public LocalDateTime datetimeValue() {
+            assert this.type.equals(Type.DATETIME);
+            return (LocalDateTime) this.value;
         }
 
         @Override

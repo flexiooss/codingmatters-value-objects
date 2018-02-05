@@ -1,5 +1,8 @@
 package org.codingmatters.value.objects.values;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.function.Consumer;
 
 public interface PropertyValue {
@@ -76,6 +79,24 @@ public interface PropertyValue {
             return this;
         }
 
+        public Builder dateValue(LocalDate value) {
+            this.raw = value;
+            this.type = Type.DATE;
+            return this;
+        }
+
+        public Builder timeValue(LocalTime value) {
+            this.raw = value;
+            this.type = Type.TIME;
+            return this;
+        }
+
+        public Builder datetimeValue(LocalDateTime value) {
+            this.raw = value;
+            this.type = Type.DATETIME;
+            return this;
+        }
+
         public Builder objectValue(ObjectValue value) {
             this.raw = value;
             this.type = Type.OBJECT;
@@ -103,6 +124,7 @@ public interface PropertyValue {
         public Value buildValue() {
             return new PropertyValueImpl.ValueImpl(this.type, this.raw);
         }
+
     }
 
     enum Type {
@@ -134,6 +156,24 @@ public interface PropertyValue {
             @Override
             public Builder set(Builder builder, Object value) {
                 return builder.bytesValue((byte[]) value);
+            }
+        },
+        DATE {
+            @Override
+            public Builder set(Builder builder, Object value) {
+                return builder.dateValue((LocalDate) value);
+            }
+        },
+        TIME {
+            @Override
+            public Builder set(Builder builder, Object value) {
+                return builder.timeValue((LocalTime) value);
+            }
+        },
+        DATETIME {
+            @Override
+            public Builder set(Builder builder, Object value) {
+                return builder.datetimeValue((LocalDateTime) value);
             }
         },
         OBJECT {
@@ -189,6 +229,9 @@ public interface PropertyValue {
         byte[] bytesValue();
         ObjectValue objectValue();
         Object rawValue();
+        LocalDate dateValue();
+        LocalTime timeValue();
+        LocalDateTime datetimeValue();
 
         boolean isa(Type type);
         Type type();
