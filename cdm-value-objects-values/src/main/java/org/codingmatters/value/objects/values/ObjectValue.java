@@ -12,6 +12,15 @@ public interface ObjectValue {
         return new Builder();
     }
 
+    static Builder from(ObjectValue value) {
+        Builder result = builder();
+        for (String name : value.propertyNames()) {
+            result.property(name, value.property(name));
+        }
+
+        return result;
+    }
+
     class Builder {
         private Map<String, PropertyValue> properties = new HashMap<>();
 
