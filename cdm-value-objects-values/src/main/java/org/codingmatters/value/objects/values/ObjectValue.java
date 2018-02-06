@@ -50,4 +50,14 @@ public interface ObjectValue {
     boolean has(String property);
     PropertyValue property(String property);
     String [] propertyNames();
+
+    default ObjectValue withProperty(String property, PropertyValue value) {
+        return ObjectValue.from(this).property(property, value).build();
+    }
+    default ObjectValue withProperty(String property, PropertyValue.Builder value) {
+        return ObjectValue.from(this).property(property, value).build();
+    }
+    default ObjectValue withProperty(String property, Consumer<PropertyValue.Builder> value) {
+        return ObjectValue.from(this).property(property, value).build();
+    }
 }
