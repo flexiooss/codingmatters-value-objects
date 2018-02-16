@@ -19,7 +19,7 @@ class ObjectValueImpl implements ObjectValue {
 
     @Override
     public OptionalObjectValue opt() {
-        return null;
+        return OptionalObjectValue.of(this);
     }
 
     @Override
