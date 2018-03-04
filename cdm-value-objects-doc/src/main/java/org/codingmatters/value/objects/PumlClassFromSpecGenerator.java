@@ -24,7 +24,9 @@ public class PumlClassFromSpecGenerator {
         classesFile.createNewFile();
 
         try(FormattedWriter out = new FormattedWriter(new FileWriter(classesFile))) {
+            out.appendLine("@startuml");
             new PackageGenerator(this.spec.valueSpecs(), this.rootPackage).generate(out);
+            out.appendLine("@enduml");
             out.flush();
         } catch (Exception e) {
             e.printStackTrace();

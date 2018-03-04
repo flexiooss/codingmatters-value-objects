@@ -26,8 +26,6 @@ public class PumlClassFromSpecGeneratorTest {
 
         assertThat(this.fileContent("org.generated.classes.puml"), is(this.lines(
                 "@startuml",
-                "package org.generated {",
-                "}",
                 "@enduml"
         )));
 
@@ -43,11 +41,9 @@ public class PumlClassFromSpecGeneratorTest {
 
         assertThat(this.fileContent("org.generated.classes.puml"), is(this.lines(
                 "@startuml",
-                "package org.generated {",
                 "  ",
-                "  class \"A value object\" {",
+                "  class \"org.generated.A value object\" {",
                 "  }",
-                "}",
                 "@enduml"
         )));
 
@@ -66,12 +62,10 @@ public class PumlClassFromSpecGeneratorTest {
                 "@startuml",
                 "",
                 "interface \"" + Serializable.class.getName() + "\"",
-                "package org.generated {",
                 "  ",
-                "  class \"Value\" {",
+                "  class \"org.generated.Value\" {",
                 "  }",
-                "  \"Value\" <|- \"" + Serializable.class.getName() + "\"",
-                "}",
+                "  \"org.generated.Value\" <|- \"" + Serializable.class.getName() + "\"",
                 "@enduml"
         )));
 
@@ -96,14 +90,12 @@ public class PumlClassFromSpecGeneratorTest {
 
         assertThat(this.fileContent("org.generated.classes.puml"), is(this.lines(
                 "@startuml",
-                "package org.generated {",
                 "  ",
-                "  class \"Value\" {",
+                "  class \"org.generated.Value\" {",
                 "    {field} singleProp : " + String.class.getName(),
                 "    {field} listProp : ValueList<" + String.class.getName() + ">",
                 "    {field} setProp : ValueSet<" + String.class.getName() + ">",
                 "  }",
-                "}",
                 "@enduml"
         )));
 
@@ -111,7 +103,7 @@ public class PumlClassFromSpecGeneratorTest {
     }
 
     @Test
-    public void valuePropertiesAsAggregation() throws Exception {
+    public void inSpecValuePropertiesAsAggregation() throws Exception {
         this.generate(Spec.spec()
                 .addValue(ValueSpec.valueSpec()
                         .name("value")
@@ -137,14 +129,53 @@ public class PumlClassFromSpecGeneratorTest {
 
         assertThat(this.fileContent("org.generated.classes.puml"), is(this.lines(
                 "@startuml",
-                "package org.generated {",
                 "  ",
-                "  class \"Value\" {",
+                "  class \"org.generated.Value\" {",
                 "  }",
-                "  Value *-- Value2 : singleProp",
-                "  Value *-- \"*\" Value2 : listProp",
-                "  Value *-- \"*\" Value2 : setProp\\n[Set]",
-                "}",
+                "  \"org.generated.Value\" *-- \"org.generated.Value2\" : singleProp",
+                "  \"org.generated.Value\" *-- \"*\" \"org.generated.Value2\" : listProp",
+                "  \"org.generated.Value\" *-- \"*\" \"org.generated.Value2\" : setProp\\n[Set]",
+                "@enduml"
+        )));
+
+        this.generatePng("org.generated.classes.puml");
+    }
+
+
+
+    @Test
+    public void externalSpecValuePropertiesAsAggregation() throws Exception {
+        this.generate(Spec.spec()
+                .addValue(ValueSpec.valueSpec()
+                        .name("value")
+                        .addProperty(PropertySpec.property()
+                                .name("singleProp").type(PropertyTypeSpec.type()
+                                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                        .typeRef("com.ext.Value")
+                                        .cardinality(PropertyCardinality.SINGLE))
+                        )
+                        .addProperty(PropertySpec.property()
+                                .name("listProp").type(PropertyTypeSpec.type()
+                                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                        .typeRef("com.ext.Value")
+                                        .cardinality(PropertyCardinality.LIST))
+                        )
+                        .addProperty(PropertySpec.property()
+                                .name("setProp").type(PropertyTypeSpec.type()
+                                        .typeKind(TypeKind.EXTERNAL_VALUE_OBJECT)
+                                        .typeRef("com.ext.Value")
+                                        .cardinality(PropertyCardinality.SET))
+                        )
+                ).build());
+
+        assertThat(this.fileContent("org.generated.classes.puml"), is(this.lines(
+                "@startuml",
+                "  ",
+                "  class \"org.generated.Value\" {",
+                "  }",
+                "  \"org.generated.Value\" *-- \"com.ext.Value\" : singleProp",
+                "  \"org.generated.Value\" *-- \"*\" \"com.ext.Value\" : listProp",
+                "  \"org.generated.Value\" *-- \"*\" \"com.ext.Value\" : setProp\\n[Set]",
                 "@enduml"
         )));
 
@@ -178,38 +209,86 @@ public class PumlClassFromSpecGeneratorTest {
 
         assertThat(this.fileContent("org.generated.classes.puml"), is(this.lines(
                 "@startuml",
-                "package org.generated {",
                 "  ",
-                "  class \"Value\" {",
+                "  class \"org.generated.Value\" {",
                 "  }",
                 "  ",
-                "  enum \"Value.SingleProp\" {",
+                "  enum \"org.generated.Value.SingleProp\" {",
                 "    A",
                 "    B",
                 "    C",
                 "  }",
-                "  Value *-- Value.SingleProp : singleProp",
+                "  \"org.generated.Value\" *-- \"org.generated.Value.SingleProp\" : singleProp",
                 "  ",
-                "  enum \"Value.ListProp\" {",
+                "  enum \"org.generated.Value.ListProp\" {",
                 "    D",
                 "    E",
                 "    F",
                 "  }",
-                "  Value *-- \"*\" Value.ListProp : listProp",
+                "  \"org.generated.Value\" *-- \"*\" \"org.generated.Value.ListProp\" : listProp",
                 "  ",
-                "  enum \"Value.SetProp\" {",
+                "  enum \"org.generated.Value.SetProp\" {",
                 "    G",
                 "    H",
                 "    I",
                 "  }",
-                "  Value *-- \"*\" Value.SetProp : setProp\\n[Set]",
-                "}",
+                "  \"org.generated.Value\" *-- \"*\" \"org.generated.Value.SetProp\" : setProp\\n[Set]",
                 "@enduml"
         )));
 
         this.generatePng("org.generated.classes.puml");
     }
 
+    @Test
+    public void embeddedPropertiesAsAggregation() throws Exception {
+        this.generate(Spec.spec()
+                .addValue(ValueSpec.valueSpec()
+                        .name("value")
+                        .addProperty(PropertySpec.property()
+                                .name("singleProp").type(PropertyTypeSpec.type()
+                                        .typeKind(TypeKind.EMBEDDED)
+                                        .embeddedValueSpec(AnonymousValueSpec.anonymousValueSpec()
+                                                .build())
+                                        .cardinality(PropertyCardinality.SINGLE))
+                        )
+                        .addProperty(PropertySpec.property()
+                                .name("listProp").type(PropertyTypeSpec.type()
+                                        .typeKind(TypeKind.EMBEDDED)
+                                        .embeddedValueSpec(AnonymousValueSpec.anonymousValueSpec()
+                                                .build())
+                                        .cardinality(PropertyCardinality.LIST))
+                        )
+                        .addProperty(PropertySpec.property()
+                                .name("setProp").type(PropertyTypeSpec.type()
+                                        .typeKind(TypeKind.EMBEDDED)
+                                        .embeddedValueSpec(AnonymousValueSpec.anonymousValueSpec()
+                                                .build())
+                                        .cardinality(PropertyCardinality.SET))
+                        )
+                ).build());
+
+        assertThat(this.fileContent("org.generated.classes.puml"), is(this.lines(
+                "@startuml",
+                "  ",
+                "  class \"org.generated.Value\" {",
+                "  }",
+                "  \"org.generated.Value\" *-- \"org.generated.value.SingleProp\" : singleProp",
+                "  \"org.generated.Value\" *-- \"*\" \"org.generated.value.ListProp\" : listProp",
+                "  \"org.generated.Value\" *-- \"*\" \"org.generated.value.SetProp\" : setProp\\n[Set]",
+                "  ",
+                "  class \"org.generated.value.SingleProp\" {",
+                "  }",
+                "  ",
+                "  class \"org.generated.value.ListProp\" {",
+                "  }",
+                "  ",
+                "  class \"org.generated.value.SetProp\" {",
+                "  }",
+                "@enduml"
+        )));
+
+        this.generatePng("org.generated.classes.puml");
+    }
 
 
 
@@ -221,6 +300,12 @@ public class PumlClassFromSpecGeneratorTest {
 
         SourceFileReader sourceFileReader = new SourceFileReader(new File(this.dir.getRoot(), name), outputDir, "UTF-8");
         if(sourceFileReader.hasError()) {
+            for (GeneratedImage generatedImage : sourceFileReader.getGeneratedImages()) {
+                System.err.println(generatedImage);
+            }
+            System.err.println(this.fileContent(name));
+
+
             throw new AssertionError("failed generating png from puml");
         }
         for (GeneratedImage generatedImage : sourceFileReader.getGeneratedImages()) {
