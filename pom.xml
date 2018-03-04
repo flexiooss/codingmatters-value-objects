@@ -71,6 +71,8 @@
         <module>cdm-value-objects-maven-plugin</module>
         <module>cdm-value-objects-json</module>
 
+        <module>cdm-value-objects-doc</module>
+
         <module>cdm-value-objects-generation-main</module>
 
         <module>cdm-value-objects-values</module>

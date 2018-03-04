@@ -25,6 +25,10 @@
             <groupId>org.codingmatters.value.objects</groupId>
             <artifactId>cdm-value-objects-json</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.codingmatters.value.objects</groupId>
+            <artifactId>cdm-value-objects-doc</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.maven</groupId>
