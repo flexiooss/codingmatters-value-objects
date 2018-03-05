@@ -5,12 +5,12 @@ import org.codingmatters.value.objects.spec.TypeKind;
 import org.codingmatters.value.objects.spec.ValueSpec;
 
 import java.io.IOException;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class PackageGenerator {
+
+    static public final String VALUE_OBJECT_STEREOTYPE =  "<< (V,#0099ff) >>";
+    static public final String EXT_VALUE_OBJECT_STEREOTYPE =  "<< (V,#0099ff) EXT>>";
 
     private final List<ValueSpec> valueSpecs;
     private final String packageName;
@@ -28,13 +28,34 @@ public class PackageGenerator {
 
     public void generate(FormattedWriter out) throws IOException {
         this.interfaceDeclaration(this.valueSpecs, out);
+        Set<String> externalValueObjects = new TreeSet<>();
 
         for (ValueSpec valueSpec : this.valueSpecs) {
+            externalValueObjects.addAll(this.externalValueObjects(valueSpec));
             this.valueClass(valueSpec, out);
             List<ValueSpec> embeddedValues = this.embeddedValues(valueSpec);
             if(! embeddedValues.isEmpty()) {
                 new PackageGenerator(embeddedValues, this.packageName + "." + valueSpec.name(), this.prefix).generate(out);
             }
+        }
+
+        this.externalValueObjectClasses(externalValueObjects, out);
+    }
+
+    private List<String> externalValueObjects(ValueSpec valueSpec) {
+        List<String> result = new LinkedList<>();
+        for (PropertySpec propertySpec : valueSpec.propertySpecs()) {
+            if(propertySpec.typeSpec().typeKind().equals(TypeKind.EXTERNAL_VALUE_OBJECT)) {
+                result.add(propertySpec.typeSpec().typeRef());
+            }
+        }
+        return result;
+    }
+
+    private void externalValueObjectClasses(Set<String> externalValueObjects, FormattedWriter out) throws IOException {
+        for (String externalValueObject : externalValueObjects) {
+            out.appendLine(this.prefix + "  class \"%s\" %s {", externalValueObject,  EXT_VALUE_OBJECT_STEREOTYPE);
+            out.appendLine(this.prefix + "  }");
         }
     }
 
@@ -55,7 +76,7 @@ public class PackageGenerator {
     private void valueClass(ValueSpec valueSpec, FormattedWriter out) throws IOException {
         String className = this.capitalizedFirst(valueSpec.name());
         out.appendLine(this.prefix + "  ");
-        out.appendLine(this.prefix + "  class \"%s.%s\" {", this.packageName, className);
+        out.appendLine(this.prefix + "  class \"%s.%s\" %s {", this.packageName, className,  VALUE_OBJECT_STEREOTYPE);
         for (PropertySpec propertySpec : valueSpec.propertySpecs()) {
             switch(propertySpec.typeSpec().typeKind()) {
                 case JAVA_TYPE:

@@ -10,6 +10,8 @@ import org.junit.rules.TestName;
 
 import java.io.*;
 
+import static org.codingmatters.value.objects.PackageGenerator.EXT_VALUE_OBJECT_STEREOTYPE;
+import static org.codingmatters.value.objects.PackageGenerator.VALUE_OBJECT_STEREOTYPE;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -42,7 +44,7 @@ public class PumlClassFromSpecGeneratorTest {
         assertThat(this.fileContent("org.generated.classes.puml"), is(this.lines(
                 "@startuml",
                 "  ",
-                "  class \"org.generated.A value object\" {",
+                "  class \"org.generated.A value object\" " + VALUE_OBJECT_STEREOTYPE + " {",
                 "  }",
                 "@enduml"
         )));
@@ -63,7 +65,7 @@ public class PumlClassFromSpecGeneratorTest {
                 "",
                 "interface \"" + Serializable.class.getName() + "\"",
                 "  ",
-                "  class \"org.generated.Value\" {",
+                "  class \"org.generated.Value\" " + VALUE_OBJECT_STEREOTYPE + " {",
                 "  }",
                 "  \"org.generated.Value\" <|- \"" + Serializable.class.getName() + "\"",
                 "@enduml"
@@ -91,7 +93,7 @@ public class PumlClassFromSpecGeneratorTest {
         assertThat(this.fileContent("org.generated.classes.puml"), is(this.lines(
                 "@startuml",
                 "  ",
-                "  class \"org.generated.Value\" {",
+                "  class \"org.generated.Value\" " + VALUE_OBJECT_STEREOTYPE + " {",
                 "    {field} singleProp : " + String.class.getName(),
                 "    {field} listProp : ValueList<" + String.class.getName() + ">",
                 "    {field} setProp : ValueSet<" + String.class.getName() + ">",
@@ -130,7 +132,7 @@ public class PumlClassFromSpecGeneratorTest {
         assertThat(this.fileContent("org.generated.classes.puml"), is(this.lines(
                 "@startuml",
                 "  ",
-                "  class \"org.generated.Value\" {",
+                "  class \"org.generated.Value\" " + VALUE_OBJECT_STEREOTYPE + " {",
                 "  }",
                 "  \"org.generated.Value\" *-- \"org.generated.Value2\" : singleProp",
                 "  \"org.generated.Value\" *-- \"*\" \"org.generated.Value2\" : listProp",
@@ -171,11 +173,13 @@ public class PumlClassFromSpecGeneratorTest {
         assertThat(this.fileContent("org.generated.classes.puml"), is(this.lines(
                 "@startuml",
                 "  ",
-                "  class \"org.generated.Value\" {",
+                "  class \"org.generated.Value\" " + VALUE_OBJECT_STEREOTYPE + " {",
                 "  }",
                 "  \"org.generated.Value\" *-- \"com.ext.Value\" : singleProp",
                 "  \"org.generated.Value\" *-- \"*\" \"com.ext.Value\" : listProp",
                 "  \"org.generated.Value\" *-- \"*\" \"com.ext.Value\" : setProp\\n[Set]",
+                "  class \"com.ext.Value\" " + EXT_VALUE_OBJECT_STEREOTYPE + " {",
+                "  }",
                 "@enduml"
         )));
 
@@ -210,7 +214,7 @@ public class PumlClassFromSpecGeneratorTest {
         assertThat(this.fileContent("org.generated.classes.puml"), is(this.lines(
                 "@startuml",
                 "  ",
-                "  class \"org.generated.Value\" {",
+                "  class \"org.generated.Value\" " + VALUE_OBJECT_STEREOTYPE + " {",
                 "  }",
                 "  ",
                 "  enum \"org.generated.Value.SingleProp\" {",
@@ -270,19 +274,19 @@ public class PumlClassFromSpecGeneratorTest {
         assertThat(this.fileContent("org.generated.classes.puml"), is(this.lines(
                 "@startuml",
                 "  ",
-                "  class \"org.generated.Value\" {",
+                "  class \"org.generated.Value\" " + VALUE_OBJECT_STEREOTYPE + " {",
                 "  }",
                 "  \"org.generated.Value\" *-- \"org.generated.value.SingleProp\" : singleProp",
                 "  \"org.generated.Value\" *-- \"*\" \"org.generated.value.ListProp\" : listProp",
                 "  \"org.generated.Value\" *-- \"*\" \"org.generated.value.SetProp\" : setProp\\n[Set]",
                 "  ",
-                "  class \"org.generated.value.SingleProp\" {",
+                "  class \"org.generated.value.SingleProp\" " + VALUE_OBJECT_STEREOTYPE + " {",
                 "  }",
                 "  ",
-                "  class \"org.generated.value.ListProp\" {",
+                "  class \"org.generated.value.ListProp\" " + VALUE_OBJECT_STEREOTYPE + " {",
                 "  }",
                 "  ",
-                "  class \"org.generated.value.SetProp\" {",
+                "  class \"org.generated.value.SetProp\" " + VALUE_OBJECT_STEREOTYPE + " {",
                 "  }",
                 "@enduml"
         )));
