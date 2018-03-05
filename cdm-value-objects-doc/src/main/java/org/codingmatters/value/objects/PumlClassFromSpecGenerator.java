@@ -1,5 +1,9 @@
 package org.codingmatters.value.objects;
 
+import net.sourceforge.plantuml.FileFormat;
+import net.sourceforge.plantuml.FileFormatOption;
+import net.sourceforge.plantuml.GeneratedImage;
+import net.sourceforge.plantuml.SourceFileReader;
 import org.codingmatters.value.objects.spec.Spec;
 
 import java.io.File;
@@ -30,6 +34,24 @@ public class PumlClassFromSpecGenerator {
             out.flush();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        this.generateSvg(classesFile);
+    }
+
+    private void generateSvg(File classesFile) throws IOException {
+        SourceFileReader sourceFileReader = new SourceFileReader(
+                classesFile,
+                classesFile.getParentFile(),
+                new FileFormatOption(FileFormat.SVG));
+        if(sourceFileReader.hasError()) {
+            for (GeneratedImage generatedImage : sourceFileReader.getGeneratedImages()) {
+                System.err.println(generatedImage);
+            }
+            throw new AssertionError("failed generating svg from puml : " + classesFile.getAbsolutePath());
+        }
+        for (GeneratedImage generatedImage : sourceFileReader.getGeneratedImages()) {
+            System.out.println("generated : " + generatedImage);
         }
     }
 
