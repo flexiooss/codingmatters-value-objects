@@ -1,10 +1,7 @@
 package org.codingmatters.value.objects.json;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
 import org.codingmatters.value.objects.generation.ValueConfiguration;
 import org.codingmatters.value.objects.json.property.SimplePropertyWriter;
 import org.codingmatters.value.objects.spec.PropertySpec;
@@ -32,6 +29,7 @@ public class ValueWriter {
         return TypeSpec.classBuilder(this.types.valueType().simpleName() + "Writer")
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(this.buildWriteWithGeneratorMethod())
+                .addMethod(this.buildWriteArrayWithGeneratorMethod())
                 .build();
     }
 
@@ -47,6 +45,27 @@ public class ValueWriter {
             this.writePropertyStatements(method, propertySpec);
         }
         method.addStatement("generator.writeEndObject()");
+
+        method.returns(TypeName.VOID);
+        return method.build();
+    }
+
+    private MethodSpec buildWriteArrayWithGeneratorMethod() {
+        MethodSpec.Builder method = MethodSpec.methodBuilder("writeArray")
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(JsonGenerator.class, "generator")
+                .addParameter(ArrayTypeName.of(this.types.valueType()), "values")
+                .addException(ClassName.get(IOException.class));
+
+        method.beginControlFlow("if(values == null)")
+                    .addStatement("generator.writeNull()")
+                .nextControlFlow("else")
+                    .addStatement("generator.writeStartArray()")
+                    .beginControlFlow("for($T value : values)", this.types.valueType())
+                        .addStatement("this.write(generator, value)")
+                    .endControlFlow()
+                    .addStatement("generator.writeEndArray()")
+                .endControlFlow();
 
         method.returns(TypeName.VOID);
         return method.build();
