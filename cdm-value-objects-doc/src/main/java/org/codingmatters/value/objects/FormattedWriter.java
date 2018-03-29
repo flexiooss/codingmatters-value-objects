@@ -4,10 +4,10 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.Writer;
 
-class FormattedWriter implements Closeable {
+public class FormattedWriter implements Closeable {
     private final Writer out;
 
-    FormattedWriter(Writer out) {
+    public FormattedWriter(Writer out) {
         this.out = out;
     }
 

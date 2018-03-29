@@ -299,7 +299,8 @@ public class PumlClassFromSpecGeneratorTest {
 
 
     private void generatePng(String name) throws IOException {
-        File outputDir = new File("/tmp/exp/" + this.name.getMethodName());
+//        File outputDir = new File("/tmp/exp/" + this.name.getMethodName());
+        File outputDir = this.dir.newFolder();
         outputDir.mkdirs();
 
         SourceFileReader sourceFileReader = new SourceFileReader(new File(this.dir.getRoot(), name), outputDir, "UTF-8");
