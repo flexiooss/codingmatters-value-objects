@@ -5,6 +5,7 @@ import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.GeneratedImage;
 import net.sourceforge.plantuml.SourceFileReader;
 import org.codingmatters.value.objects.spec.Spec;
+import org.codingmatters.value.objects.spec.ValueSpec;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -35,8 +36,23 @@ public class PumlClassFromSpecGenerator {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         this.generateSvg(classesFile);
+
+        for (ValueSpec valueSpec : this.spec.valueSpecs()) {
+            classesFile = new File(this.rootDirectory, this.rootPackage + "." + valueSpec.name() + ".classes.puml");
+            classesFile.createNewFile();
+
+            try(FormattedWriter out = new FormattedWriter(new FileWriter(classesFile))) {
+                out.appendLine("@startuml");
+                new PackageGenerator(this.spec.valueSpecs(), this.rootPackage).generate(valueSpec, out);
+                out.appendLine("@enduml");
+                out.flush();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            this.generateSvg(classesFile);
+        }
+
     }
 
     private void generateSvg(File classesFile) throws IOException {

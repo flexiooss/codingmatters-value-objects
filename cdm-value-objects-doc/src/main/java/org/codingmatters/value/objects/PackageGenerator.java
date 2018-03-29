@@ -42,6 +42,20 @@ public class PackageGenerator {
         this.externalValueObjectClasses(externalValueObjects, out);
     }
 
+    public void generate(ValueSpec valueSpec, FormattedWriter out) throws IOException {
+        this.interfaceDeclaration(Arrays.asList(valueSpec), out);
+
+        Set<String> externalValueObjects = new TreeSet<>();
+        externalValueObjects.addAll(this.externalValueObjects(valueSpec));
+        this.valueClass(valueSpec, out);
+        List<ValueSpec> embeddedValues = this.embeddedValues(valueSpec);
+        if(! embeddedValues.isEmpty()) {
+            new PackageGenerator(embeddedValues, this.packageName + "." + valueSpec.name(), this.prefix).generate(out);
+        }
+
+        this.externalValueObjectClasses(externalValueObjects, out);
+    }
+
     private List<String> externalValueObjects(ValueSpec valueSpec) {
         List<String> result = new LinkedList<>();
         for (PropertySpec propertySpec : valueSpec.propertySpecs()) {
