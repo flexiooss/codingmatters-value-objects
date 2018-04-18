@@ -12,6 +12,18 @@ public class ObjectValueWriter {
         this.writeObject(generator, value);
     }
 
+    public void writeArray(JsonGenerator generator, ObjectValue[] values) throws IOException {
+        if(values == null) {
+            generator.writeNull();
+        } else {
+            generator.writeStartArray();
+            for(ObjectValue value : values) {
+                this.write(generator, value);
+            }
+            generator.writeEndArray();
+        }
+    }
+
     private void writeValue(JsonGenerator generator, PropertyValue property) throws IOException {
         if(property.isNullValue()) {
             generator.writeNull();
