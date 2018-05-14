@@ -121,9 +121,12 @@ public class ValueConfiguration {
             return this.valueType().nestedClass(this.enumTypeName(propertySpec.name()));
         } else {
             try {
-                return ClassName.get(Class.forName(propertySpec.typeSpec().typeRef()));
+                Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(propertySpec.typeSpec().typeRef());
+                return ClassName.get(clazz);
+//                return Class.forName(propertySpec.typeSpec().typeRef())
             } catch (ClassNotFoundException e) {
                 System.err.println("class not found : " + propertySpec.typeSpec().typeRef());
+                e.printStackTrace();
                 return null;
             }
         }
