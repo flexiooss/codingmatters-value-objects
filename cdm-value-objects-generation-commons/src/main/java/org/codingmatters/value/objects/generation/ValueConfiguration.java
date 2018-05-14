@@ -8,6 +8,8 @@ import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.ValueSpec;
 
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Optional;
 
 import static org.codingmatters.value.objects.spec.TypeKind.ENUM;
@@ -70,7 +72,7 @@ public class ValueConfiguration {
                 return ArrayTypeName.of(byte.class);
             } else {
                 try {
-                    return ClassName.bestGuess(propertySpec.typeSpec().typeRef());
+                    return ClassName.bestGuess(propertySpec.typeSpec().typeRef().replaceAll("\\$", "."));
                 } catch(IllegalArgumentException e) {
                     System.err.println("#######");
                     System.err.println("#######");
@@ -121,11 +123,13 @@ public class ValueConfiguration {
             return this.valueType().nestedClass(this.enumTypeName(propertySpec.name()));
         } else {
             try {
-                Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(propertySpec.typeSpec().typeRef());
-                return ClassName.get(clazz);
-//                return Class.forName(propertySpec.typeSpec().typeRef())
+                return ClassName.get(Class.forName(propertySpec.typeSpec().typeRef()));
             } catch (ClassNotFoundException e) {
                 System.err.println("class not found : " + propertySpec.typeSpec().typeRef());
+                System.err.println("classpath :");
+                for (URL url : ((URLClassLoader) Thread.currentThread().getContextClassLoader()).getURLs()) {
+                    System.err.println("\t- " + url.toString());
+                }
                 e.printStackTrace();
                 return null;
             }
