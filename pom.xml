@@ -78,6 +78,8 @@
         <module>cdm-value-objects-values</module>
 
         <module>cdm-value-objects-demo</module>
+
+        <module>cdm-value-objects-php</module>
     </modules>
 
     <prerequisites>

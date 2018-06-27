@@ -1,0 +1,14 @@
+{
+    "name":"phpGeneration/unitTests",
+    "require": {
+        "phpunit/phpunit": "^6.4"
+    },
+    "autoload": {
+        "classmap": [
+            "org/"
+        ],
+        "psr-4": {
+            "org\\": "org/"
+        }
+    }
+}

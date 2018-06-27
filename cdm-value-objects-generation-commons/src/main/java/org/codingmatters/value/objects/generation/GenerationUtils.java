@@ -11,7 +11,8 @@ import java.io.IOException;
  */
 public class GenerationUtils {
     static public File packageDir(File baseDir, String packageName) {
-        return new File(baseDir, packageName.replaceAll(".", "/"));
+        String child = packageName.replaceAll( "\\.", "/" );
+        return new File(baseDir, child );
     }
 
     static public void writeJavaFile(File packageDestination, String pack, TypeSpec type) throws IOException {
