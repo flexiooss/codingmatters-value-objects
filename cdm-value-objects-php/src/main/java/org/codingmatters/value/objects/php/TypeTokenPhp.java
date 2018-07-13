@@ -4,30 +4,39 @@ import org.codingmatters.value.objects.spec.TypeToken;
 
 public enum TypeTokenPhp {
     STRING( "string" ),
-    INT( "integer" ),
-    LONG( "integer" ),
+    INT( "int" ),
+    LONG( "int" ),
     FLOAT( "float" ),
     DOUBLE( "float" ),
-    BOOL( "boolean" ),
-    BYTES( "" ),
-    DATE( "DateTime" ),
-    TIME( "DateTime" ),
-    DATE_TIME( "DateTime" ),
-    TZ_DATE_TIME( "DateTime" );
+    BOOL( "bool" ),
+    BYTES( "string" ),
+    DATE( "date-time", "DateTime" ),
+    TIME( "date-time", "DateTime" ),
+    DATE_TIME( "date-time", "DateTime" ),
+    TZ_DATE_TIME( "date-time", "DateTime" );
 
     private final String type;
+    private String implementationType;
 
     public static TypeTokenPhp parse( String typeSpec ) {
-
-        return TypeTokenPhp.valueOf( TypeToken.parse( typeSpec ).name() );
+        String name = TypeToken.parse( typeSpec ).name();
+        return TypeTokenPhp.valueOf( name );
     }
 
     TypeTokenPhp( String type ) {
-        this.type = type;
+        this( type, type );
     }
 
-    public String getImplementationType() {
+    TypeTokenPhp( String type, String implementationType ) {
+        this.type = type;
+        this.implementationType = implementationType;
+    }
+
+    public String getTypeName() {
         return this.type;
     }
 
+    public String getImplementationType() {
+        return this.implementationType;
+    }
 }

@@ -2,30 +2,30 @@ book:
   name: string
   author: $person
   bookFormat: string
-#  datePublished: date
-#  kind:
-#    $enum: TEXTBOOK, AUDIOBOOK
-#  tags:
-#    $set:
-#      $enum: CHILDREN, SCIENCE, LITERATURE
+  published: bool
+  kind:
+    $enum: TEXTBOOK, AUDIOBOOK
+  tags:
+    $set:
+      $enum: CHILDREN, SCIENCE, LITERATURE
 #  isbn: string
-#  numberOfPages: int
-#  reviews:
-#    $list: $review
+  numberOfPages: int
+  reviews:
+    $list: $review
 
 person:
   name: string
   email: string
   address:
     streetAddress: string
-#    postalCode: string
+  postalCode: bytes
 #    addressLocality: string
 #    addressRegion: string
 #    addressCountry: string
 #
 review:
-#  author: $person
-#  datePublished: date-time
+  author: $person
+  publicationDate: date
 #  itemReviewed: $book
   reviewBody: string
 #  reviewRating:

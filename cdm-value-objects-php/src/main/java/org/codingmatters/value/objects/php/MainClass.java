@@ -1,5 +1,6 @@
 package org.codingmatters.value.objects.php;
 
+import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.spec.Spec;
 
 import java.io.File;
@@ -16,15 +17,23 @@ public class MainClass {
     }
 
     public static void main( String[] args ) throws IOException {
+
+
         String rootPath = System.getProperty( "generationTargetDir", "" );
         if( rootPath.equals( "" ) ) {
             rootPath = "/home/nico/workspace/codingmatters-value-objects/cdm-value-objects-php/target/test-classes";
-            System.out.println( "Generation target dir property not found" );
-            System.exit( 1 );
+//            System.out.println( "Generation target dir property not found" );
+//            System.exit( 1 );
         }
         System.out.println( "Generating in " + rootPath );
+
+//        Spec spec = loadSpec( "test.yaml" );
+//        new SpecCodeGenerator( spec, "org.generated", new File( rootPath ) );
+
+
         Spec spec = loadSpec( "books.yaml" );
         new SpecPhpGenerator( spec, "org.generated", new File( rootPath ) ).generate();
+
     }
 
 }
