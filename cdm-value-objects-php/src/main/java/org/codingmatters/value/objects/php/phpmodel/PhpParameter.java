@@ -17,6 +17,8 @@ public class PhpParameter {
         this.type = type;
     }
 
+
+
     public String name() {
         return this.name;
     }
@@ -32,6 +34,9 @@ public class PhpParameter {
     }
 
     private String getTypeName( PropertyTypeSpec fieldSpec ) throws IOException {
+        if( fieldSpec == null ){
+            return "";
+        }
         if( fieldSpec.typeKind() == TypeKind.JAVA_TYPE ) {
             return TypeTokenPhp.parse( fieldSpec.typeRef() ).getImplementationType();
         } else if( fieldSpec.typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT ) {
@@ -40,7 +45,6 @@ public class PhpParameter {
 //            }
             return firstLetterUpperCase( fieldSpec.typeRef() );
         } else if( fieldSpec.typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT ) {
-            // TODO Got package name to import here
             return firstLetterUpperCase(
                     fieldSpec.typeRef().substring( fieldSpec.typeRef().lastIndexOf( "." ) + 1 )
             );

@@ -10,8 +10,7 @@ import org.codingmatters.value.objects.spec.TypeKind;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class SpecPhpGenerator {
 
@@ -39,26 +38,50 @@ public class SpecPhpGenerator {
                 }
             }
         }
-        for( PackagedValueSpec valueSpec : packagedValueSpecs ) {
-            File packageDestination = new File( rootDirectory, valueSpec.packagename().replace( ".", "/" ) );
-            this.writePhpFile( packageDestination, valueSpec );
-        }
+        Map<String, String> classReferencesContext = new HashMap<>();
         for( PhpEnum enumValue : enumValues ) {
             File packageDestination = new File( rootDirectory, enumValue.packageName().replace( ".", "/" ) );
-            this.writePhpEnum( packageDestination, enumValue );
+            this.writePhpEnum( packageDestination, enumValue, classReferencesContext );
+        }
+        fillClassContext( classReferencesContext, packagedValueSpecs );
+        for( PackagedValueSpec valueSpec : packagedValueSpecs ) {
+            File packageDestination = new File( rootDirectory, valueSpec.packagename().replace( ".", "/" ) );
+            this.writePhpFile( packageDestination, valueSpec, classReferencesContext );
         }
     }
 
-    private void writePhpEnum( File packageDestination, PhpEnum enumValue ) throws IOException {
-        PhpTypeClassWriter fileWriter = new PhpTypeClassWriter( packageDestination, enumValue.packageName(), enumValue.name() );
-        fileWriter.write( enumValue );
+    private void fillClassContext( Map<String, String> classReferencesContext, List<PackagedValueSpec> packagedValueSpecs ) {
+        for( PackagedValueSpec packagedValueSpec : packagedValueSpecs ) {
+            if( new PhpModelParser().needToBeGenerated( packagedValueSpec ) ) {
+                String name = firstLetterUpperCase( packagedValueSpec.valueSpec().name() );
+                classReferencesContext.put( name, packagedValueSpec.packagename() + "." + name );
+            }else{
+                classReferencesContext.put( firstLetterUpperCase( packagedValueSpec.valueSpec().name() ), packagedValueSpec.valueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() );
+            }
+            for( PropertySpec propertySpec : packagedValueSpec.valueSpec().propertySpecs() ) {
+                if( propertySpec.name().equals( "$value-object" ) ) {
+                    String[] split = propertySpec.typeSpec().typeRef().split( "\\." );
+                    classReferencesContext.put( split[split.length - 1], propertySpec.typeSpec().typeRef() );
+                }
+            }
+        }
     }
 
-    private void writePhpFile( File packageDestination, PackagedValueSpec valueObject ) throws IOException {
-        PhpPackagedValueSpec phpValueObject = new PhpModelParser().parseValueSpec( valueObject );
+    private void writePhpEnum( File packageDestination, PhpEnum enumValue, Map<String, String> classReferencesContext ) throws IOException {
+        PhpTypeClassWriter fileWriter = new PhpTypeClassWriter( packageDestination, enumValue.packageName(), enumValue.name() );
+        fileWriter.write( enumValue, classReferencesContext );
+    }
+
+    private void writePhpFile( File packageDestination, PackagedValueSpec valueObject, Map<String, String> classReferencesContext ) throws IOException {
+        PhpPackagedValueSpec phpValueObject = new PhpModelParser().parseValueSpec( valueObject, classReferencesContext );
         if( phpValueObject != null ) {
             PhpTypeClassWriter fileWriter = new PhpTypeClassWriter( packageDestination, valueObject.packagename(), valueObject.valueSpec().name() );
-            fileWriter.write( phpValueObject );
+            fileWriter.write( phpValueObject, classReferencesContext );
         }
     }
+
+    private String firstLetterUpperCase( String name ) {
+        return name.substring( 0, 1 ).toUpperCase( Locale.ENGLISH ) + name.substring( 1 );
+    }
+
 }

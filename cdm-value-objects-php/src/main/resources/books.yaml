@@ -19,6 +19,12 @@ person:
   address:
     streetAddress: string
   postalCode: bytes
+  reference:
+    $value-object: io.flexio.utils.TypedArray
+#  references: NOT HANDLED
+#    $list:
+#      $value-object: io.flexio.utils.TypedArray
+
 #    addressLocality: string
 #    addressRegion: string
 #    addressCountry: string

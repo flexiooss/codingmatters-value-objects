@@ -10,9 +10,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PhpTypeClassWriter {
@@ -39,10 +37,16 @@ public class PhpTypeClassWriter {
     }
 
 
-    public void write( PhpEnum enumValue ) throws IOException {
+    public void write( PhpEnum enumValue, Map<String, String> classReferencesContext ) throws IOException {
+        putClassInContext( enumValue.name(), classReferencesContext );
         startPhpFile();
 
+        writer.write( "use \\Exception;" );
+        twoLine( 0 );
+
         writer.write( "class " + enumValue.name() + " {" );
+        twoLine( 1 );
+        writer.write( "private const values = array('" + String .join( "', '", enumValue.enumValues() ) + "');" );
         twoLine( 1 );
         writer.write( "protected $value;" );
         twoLine( 1 );
@@ -70,12 +74,39 @@ public class PhpTypeClassWriter {
             writer.write( "}" );
             newLine( 0 );
         }
+        newLine( 1 );
+        writer.write( "public static function valueOf( string $value ){" );
+        newLine( 2 );
+        writer.write( "if( in_array($value, BookKind::values())){" );
+        newLine( 3 );
+        writer.write( "return new BookKind( $value );" );
+        newLine( 2 );
+        writer.write( "} else {" );
+        newLine( 3 );
+        writer.write( "throw new Exception( 'No enum constant '.$value );" );
+        newLine( 2 );
+        writer.write( "}" );
+        newLine( 1 );
+        writer.write( "}" );
+        twoLine( 1 );
 
+        writer.write( "public static function values(){" );
+        newLine( 2 );
+        writer.write( "return BookKind::values;" );
+        newLine( 1 );
+        writer.write( "}" );
+        newLine( 0 );
 
         writer.write( "}" );
 
         writer.flush();
         writer.close();
+    }
+
+    private void putClassInContext( String name, Map<String, String> classReferencesContext ) {
+        if(! classReferencesContext.containsKey( name )) {
+            classReferencesContext.put( name, this.packageName + "." + name );
+        }
     }
 
     private void startPhpFile() throws IOException {
@@ -86,11 +117,12 @@ public class PhpTypeClassWriter {
         twoLine( 0 );
     }
 
-    public void write( PhpPackagedValueSpec spec ) throws IOException {
+    public void write( PhpPackagedValueSpec spec, Map<String, String> classReferencesContext ) throws IOException {
+        putClassInContext( this.objectName, classReferencesContext );
         startPhpFile();
 
         for( String importation : spec.imports() ) {
-            writer.write( "use " + importation + ";" );
+            writer.write( "use " + importation.replace( ".", "\\" ) + ";" );
             writer.newLine();
         }
         writer.newLine();

@@ -18,7 +18,6 @@ public class MainClass {
 
     public static void main( String[] args ) throws IOException {
 
-
         String rootPath = System.getProperty( "generationTargetDir", "" );
         if( rootPath.equals( "" ) ) {
             rootPath = "/home/nico/workspace/codingmatters-value-objects/cdm-value-objects-php/target/test-classes";
@@ -27,8 +26,8 @@ public class MainClass {
         }
         System.out.println( "Generating in " + rootPath );
 
-//        Spec spec = loadSpec( "test.yaml" );
-//        new SpecCodeGenerator( spec, "org.generated", new File( rootPath ) );
+//        Spec spec = loadSpec( "books.yaml" );
+//        new SpecCodeGenerator( spec, "org.generated", new File( rootPath ) ).generate();
 
 
         Spec spec = loadSpec( "books.yaml" );
