@@ -10,7 +10,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PhpTypeClassWriter {
@@ -46,8 +49,6 @@ public class PhpTypeClassWriter {
 
         writer.write( "class " + enumValue.name() + " {" );
         twoLine( 1 );
-        writer.write( "private const values = array('" + String .join( "', '", enumValue.enumValues() ) + "');" );
-        twoLine( 1 );
         writer.write( "protected $value;" );
         twoLine( 1 );
         writer.write( "private function __construct( $value ){" );
@@ -65,7 +66,7 @@ public class PhpTypeClassWriter {
 
         for( String value : enumValue.enumValues() ) {
             newLine( 1 );
-            writer.write( "public static function " + value + "(){ " );
+            writer.write( "public static function " + value + "(): " + enumValue.name() + " { " );
             writer.newLine();
             indent( 2 );
             writer.write( "return new " + enumValue.name() + "( '" + value + "' );" );
@@ -75,7 +76,7 @@ public class PhpTypeClassWriter {
             newLine( 0 );
         }
         newLine( 1 );
-        writer.write( "public static function valueOf( string $value ){" );
+        writer.write( "public static function valueOf( string $value ): " + enumValue.name() + " {" );
         newLine( 2 );
         writer.write( "if( in_array($value, BookKind::values())){" );
         newLine( 3 );
@@ -92,7 +93,7 @@ public class PhpTypeClassWriter {
 
         writer.write( "public static function values(){" );
         newLine( 2 );
-        writer.write( "return BookKind::values;" );
+        writer.write( "return array('" + String.join( "', '", enumValue.enumValues() ) + "');" );
         newLine( 1 );
         writer.write( "}" );
         newLine( 0 );
@@ -104,7 +105,7 @@ public class PhpTypeClassWriter {
     }
 
     private void putClassInContext( String name, Map<String, String> classReferencesContext ) {
-        if(! classReferencesContext.containsKey( name )) {
+        if( !classReferencesContext.containsKey( name ) ) {
             classReferencesContext.put( name, this.packageName + "." + name );
         }
     }
@@ -146,7 +147,12 @@ public class PhpTypeClassWriter {
             writer.write( phpMethod.name() );
             writer.write( "(" );
             writer.write( String.join( ", ", phpMethod.parameters().stream().map( param->param.type() + " $" + param.name() ).collect( Collectors.toList() ) ) );
-            writer.write( "){" );
+            writer.write( ")" );
+            String returnType = phpMethod.type();
+            if( returnType != null ) {
+                writer.write( ": " + returnType );
+            }
+            writer.write( " {" );
             writer.newLine();
             for( String instruction : phpMethod.instructions() ) {
                 indent( 2 );

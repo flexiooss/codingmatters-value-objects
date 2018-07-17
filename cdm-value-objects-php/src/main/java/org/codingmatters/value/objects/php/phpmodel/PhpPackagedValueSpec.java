@@ -3,7 +3,9 @@ package org.codingmatters.value.objects.php.phpmodel;
 import org.codingmatters.value.objects.spec.PropertyTypeSpec;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PhpPackagedValueSpec {
 
@@ -12,14 +14,14 @@ public class PhpPackagedValueSpec {
     private List<PhpPropertySpec> properties;
     private List<PhpMethod> methods;
     private PropertyTypeSpec extender;
-    private List<String> imports;
+    private Set<String> imports;
 
     public PhpPackagedValueSpec( String packageName, String name ) {
         this.name = name;
         this.packageName = packageName;
         this.properties = new ArrayList<>();
         this.methods = new ArrayList<>();
-        this.imports = new ArrayList<>();
+        this.imports = new HashSet<>();
         this.extender = null;
     }
 
@@ -55,7 +57,7 @@ public class PhpPackagedValueSpec {
         imports.add( importation );
     }
 
-    public List<String> imports() {
+    public Set<String> imports() {
         return imports;
     }
 }

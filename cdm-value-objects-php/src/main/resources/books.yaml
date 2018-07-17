@@ -32,6 +32,8 @@ person:
 review:
   author: $person
   publicationDate: date
+  publicationDateTime: date-time
+  publicationTime: time
 #  itemReviewed: $book
   reviewBody: string
 #  reviewRating:

@@ -91,10 +91,16 @@ class BookTest extends TestCase {
         $review = new Review();
 
         $date = new DateTime('2011-08-01T15:03:01.012345Z');
+        $datetime = new DateTime('2011-09-01T15:04:01.012345Z');
+        $time = new DateTime('2011-10-01T15:05:01.012345Z');
 
         $review -> withPublicationDate( $date );
+        $review -> withPublicationDateTime( $datetime );
+        $review -> withPublicationTime( $time );
 
         $this -> assertSame( "2011-08-01", $review->publicationDate()->format("Y-m-d") );
+        $this -> assertSame( "2011-09-01", $review->publicationDateTime()->format("Y-m-d") );
+        $this -> assertSame( "2011-10-01", $review->publicationTime()->format("Y-m-d") );
     }
 
     public function testExternalValueObject(){
@@ -115,6 +121,6 @@ class BookTest extends TestCase {
 
         $this -> assertSame( "coucou body", $person -> reference()[0]->reviewBody() );
         $this -> assertSame( "hello nobody", $person -> reference()[1]->reviewBody() );
-
     }
+
 }

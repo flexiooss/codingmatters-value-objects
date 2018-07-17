@@ -87,13 +87,13 @@ public class PhpModelParser {
             }
             phpPackagedValueSpec.addProperty( property );
 
-            phpPackagedValueSpec.addMethod( createGetter( propertySpec ) );
-            phpPackagedValueSpec.addMethod( createSetter( propertySpec, classReferencesContext ) );
+            phpPackagedValueSpec.addMethod( createGetter( propertySpec, classReferencesContext ) );
+            phpPackagedValueSpec.addMethod( createSetter( propertySpec, classReferencesContext, firstLetterUpperCase( valueSpec.valueSpec().name() ) ) );
         }
         return phpPackagedValueSpec;
     }
 
-    private PhpMethod createSetter( PropertySpec propertySpec, Map<String, String> classReferencesContext ) {
+    private PhpMethod createSetter( PropertySpec propertySpec, Map<String, String> classReferencesContext, String returnType ) {
         PhpMethod phpMethod = new PhpMethod( "with" + firstLetterUpperCase( propertySpec.name() ) );
         String[] split = propertySpec.typeSpec().typeRef().split( "\\." );
         if( classReferencesContext.containsKey( split[split.length - 1] ) ) {
@@ -106,12 +106,22 @@ public class PhpModelParser {
         }
         phpMethod.addInstruction( "$this->" + propertySpec.name() + " = " + "$" + propertySpec.name() );
         phpMethod.addInstruction( "return $this" );
+        phpMethod.returnType( PropertyTypeSpec.type().typeKind( TypeKind.EXTERNAL_VALUE_OBJECT ).typeRef( returnType ).build() );
         return phpMethod;
     }
 
-    private PhpMethod createGetter( PropertySpec propertySpec ) {
+    private PhpMethod createGetter( PropertySpec propertySpec, Map<String, String> classReferencesContext ) {
         PhpMethod phpMethod = new PhpMethod( propertySpec.name() );
         phpMethod.addInstruction( "return $this->" + propertySpec.name() );
+        String[] split = propertySpec.typeSpec().typeRef().split( "\\." );
+        if( classReferencesContext.containsKey( split[split.length - 1] ) ) {
+            phpMethod.returnType( PropertyTypeSpec.type()
+                    .typeKind( TypeKind.EXTERNAL_VALUE_OBJECT )
+                    .typeRef( classReferencesContext.get( split[split.length - 1] ) )
+                    .build() );
+        } else {
+            phpMethod.returnType( propertySpec.typeSpec() );
+        }
         return phpMethod;
     }
 
