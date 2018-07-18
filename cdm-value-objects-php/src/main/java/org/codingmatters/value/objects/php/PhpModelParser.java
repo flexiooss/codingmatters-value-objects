@@ -80,7 +80,7 @@ public class PhpModelParser {
                 phpPackagedValueSpec.addImport( valueSpec.packagename().replace( ".", "\\" ) + "\\" + valueSpec.valueSpec().name() + "\\" + propertySpec.typeSpec().typeRef() );
             } else if( propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE ) {
                 if( propertySpec.typeSpec().typeRef().contains( "date" ) ) {
-                    phpPackagedValueSpec.addImport( "\\DateTime" );
+                    phpPackagedValueSpec.addImport( "io.flexio.utils.FlexDate" );
                 } else if( propertySpec.name().equals( "$value-object" ) ) {
                     phpPackagedValueSpec.addImport( propertySpec.typeSpec().typeRef() );
                 }

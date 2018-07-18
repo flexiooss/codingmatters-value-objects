@@ -10,15 +10,20 @@ public enum TypeTokenPhp {
     DOUBLE( "float" ),
     BOOL( "bool" ),
     BYTES( "string" ),
-    DATE( "date-time", "DateTime" ),
-    TIME( "date-time", "DateTime" ),
-    DATE_TIME( "date-time", "DateTime" ),
-    TZ_DATE_TIME( "date-time", "DateTime" );
+    DATE( "date-time", "FlexDate" ),
+    TIME( "date-time", "FlexDate" ),
+    DATE_TIME( "date-time", "FlexDate" ),
+    TZ_DATE_TIME( "date-time", "FlexDate" );
 
     private final String type;
     private String implementationType;
 
     public static TypeTokenPhp parse( String typeSpec ) {
+        for( TypeToken typeToken : TypeToken.values() ) {
+            if( typeToken.getImplementationType().equals( typeSpec ) ) {
+                return TypeTokenPhp.valueOf( typeToken.name() );
+            }
+        }
         String name = TypeToken.parse( typeSpec ).name();
         return TypeTokenPhp.valueOf( name );
     }

@@ -20,9 +20,8 @@ public class MainClass {
 
         String rootPath = System.getProperty( "generationTargetDir", "" );
         if( rootPath.equals( "" ) ) {
-            rootPath = "/home/nico/workspace/codingmatters-value-objects/cdm-value-objects-php/target/test-classes";
-//            System.out.println( "Generation target dir property not found" );
-//            System.exit( 1 );
+            System.out.println( "Generation target dir property not found" );
+            System.exit( 1 );
         }
         System.out.println( "Generating in " + rootPath );
 

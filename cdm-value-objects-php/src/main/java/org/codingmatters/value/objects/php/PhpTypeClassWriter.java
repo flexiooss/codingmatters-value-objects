@@ -46,8 +46,10 @@ public class PhpTypeClassWriter {
 
         writer.write( "use \\Exception;" );
         twoLine( 0 );
+        writer.write( "use \\JsonSerializable;" );
+        twoLine( 0 );
 
-        writer.write( "class " + enumValue.name() + " {" );
+        writer.write( "class " + enumValue.name() + " implements JsonSerializable {" );
         twoLine( 1 );
         writer.write( "protected $value;" );
         twoLine( 1 );
@@ -96,8 +98,15 @@ public class PhpTypeClassWriter {
         writer.write( "return array('" + String.join( "', '", enumValue.enumValues() ) + "');" );
         newLine( 1 );
         writer.write( "}" );
-        newLine( 0 );
 
+        newLine( 1 );
+        writer.write( "public function jsonSerialize() {" );
+        newLine( 2 );
+        writer.write( "return $this->value;" );
+        newLine( 1 );
+        writer.write( "}" );
+
+        newLine( 0 );
         writer.write( "}" );
 
         writer.flush();

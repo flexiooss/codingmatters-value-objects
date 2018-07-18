@@ -13,6 +13,7 @@ use org\generated\book\BookKind;
 use org\generated\book\tags\BookTags;
 use org\generated\person\Address;
 use org\generated\book\Tags;
+use io\flexio\utils\FlexDate;
 use \DateTime;
 
 class BookTest extends TestCase {
@@ -90,17 +91,17 @@ class BookTest extends TestCase {
     public function testDate() {
         $review = new Review();
 
-        $date = new DateTime('2011-08-01T15:03:01.012345Z');
-        $datetime = new DateTime('2011-09-01T15:04:01.012345Z');
-        $time = new DateTime('2011-10-01T15:05:01.012345Z');
+        $date = FlexDate::newDate('2011-08-01');
+        $datetime = FlexDate::newDateTime('2011-09-01T15:04:01');
+        $time = FlexDate::newTime('2011-10-01T15:05:01.012345Z');
 
         $review -> withPublicationDate( $date );
         $review -> withPublicationDateTime( $datetime );
         $review -> withPublicationTime( $time );
 
-        $this -> assertSame( "2011-08-01", $review->publicationDate()->format("Y-m-d") );
-        $this -> assertSame( "2011-09-01", $review->publicationDateTime()->format("Y-m-d") );
-        $this -> assertSame( "2011-10-01", $review->publicationTime()->format("Y-m-d") );
+        $this -> assertSame( '2011-08-01', $review->publicationDate()->jsonSerialize() );
+        $this -> assertSame( '2011-09-01T15:04:01', $review->publicationDateTime()->jsonSerialize() );
+        $this -> assertSame( '15:05:01', $review->publicationTime()->jsonSerialize() );
     }
 
     public function testExternalValueObject(){
