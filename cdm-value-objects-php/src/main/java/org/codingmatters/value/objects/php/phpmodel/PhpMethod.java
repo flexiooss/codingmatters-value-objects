@@ -1,6 +1,6 @@
 package org.codingmatters.value.objects.php.phpmodel;
 
-import org.codingmatters.value.objects.php.TypeTokenPhp;
+import org.codingmatters.value.objects.php.generator.TypeTokenPhp;
 import org.codingmatters.value.objects.spec.PropertyTypeSpec;
 import org.codingmatters.value.objects.spec.TypeKind;
 

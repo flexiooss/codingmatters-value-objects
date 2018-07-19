@@ -1,4 +1,4 @@
-package org.codingmatters.value.objects.php;
+package org.codingmatters.value.objects.php.generator;
 
 import org.codingmatters.value.objects.generation.preprocessor.PackagedValueSpec;
 import org.codingmatters.value.objects.php.phpmodel.PhpMethod;

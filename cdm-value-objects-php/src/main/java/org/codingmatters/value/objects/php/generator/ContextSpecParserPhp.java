@@ -1,6 +1,7 @@
-package org.codingmatters.value.objects.php;
+package org.codingmatters.value.objects.php.generator;
 
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
+import org.codingmatters.value.objects.php.generator.TypeTokenPhp;
 import org.codingmatters.value.objects.spec.*;
 
 import java.util.*;

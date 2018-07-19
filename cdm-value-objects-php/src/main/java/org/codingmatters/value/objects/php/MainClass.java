@@ -1,6 +1,8 @@
 package org.codingmatters.value.objects.php;
 
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
+import org.codingmatters.value.objects.php.generator.SpecPhpGenerator;
+import org.codingmatters.value.objects.php.generator.SpecReaderPhp;
 import org.codingmatters.value.objects.spec.Spec;
 
 import java.io.File;

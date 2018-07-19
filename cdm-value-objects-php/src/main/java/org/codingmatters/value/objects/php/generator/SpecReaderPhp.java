@@ -1,13 +1,10 @@
-package org.codingmatters.value.objects.php;
+package org.codingmatters.value.objects.php.generator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
-import org.codingmatters.value.objects.exception.SpecSyntaxException;
-import org.codingmatters.value.objects.reader.ContextSpecParser;
 import org.codingmatters.value.objects.spec.Spec;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 

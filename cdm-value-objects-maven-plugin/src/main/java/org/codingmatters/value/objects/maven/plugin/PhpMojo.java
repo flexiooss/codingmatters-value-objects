@@ -4,12 +4,11 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
-import org.codingmatters.value.objects.php.SpecPhpGenerator;
-import org.codingmatters.value.objects.php.SpecReaderPhp;
+import org.codingmatters.value.objects.php.generator.SpecPhpGenerator;
+import org.codingmatters.value.objects.php.generator.SpecReaderPhp;
 import org.codingmatters.value.objects.spec.Spec;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 

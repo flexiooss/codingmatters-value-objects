@@ -1,4 +1,4 @@
-package org.codingmatters.value.objects.php;
+package org.codingmatters.value.objects.php.generator;
 
 import org.codingmatters.value.objects.generation.preprocessor.PackagedValueSpec;
 import org.codingmatters.value.objects.generation.preprocessor.SpecPreprocessor;
@@ -25,7 +25,7 @@ public class SpecPhpGenerator {
     }
 
     public void generate() throws IOException {
-        List<PackagedValueSpec> packagedValueSpecs = new SpecPreprocessor( this.spec, this.rootPackage ).packagedValueSpec();
+        List<PackagedValueSpec> packagedValueSpecs = new PhpSpecPreprocessor( this.spec, this.rootPackage ).packagedValueSpec();
         List<PhpEnum> enumValues = new ArrayList<>();
         for( PackagedValueSpec valueSpec : packagedValueSpecs ) {
             for( PropertySpec propertySpec : valueSpec.valueSpec().propertySpecs() ) {
@@ -48,6 +48,10 @@ public class SpecPhpGenerator {
             File packageDestination = new File( rootDirectory, valueSpec.packagename().replace( ".", "/" ) );
             this.writePhpFile( packageDestination, valueSpec, classReferencesContext );
         }
+        for( PackagedValueSpec valueSpec : packagedValueSpecs ) {
+            File packageDestination = new File( rootDirectory, valueSpec.packagename().replace( ".", "/" ) + "/json" );
+            this.writeJsonUtils( packageDestination, valueSpec, classReferencesContext );
+        }
     }
 
     private void fillClassContext( Map<String, String> classReferencesContext, List<PackagedValueSpec> packagedValueSpecs ) {
@@ -67,16 +71,24 @@ public class SpecPhpGenerator {
         }
     }
 
+    private void writeJsonUtils( File packageDestination, PackagedValueSpec valueObject, Map<String, String> classReferencesContext ) throws IOException {
+        PhpPackagedValueSpec phpValueObject = new PhpModelParser().parseValueSpec( valueObject, classReferencesContext );
+        if( phpValueObject != null ) {
+            PhpTypeClassWriter fileWriter = new PhpTypeClassWriter( packageDestination, valueObject.packagename() + ".json", valueObject.valueSpec().name() + "Reader");
+            fileWriter.writeReader( phpValueObject );
+        }
+    }
+
     private void writePhpEnum( File packageDestination, PhpEnum enumValue, Map<String, String> classReferencesContext ) throws IOException {
         PhpTypeClassWriter fileWriter = new PhpTypeClassWriter( packageDestination, enumValue.packageName(), enumValue.name() );
-        fileWriter.write( enumValue, classReferencesContext );
+        fileWriter.writeEnum( enumValue, classReferencesContext );
     }
 
     private void writePhpFile( File packageDestination, PackagedValueSpec valueObject, Map<String, String> classReferencesContext ) throws IOException {
         PhpPackagedValueSpec phpValueObject = new PhpModelParser().parseValueSpec( valueObject, classReferencesContext );
         if( phpValueObject != null ) {
             PhpTypeClassWriter fileWriter = new PhpTypeClassWriter( packageDestination, valueObject.packagename(), valueObject.valueSpec().name() );
-            fileWriter.write( phpValueObject, classReferencesContext );
+            fileWriter.writeValueObject( phpValueObject, classReferencesContext );
         }
     }
 

@@ -1,4 +1,4 @@
-package org.codingmatters.value.objects.php;
+package org.codingmatters.value.objects.php.generator;
 
 import org.codingmatters.value.objects.spec.TypeToken;
 
@@ -10,8 +10,8 @@ public enum TypeTokenPhp {
     DOUBLE( "float" ),
     BOOL( "bool" ),
     BYTES( "string" ),
-    DATE( "date-time", "FlexDate" ),
-    TIME( "date-time", "FlexDate" ),
+    DATE( "date", "FlexDate" ),
+    TIME( "time", "FlexDate" ),
     DATE_TIME( "date-time", "FlexDate" ),
     TZ_DATE_TIME( "date-time", "FlexDate" );
 

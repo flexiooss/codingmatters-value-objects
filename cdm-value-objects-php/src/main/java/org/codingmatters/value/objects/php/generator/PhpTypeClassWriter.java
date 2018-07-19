@@ -1,19 +1,18 @@
-package org.codingmatters.value.objects.php;
+package org.codingmatters.value.objects.php.generator;
 
 
 import org.codingmatters.value.objects.php.phpmodel.PhpEnum;
 import org.codingmatters.value.objects.php.phpmodel.PhpMethod;
 import org.codingmatters.value.objects.php.phpmodel.PhpPackagedValueSpec;
 import org.codingmatters.value.objects.php.phpmodel.PhpPropertySpec;
+import org.codingmatters.value.objects.spec.PropertyCardinality;
+import org.codingmatters.value.objects.spec.TypeKind;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PhpTypeClassWriter {
@@ -35,12 +34,13 @@ public class PhpTypeClassWriter {
         this.objectName = firstLetterUpperCase( name );
         this.fileName = objectName + ".php";
         String targetFile = String.join( "/", this.targetDirectory.getPath(), fileName );
+        System.out.println( "Generating in " + targetFile );
         this.writer = new BufferedWriter( new FileWriter( targetFile ) );
         this.imports = new HashSet<>();
     }
 
 
-    public void write( PhpEnum enumValue, Map<String, String> classReferencesContext ) throws IOException {
+    public void writeEnum( PhpEnum enumValue, Map<String, String> classReferencesContext ) throws IOException {
         putClassInContext( enumValue.name(), classReferencesContext );
         startPhpFile();
 
@@ -127,7 +127,7 @@ public class PhpTypeClassWriter {
         twoLine( 0 );
     }
 
-    public void write( PhpPackagedValueSpec spec, Map<String, String> classReferencesContext ) throws IOException {
+    public void writeValueObject( PhpPackagedValueSpec spec, Map<String, String> classReferencesContext ) throws IOException {
         putClassInContext( this.objectName, classReferencesContext );
         startPhpFile();
 
@@ -179,6 +179,99 @@ public class PhpTypeClassWriter {
         writer.close();
     }
 
+    public void writeReader( PhpPackagedValueSpec spec ) throws IOException {
+        startPhpFile();
+
+        for( String importation : spec.imports() ) {
+            writer.write( "use " + importation.replace( ".", "\\" ) + ";" );
+            writer.newLine();
+        }
+        twoLine( 0 );
+        writer.write( "class " + this.objectName + "Reader {" );
+        twoLine( 1 );
+        writer.write( "public function read( string $json ) : " + this.objectName + " {" );
+        newLine( 2 );
+        writer.write( "$decode = json_decode( $json );" );
+        newLine( 2 );
+        String resultVar = "$" + firstLetterLowerCase( this.objectName );
+        writer.write( resultVar + " = new " + this.objectName + "();" );
+        newLine( 2 );
+        for( PhpPropertySpec property : spec.propertySpecs() ) {
+            if( property.typeSpec().cardinality() == PropertyCardinality.LIST || property.typeSpec().cardinality() == PropertyCardinality.SET ) {
+                processFieldList( resultVar, property );
+            } else {
+                processReadSingleField( resultVar, property );
+            }
+        }
+        writer.write( "return $decode;" );
+
+        newLine( 1 );
+        writer.write( "}" );
+
+        twoLine( 0 );
+        writer.write( "}" );
+        writer.flush();
+        writer.close();
+    }
+
+    private void processFieldList( String resultVar, PhpPropertySpec property ) throws IOException {
+        writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
+        newLine( 3 );
+        writer.write( "$list = array();" );
+        newLine( 3 );
+        writer.write( "foreach( $decode['" + property.name() + "'] as $item ){" );
+        newLine( 4 );
+        writer.write( "$list[] = $item;" );
+        newLine( 3 );
+        writer.write( "}" );
+        newLine( 3 );
+        writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( " );
+        if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
+            writer.write( property.typeSpec().typeRef() + ".valueOf( $decode['" + property.name() + "'] )" );
+        } else if( property.typeSpec().typeKind() == TypeKind.JAVA_TYPE && isDate( property ) ) {
+            writer.write( "FlexDate::new" + getDateClass( property.typeSpec().typeRef() ) + "( $decode['" + property.name() + "'] )" );
+        } else {
+            writer.write( "$decode['" + property.name() + "']" );
+        }
+        writer.write( " );" );
+        newLine( 2 );
+        writer.write( "}" );
+        newLine( 2 );
+    }
+
+    private void processReadSingleField( String resultVar, PhpPropertySpec property ) throws IOException {
+        if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
+            writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
+            newLine( 3 );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( " + property.typeSpec().typeRef() + ".valueOf( $decode['" + property.name() + "'] )));" );
+            newLine( 2 );
+            writer.write( "}" );
+            newLine( 2 );
+        } else if( property.typeSpec().typeKind() == TypeKind.JAVA_TYPE && isDate( property ) ) {
+            writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
+            newLine( 3 );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( FlexDate::new" + getDateClass( property.typeSpec().typeRef() ) + "( $decode['" + property.name() + "'] )));" );
+            newLine( 2 );
+            writer.write( "}" );
+            newLine( 2 );
+        } else {
+            writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
+            newLine( 3 );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $decode['" + property.name() + "'] ));" );
+            newLine( 2 );
+            writer.write( "}" );
+            newLine( 2 );
+        }
+    }
+
+    private String getDateClass( String dateClass ) {
+        return String.join( "", Arrays.stream( dateClass.split( "-" ) ).map( this::firstLetterUpperCase ).collect( Collectors.toList() ) );
+    }
+
+    private boolean isDate( PhpPropertySpec property ) {
+        return property.typeSpec().typeRef().equals( "date" ) || property.typeSpec().typeRef().equals( "time" ) || property.typeSpec().typeRef().equals( "date-time" );
+    }
+
     private void twoLine( int indentSize ) throws IOException {
         newLine( 0 );
         newLine( indentSize );
@@ -206,4 +299,7 @@ public class PhpTypeClassWriter {
         return name.substring( 0, 1 ).toUpperCase( Locale.ENGLISH ) + name.substring( 1 );
     }
 
+    private String firstLetterLowerCase( String name ) {
+        return name.substring( 0, 1 ).toLowerCase( Locale.ENGLISH ) + name.substring( 1 );
+    }
 }
