@@ -3,10 +3,7 @@ package org.codingmatters.value.objects.php;
 import org.codingmatters.value.objects.generation.preprocessor.PackagedValueSpec;
 import org.codingmatters.value.objects.php.generator.PhpSpecPreprocessor;
 import org.codingmatters.value.objects.php.generator.SpecReaderPhp;
-import org.codingmatters.value.objects.spec.PropertyCardinality;
-import org.codingmatters.value.objects.spec.PropertySpec;
-import org.codingmatters.value.objects.spec.Spec;
-import org.codingmatters.value.objects.spec.TypeKind;
+import org.codingmatters.value.objects.spec.*;
 import org.junit.Test;
 
 import java.util.List;
@@ -42,12 +39,13 @@ public class SpecProcessorTest {
         PackagedValueSpec spec = values.get( 0 );
         assertThat( spec.packagename(), is( "org.generated" ) );
         assertThat( spec.valueSpec().name(), is( "primitiveProps" ) );
-        assertThat( spec.valueSpec().propertySpecs().size(), is( 10 ) );
+        assertThat( spec.valueSpec().propertySpecs().size(), is( 11 ) );
         assertThat( spec.valueSpec().propertySpecs().stream()
                 .anyMatch( property->property.typeSpec().typeKind() != TypeKind.JAVA_TYPE ), is( false ) );
         assertThat( spec.valueSpec().propertySpecs().stream()
                 .anyMatch( property->property.typeSpec().cardinality() != PropertyCardinality.SINGLE ), is( false ) );
         assertThat( spec.valueSpec().propertySpec( "stringProp" ).typeSpec().typeRef(), is( "string" ) );
+        assertThat( spec.valueSpec().propertySpec( "bytesProp" ).typeSpec().typeRef(), is( "string" ) );
         assertThat( spec.valueSpec().propertySpec( "integerProp" ).typeSpec().typeRef(), is( "int" ) );
         assertThat( spec.valueSpec().propertySpec( "longProp" ).typeSpec().typeRef(), is( "int" ) );
         assertThat( spec.valueSpec().propertySpec( "floatProp" ).typeSpec().typeRef(), is( "float" ) );
@@ -189,6 +187,27 @@ public class SpecProcessorTest {
         assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().typeRef(), is( "java.time.DayOfWeek" ) );
         assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
         assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().isInSpecEnum(), is( false ) );
+    }
+
+    @Test
+    public void test_07_testObjectWithValueObjectProperties() throws Exception {
+        List<PackagedValueSpec> values = getValues( "07_propertiesWithExternalValueObject.yaml" );
+        assertThat( values.size(), is( 1 ) );
+
+        ValueSpec spec = values.get( 0 ).valueSpec();
+
+        assertThat( values.get( 0 ).packagename(), is( "org.generated" ) );
+        assertThat( spec.propertySpecs().size(), is( 2 ) );
+
+        assertThat( spec.propertySpec( "prop" ).name(), is( "prop" ) );
+        assertThat( spec.propertySpec( "prop" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
+        assertThat( spec.propertySpec( "prop" ).typeSpec().typeKind(), is( TypeKind.EXTERNAL_VALUE_OBJECT ) );
+        assertThat( spec.propertySpec( "prop" ).typeSpec().typeRef(), is( "org.generated.ref.ExtReferenced" ) );
+
+        assertThat( spec.propertySpec( "propList" ).name(), is( "propList" ) );
+        assertThat( spec.propertySpec( "propList" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
+        assertThat( spec.propertySpec( "propList" ).typeSpec().typeKind(), is( TypeKind.EXTERNAL_VALUE_OBJECT ) );
+        assertThat( spec.propertySpec( "propList" ).typeSpec().typeRef(), is( "org.generated.ref.OtherValueObj" ) );
     }
 
 }

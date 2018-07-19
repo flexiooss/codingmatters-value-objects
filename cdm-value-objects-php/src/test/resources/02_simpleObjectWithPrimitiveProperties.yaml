@@ -1,5 +1,6 @@
 primitiveProps:
   stringProp: string
+  bytesProp: bytes
   integerProp: int
   longProp: long
   floatProp: float

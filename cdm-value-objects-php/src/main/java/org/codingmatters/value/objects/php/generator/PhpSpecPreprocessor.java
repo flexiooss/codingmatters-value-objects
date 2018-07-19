@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.codingmatters.value.objects.spec.TypeKind.ENUM;
-import static org.codingmatters.value.objects.spec.TypeKind.IN_SPEC_VALUE_OBJECT;
+import static org.codingmatters.value.objects.spec.TypeKind.*;
 
 public class PhpSpecPreprocessor {
 
@@ -48,6 +47,21 @@ public class PhpSpecPreprocessor {
                                     null,
                                     propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) );
                         }
+                    } else if( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() == TypeKind.EMBEDDED ) {
+                        if( "$value-object".equals( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).name() ) ) {
+                            rootValueSpec.addProperty(
+                                    PropertySpec.property()
+                                            .name( propertySpec.name() )
+                                            .type( PropertyTypeSpec.type()
+                                                    .cardinality( PropertyCardinality.LIST )
+                                                    .typeKind( TypeKind.EXTERNAL_VALUE_OBJECT )
+                                                    .typeRef( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() )
+                                            )
+                                            .build()
+                            );
+                        } else {
+                            System.out.println( "You have reached the limit of the php spec processor, thank you" );
+                        }
                     } else {
                         rootValueSpec.addProperty( PropertySpec.property()
                                 .name( propertySpec.name() )
@@ -58,6 +72,18 @@ public class PhpSpecPreprocessor {
                                 ).build()
                         );
                     }
+                } else if( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).name().equals( "$value-object" ) ) {
+                    // external value object
+                    rootValueSpec.addProperty(
+                            PropertySpec.property()
+                                    .name( propertySpec.name() )
+                                    .type( PropertyTypeSpec.type()
+                                            .typeRef( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() )
+                                            .typeKind( EXTERNAL_VALUE_OBJECT )
+                                            .cardinality( PropertyCardinality.SINGLE )
+                                    )
+                                    .build()
+                    );
                 } else {
                     ValueSpec embeddedValueSpec = createEmbeddedValueSpec( propertySpec );
                     String embeddedPackage = valuePackage + "." + valueSpec.name().toLowerCase();
@@ -85,7 +111,6 @@ public class PhpSpecPreprocessor {
         valueSpecs.add( new PackagedValueSpec( valuePackage, rootValueSpec.build() ) );
         return valueSpecs;
     }
-
 
 
     private PropertySpec createEnumProperty( PropertySpec propertySpec, String[] enumValues, String typeRef ) {

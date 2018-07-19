@@ -1,0 +1,7 @@
+valueObjectProps:
+  prop:
+    $value-object: org.generated.ref.ExtReferenced
+  propList:
+    $list:
+      $value-object: org.generated.ref.OtherValueObj
+

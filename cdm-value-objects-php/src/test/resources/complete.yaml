@@ -70,7 +70,6 @@ valueObjectProps:
   prop:
     $value-object: org.generated.ref.ExtReferenced
 
-
 hints:
   propName:
     $type: string
