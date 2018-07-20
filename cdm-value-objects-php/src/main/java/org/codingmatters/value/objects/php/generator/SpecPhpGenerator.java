@@ -1,9 +1,10 @@
 package org.codingmatters.value.objects.php.generator;
 
 import org.codingmatters.value.objects.generation.preprocessor.PackagedValueSpec;
-import org.codingmatters.value.objects.generation.preprocessor.SpecPreprocessor;
 import org.codingmatters.value.objects.php.phpmodel.PhpEnum;
 import org.codingmatters.value.objects.php.phpmodel.PhpPackagedValueSpec;
+import org.codingmatters.value.objects.php.phpmodel.PhpTypedList;
+import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
@@ -27,31 +28,47 @@ public class SpecPhpGenerator {
     public void generate() throws IOException {
         List<PackagedValueSpec> packagedValueSpecs = new PhpSpecPreprocessor( this.spec, this.rootPackage ).packagedValueSpec();
         List<PhpEnum> enumValues = new ArrayList<>();
+        List<PhpPackagedValueSpec> listValues = new ArrayList();
         for( PackagedValueSpec valueSpec : packagedValueSpecs ) {
             for( PropertySpec propertySpec : valueSpec.valueSpec().propertySpecs() ) {
                 if( propertySpec.typeSpec().typeKind() == TypeKind.ENUM ) {
+                    String typeRef = rootPackage + "." + valueSpec.valueSpec().name().toLowerCase() + "." + valueSpec.valueSpec().name() + firstLetterUpperCase( propertySpec.name() );
                     enumValues.add( new PhpEnum(
-                            propertySpec.typeSpec().typeRef().replace( "$list", "" ).replace( "$set", "" ),
-                            String.join( ".", valueSpec.packagename(), valueSpec.valueSpec().name().replace( "$list", "" ).replace( "$set", "" ) ),
+                            typeRef,
                             propertySpec.typeSpec().enumValues() )
                     );
                 }
+                if( propertySpec.typeSpec().cardinality() == PropertyCardinality.LIST ) {
+                    listValues.add( PhpTypedList.createPhpPackagedValueSpec( valueSpec, propertySpec ) );
+                }
             }
         }
+        // GENERATE ENUM
         Map<String, String> classReferencesContext = new HashMap<>();
         for( PhpEnum enumValue : enumValues ) {
             File packageDestination = new File( rootDirectory, enumValue.packageName().replace( ".", "/" ) );
             this.writePhpEnum( packageDestination, enumValue, classReferencesContext );
         }
         fillClassContext( classReferencesContext, packagedValueSpecs );
+
+        //GENERATE LIST
+        for( PhpPackagedValueSpec listValue : listValues ) {
+            File packageDestination = new File( rootDirectory, listValue.packageName().replace( ".", "/" ) );
+            PhpTypeClassWriter fileWriter = new PhpTypeClassWriter( packageDestination, listValue.packageName(), listValue.name() );
+            fileWriter.writeValueObject( listValue, classReferencesContext );
+        }
+
+        // GENERATE CLASSES
         for( PackagedValueSpec valueSpec : packagedValueSpecs ) {
             File packageDestination = new File( rootDirectory, valueSpec.packagename().replace( ".", "/" ) );
             this.writePhpFile( packageDestination, valueSpec, classReferencesContext );
         }
-        for( PackagedValueSpec valueSpec : packagedValueSpecs ) {
-            File packageDestination = new File( rootDirectory, valueSpec.packagename().replace( ".", "/" ) + "/json" );
-            this.writeJsonUtils( packageDestination, valueSpec, classReferencesContext );
-        }
+
+        // GENERATE READERS
+//        for( PackagedValueSpec valueSpec : packagedValueSpecs ) {
+//            File packageDestination = new File( rootDirectory, valueSpec.packagename().replace( ".", "/" ) + "/json" );
+//            this.writeJsonUtils( packageDestination, valueSpec, classReferencesContext );
+//        }
     }
 
     private void fillClassContext( Map<String, String> classReferencesContext, List<PackagedValueSpec> packagedValueSpecs ) {
@@ -59,7 +76,7 @@ public class SpecPhpGenerator {
             if( new PhpModelParser().needToBeGenerated( packagedValueSpec ) ) {
                 String name = firstLetterUpperCase( packagedValueSpec.valueSpec().name() );
                 classReferencesContext.put( name, packagedValueSpec.packagename() + "." + name );
-            }else{
+            } else {
                 classReferencesContext.put( firstLetterUpperCase( packagedValueSpec.valueSpec().name() ), packagedValueSpec.valueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() );
             }
             for( PropertySpec propertySpec : packagedValueSpec.valueSpec().propertySpecs() ) {
@@ -74,7 +91,7 @@ public class SpecPhpGenerator {
     private void writeJsonUtils( File packageDestination, PackagedValueSpec valueObject, Map<String, String> classReferencesContext ) throws IOException {
         PhpPackagedValueSpec phpValueObject = new PhpModelParser().parseValueSpec( valueObject, classReferencesContext );
         if( phpValueObject != null ) {
-            PhpTypeClassWriter fileWriter = new PhpTypeClassWriter( packageDestination, valueObject.packagename() + ".json", valueObject.valueSpec().name() + "Reader");
+            PhpTypeClassWriter fileWriter = new PhpTypeClassWriter( packageDestination, valueObject.packagename() + ".json", valueObject.valueSpec().name() + "Reader" );
             fileWriter.writeReader( phpValueObject );
         }
     }

@@ -28,7 +28,7 @@ public class SpecProcessorTest {
         List<PackagedValueSpec> values = getValues( "01_emptyObject.yaml" );
         assertThat( values.size(), is( 1 ) );
         assertThat( values.get( 0 ).packagename(), is( "org.generated" ) );
-        assertThat( values.get( 0 ).valueSpec().name(), is( "book" ) );
+        assertThat( values.get( 0 ).valueSpec().name(), is( "Book" ) );
         assertThat( values.get( 0 ).valueSpec().propertySpecs().size(), is( 0 ) );
     }
 
@@ -38,10 +38,12 @@ public class SpecProcessorTest {
         assertThat( values.size(), is( 1 ) );
         PackagedValueSpec spec = values.get( 0 );
         assertThat( spec.packagename(), is( "org.generated" ) );
-        assertThat( spec.valueSpec().name(), is( "primitiveProps" ) );
+        assertThat( spec.valueSpec().name(), is( "PrimitiveProps" ) );
         assertThat( spec.valueSpec().propertySpecs().size(), is( 11 ) );
         assertThat( spec.valueSpec().propertySpecs().stream()
-                .anyMatch( property->property.typeSpec().typeKind() != TypeKind.JAVA_TYPE ), is( false ) );
+                .filter( property->property.typeSpec().typeKind() == TypeKind.JAVA_TYPE ).count(), is( 7L ) );
+        assertThat( spec.valueSpec().propertySpecs().stream()
+                .filter( property->property.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT ).count(), is( 4L ) );
         assertThat( spec.valueSpec().propertySpecs().stream()
                 .anyMatch( property->property.typeSpec().cardinality() != PropertyCardinality.SINGLE ), is( false ) );
         assertThat( spec.valueSpec().propertySpec( "stringProp" ).typeSpec().typeRef(), is( "string" ) );
@@ -51,10 +53,10 @@ public class SpecProcessorTest {
         assertThat( spec.valueSpec().propertySpec( "floatProp" ).typeSpec().typeRef(), is( "float" ) );
         assertThat( spec.valueSpec().propertySpec( "doubleProp" ).typeSpec().typeRef(), is( "float" ) );
         assertThat( spec.valueSpec().propertySpec( "booleanProp" ).typeSpec().typeRef(), is( "bool" ) );
-        assertThat( spec.valueSpec().propertySpec( "dateProp" ).typeSpec().typeRef(), is( "date" ) );
-        assertThat( spec.valueSpec().propertySpec( "timeProp" ).typeSpec().typeRef(), is( "time" ) );
-        assertThat( spec.valueSpec().propertySpec( "dateTimeProp" ).typeSpec().typeRef(), is( "date-time" ) );
-        assertThat( spec.valueSpec().propertySpec( "tzDateTimeProp" ).typeSpec().typeRef(), is( "date-time" ) );
+        assertThat( spec.valueSpec().propertySpec( "dateProp" ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
+        assertThat( spec.valueSpec().propertySpec( "timeProp" ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
+        assertThat( spec.valueSpec().propertySpec( "dateTimeProp" ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
+        assertThat( spec.valueSpec().propertySpec( "tzDateTimeProp" ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
     }
 
     @Test
@@ -63,7 +65,7 @@ public class SpecProcessorTest {
         assertThat( values.size(), is( 1 ) );
         PackagedValueSpec spec = values.get( 0 );
         assertThat( spec.packagename(), is( "org.generated" ) );
-        assertThat( spec.valueSpec().name(), is( "arraySimpleProps" ) );
+        assertThat( spec.valueSpec().name(), is( "ArraySimpleProps" ) );
         assertThat( spec.valueSpec().propertySpecs().size(), is( 20 ) );
         assertThat( spec.valueSpec().propertySpecs().stream()
                 .anyMatch( property->property.typeSpec().typeKind() != TypeKind.JAVA_TYPE ), is( false ) );
@@ -157,13 +159,13 @@ public class SpecProcessorTest {
         assertThat( spec.packagename(), is( "org.generated" ) );
         assertThat( spec.valueSpec().propertySpecs().size(), is( 2 ) );
         assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().typeKind(), is( TypeKind.ENUM ) );
-        assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().typeRef(), is( "org.generated.inSpecEnumPropertiesSingle" ) );
+        assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().typeRef(), is( "org.generated.inspecenumproperties.InSpecEnumPropertiesSingle" ) );
         assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
         assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().enumValues(), is( new String[]{ "SA", "SB", "SC" } ) );
         assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().isInSpecEnum(), is( true ) );
 
         assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().typeKind(), is( TypeKind.ENUM ) );
-        assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().typeRef(), is( "org.generated.inSpecEnumPropertiesMultiple" ) );
+        assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().typeRef(), is( "org.generated.inspecenumproperties.InSpecEnumPropertiesMultipleList" ) );
         assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
         assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().enumValues(), is( new String[]{ "MA", "MB", "MC" } ) );
         assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().isInSpecEnum(), is( true ) );

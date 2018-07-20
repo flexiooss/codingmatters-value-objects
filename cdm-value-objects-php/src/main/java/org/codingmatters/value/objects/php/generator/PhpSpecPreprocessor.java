@@ -29,23 +29,25 @@ public class PhpSpecPreprocessor {
 
     private List<PackagedValueSpec> preProcess( ValueSpec valueSpec, String valuePackage ) {
         List<PackagedValueSpec> valueSpecs = new ArrayList<>();
-        ValueSpec.Builder rootValueSpec = ValueSpec.valueSpec().name( valueSpec.name() );
+        ValueSpec.Builder rootValueSpec = ValueSpec.valueSpec().name( capitalizedFirst( valueSpec.name() ) );
 
         for( PropertySpec propertySpec : valueSpec.propertySpecs() ) {
             if( propertySpec.typeSpec().typeKind() == TypeKind.EMBEDDED ) {
+
                 if( isListOrSet( propertySpec ) ) {
                     if( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() == ENUM ) {
                         if( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef().equals( capitalizedFirst( valueSpec.name().toLowerCase() ) + capitalizedFirst( propertySpec.name() ) + propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).name() ) ) {
-                            String enumName = uncapitalizedFirst( valueSpec.name() ) + capitalizedFirst( propertySpec.name() );
+                            String enumName = capitalizedFirst( valueSpec.name() ) + capitalizedFirst( propertySpec.name() );
                             rootValueSpec.addProperty( createEnumProperty(
-                                    propertySpec,
                                     propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().enumValues(),
-                                    valuePackage + "." + enumName ) );
+                                    valuePackage + "." + valueSpec.name().toLowerCase() + "." + enumName + "List",
+                                    propertySpec.typeSpec().cardinality(),
+                                    propertySpec.name()
+                            ) );
                         } else {
                             rootValueSpec.addProperty( createEnumProperty(
-                                    propertySpec,
                                     null,
-                                    propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) );
+                                    propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), propertySpec.typeSpec().cardinality(), propertySpec.name() ) );
                         }
                     } else if( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() == TypeKind.EMBEDDED ) {
                         if( "$value-object".equals( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).name() ) ) {
@@ -62,6 +64,24 @@ public class PhpSpecPreprocessor {
                         } else {
                             System.out.println( "You have reached the limit of the php spec processor, thank you" );
                         }
+                    } else if( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() == IN_SPEC_VALUE_OBJECT ) {
+                        PropertyTypeSpec.Builder elementType = PropertyTypeSpec.type().typeRef(
+                                packageName + "." + capitalizedFirst( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() )
+                        );
+
+
+                        AnonymousValueSpec listElementType = AnonymousValueSpec.anonymousValueSpec()
+                                .addProperty( PropertySpec.property().type( elementType ).build() ).build();
+
+                        rootValueSpec.addProperty( PropertySpec.property()
+                                .name( propertySpec.name() )
+                                .type( new PropertyTypeSpec.Builder()
+                                        .cardinality( propertySpec.typeSpec().cardinality() )
+                                        .typeKind( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() )
+                                        .typeRef( packageName + "." + valueSpec.name().toLowerCase() + "." + capitalizedFirst( valueSpec.name() ) + capitalizedFirst( propertySpec.name() ) + "List" )
+                                        .embeddedValueSpec( listElementType )
+                                ).build()
+                        );
                     } else {
                         rootValueSpec.addProperty( PropertySpec.property()
                                 .name( propertySpec.name() )
@@ -72,7 +92,7 @@ public class PhpSpecPreprocessor {
                                 ).build()
                         );
                     }
-                } else if( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).name().equals( "$value-object" ) ) {
+                } else if( "$value-object".equals( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).name() ) ) {
                     // external value object
                     rootValueSpec.addProperty(
                             PropertySpec.property()
@@ -93,19 +113,40 @@ public class PhpSpecPreprocessor {
                 }
             } else if( isEnum( propertySpec ) ) {
                 if( propertySpec.typeSpec().typeRef().equals( capitalizedFirst( valueSpec.name().toLowerCase() ) + capitalizedFirst( propertySpec.name() ) ) ) {
-                    String enumName = uncapitalizedFirst( valueSpec.name() ) + capitalizedFirst( propertySpec.name() );
+                    String enumName = capitalizedFirst( valueSpec.name() ) + capitalizedFirst( propertySpec.name() );
                     rootValueSpec.addProperty( createEnumProperty(
-                            propertySpec,
                             propertySpec.typeSpec().enumValues(),
-                            valuePackage + "." + enumName ) );
+                            valuePackage + "." + valueSpec.name().toLowerCase() + "." + enumName,
+                            propertySpec.typeSpec().cardinality(),
+                            propertySpec.name() )
+                    );
                 } else {
                     rootValueSpec.addProperty( createEnumProperty(
-                            propertySpec,
                             null,
-                            propertySpec.typeSpec().typeRef() ) );
+                            propertySpec.typeSpec().typeRef(), propertySpec.typeSpec().cardinality(), propertySpec.name() ) );
                 }
+            } else if( propertySpec.typeSpec().typeKind() == IN_SPEC_VALUE_OBJECT ) {
+                rootValueSpec.addProperty( PropertySpec.property()
+                        .name( propertySpec.name() )
+                        .type( PropertyTypeSpec.type()
+                                .cardinality( propertySpec.typeSpec().cardinality() )
+                                .typeKind( IN_SPEC_VALUE_OBJECT )
+                                .typeRef( packageName + "." + capitalizedFirst( propertySpec.typeSpec().typeRef() ) )
+                        )
+                        .build() );
             } else {
-                rootValueSpec.addProperty( propertySpec );
+                if( propertySpec.typeSpec().typeRef().contains( "date" ) || propertySpec.typeSpec().typeRef().contains( "time" ) ) {
+                    rootValueSpec.addProperty( PropertySpec.property()
+                            .name( propertySpec.name() )
+                            .type( PropertyTypeSpec.type()
+                                    .typeKind( TypeKind.EXTERNAL_VALUE_OBJECT )
+                                    .typeRef( "io.flexio.utils.FlexDate" )
+                                    .cardinality( propertySpec.typeSpec().cardinality() )
+                            )
+                            .build() );
+                } else {
+                    rootValueSpec.addProperty( propertySpec );
+                }
             }
         }
         valueSpecs.add( new PackagedValueSpec( valuePackage, rootValueSpec.build() ) );
@@ -113,18 +154,18 @@ public class PhpSpecPreprocessor {
     }
 
 
-    private PropertySpec createEnumProperty( PropertySpec propertySpec, String[] enumValues, String typeRef ) {
+    private PropertySpec createEnumProperty( String[] enumValues, String typeRef, PropertyCardinality cardinality, String propName ) {
         PropertyTypeSpec.Builder type = PropertyTypeSpec.type()
                 .typeRef( typeRef )
                 .typeKind( TypeKind.ENUM )
-                .cardinality( propertySpec.typeSpec().cardinality() );
+                .cardinality( cardinality );
 
         if( enumValues != null ) {
             type.enumValues( enumValues );
         }
 
         return PropertySpec.property()
-                .name( propertySpec.name() )
+                .name( propName )
                 .type( type )
                 .build();
     }

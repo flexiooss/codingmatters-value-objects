@@ -8,11 +8,11 @@ use io\flexio\utils\TypedArray;
 use org\generated\Book;
 use org\generated\Person;
 use org\generated\Review;
-use org\generated\book\Reviews;
+use org\generated\book\BookReviewsList;
 use org\generated\book\BookKind;
-use org\generated\book\tags\BookTags;
+use org\generated\book\BookTags;
 use org\generated\person\Address;
-use org\generated\book\Tags;
+use org\generated\book\BookTagsList;
 use io\flexio\utils\FlexDate;
 use \DateTime;
 
@@ -42,7 +42,7 @@ class BookTest extends TestCase {
         $person -> withName( "personName" )
                 -> withEmail( "person@mail.con" );
 
-        $tags = new Tags();
+        $tags = new BookTagsList();
         $tags[] = BookTags::SCIENCE();
 
         $book -> withName("bookName")
@@ -69,7 +69,7 @@ class BookTest extends TestCase {
         $review = new Review();
         $review -> withReviewBody( "review body 1" );
 
-        $book -> withReviews( new Reviews() );
+        $book -> withReviews( new BookReviewsList() );
         $book -> reviews()[] = $review;
         $book -> withKind( BookKind::valueOf("AUDIOBOOK") );
 

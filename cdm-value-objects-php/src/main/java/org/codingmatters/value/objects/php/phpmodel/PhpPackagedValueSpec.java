@@ -29,7 +29,7 @@ public class PhpPackagedValueSpec {
         return this.name;
     }
 
-    public void addProperty( PhpPropertySpec property ){
+    public void addProperty( PhpPropertySpec property ) {
         this.properties.add( property );
     }
 
@@ -41,11 +41,11 @@ public class PhpPackagedValueSpec {
         return this.methods;
     }
 
-    public void addMethod( PhpMethod method ){
+    public void addMethod( PhpMethod method ) {
         this.methods.add( method );
     }
 
-    public void extend( PropertyTypeSpec typeSpec ){
+    public void extend( PropertyTypeSpec typeSpec ) {
         extender = typeSpec;
     }
 
@@ -59,5 +59,9 @@ public class PhpPackagedValueSpec {
 
     public Set<String> imports() {
         return imports;
+    }
+
+    public String packageName() {
+        return packageName;
     }
 }

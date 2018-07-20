@@ -6,9 +6,9 @@ public class PhpEnum {
     private final String[] enumValues;
     private final String name;
 
-    public PhpEnum( String name, String packageName, String... enumValues ) {
-        this.name = name;
-        this.packageName = packageName;
+    public PhpEnum( String typeRef, String... enumValues ) {
+        this.name = typeRef.substring( typeRef.lastIndexOf( "." ) + 1 );
+        this.packageName = typeRef.substring( 0, typeRef.lastIndexOf( "." ) );
         this.enumValues = enumValues;
     }
 

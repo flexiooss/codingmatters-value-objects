@@ -41,7 +41,4 @@ public enum TypeTokenPhp {
         return this.type;
     }
 
-    public String getImplementationType() {
-        return this.implementationType;
-    }
 }
