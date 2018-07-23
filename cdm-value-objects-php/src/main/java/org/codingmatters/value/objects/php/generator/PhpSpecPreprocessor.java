@@ -169,7 +169,7 @@ public class PhpSpecPreprocessor {
     }
 
 
-    private PropertySpec createEnumProperty( String[] enumValues, String typeRef, PropertyCardinality cardinality, String propName ) {
+    private PropertySpec createEnumProperty( String[] enumValues, String typeRef, PropertyCardinality cardinality, String propName  ) {
         PropertyTypeSpec.Builder type = PropertyTypeSpec.type()
                 .typeRef( typeRef )
                 .typeKind( TypeKind.ENUM )
@@ -178,6 +178,9 @@ public class PhpSpecPreprocessor {
         if( enumValues != null ) {
             type.enumValues( enumValues );
         }
+//        if( embeddedType != null){
+//            type.embeddedValueSpec( AnonymousValueSpec.anonymousValueSpec().addProperty( PropertySpec.property().type( PropertyTypeSpec.type().typeRef( embeddedType ) ).build() ).build() );
+//        }
 
         return PropertySpec.property()
                 .name( propName )

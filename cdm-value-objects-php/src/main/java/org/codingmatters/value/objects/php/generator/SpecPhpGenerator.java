@@ -65,10 +65,10 @@ public class SpecPhpGenerator {
         }
 
         // GENERATE READERS
-//        for( PackagedValueSpec valueSpec : packagedValueSpecs ) {
-//            File packageDestination = new File( rootDirectory, valueSpec.packagename().replace( ".", "/" ) + "/json" );
-//            this.writeJsonUtils( packageDestination, valueSpec, classReferencesContext );
-//        }
+        for( PackagedValueSpec valueSpec : packagedValueSpecs ) {
+            File packageDestination = new File( rootDirectory, valueSpec.packagename().replace( ".", "/" ) + "/json" );
+            this.writeJsonUtils( packageDestination, valueSpec, classReferencesContext );
+        }
     }
 
     private void fillClassContext( Map<String, String> classReferencesContext, List<PackagedValueSpec> packagedValueSpecs ) {
