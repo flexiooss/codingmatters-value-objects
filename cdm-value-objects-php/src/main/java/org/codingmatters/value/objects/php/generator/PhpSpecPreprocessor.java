@@ -58,13 +58,11 @@ public class PhpSpecPreprocessor {
                                             .type( PropertyTypeSpec.type()
                                                     .cardinality( PropertyCardinality.LIST )
                                                     .typeKind( TypeKind.EXTERNAL_VALUE_OBJECT )
-                                                    .typeRef( listType.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() )
+                                                    .typeRef( packageName + "." + valueSpec.name().toLowerCase() + "." + capitalizedFirst( valueSpec.name() ) + capitalizedFirst( propertySpec.name() ) + "List" )
                                                     .embeddedValueSpec( AnonymousValueSpec.anonymousValueSpec().addProperty( PropertySpec.property().type( PropertyTypeSpec.type().typeRef( listType.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) ).build() ).build() )
                                             )
                                             .build()
                             );
-                        } else {
-                            System.out.println( "You have reached the limit of the php spec processor, thank you" );
                         }
                     } else if( listType.typeSpec().typeKind() == IN_SPEC_VALUE_OBJECT ) {
                         PropertyTypeSpec.Builder elementType = PropertyTypeSpec.type().typeRef(

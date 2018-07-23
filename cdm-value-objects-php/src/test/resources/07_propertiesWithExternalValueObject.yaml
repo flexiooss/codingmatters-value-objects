@@ -1,7 +1,7 @@
 valueObjectProps:
   prop:
-    $value-object: org.generated.ref.ExtReferenced
+    $value-object: io.flexio.utils.FlexDate
   propList:
     $list:
-      $value-object: org.generated.ref.OtherValueObj
+      $value-object: io.flexio.utils.FlexDate
 
