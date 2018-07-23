@@ -68,31 +68,31 @@ public class SpecProcessorTest {
         assertThat( spec.valueSpec().name(), is( "ArraySimpleProps" ) );
         assertThat( spec.valueSpec().propertySpecs().size(), is( 20 ) );
         assertThat( spec.valueSpec().propertySpecs().stream()
-                .anyMatch( property->property.typeSpec().typeKind() != TypeKind.JAVA_TYPE ), is( false ) );
+                .anyMatch( property->property.typeSpec().typeKind() != TypeKind.EXTERNAL_VALUE_OBJECT ), is( false ) );
         assertThat( spec.valueSpec().propertySpecs().stream()
                 .filter( property->property.typeSpec().cardinality() == PropertyCardinality.LIST ).count(), is( 20L ) );
 
-        assertThat( spec.valueSpec().propertySpec( "stringList" ).typeSpec().typeRef(), is( "string" ) );
-        assertThat( spec.valueSpec().propertySpec( "integerList" ).typeSpec().typeRef(), is( "int" ) );
-        assertThat( spec.valueSpec().propertySpec( "longList" ).typeSpec().typeRef(), is( "int" ) );
-        assertThat( spec.valueSpec().propertySpec( "floatList" ).typeSpec().typeRef(), is( "float" ) );
-        assertThat( spec.valueSpec().propertySpec( "doubleList" ).typeSpec().typeRef(), is( "float" ) );
-        assertThat( spec.valueSpec().propertySpec( "booleanList" ).typeSpec().typeRef(), is( "bool" ) );
-        assertThat( spec.valueSpec().propertySpec( "dateList" ).typeSpec().typeRef(), is( "date" ) );
-        assertThat( spec.valueSpec().propertySpec( "timeList" ).typeSpec().typeRef(), is( "time" ) );
-        assertThat( spec.valueSpec().propertySpec( "dateTimeList" ).typeSpec().typeRef(), is( "date-time" ) );
-        assertThat( spec.valueSpec().propertySpec( "tzDateTimeList" ).typeSpec().typeRef(), is( "date-time" ) );
+        assertThat( spec.valueSpec().propertySpec( "stringList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "string" ) );
+        assertThat( spec.valueSpec().propertySpec( "integerList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "int" ) );
+        assertThat( spec.valueSpec().propertySpec( "longList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "int" ) );
+        assertThat( spec.valueSpec().propertySpec( "floatList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "float" ) );
+        assertThat( spec.valueSpec().propertySpec( "doubleList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "float" ) );
+        assertThat( spec.valueSpec().propertySpec( "booleanList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "bool" ) );
+        assertThat( spec.valueSpec().propertySpec( "dateList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
+        assertThat( spec.valueSpec().propertySpec( "timeList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
+        assertThat( spec.valueSpec().propertySpec( "dateTimeList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
+        assertThat( spec.valueSpec().propertySpec( "tzDateTimeList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
 
-        assertThat( spec.valueSpec().propertySpec( "stringSet" ).typeSpec().typeRef(), is( "string" ) );
-        assertThat( spec.valueSpec().propertySpec( "integerSet" ).typeSpec().typeRef(), is( "int" ) );
-        assertThat( spec.valueSpec().propertySpec( "longSet" ).typeSpec().typeRef(), is( "int" ) );
-        assertThat( spec.valueSpec().propertySpec( "floatSet" ).typeSpec().typeRef(), is( "float" ) );
-        assertThat( spec.valueSpec().propertySpec( "doubleSet" ).typeSpec().typeRef(), is( "float" ) );
-        assertThat( spec.valueSpec().propertySpec( "booleanSet" ).typeSpec().typeRef(), is( "bool" ) );
-        assertThat( spec.valueSpec().propertySpec( "dateSet" ).typeSpec().typeRef(), is( "date" ) );
-        assertThat( spec.valueSpec().propertySpec( "timeSet" ).typeSpec().typeRef(), is( "time" ) );
-        assertThat( spec.valueSpec().propertySpec( "dateTimeSet" ).typeSpec().typeRef(), is( "date-time" ) );
-        assertThat( spec.valueSpec().propertySpec( "tzDateTimeSet" ).typeSpec().typeRef(), is( "date-time" ) );
+        assertThat( spec.valueSpec().propertySpec( "stringSet" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "string" ) );
+        assertThat( spec.valueSpec().propertySpec( "integerSet" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "int" ) );
+        assertThat( spec.valueSpec().propertySpec( "longSet" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "int" ) );
+        assertThat( spec.valueSpec().propertySpec( "floatSet" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "float" ) );
+        assertThat( spec.valueSpec().propertySpec( "doubleSet" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "float" ) );
+        assertThat( spec.valueSpec().propertySpec( "booleanSet" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "bool" ) );
+        assertThat( spec.valueSpec().propertySpec( "dateSet" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
+        assertThat( spec.valueSpec().propertySpec( "timeSet" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
+        assertThat( spec.valueSpec().propertySpec( "dateTimeSet" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
+        assertThat( spec.valueSpec().propertySpec( "tzDateTimeSet" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
     }
 
     @Test
@@ -143,10 +143,10 @@ public class SpecProcessorTest {
 
         // ***** ROOT SPEC - PROP 2 ***** \\
         PropertySpec embeddedIntListProperty = embeddedSpec.valueSpec().propertySpecs().get( 1 );
-        assertThat( embeddedIntListProperty.typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
+        assertThat( embeddedIntListProperty.typeSpec().typeKind(), is( TypeKind.EXTERNAL_VALUE_OBJECT ) );
         assertThat( embeddedIntListProperty.name(), is( "intList" ) );
         assertThat( embeddedIntListProperty.typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
-        assertThat( embeddedIntListProperty.typeSpec().typeRef(), is( "int" ) );
+        assertThat( embeddedIntListProperty.typeSpec().typeRef(), is( "org.generated.complextype.complexprops.ComplexPropsIntListList" ) );
     }
 
     @Test
@@ -204,12 +204,12 @@ public class SpecProcessorTest {
         assertThat( spec.propertySpec( "prop" ).name(), is( "prop" ) );
         assertThat( spec.propertySpec( "prop" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
         assertThat( spec.propertySpec( "prop" ).typeSpec().typeKind(), is( TypeKind.EXTERNAL_VALUE_OBJECT ) );
-        assertThat( spec.propertySpec( "prop" ).typeSpec().typeRef(), is( "org.generated.ref.ExtReferenced" ) );
+        assertThat( spec.propertySpec( "prop" ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
 
         assertThat( spec.propertySpec( "propList" ).name(), is( "propList" ) );
         assertThat( spec.propertySpec( "propList" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
         assertThat( spec.propertySpec( "propList" ).typeSpec().typeKind(), is( TypeKind.EXTERNAL_VALUE_OBJECT ) );
-        assertThat( spec.propertySpec( "propList" ).typeSpec().typeRef(), is( "org.generated.ref.OtherValueObj" ) );
+        assertThat( spec.propertySpec( "propList" ).typeSpec().typeRef(), is( "org.generated.valueobjectprops.ValueObjectPropsPropListList" ) );
     }
 
 }
