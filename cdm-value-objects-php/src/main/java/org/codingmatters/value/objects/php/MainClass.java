@@ -1,18 +1,18 @@
 package org.codingmatters.value.objects.php;
 
-import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.php.generator.SpecPhpGenerator;
 import org.codingmatters.value.objects.php.generator.SpecReaderPhp;
 import org.codingmatters.value.objects.spec.Spec;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 public class MainClass {
 
     static private Spec loadSpec( String resource ) {
         try {
-            return new SpecReaderPhp().read( Thread.currentThread().getContextClassLoader().getResourceAsStream( resource ) );
+            return new SpecReaderPhp().read( new FileInputStream( resource ) );
         } catch( Exception e ) {
             throw new RuntimeException( "error loading spec", e );
         }
@@ -31,8 +31,14 @@ public class MainClass {
 //        new SpecCodeGenerator( spec, "org.generated", new File( rootPath ) ).generate();
 
 
-        Spec spec = loadSpec( "books.yaml" );
-        new SpecPhpGenerator( spec, "org.generated", new File( rootPath ) ).generate();
+        for( File file : new File( rootPath ).listFiles() ) {
+            if( file.getName().endsWith( "yaml" ) ) {
+                Spec spec = loadSpec( rootPath + "/" + file.getName() );
+                new SpecPhpGenerator( spec, "org.generated", new File( rootPath ) ).generate();
+            }
+        }
+
+//        Spec spec = loadSpec( "books.yaml" );
 
     }
 

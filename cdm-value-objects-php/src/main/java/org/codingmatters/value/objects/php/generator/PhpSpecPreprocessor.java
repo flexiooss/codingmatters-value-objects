@@ -34,12 +34,13 @@ public class PhpSpecPreprocessor {
         for( PropertySpec propertySpec : valueSpec.propertySpecs() ) {
             if( propertySpec.typeSpec().typeKind() == TypeKind.EMBEDDED ) {
 
+                PropertySpec listType = propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 );
                 if( isListOrSet( propertySpec ) ) {
-                    if( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() == ENUM ) {
-                        if( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef().equals( capitalizedFirst( valueSpec.name().toLowerCase() ) + capitalizedFirst( propertySpec.name() ) + propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).name() ) ) {
+                    if( listType.typeSpec().typeKind() == ENUM ) {
+                        if( listType.typeSpec().typeRef().equals( capitalizedFirst( valueSpec.name().toLowerCase() ) + capitalizedFirst( propertySpec.name() ) + listType.name() ) ) {
                             String enumName = capitalizedFirst( valueSpec.name() ) + capitalizedFirst( propertySpec.name() );
                             rootValueSpec.addProperty( createEnumProperty(
-                                    propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().enumValues(),
+                                    listType.typeSpec().enumValues(),
                                     valuePackage + "." + valueSpec.name().toLowerCase() + "." + enumName + "List",
                                     propertySpec.typeSpec().cardinality(),
                                     propertySpec.name()
@@ -47,26 +48,27 @@ public class PhpSpecPreprocessor {
                         } else {
                             rootValueSpec.addProperty( createEnumProperty(
                                     null,
-                                    propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), propertySpec.typeSpec().cardinality(), propertySpec.name() ) );
+                                    listType.typeSpec().typeRef(), propertySpec.typeSpec().cardinality(), propertySpec.name() ) );
                         }
-                    } else if( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() == TypeKind.EMBEDDED ) {
-                        if( "$value-object".equals( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).name() ) ) {
+                    } else if( listType.typeSpec().typeKind() == TypeKind.EMBEDDED ) {
+                        if( "$value-object".equals( listType.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).name() ) ) {
                             rootValueSpec.addProperty(
                                     PropertySpec.property()
                                             .name( propertySpec.name() )
                                             .type( PropertyTypeSpec.type()
                                                     .cardinality( PropertyCardinality.LIST )
                                                     .typeKind( TypeKind.EXTERNAL_VALUE_OBJECT )
-                                                    .typeRef( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() )
+                                                    .typeRef( listType.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() )
+                                                    .embeddedValueSpec( AnonymousValueSpec.anonymousValueSpec().addProperty( PropertySpec.property().type( PropertyTypeSpec.type().typeRef( listType.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) ).build() ).build() )
                                             )
                                             .build()
                             );
                         } else {
                             System.out.println( "You have reached the limit of the php spec processor, thank you" );
                         }
-                    } else if( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() == IN_SPEC_VALUE_OBJECT ) {
+                    } else if( listType.typeSpec().typeKind() == IN_SPEC_VALUE_OBJECT ) {
                         PropertyTypeSpec.Builder elementType = PropertyTypeSpec.type().typeRef(
-                                packageName + "." + capitalizedFirst( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() )
+                                packageName + "." + capitalizedFirst( listType.typeSpec().typeRef() )
                         );
 
 
@@ -77,28 +79,43 @@ public class PhpSpecPreprocessor {
                                 .name( propertySpec.name() )
                                 .type( new PropertyTypeSpec.Builder()
                                         .cardinality( propertySpec.typeSpec().cardinality() )
-                                        .typeKind( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() )
+                                        .typeKind( listType.typeSpec().typeKind() )
                                         .typeRef( packageName + "." + valueSpec.name().toLowerCase() + "." + capitalizedFirst( valueSpec.name() ) + capitalizedFirst( propertySpec.name() ) + "List" )
                                         .embeddedValueSpec( listElementType )
                                 ).build()
                         );
                     } else {
-                        rootValueSpec.addProperty( PropertySpec.property()
+                        PropertyTypeSpec.Builder list;
+                        if( listType.typeSpec().typeRef().contains( "date" ) || listType.typeSpec().typeRef().contains( "time" ) ) {
+                            list = PropertyTypeSpec.type()
+                                    .typeKind( TypeKind.EXTERNAL_VALUE_OBJECT )
+                                    .typeRef( "io.flexio.utils.FlexDate" );
+                        } else {
+                            list = PropertyTypeSpec.type()
+                                    .typeKind( listType.typeSpec().typeKind() )
+                                    .typeRef( listType.typeSpec().typeRef() );
+                        }
+                        AnonymousValueSpec listElementType = AnonymousValueSpec.anonymousValueSpec()
+                                .addProperty( PropertySpec.property().type( list ).build() ).build();
+
+                        PropertySpec prop = PropertySpec.property()
                                 .name( propertySpec.name() )
-                                .type( new PropertyTypeSpec.Builder()
-                                        .cardinality( propertySpec.typeSpec().cardinality() )
-                                        .typeKind( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() )
-                                        .typeRef( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() )
-                                ).build()
-                        );
+                                .type( PropertyTypeSpec.type()
+                                        .typeKind( TypeKind.EXTERNAL_VALUE_OBJECT )
+                                        .typeRef( valuePackage + "." + valueSpec.name().toLowerCase() + "." + capitalizedFirst( valueSpec.name() ) + capitalizedFirst( propertySpec.name() ) + "List" )
+                                        .cardinality( PropertyCardinality.LIST )
+                                        .embeddedValueSpec( listElementType )
+                                )
+                                .build();
+                        rootValueSpec.addProperty( prop );
                     }
-                } else if( "$value-object".equals( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).name() ) ) {
+                } else if( "$value-object".equals( listType.name() ) ) {
                     // external value object
                     rootValueSpec.addProperty(
                             PropertySpec.property()
                                     .name( propertySpec.name() )
                                     .type( PropertyTypeSpec.type()
-                                            .typeRef( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() )
+                                            .typeRef( listType.typeSpec().typeRef() )
                                             .typeKind( EXTERNAL_VALUE_OBJECT )
                                             .cardinality( PropertyCardinality.SINGLE )
                                     )

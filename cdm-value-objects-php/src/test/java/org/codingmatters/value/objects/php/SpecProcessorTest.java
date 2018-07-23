@@ -28,7 +28,7 @@ public class SpecProcessorTest {
         List<PackagedValueSpec> values = getValues( "01_emptyObject.yaml" );
         assertThat( values.size(), is( 1 ) );
         assertThat( values.get( 0 ).packagename(), is( "org.generated" ) );
-        assertThat( values.get( 0 ).valueSpec().name(), is( "Book" ) );
+        assertThat( values.get( 0 ).valueSpec().name(), is( "EmptyObject" ) );
         assertThat( values.get( 0 ).valueSpec().propertySpecs().size(), is( 0 ) );
     }
 
