@@ -5,6 +5,8 @@ namespace Test;
 use PHPUnit\Framework\TestCase;
 use io\flexio\utils\FlexDate;
 use org\generated\ArraySimpleProps;
+use org\generated\json\ArraySimplePropsReader;
+
 use org\generated\arraysimpleprops\ArraySimplePropsStringListList;
 use org\generated\arraysimpleprops\ArraySimplePropsIntegerListList;
 use org\generated\arraysimpleprops\ArraySimplePropsDoubleListList;
@@ -15,6 +17,17 @@ use org\generated\arraysimpleprops\ArraySimplePropsDateListList;
 use org\generated\arraysimpleprops\ArraySimplePropsDateTimeListList;
 use org\generated\arraysimpleprops\ArraySimplePropsTzDateTimeListList;
 use org\generated\arraysimpleprops\ArraySimplePropsTimeListList;
+
+use org\generated\arraysimpleprops\ArraySimplePropsStringSetList;
+use org\generated\arraysimpleprops\ArraySimplePropsIntegerSetList;
+use org\generated\arraysimpleprops\ArraySimplePropsDoubleSetList;
+use org\generated\arraysimpleprops\ArraySimplePropsFloatSetList;
+use org\generated\arraysimpleprops\ArraySimplePropsBooleanSetList;
+use org\generated\arraysimpleprops\ArraySimplePropsLongSetList;
+use org\generated\arraysimpleprops\ArraySimplePropsDateSetList;
+use org\generated\arraysimpleprops\ArraySimplePropsDateTimeSetList;
+use org\generated\arraysimpleprops\ArraySimplePropsTzDateTimeSetList;
+use org\generated\arraysimpleprops\ArraySimplePropsTimeSetList;
 
 class EmptyObjectTest extends TestCase {
 
@@ -173,5 +186,89 @@ class EmptyObjectTest extends TestCase {
         $this->expectException(\TypeError::class);
         new ArraySimplePropsTzDateTimeListList( array( new \DateTime() ) );
     }
+
+    public function testReader(){
+        $arrayProp = new ArraySimpleProps();
+        $arrayProp -> withStringList( new ArraySimplePropsStringListList( array( "foo", "bar" )));
+        $arrayProp -> withIntegerList( new ArraySimplePropsIntegerListList( array( 7, 9 )));
+        $arrayProp -> withLongList( new ArraySimplePropsLongListList( array( 7, 9 )));
+        $arrayProp -> withFloatList( new ArraySimplePropsFloatListList( array( 7.5, 9.0 )));
+        $arrayProp -> withDoubleList( new ArraySimplePropsDoubleListList( array( 7.5, 9.0 )));
+        $arrayProp -> withBooleanList( new ArraySimplePropsBooleanListList( array( true, false )));
+        $arrayProp -> withTimeList( new ArraySimplePropsTimeListList( array( FlexDate::newTime( '15:07:20' ))));
+        $arrayProp -> withDateList( new ArraySimplePropsDateListList( array( FlexDate::newDate( "2018-10-17" ))));
+        $arrayProp -> withDateTimeList( new ArraySimplePropsDateTimeListList( array( FlexDate::newDateTime( '2017-01-18T20:00:00' ))));
+        $arrayProp -> withTzDateTimeList( new ArraySimplePropsTzDateTimeListList( array( FlexDate::newTzDateTime( '2018-10-17T15:07:20+01:00' ))));
+
+        $arrayProp -> withStringSet( new ArraySimplePropsStringSetList( array( "foo", "bar" )));
+        $arrayProp -> withIntegerSet( new ArraySimplePropsIntegerSetList( array( 7, 9 )));
+        $arrayProp -> withLongSet( new ArraySimplePropsLongSetList( array( 7, 9 )));
+        $arrayProp -> withFloatSet( new ArraySimplePropsFloatSetList( array( 7.5, 9.0 )));
+        $arrayProp -> withDoubleSet( new ArraySimplePropsDoubleSetList( array( 7.5, 9.0 )));
+        $arrayProp -> withBooleanSet( new ArraySimplePropsBooleanSetList( array( true, false )));
+        $arrayProp -> withTimeSet( new ArraySimplePropsTimeSetList( array( FlexDate::newTime( '15:07:20' ))));
+        $arrayProp -> withDateSet( new ArraySimplePropsDateSetList( array( FlexDate::newDate( "2018-10-17" ))));
+        $arrayProp -> withDateTimeSet( new ArraySimplePropsDateTimeSetList( array( FlexDate::newDateTime( '2017-01-18T20:00:00' ))));
+        $arrayProp -> withTzDateTimeSet( new ArraySimplePropsTzDateTimeSetList( array( FlexDate::newTzDateTime( '2018-10-17T15:07:20+01:00' ))));
+
+        $content = json_encode( $arrayProp, JSON_PRESERVE_ZERO_FRACTION );
+
+        $reader = new ArraySimplePropsReader();
+        $object = $reader->read( $content );
+
+        $this->assertNotNull( $object );
+        $this->assertSame( $object->stringList()[0], 'foo' );
+        $this->assertSame( $object->stringList()[1], 'bar' );
+
+        $this->assertSame( $object->integerList()[0], 7 );
+        $this->assertSame( $object->integerList()[1], 9 );
+
+        $this->assertSame( $object->longList()[0], 7 );
+        $this->assertSame( $object->longList()[1], 9 );
+
+        $this->assertSame( $object->floatList()[0], 7.5 );
+        $this->assertSame( $object->floatList()[1], 9.0 );
+
+        $this->assertSame( $object->doubleList()[0], 7.5 );
+        $this->assertSame( $object->doubleList()[1], 9.0 );
+
+        $this->assertSame( $object->booleanList()[0], true );
+        $this->assertSame( $object->booleanList()[1], false );
+
+        $this->assertSame( $object->timeList()[0]->jsonSerialize(), '15:07:20' );
+
+        $this->assertSame( $object->dateList()[0]->jsonSerialize(), '2018-10-17' );
+
+        $this->assertSame( $object->dateTimeList()[0]->jsonSerialize(), '2017-01-18T20:00:00' );
+
+        $this->assertSame( $object->tzDateTimeList()[0]->jsonSerialize(), '2018-10-17T15:07:20+01:00' );
+
+        $this->assertSame( $object->stringSet()[0], 'foo' );
+        $this->assertSame( $object->stringSet()[1], 'bar' );
+
+        $this->assertSame( $object->integerSet()[0], 7 );
+        $this->assertSame( $object->integerSet()[1], 9 );
+
+        $this->assertSame( $object->longSet()[0], 7 );
+        $this->assertSame( $object->longSet()[1], 9 );
+
+        $this->assertSame( $object->floatSet()[0], 7.5 );
+        $this->assertSame( $object->floatSet()[1], 9.0 );
+
+        $this->assertSame( $object->doubleSet()[0], 7.5 );
+        $this->assertSame( $object->doubleSet()[1], 9.0 );
+
+        $this->assertSame( $object->booleanSet()[0], true );
+        $this->assertSame( $object->booleanSet()[1], false );
+
+        $this->assertSame( $object->timeSet()[0]->jsonSerialize(), '15:07:20' );
+
+        $this->assertSame( $object->dateSet()[0]->jsonSerialize(), '2018-10-17' );
+
+        $this->assertSame( $object->dateTimeSet()[0]->jsonSerialize(), '2017-01-18T20:00:00' );
+
+        $this->assertSame( $object->tzDateTimeSet()[0]->jsonSerialize(), '2018-10-17T15:07:20+01:00' );
+    }
+
 
 }

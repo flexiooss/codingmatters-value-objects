@@ -127,7 +127,7 @@ public class PhpTypeClassWriter {
         twoLine( 0 );
     }
 
-    public void writeValueObject( PhpPackagedValueSpec spec, Map<String, String> classReferencesContext ) throws IOException {
+    public void writeValueObject( PhpPackagedValueSpec spec, Map<String, String> classReferencesContext, boolean serializable ) throws IOException {
         putClassInContext( this.objectName, classReferencesContext );
         startPhpFile();
 
@@ -140,6 +140,9 @@ public class PhpTypeClassWriter {
         writer.write( "class " + this.objectName );
         if( spec.extender() != null ) {
             writer.write( " extends " + spec.extender().typeRef() );
+        }
+        if( serializable) {
+            writer.write( " implements \\JsonSerializable" );
         }
         writer.write( " {" );
         twoLine( 1 );
@@ -173,6 +176,15 @@ public class PhpTypeClassWriter {
             writer.write( "}" );
             twoLine( 0 );
         }
+        if( serializable ) {
+            indent( 1 );
+            writer.write( "public function jsonSerialize() {" );
+            newLine( 2 );
+            writer.write( "return get_object_vars($this);" );
+            newLine( 1 );
+            writer.write( "}" );
+            newLine( 0 );
+        }
         writer.write( "}" );
 
         writer.flush();
@@ -182,17 +194,20 @@ public class PhpTypeClassWriter {
     public void writeReader( PhpPackagedValueSpec spec ) throws IOException {
         startPhpFile();
 
+        writer.write( "use " + spec.packageName().replace( ".", "\\" ) + "\\" + spec.name() + ";" );
+        writer.newLine();
         for( String importation : spec.imports() ) {
             writer.write( "use " + importation.replace( ".", "\\" ) + ";" );
             writer.newLine();
         }
+
         twoLine( 0 );
         writer.write( "class " + this.objectName + " {" );
         twoLine( 1 );
         String objectToRead = this.objectName.substring( 0, this.objectName.length() - 6 );
         writer.write( "public function read( string $json ) : " + objectToRead + " {" );
         newLine( 2 );
-        writer.write( "$decode = json_decode( $json );" );
+        writer.write( "$decode = json_decode( $json, true );" );
         newLine( 2 );
         String resultVar = "$" + firstLetterLowerCase( objectToRead );
         writer.write( resultVar + " = new " + objectToRead + "();" );
@@ -219,7 +234,7 @@ public class PhpTypeClassWriter {
         writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
         newLine( 3 );
         String listType = property.typeSpec().typeRef().substring( property.typeSpec().typeRef().lastIndexOf( "." ) + 1 );
-        writer.write( "$list = new " + listType + "List" + "();" );
+        writer.write( "$list = new " + listType + "();" );
         newLine( 3 );
         writer.write( "foreach( $decode['" + property.name() + "'] as $item ){" );
         newLine( 4 );
@@ -230,7 +245,7 @@ public class PhpTypeClassWriter {
                 writer.write( "$list[] = $item;" );
             } else if( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT ) {
                 if( "io.flexio.utils.FlexDate".equals( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) ) {
-                    writer.write( "$list[] = FlexDate::parse( $item );" );
+                    writer.write( "$list[] = \\io\\flexio\\utils\\FlexDate::parse( $item );" );
                 }
             }
         } else {
@@ -249,15 +264,14 @@ public class PhpTypeClassWriter {
         if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
             writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
             newLine( 3 );
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( " + property.typeSpec().typeRef() + ".valueOf( $decode['" + property.name() + "'] )));" );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( " + property.typeSpec().typeRef() + ".valueOf( $decode['" + property.name() + "'] ));" );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );
-        } else if( property.typeSpec().typeKind() == TypeKind.JAVA_TYPE && isDate( property ) ) {
+        } else if( "io.flexio.utils.FlexDate".equals( property.typeSpec().typeRef() ) ) {
             writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
             newLine( 3 );
-            //TODO TOREDO !!!!!!!!
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( FlexDate::new" + getDateClass( property.typeSpec().typeRef() ) + "( $decode['" + property.name() + "'] )));" );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( FlexDate::parse( $decode['" + property.name() + "'] ));" );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );
@@ -273,7 +287,7 @@ public class PhpTypeClassWriter {
         } else {
             writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
             newLine( 3 );
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $decode['" + property.name() + "'] ));" );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $decode['" + property.name() + "'] );" );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );

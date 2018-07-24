@@ -55,7 +55,7 @@ public class SpecPhpGenerator {
         for( PhpPackagedValueSpec listValue : listValues ) {
             File packageDestination = new File( rootDirectory, listValue.packageName().replace( ".", "/" ) );
             PhpTypeClassWriter fileWriter = new PhpTypeClassWriter( packageDestination, listValue.packageName(), listValue.name() );
-            fileWriter.writeValueObject( listValue, classReferencesContext );
+            fileWriter.writeValueObject( listValue, classReferencesContext, false );
         }
 
         // GENERATE CLASSES
@@ -105,7 +105,7 @@ public class SpecPhpGenerator {
         PhpPackagedValueSpec phpValueObject = new PhpModelParser().parseValueSpec( valueObject, classReferencesContext );
         if( phpValueObject != null ) {
             PhpTypeClassWriter fileWriter = new PhpTypeClassWriter( packageDestination, valueObject.packagename(), valueObject.valueSpec().name() );
-            fileWriter.writeValueObject( phpValueObject, classReferencesContext );
+            fileWriter.writeValueObject( phpValueObject, classReferencesContext, true );
         }
     }
 
