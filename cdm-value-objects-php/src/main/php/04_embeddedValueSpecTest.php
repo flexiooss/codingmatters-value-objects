@@ -47,6 +47,11 @@ class EmbeddedObjectTest extends TestCase {
         $reader = new ComplexTypeReader();
         $object = $reader->read( $content );
 
-        $this -> assertSame( $object -> complexProp() -> stringProp(), 'toto' );
+        $this -> assertSame( $object -> complexProps() -> stringProp(), 'toto' );
+        $this -> assertSame( $object -> complexProps() -> intList()[0], 7 );
+        $this -> assertSame( $object -> complexProps() -> intList()[1], 9 );
+        $this -> assertSame( $object -> complexProps() -> intList()[2], 20 );
+        $this -> assertSame( $object -> testIsOk(), true );
+        $this -> assertSame( $object -> foo(), 74.9 );
     }
 }

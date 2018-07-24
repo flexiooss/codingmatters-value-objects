@@ -80,9 +80,9 @@ public class PhpTypeClassWriter {
         newLine( 1 );
         writer.write( "public static function valueOf( string $value ): " + enumValue.name() + " {" );
         newLine( 2 );
-        writer.write( "if( in_array($value, BookKind::values())){" );
+        writer.write( "if( in_array($value, " + enumValue.name() + "::values())){" );
         newLine( 3 );
-        writer.write( "return new BookKind( $value );" );
+        writer.write( "return new " + enumValue.name() + "( $value );" );
         newLine( 2 );
         writer.write( "} else {" );
         newLine( 3 );
@@ -245,7 +245,7 @@ public class PhpTypeClassWriter {
         writer.write( "foreach( $decode['" + property.name() + "'] as $item ){" );
         newLine( 4 );
         if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
-            writer.write( "$list[] = " + property.typeSpec().typeRef().substring( 0, property.typeSpec().typeRef().length() - 4 ) + "::valueOf( $item );" );
+            writer.write( "$list[] = \\" + property.typeSpec().typeRef().substring( 0, property.typeSpec().typeRef().length() - 4 ).replace( ".", "\\" ) + "::valueOf( $item );" );
         } else if( property.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT && property.typeSpec().embeddedValueSpec() != null ) {
             if( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() == TypeKind.JAVA_TYPE ) {
                 writer.write( "$list[] = $item;" );
@@ -270,7 +270,7 @@ public class PhpTypeClassWriter {
         if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
             writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
             newLine( 3 );
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( " + property.typeSpec().typeRef() + ".valueOf( $decode['" + property.name() + "'] ));" );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( \\" + property.typeSpec().typeRef().replace( ".", "\\" ) + "::valueOf( $decode['" + property.name() + "'] ));" );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );
