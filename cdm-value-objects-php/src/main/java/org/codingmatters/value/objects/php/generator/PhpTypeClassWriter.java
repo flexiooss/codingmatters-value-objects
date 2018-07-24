@@ -209,6 +209,12 @@ public class PhpTypeClassWriter {
         newLine( 2 );
         writer.write( "$decode = json_decode( $json, true );" );
         newLine( 2 );
+        writer.write( "return $this->readArray( $decode );" );
+        newLine( 1 );
+        writer.write( "}" );
+        twoLine( 1 );
+        writer.write( "public function readArray( array $decode ) : " + objectToRead + " {" );
+        newLine( 2 );
         String resultVar = "$" + firstLetterLowerCase( objectToRead );
         writer.write( resultVar + " = new " + objectToRead + "();" );
         newLine( 2 );
@@ -278,9 +284,9 @@ public class PhpTypeClassWriter {
         } else if( property.typeSpec().typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT ) {
             writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
             newLine( 3 );
-            writer.write( "$reader = new " + getReaderFromReference( property ) + "();" );
+            writer.write( "$reader = new \\" + getReaderFromReference( property ) + "();" );
             newLine( 3 );
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $reader.read( $decode['" + property.name() + "'] ));" );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $reader->readArray( $decode['" + property.name() + "'] ));" );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );
@@ -297,7 +303,7 @@ public class PhpTypeClassWriter {
     private String getReaderFromReference( PhpPropertySpec property ) {
         String typeRef = property.typeSpec().typeRef();
         int index = typeRef.lastIndexOf( "." );
-        return typeRef.substring( 0, index ) + ".json" + typeRef.substring( index ) + "Reader";
+        return (typeRef.substring( 0, index ) + ".json" + typeRef.substring( index ) + "Reader").replace( ".", "\\" );
 
     }
 
