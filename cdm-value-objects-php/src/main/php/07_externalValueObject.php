@@ -6,24 +6,51 @@ use PHPUnit\Framework\TestCase;
 
 use io\flexio\utils\FlexDate;
 use org\generated\ValueObjectProps;
+use org\generated\json\ValueObjectPropsReader;
 use org\generated\valueobjectprops\ValueObjectPropsPropListList;
+use org\generated\PrimitiveProps;
 
 class ExternalValueObjectTest extends TestCase {
 
     public function testValueObjectTypedProperties() {
-        $object = new ValueObjectProps();
+        $valueObjectProps = new ValueObjectProps();
 
-        $flexDate = FlexDate::newDate( '2018-05-20' );
-        $flexDate2 = FlexDate::newDate( '2018-07-23' );
+        $object = new PrimitiveProps();
+        $object -> withStringProp( "toto" );
 
-        $object->withProp( $flexDate )
-            -> withPropList( new ValueObjectPropsPropListList( array( $flexDate )));
+        $object2 = new PrimitiveProps();
+        $object2 -> withStringProp( "tutu" );
 
-        $object->propList()[] = $flexDate2;
+        $valueObjectProps->withProp( $object )
+            -> withPropList( new ValueObjectPropsPropListList( array( $object )));
 
-        $this -> assertSame( $object->prop()->jsonSerialize(), '2018-05-20' );
-        $this -> assertSame( $object->propList()[0]->jsonSerialize(), '2018-05-20' );
-        $this -> assertSame( $object->propList()[1]->jsonSerialize(), '2018-07-23' );
+        $valueObjectProps->propList()[] = $object2;
+
+        $this -> assertSame( $valueObjectProps->prop()->stringProp(), 'toto' );
+        $this -> assertSame( $valueObjectProps->propList()[0]->stringProp(), 'toto' );
+        $this -> assertSame( $valueObjectProps->propList()[1]->stringProp(), 'tutu' );
+    }
+
+    public function testReader(){
+        $valueObjectProps = new ValueObjectProps();
+
+        $object = new PrimitiveProps();
+        $object -> withStringProp( "toto" );
+
+        $object2 = new PrimitiveProps();
+        $object2 -> withStringProp( "tutu" );
+
+        $valueObjectProps->withProp( $object )
+                -> withPropList( new ValueObjectPropsPropListList( array( $object, $object2 )));
+
+        $content = json_encode( $valueObjectProps, true );
+
+        $reader = new ValueObjectPropsReader();
+        $parsed = $reader->read( $content );
+
+        $this->assertSame( "toto", $parsed->prop()->stringProp() );
+        $this->assertSame( "toto", $parsed->propList()[0]->stringProp() );
+        $this->assertSame( "tutu", $parsed->propList()[1]->stringProp() );
     }
 
 }

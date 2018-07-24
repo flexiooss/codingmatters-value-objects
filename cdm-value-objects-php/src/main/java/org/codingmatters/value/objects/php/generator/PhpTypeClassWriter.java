@@ -249,10 +249,12 @@ public class PhpTypeClassWriter {
         } else if( property.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT && property.typeSpec().embeddedValueSpec() != null ) {
             if( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() == TypeKind.JAVA_TYPE ) {
                 writer.write( "$list[] = $item;" );
-            } else if( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT ) {
-                if( "io.flexio.utils.FlexDate".equals( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) ) {
+            } else if( "io.flexio.utils.FlexDate".equals( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) ) {
                     writer.write( "$list[] = \\io\\flexio\\utils\\FlexDate::parse( $item );" );
-                }
+            } else {
+                writer.write( "$reader = new \\" + getReaderFromReference( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) + "();" );
+                newLine( 4 );
+                writer.write( "$list[] = $reader->readArray( $item );" );
             }
         } else {
             writer.write( "$list[] = $item;" );
@@ -281,10 +283,10 @@ public class PhpTypeClassWriter {
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );
-        } else if( property.typeSpec().typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT ) {
+        } else if( property.typeSpec().typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT || property.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT ) {
             writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
             newLine( 3 );
-            writer.write( "$reader = new \\" + getReaderFromReference( property ) + "();" );
+            writer.write( "$reader = new \\" + getReaderFromReference( property.typeSpec().typeRef() ) + "();" );
             newLine( 3 );
             writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $reader->readArray( $decode['" + property.name() + "'] ));" );
             newLine( 2 );
@@ -300,8 +302,7 @@ public class PhpTypeClassWriter {
         }
     }
 
-    private String getReaderFromReference( PhpPropertySpec property ) {
-        String typeRef = property.typeSpec().typeRef();
+    private String getReaderFromReference( String typeRef ) {
         int index = typeRef.lastIndexOf( "." );
         return (typeRef.substring( 0, index ) + ".json" + typeRef.substring( index ) + "Reader").replace( ".", "\\" );
 

@@ -1,7 +1,6 @@
 valueObjectProps:
   prop:
-    $value-object: io.flexio.utils.FlexDate
+    $value-object: org.generated.PrimitiveProps
   propList:
     $list:
-      $value-object: io.flexio.utils.FlexDate
-
+      $value-object: org.generated.PrimitiveProps
