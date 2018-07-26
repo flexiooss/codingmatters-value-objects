@@ -181,14 +181,14 @@ public class SpecProcessorTest {
         assertThat( spec.valueSpec().propertySpecs().size(), is( 2 ) );
 
         assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().typeKind(), is( TypeKind.ENUM ) );
-        assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().typeRef(), is( "java.time.DayOfWeek" ) );
+        assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().typeRef(), is( "org.generated.enumproperties.EnumPropertiesSingle" ) );
         assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
-        assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().isInSpecEnum(), is( false ) );
+        assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().isInSpecEnum(), is( true ) );
 
         assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().typeKind(), is( TypeKind.ENUM ) );
-        assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().typeRef(), is( "java.time.DayOfWeek" ) );
+        assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().typeRef(), is( "org.generated.enumproperties.EnumPropertiesMultipleList" ) );
         assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
-        assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().isInSpecEnum(), is( false ) );
+        assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().isInSpecEnum(), is( true ) );
     }
 
     @Test
@@ -204,7 +204,7 @@ public class SpecProcessorTest {
         assertThat( spec.propertySpec( "prop" ).name(), is( "prop" ) );
         assertThat( spec.propertySpec( "prop" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
         assertThat( spec.propertySpec( "prop" ).typeSpec().typeKind(), is( TypeKind.EXTERNAL_VALUE_OBJECT ) );
-        assertThat( spec.propertySpec( "prop" ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
+        assertThat( spec.propertySpec( "prop" ).typeSpec().typeRef(), is( "org.generated.PrimitiveProps" ) );
 
         assertThat( spec.propertySpec( "propList" ).name(), is( "propList" ) );
         assertThat( spec.propertySpec( "propList" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
