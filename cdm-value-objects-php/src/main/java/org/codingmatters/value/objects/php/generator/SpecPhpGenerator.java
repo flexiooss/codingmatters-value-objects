@@ -28,10 +28,11 @@ public class SpecPhpGenerator {
     public void generate() throws IOException {
         List<PackagedValueSpec> packagedValueSpecs = new PhpSpecPreprocessor( this.spec, this.rootPackage ).packagedValueSpec();
         List<PhpEnum> enumValues = new ArrayList<>();
-        List<PhpPackagedValueSpec> listValues = new ArrayList();
+        ArrayList<PhpPackagedValueSpec> listValues = new ArrayList<>();
         for( PackagedValueSpec valueSpec : packagedValueSpecs ) {
             for( PropertySpec propertySpec : valueSpec.valueSpec().propertySpecs() ) {
                 if( propertySpec.typeSpec().typeKind() == TypeKind.ENUM ) {
+                    System.out.println( "GENERATE ENUM " + Arrays.toString( propertySpec.typeSpec().enumValues() ) );
                     String typeRef = rootPackage + "." + valueSpec.valueSpec().name().toLowerCase() + "." + valueSpec.valueSpec().name() + firstLetterUpperCase( propertySpec.name() );
                     enumValues.add( new PhpEnum(
                             typeRef,
@@ -39,6 +40,7 @@ public class SpecPhpGenerator {
                     );
                 }
                 if( propertySpec.typeSpec().cardinality() == PropertyCardinality.LIST ) {
+                    System.out.println( "Generate LIST:" + propertySpec.name() );
                     listValues.add( PhpTypedList.createPhpPackagedValueSpec( valueSpec, propertySpec ) );
                 }
             }
