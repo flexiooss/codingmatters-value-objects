@@ -32,8 +32,12 @@ public class SpecPhpGenerator {
         for( PackagedValueSpec valueSpec : packagedValueSpecs ) {
             for( PropertySpec propertySpec : valueSpec.valueSpec().propertySpecs() ) {
                 if( propertySpec.typeSpec().typeKind() == TypeKind.ENUM ) {
+                    String typeRef = propertySpec.typeSpec().typeRef();
+                    if( propertySpec.typeSpec().cardinality() == PropertyCardinality.LIST ) {
+                        typeRef = typeRef.substring( 0, typeRef.length() - 4 );
+                    }
                     System.out.println( "GENERATE ENUM " + Arrays.toString( propertySpec.typeSpec().enumValues() ) );
-                    String typeRef = rootPackage + "." + valueSpec.valueSpec().name().toLowerCase() + "." + valueSpec.valueSpec().name() + firstLetterUpperCase( propertySpec.name() );
+                    System.out.println( "IN " + typeRef );
                     enumValues.add( new PhpEnum(
                             typeRef,
                             propertySpec.typeSpec().enumValues() )

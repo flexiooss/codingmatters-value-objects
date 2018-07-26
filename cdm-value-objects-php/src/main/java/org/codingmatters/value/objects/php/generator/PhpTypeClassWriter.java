@@ -34,7 +34,7 @@ public class PhpTypeClassWriter {
         this.objectName = firstLetterUpperCase( name );
         this.fileName = objectName + ".php";
         String targetFile = String.join( "/", this.targetDirectory.getPath(), fileName );
-        System.out.println( "Generating in " + targetFile );
+//        System.out.println( "Generating in " + targetFile );
         this.writer = new BufferedWriter( new FileWriter( targetFile ) );
         this.imports = new HashSet<>();
     }
