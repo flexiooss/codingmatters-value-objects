@@ -141,7 +141,7 @@ public class PhpTypeClassWriter {
         if( spec.extender() != null ) {
             writer.write( " extends " + spec.extender().typeRef() );
         }
-        if( serializable) {
+        if( serializable ) {
             writer.write( " implements \\JsonSerializable" );
         }
         writer.write( " {" );
@@ -185,6 +185,28 @@ public class PhpTypeClassWriter {
             writer.write( "}" );
             newLine( 0 );
         }
+        writer.write( "}" );
+
+        writer.flush();
+        writer.close();
+    }
+
+
+    public void writeWriter( PhpPackagedValueSpec spec ) throws IOException {
+        startPhpFile();
+
+        writer.write( "use " + spec.packageName().replace( ".", "\\" ) + "\\" + spec.name() + ";" );
+        twoLine( 0 );
+        writer.write( "class " + this.objectName + " {" );
+        twoLine( 1 );
+        String objectToWrite = this.objectName.substring( 0, this.objectName.length() - 6 );
+
+        writer.write( "public function write( " + objectToWrite + " $object ) : string {" );
+        newLine( 2 );
+        writer.write( "return json_encode( $object );" );
+        newLine( 1 );
+        writer.write( "}" );
+        newLine( 0 );
         writer.write( "}" );
 
         writer.flush();
@@ -250,7 +272,7 @@ public class PhpTypeClassWriter {
             if( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() == TypeKind.JAVA_TYPE ) {
                 writer.write( "$list[] = $item;" );
             } else if( "io.flexio.utils.FlexDate".equals( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) ) {
-                    writer.write( "$list[] = \\io\\flexio\\utils\\FlexDate::parse( $item );" );
+                writer.write( "$list[] = \\io\\flexio\\utils\\FlexDate::parse( $item );" );
             } else {
                 writer.write( "$reader = new \\" + getReaderFromReference( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) + "();" );
                 newLine( 4 );
@@ -342,6 +364,7 @@ public class PhpTypeClassWriter {
     private String firstLetterUpperCase( String name ) {
         return name.substring( 0, 1 ).toUpperCase( Locale.ENGLISH ) + name.substring( 1 );
     }
+
 
     private String firstLetterLowerCase( String name ) {
         return name.substring( 0, 1 ).toLowerCase( Locale.ENGLISH ) + name.substring( 1 );

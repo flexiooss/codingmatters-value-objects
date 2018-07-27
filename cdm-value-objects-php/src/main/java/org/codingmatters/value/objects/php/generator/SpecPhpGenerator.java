@@ -36,15 +36,12 @@ public class SpecPhpGenerator {
                     if( propertySpec.typeSpec().cardinality() == PropertyCardinality.LIST ) {
                         typeRef = typeRef.substring( 0, typeRef.length() - 4 );
                     }
-                    System.out.println( "GENERATE ENUM " + Arrays.toString( propertySpec.typeSpec().enumValues() ) );
-                    System.out.println( "IN " + typeRef );
                     enumValues.add( new PhpEnum(
                             typeRef,
                             propertySpec.typeSpec().enumValues() )
                     );
                 }
                 if( propertySpec.typeSpec().cardinality() == PropertyCardinality.LIST ) {
-                    System.out.println( "Generate LIST:" + propertySpec.name() );
                     listValues.add( PhpTypedList.createPhpPackagedValueSpec( valueSpec, propertySpec ) );
                 }
             }
@@ -99,6 +96,9 @@ public class SpecPhpGenerator {
         if( phpValueObject != null ) {
             PhpTypeClassWriter fileWriter = new PhpTypeClassWriter( packageDestination, valueObject.packagename() + ".json", valueObject.valueSpec().name() + "Reader" );
             fileWriter.writeReader( phpValueObject );
+
+            fileWriter = new PhpTypeClassWriter( packageDestination, valueObject.packagename() + ".json", valueObject.valueSpec().name() + "Writer" );
+            fileWriter.writeWriter( phpValueObject );
         }
     }
 
