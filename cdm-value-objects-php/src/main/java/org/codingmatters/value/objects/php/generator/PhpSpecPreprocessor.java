@@ -33,8 +33,12 @@ public class PhpSpecPreprocessor {
 
         for( PropertySpec propertySpec : valueSpec.propertySpecs() ) {
             if( propertySpec.typeSpec().typeKind() == TypeKind.EMBEDDED ) {
-
-                PropertySpec listType = propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 );
+                PropertySpec listType ;
+                if( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().isEmpty() ){
+                    listType = PropertySpec.property().build();
+                }else{
+                    listType = propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 );
+                }
                 if( isListOrSet( propertySpec ) ) {
                     processListProperty( valueSpec, valuePackage, rootValueSpec, propertySpec, listType );
                 } else if( "$value-object".equals( listType.name() ) ) {
