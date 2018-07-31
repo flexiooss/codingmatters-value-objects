@@ -12,7 +12,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PhpTypeClassWriter {
@@ -40,8 +43,7 @@ public class PhpTypeClassWriter {
     }
 
 
-    public void writeEnum( PhpEnum enumValue, Map<String, String> classReferencesContext ) throws IOException {
-        putClassInContext( enumValue.name(), classReferencesContext );
+    public void writeEnum( PhpEnum enumValue ) throws IOException {
         startPhpFile();
 
         writer.write( "use \\Exception;" );
@@ -113,12 +115,6 @@ public class PhpTypeClassWriter {
         writer.close();
     }
 
-    private void putClassInContext( String name, Map<String, String> classReferencesContext ) {
-        if( !classReferencesContext.containsKey( name ) ) {
-            classReferencesContext.put( name, this.packageName + "." + name );
-        }
-    }
-
     private void startPhpFile() throws IOException {
         writer.write( "<?php" );
         twoLine( 0 );
@@ -127,8 +123,7 @@ public class PhpTypeClassWriter {
         twoLine( 0 );
     }
 
-    public void writeValueObject( PhpPackagedValueSpec spec, Map<String, String> classReferencesContext, boolean serializable ) throws IOException {
-        putClassInContext( this.objectName, classReferencesContext );
+    public void writeValueObject( PhpPackagedValueSpec spec, boolean serializable ) throws IOException {
         startPhpFile();
 
         for( String importation : spec.imports() ) {
@@ -261,7 +256,7 @@ public class PhpTypeClassWriter {
     private void processFieldList( PhpPackagedValueSpec spec, String resultVar, PhpPropertySpec property ) throws IOException {
         writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
         newLine( 3 );
-        String listType = property.typeSpec().typeRef().substring( property.typeSpec().typeRef().lastIndexOf( "." ) + 1 );
+        String listType = "\\" + property.typeSpec().typeRef().replace( ".", "\\" );
         writer.write( "$list = new " + listType + "();" );
         newLine( 3 );
         writer.write( "foreach( $decode['" + property.name() + "'] as $item ){" );
@@ -301,7 +296,7 @@ public class PhpTypeClassWriter {
         } else if( "io.flexio.utils.FlexDate".equals( property.typeSpec().typeRef() ) ) {
             writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
             newLine( 3 );
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( FlexDate::parse( $decode['" + property.name() + "'] ));" );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( \\io\\flexio\\utils\\FlexDate::parse( $decode['" + property.name() + "'] ));" );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );

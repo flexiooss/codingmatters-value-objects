@@ -10,10 +10,10 @@ public enum TypeTokenPhp {
     DOUBLE( "float" ),
     BOOL( "bool" ),
     BYTES( "string" ),
-    DATE( "date", "FlexDate" ),
-    TIME( "time", "FlexDate" ),
-    DATE_TIME( "date-time", "FlexDate" ),
-    TZ_DATE_TIME( "date-time", "FlexDate" );
+    DATE( "date", "\\io\\flexio\\utils\\FlexDate" ),
+    TIME( "time", "\\io\\flexio\\utils\\FlexDate" ),
+    DATE_TIME( "date-time", "\\io\\flexio\\utils\\FlexDate" ),
+    TZ_DATE_TIME( "date-time", "\\io\\flexio\\utils\\FlexDate" );
 
     private final String type;
     private String implementationType;

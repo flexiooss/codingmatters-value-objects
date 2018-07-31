@@ -13,41 +13,22 @@ import java.util.Map;
 
 public class PhpModelParser {
 
-    public PhpPackagedValueSpec parseValueSpec( PackagedValueSpec valueSpec, Map<String, String> classReferencesContext ) {
-        return getDummyPhpClass( valueSpec, classReferencesContext );
+    public PhpPackagedValueSpec parseValueSpec( PackagedValueSpec valueSpec ) {
+        return getDummyPhpClass( valueSpec );
     }
 
     public boolean needToBeGenerated( PackagedValueSpec valueSpec ) {
         return !(valueSpec.valueSpec().propertySpecs().size() == 1 && valueSpec.valueSpec().propertySpecs().get( 0 ).name().equals( "$value-object" ));
     }
 
-    private PhpPackagedValueSpec getDummyPhpClass( PackagedValueSpec valueSpec, Map<String, String> classReferencesContext ) {
+    private PhpPackagedValueSpec getDummyPhpClass( PackagedValueSpec valueSpec ) {
         PhpPackagedValueSpec phpPackagedValueSpec = new PhpPackagedValueSpec( valueSpec.packagename(), valueSpec.valueSpec().name() );
 
         for( PropertySpec propertySpec : valueSpec.valueSpec().propertySpecs() ) {
             PhpPropertySpec property = new PhpPropertySpec( propertySpec.typeSpec(), propertySpec.name() );
-
-            if( propertySpec.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT ) {
-                String[] split = propertySpec.typeSpec().typeRef().split( "\\." );
-                if( classReferencesContext.containsKey( split[split.length - 1] ) ) {
-                    phpPackagedValueSpec.addImport( classReferencesContext.get( split[split.length - 1] ) );
-                } else {
-                    phpPackagedValueSpec.addImport( propertySpec.typeSpec().typeRef().replace( ".", "\\" ) );
-                }
-            } else if( propertySpec.typeSpec().typeKind() == TypeKind.ENUM ) {
-                phpPackagedValueSpec.addImport( valueSpec.packagename().replace( ".", "\\" ) + "\\" + valueSpec.valueSpec().name().toLowerCase() + "\\" + propertySpec.typeSpec().typeRef().substring( propertySpec.typeSpec().typeRef().lastIndexOf( "." ) + 1 ) );
-            } else if( propertySpec.typeSpec().typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT ) {
-                phpPackagedValueSpec.addImport( propertySpec.typeSpec().typeRef() );
-            } else if( propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE ) {
-                if( propertySpec.typeSpec().typeRef().contains( "date" ) ) {
-                    phpPackagedValueSpec.addImport( "io.flexio.utils.FlexDate" );
-                } else if( propertySpec.name().equals( "$value-object" ) ) {
-                    phpPackagedValueSpec.addImport( propertySpec.typeSpec().typeRef() );
-                }
-            }
             phpPackagedValueSpec.addProperty( property );
 
-            phpPackagedValueSpec.addMethod( createGetter( propertySpec, classReferencesContext ) );
+            phpPackagedValueSpec.addMethod( createGetter( propertySpec ) );
             phpPackagedValueSpec.addMethod( createSetter( propertySpec, firstLetterUpperCase( valueSpec.valueSpec().name() ) ) );
         }
         return phpPackagedValueSpec;
@@ -56,8 +37,11 @@ public class PhpModelParser {
     private PhpMethod createSetter( PropertySpec propertySpec, String returnType ) {
         PhpMethod phpMethod = new PhpMethod( "with" + firstLetterUpperCase( propertySpec.name() ) );
         String type;
-        if( propertySpec.typeSpec().typeRef() != null ) {
-            type = propertySpec.typeSpec().typeRef().substring( propertySpec.typeSpec().typeRef().lastIndexOf( "." ) + 1 );
+        if( propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE  ){
+            type = propertySpec.typeSpec().typeRef();
+        }
+        else if( propertySpec.typeSpec().typeRef() != null ) {
+            type = "\\" + propertySpec.typeSpec().typeRef().replace( ".","\\" );
         } else {
             type = "";
         }
@@ -68,12 +52,16 @@ public class PhpModelParser {
         return phpMethod;
     }
 
-    private PhpMethod createGetter( PropertySpec propertySpec, Map<String, String> classReferencesContext ) {
+    private PhpMethod createGetter( PropertySpec propertySpec ) {
         PhpMethod phpMethod = new PhpMethod( propertySpec.name() );
         phpMethod.addInstruction( "return $this->" + propertySpec.name() );
         String type;
-        if( propertySpec.typeSpec().typeRef() != null ) {
-            type = propertySpec.typeSpec().typeRef().substring( propertySpec.typeSpec().typeRef().lastIndexOf( "." ) + 1 );
+
+        if( propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE  ){
+            type = propertySpec.typeSpec().typeRef();
+        }
+        else if( propertySpec.typeSpec().typeRef() != null ) {
+            type = "\\" + propertySpec.typeSpec().typeRef().replace( ".","\\" );
         } else {
             type = "";
         }
