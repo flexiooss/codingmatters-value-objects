@@ -19,7 +19,6 @@ public class MainClass {
     }
 
     public static void main( String[] args ) throws IOException {
-
         String rootPath = System.getProperty( "generationTargetDir", "" );
         if( rootPath.equals( "" ) ) {
             System.out.println( "Generation target dir property not found" );
@@ -27,19 +26,12 @@ public class MainClass {
         }
         System.out.println( "Generating in " + rootPath );
 
-//        Spec spec = loadSpec( "books.yaml" );
-//        new SpecCodeGenerator( spec, "org.generated", new File( rootPath ) ).generate();
-
-
         for( File file : new File( rootPath ).listFiles() ) {
             if( file.getName().endsWith( "yaml" ) ) {
                 Spec spec = loadSpec( rootPath + "/" + file.getName() );
                 new SpecPhpGenerator( spec, "org.generated", new File( rootPath ) ).generate();
             }
         }
-
-//        Spec spec = loadSpec( "books.yaml" );
-
     }
 
 }
