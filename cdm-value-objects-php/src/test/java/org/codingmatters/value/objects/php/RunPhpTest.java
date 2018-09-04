@@ -37,6 +37,12 @@ public class RunPhpTest {
             while( stream.read( buffer ) != -1 ) {
                 out.write( buffer );
             }
+            System.out.println( "Out = " + new String( out.toByteArray() ) );
+        }
+        try( InputStream stream = process.getErrorStream() ) {
+            while( stream.read( buffer ) != -1 ) {
+                out.write( buffer );
+            }
             System.out.println( "Error = " + new String( out.toByteArray() ) );
         }
     }
