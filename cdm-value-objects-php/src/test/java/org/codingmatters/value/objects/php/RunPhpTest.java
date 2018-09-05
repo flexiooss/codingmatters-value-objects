@@ -23,7 +23,7 @@ public class RunPhpTest {
         processBuilder.directory( new File( dir ) );
         processBuilder.command( "composer", "install" );
         Process process = processBuilder.start();
-        process.waitFor( 30, TimeUnit.SECONDS );
+        process.waitFor( 60, TimeUnit.SECONDS );
         if( process.exitValue() != 0 ) {
             printError( process );
         }
@@ -34,6 +34,12 @@ public class RunPhpTest {
         byte[] buffer = new byte[1024];
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try( InputStream stream = process.getInputStream() ) {
+            while( stream.read( buffer ) != -1 ) {
+                out.write( buffer );
+            }
+            System.out.println( "Out = " + new String( out.toByteArray() ) );
+        }
+        try( InputStream stream = process.getErrorStream() ) {
             while( stream.read( buffer ) != -1 ) {
                 out.write( buffer );
             }
