@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.squareup.javapoet.*;
 import org.codingmatters.value.objects.generation.ValueConfiguration;
+import org.codingmatters.value.objects.json.property.JsonPropertyHelper;
 import org.codingmatters.value.objects.json.property.SimplePropertyReaderProducer;
 import org.codingmatters.value.objects.json.property.SimplePropertyReaders;
 import org.codingmatters.value.objects.json.property.statement.EnumPropertyStatement;
@@ -41,9 +42,13 @@ public class ValueReader {
                 ;
 
         for (PropertySpec propertySpec : this.propertySpecs) {
-            SimplePropertyReaderProducer propertyReaderProducer = this.propertyReaderProducer(propertySpec);
-            if(propertyReaderProducer != null) {
-                this.addPropertyReaderStatements(result, propertySpec, propertyReaderProducer);
+            if(! JsonPropertyHelper.isTransient(propertySpec)) {
+                SimplePropertyReaderProducer propertyReaderProducer = this.propertyReaderProducer(propertySpec);
+                if (propertyReaderProducer != null) {
+                    this.addPropertyReaderStatements(result, propertySpec, propertyReaderProducer);
+                }
+            } else {
+                System.out.println("skipping transient field " + propertySpec.name());
             }
         }
 
@@ -303,7 +308,9 @@ public class ValueReader {
                 .beginControlFlow("if(token != null)")
                     .beginControlFlow("switch (token)");
         for (PropertySpec propertySpec : this.propertySpecs) {
-            this.propertyStatements(method, propertySpec);
+            if(! JsonPropertyHelper.isTransient(propertySpec)) {
+                this.propertyStatements(method, propertySpec);
+            }
         }
         method.beginControlFlow("default:")
                 .addStatement("this.consumeUnexpectedProperty(parser)")

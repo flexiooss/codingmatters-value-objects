@@ -3,6 +3,7 @@ package org.codingmatters.value.objects.json;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.squareup.javapoet.*;
 import org.codingmatters.value.objects.generation.ValueConfiguration;
+import org.codingmatters.value.objects.json.property.JsonPropertyHelper;
 import org.codingmatters.value.objects.json.property.SimplePropertyWriter;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.TypeKind;
@@ -42,7 +43,11 @@ public class ValueWriter {
 
         method.addStatement("generator.writeStartObject()");
         for (PropertySpec propertySpec : this.propertySpecs) {
-            this.writePropertyStatements(method, propertySpec);
+            if(! JsonPropertyHelper.isTransient(propertySpec)) {
+                this.writePropertyStatements(method, propertySpec);
+            } else {
+                System.out.println("skipping transient field " + propertySpec.name());
+            }
         }
         method.addStatement("generator.writeEndObject()");
 
