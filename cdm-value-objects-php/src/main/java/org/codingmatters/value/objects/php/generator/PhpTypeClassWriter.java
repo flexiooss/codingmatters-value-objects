@@ -123,7 +123,7 @@ public class PhpTypeClassWriter {
         twoLine( 0 );
     }
 
-    public void writeValueObject( PhpPackagedValueSpec spec, boolean serializable ) throws IOException {
+    public void writeValueObject( PhpPackagedValueSpec spec, boolean serializable, boolean useReturnType ) throws IOException {
         startPhpFile();
 
         for( String importation : spec.imports() ) {
@@ -156,7 +156,7 @@ public class PhpTypeClassWriter {
             writer.write( String.join( ", ", phpMethod.parameters().stream().map( param->param.type() + " $" + param.name() ).collect( Collectors.toList() ) ) );
             writer.write( ")" );
             String returnType = phpMethod.type();
-            if( returnType != null ) {
+            if( returnType != null && useReturnType ) {
                 writer.write( ": " + returnType );
             }
             writer.write( " {" );

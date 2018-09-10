@@ -11,19 +11,30 @@ import org.codingmatters.value.objects.spec.TypeKind;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class SpecPhpGenerator {
 
     private final Spec spec;
     private final String rootPackage;
     private final File rootDirectory;
+    private boolean useReturnType = true;
 
     public SpecPhpGenerator( Spec spec, String rootPackage, File targetDirectory ) {
         this.spec = spec;
         this.rootPackage = rootPackage;
         this.rootDirectory = targetDirectory;
     }
+
+    public SpecPhpGenerator( Spec spec, String rootPackage, File targetDirectory, boolean useReturnType ) {
+        this.spec = spec;
+        this.rootPackage = rootPackage;
+        this.rootDirectory = targetDirectory;
+        this.useReturnType = useReturnType;
+    }
+
 
     public void generate() throws IOException {
         List<PackagedValueSpec> packagedValueSpecs = new PhpSpecPreprocessor( this.spec, this.rootPackage ).packagedValueSpec();
@@ -56,7 +67,7 @@ public class SpecPhpGenerator {
         for( PhpPackagedValueSpec listValue : listValues ) {
             File packageDestination = new File( rootDirectory, listValue.packageName().replace( ".", "/" ) );
             PhpTypeClassWriter fileWriter = new PhpTypeClassWriter( packageDestination, listValue.packageName(), listValue.name() );
-            fileWriter.writeValueObject( listValue, false );
+            fileWriter.writeValueObject( listValue, false, useReturnType );
         }
 
         // GENERATE CLASSES
@@ -92,12 +103,8 @@ public class SpecPhpGenerator {
         PhpPackagedValueSpec phpValueObject = new PhpModelParser().parseValueSpec( valueObject );
         if( phpValueObject != null ) {
             PhpTypeClassWriter fileWriter = new PhpTypeClassWriter( packageDestination, valueObject.packagename(), valueObject.valueSpec().name() );
-            fileWriter.writeValueObject( phpValueObject, true );
+            fileWriter.writeValueObject( phpValueObject, true, useReturnType );
         }
-    }
-
-    private String firstLetterUpperCase( String name ) {
-        return name.substring( 0, 1 ).toUpperCase( Locale.ENGLISH ) + name.substring( 1 );
     }
 
 }
