@@ -175,7 +175,7 @@ public class PhpTypeClassWriter {
             indent( 1 );
             writer.write( "public function jsonSerialize() {" );
             newLine( 2 );
-            writer.write( "return get_object_vars($this);" );
+            writer.write( "return new \\ArrayObject( get_object_vars($this));" );
             newLine( 1 );
             writer.write( "}" );
             newLine( 0 );
