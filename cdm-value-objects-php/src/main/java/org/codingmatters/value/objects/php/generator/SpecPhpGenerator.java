@@ -22,12 +22,6 @@ public class SpecPhpGenerator {
     private final File rootDirectory;
     private boolean useReturnType = true;
 
-    public SpecPhpGenerator( Spec spec, String rootPackage, File targetDirectory ) {
-        this.spec = spec;
-        this.rootPackage = rootPackage;
-        this.rootDirectory = targetDirectory;
-    }
-
     public SpecPhpGenerator( Spec spec, String rootPackage, File targetDirectory, boolean useReturnType ) {
         this.spec = spec;
         this.rootPackage = rootPackage;

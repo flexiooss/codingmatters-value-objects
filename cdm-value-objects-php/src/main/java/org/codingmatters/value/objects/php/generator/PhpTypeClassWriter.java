@@ -198,7 +198,18 @@ public class PhpTypeClassWriter {
 
         writer.write( "public function write( " + objectToWrite + " $object ) : string {" );
         newLine( 2 );
-        writer.write( "return json_encode( $object );" );
+        writer.write( "$array = new \\ArrayObject();" );
+        newLine( 2 );
+        for( PhpPropertySpec property : spec.propertySpecs() ) {
+            writer.write( "if( isset( $object->" + property.name() + "() )){" );
+            newLine( 3 );
+            writer.write( "$array['" + property.realName() + "'] = $object->" + property.name() + "();" );
+            newLine( 2 );
+            writer.write( "}" );
+            newLine( 2 );
+        }
+        newLine( 2 );
+        writer.write( "return json_encode( $array );" );
         newLine( 1 );
         writer.write( "}" );
         newLine( 0 );
@@ -254,16 +265,16 @@ public class PhpTypeClassWriter {
     }
 
     private void processFieldList( PhpPackagedValueSpec spec, String resultVar, PhpPropertySpec property ) throws IOException {
-        writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
+        writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
         newLine( 3 );
         String listType = "\\" + property.typeSpec().typeRef().replace( ".", "\\" );
         writer.write( "$list = new " + listType + "();" );
         newLine( 3 );
-        writer.write( "foreach( $decode['" + property.name() + "'] as $item ){" );
+        writer.write( "foreach( $decode['" + property.realName() + "'] as $item ){" );
         newLine( 4 );
         if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
             writer.write( "$list[] = \\" + property.typeSpec().typeRef().substring( 0, property.typeSpec().typeRef().length() - 4 ).replace( ".", "\\" ) + "::valueOf( $item );" );
-        } else if( property.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT && property.typeSpec().embeddedValueSpec() != null ) {
+        } else if( (property.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT && property.typeSpec().embeddedValueSpec() != null) || property.typeSpec().typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT ) {
             if( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() == TypeKind.JAVA_TYPE ) {
                 writer.write( "$list[] = $item;" );
             } else if( "io.flexio.utils.FlexDate".equals( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) ) {
@@ -285,34 +296,48 @@ public class PhpTypeClassWriter {
         newLine( 2 );
     }
 
+
     private void processSingleField( String resultVar, PhpPropertySpec property ) throws IOException {
         if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
-            writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
+            writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
             newLine( 3 );
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( \\" + property.typeSpec().typeRef().replace( ".", "\\" ) + "::valueOf( $decode['" + property.name() + "'] ));" );
+            writer.write( resultVar +
+                    "->with" +
+                    firstLetterUpperCase( property.name() ) +
+                    "( \\" + property.typeSpec().typeRef().replace( ".", "\\" ) +
+                    "::valueOf( $decode['" + property.realName() +
+                    "'] ));"
+            );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );
         } else if( "io.flexio.utils.FlexDate".equals( property.typeSpec().typeRef() ) ) {
-            writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
+            writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
             newLine( 3 );
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( \\io\\flexio\\utils\\FlexDate::parse( $decode['" + property.name() + "'] ));" );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( \\io\\flexio\\utils\\FlexDate::parse( $decode['" + property.realName() + "'] ));" );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );
         } else if( property.typeSpec().typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT || property.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT ) {
-            writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
+            writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
             newLine( 3 );
             writer.write( "$reader = new \\" + getReaderFromReference( property.typeSpec().typeRef() ) + "();" );
             newLine( 3 );
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $reader->readArray( $decode['" + property.name() + "'] ));" );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $reader->readArray( $decode['" + property.realName() + "'] ));" );
+            newLine( 2 );
+            writer.write( "}" );
+            newLine( 2 );
+        } else if( property.typeSpec().typeRef().equals( "\\ArrayObject" ) ) {
+            writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
+            newLine( 3 );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( new \\ArrayObject( $decode['" + property.realName() + "'] ));" );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );
         } else {
-            writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
+            writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
             newLine( 3 );
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $decode['" + property.name() + "'] );" );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $decode['" + property.realName() + "'] );" );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );

@@ -1,5 +1,6 @@
 package org.codingmatters.value.objects.php.generator;
 
+import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.value.objects.generation.preprocessor.PackagedValueSpec;
 import org.codingmatters.value.objects.php.phpmodel.PhpMethod;
 import org.codingmatters.value.objects.php.phpmodel.PhpPackagedValueSpec;
@@ -9,9 +10,10 @@ import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.TypeKind;
 
 import java.util.Locale;
-import java.util.Map;
 
 public class PhpModelParser {
+
+    private final Naming naming = new Naming();
 
     public PhpPackagedValueSpec parseValueSpec( PackagedValueSpec valueSpec ) {
         return getDummyPhpClass( valueSpec );
@@ -25,7 +27,7 @@ public class PhpModelParser {
         PhpPackagedValueSpec phpPackagedValueSpec = new PhpPackagedValueSpec( valueSpec.packagename(), valueSpec.valueSpec().name() );
 
         for( PropertySpec propertySpec : valueSpec.valueSpec().propertySpecs() ) {
-            PhpPropertySpec property = new PhpPropertySpec( propertySpec.typeSpec(), propertySpec.name() );
+            PhpPropertySpec property = new PhpPropertySpec( propertySpec.typeSpec(), naming.property( propertySpec.name() ), propertySpec.name() );
             phpPackagedValueSpec.addProperty( property );
 
             phpPackagedValueSpec.addMethod( createGetter( propertySpec ) );
@@ -35,33 +37,32 @@ public class PhpModelParser {
     }
 
     private PhpMethod createSetter( PropertySpec propertySpec, String returnType ) {
-        PhpMethod phpMethod = new PhpMethod( "with" + firstLetterUpperCase( propertySpec.name() ) );
+        String propertyName = naming.property( propertySpec.name() );
+        PhpMethod phpMethod = new PhpMethod( "with" + firstLetterUpperCase( propertyName ) );
         String type;
-        if( propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE  ){
+        if( propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE ) {
             type = propertySpec.typeSpec().typeRef();
-        }
-        else if( propertySpec.typeSpec().typeRef() != null ) {
-            type = "\\" + propertySpec.typeSpec().typeRef().replace( ".","\\" );
+        } else if( propertySpec.typeSpec().typeRef() != null ) {
+            type = "\\" + propertySpec.typeSpec().typeRef().replace( ".", "\\" );
         } else {
             type = "";
         }
-        phpMethod.addParameters( new PhpParameter( propertySpec.name(), type ) );
-        phpMethod.addInstruction( "$this->" + propertySpec.name() + " = " + "$" + propertySpec.name() );
+        phpMethod.addParameters( new PhpParameter( propertyName, type ) );
+        phpMethod.addInstruction( "$this->" + propertyName + " = " + "$" + propertyName );
         phpMethod.addInstruction( "return $this" );
         phpMethod.returnType( returnType );
         return phpMethod;
     }
 
     private PhpMethod createGetter( PropertySpec propertySpec ) {
-        PhpMethod phpMethod = new PhpMethod( propertySpec.name() );
-        phpMethod.addInstruction( "return $this->" + propertySpec.name() );
+        String propertyName = naming.property( propertySpec.name() );
+        PhpMethod phpMethod = new PhpMethod( propertyName );
+        phpMethod.addInstruction( "return $this->" + propertyName );
         String type;
-
-        if( propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE  ){
+        if( propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE ) {
             type = propertySpec.typeSpec().typeRef();
-        }
-        else if( propertySpec.typeSpec().typeRef() != null ) {
-            type = "\\" + propertySpec.typeSpec().typeRef().replace( ".","\\" );
+        } else if( propertySpec.typeSpec().typeRef() != null ) {
+            type = "\\" + propertySpec.typeSpec().typeRef().replace( ".", "\\" );
         } else {
             type = "";
         }
