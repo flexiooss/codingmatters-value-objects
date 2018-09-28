@@ -195,21 +195,26 @@ public class PhpTypeClassWriter {
         writer.write( "class " + this.objectName + " {" );
         twoLine( 1 );
         String objectToWrite = this.objectName.substring( 0, this.objectName.length() - 6 );
-
-        writer.write( "public function write( " + objectToWrite + " $object ) : string {" );
+        twoLine( 1 );
+        writer.write( "public function write( " + objectToWrite + " $object ){ " );
+        newLine( 2 );
+        writer.write( "return json_encode( $this->getArray( $object ));" );
+        newLine( 1 );
+        writer.write( "}" );
+        twoLine( 1 );
+        writer.write( "public function getArray( " + objectToWrite + " $object ) : \\ArrayObject {" );
         newLine( 2 );
         writer.write( "$array = new \\ArrayObject();" );
         newLine( 2 );
         for( PhpPropertySpec property : spec.propertySpecs() ) {
-            writer.write( "if( isset( $object->" + property.name() + "() )){" );
-            newLine( 3 );
-            writer.write( "$array['" + property.realName() + "'] = $object->" + property.name() + "();" );
-            newLine( 2 );
-            writer.write( "}" );
-            newLine( 2 );
+            if( property.typeSpec().cardinality() == PropertyCardinality.LIST || property.typeSpec().cardinality() == PropertyCardinality.SET ) {
+                writeFieldList( spec, property );
+            } else {
+                writeSingleField( property );
+            }
         }
         newLine( 2 );
-        writer.write( "return json_encode( $array );" );
+        writer.write( "return $array;" );
         newLine( 1 );
         writer.write( "}" );
         newLine( 0 );
@@ -217,6 +222,91 @@ public class PhpTypeClassWriter {
 
         writer.flush();
         writer.close();
+    }
+
+    private void writeSingleField( PhpPropertySpec property ) throws IOException {
+        if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
+            writer.write( "$var = $object->" + property.name() + "();" );
+            newLine( 2 );
+            writer.write( "if( isset( $var )){" );
+            newLine( 3 );
+            writer.write( "$array['" + property.realName() + "'] = $var->jsonSerialize();" );
+            newLine( 2 );
+            writer.write( "}" );
+            newLine( 2 );
+        } else if( "io.flexio.utils.FlexDate".equals( property.typeSpec().typeRef() ) ) {
+            writer.write( "$var = $object->" + property.name() + "();" );
+            newLine( 2 );
+            writer.write( "if( isset( $var )){" );
+            newLine( 3 );
+            writer.write( "$array['" + property.realName() + "'] = $var->jsonSerialize();" );
+            newLine( 2 );
+            writer.write( "}" );
+            newLine( 2 );
+        } else if( property.typeSpec().typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT || property.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT ) {
+            writer.write( "$var = $object->" + property.name() + "();" );
+            newLine( 2 );
+            writer.write( "if( isset( $var )){" );
+            newLine( 3 );
+            writer.write( "$writer = new \\" + getWriterFromReference( property.typeSpec().typeRef() ) + "();" );
+            newLine( 3 );
+            writer.write( "$array['" + property.realName() + "'] = " + "$writer->getArray( $var );" );
+            newLine( 2 );
+            writer.write( "}" );
+            newLine( 2 );
+        } else if( property.typeSpec().typeRef().equals( "\\ArrayObject" ) ) {
+            writer.write( "$var = $object->" + property.name() + "();" );
+            newLine( 2 );
+            writer.write( "if( isset( $var )){" );
+            newLine( 3 );
+            writer.write( "$array['" + property.realName() + "'] = $var;" );
+            newLine( 2 );
+            writer.write( "}" );
+            newLine( 2 );
+        } else {
+            writer.write( "$var = $object->" + property.name() + "();" );
+            newLine( 2 );
+            writer.write( "if( isset( $var )){" );
+            newLine( 3 );
+            writer.write( "$array['" + property.realName() + "'] = $var;" );
+            newLine( 2 );
+            writer.write( "}" );
+            newLine( 2 );
+        }
+    }
+
+    private void writeFieldList( PhpPackagedValueSpec spec, PhpPropertySpec property ) throws IOException {
+        writer.write( "$var = $object->" + property.name() + "();" );
+        newLine( 2 );
+        writer.write( "if( isset( $var )){" );
+        newLine( 3 );
+        writer.write( "$list = array();" );
+        newLine( 3 );
+        writer.write( "foreach( $var as $item ){" );
+
+        if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
+            newLine( 4 );
+            writer.write( "$list[] = $item->jsonSerialize();" );
+        } else if( (property.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT && property.typeSpec().embeddedValueSpec() != null) || property.typeSpec().typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT ) {
+            if( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() == TypeKind.JAVA_TYPE ) {
+                writer.write( "$list[] = $item;" );
+            } else if( "io.flexio.utils.FlexDate".equals( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) ) {
+                writer.write( "$list[] = $item->jsonSerialize();" );
+            } else {
+                writer.write( "$writer = new \\" + getWriterFromReference( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) + "();" );
+                newLine( 4 );
+                writer.write( "$list[] = $writer->getArray( $item );" );
+            }
+        } else {
+            newLine( 3 );
+            writer.write( "$list[] = $item;" );
+        }
+        newLine( 3 );
+        writer.write( "}" );
+        newLine( 2 );
+        writer.write( "$array['" + property.realName() + "'] = $list;" );
+        newLine( 2 );
+        writer.write( "}" );
     }
 
     public void writeReader( PhpPackagedValueSpec spec ) throws IOException {
@@ -248,9 +338,9 @@ public class PhpTypeClassWriter {
         newLine( 2 );
         for( PhpPropertySpec property : spec.propertySpecs() ) {
             if( property.typeSpec().cardinality() == PropertyCardinality.LIST || property.typeSpec().cardinality() == PropertyCardinality.SET ) {
-                processFieldList( spec, resultVar, property );
+                readFieldList( spec, resultVar, property );
             } else {
-                processSingleField( resultVar, property );
+                readSingleField( resultVar, property );
             }
         }
         writer.write( "return " + resultVar + ";" );
@@ -264,7 +354,7 @@ public class PhpTypeClassWriter {
         writer.close();
     }
 
-    private void processFieldList( PhpPackagedValueSpec spec, String resultVar, PhpPropertySpec property ) throws IOException {
+    private void readFieldList( PhpPackagedValueSpec spec, String resultVar, PhpPropertySpec property ) throws IOException {
         writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
         newLine( 3 );
         String listType = "\\" + property.typeSpec().typeRef().replace( ".", "\\" );
@@ -297,7 +387,7 @@ public class PhpTypeClassWriter {
     }
 
 
-    private void processSingleField( String resultVar, PhpPropertySpec property ) throws IOException {
+    private void readSingleField( String resultVar, PhpPropertySpec property ) throws IOException {
         if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
             writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
             newLine( 3 );
@@ -347,7 +437,11 @@ public class PhpTypeClassWriter {
     private String getReaderFromReference( String typeRef ) {
         int index = typeRef.lastIndexOf( "." );
         return (typeRef.substring( 0, index ) + ".json" + typeRef.substring( index ) + "Reader").replace( ".", "\\" );
+    }
 
+    private String getWriterFromReference( String typeRef ) {
+        int index = typeRef.lastIndexOf( "." );
+        return (typeRef.substring( 0, index ) + ".json" + typeRef.substring( index ) + "Writer").replace( ".", "\\" );
     }
 
     private String getDateClass( String dateClass ) {

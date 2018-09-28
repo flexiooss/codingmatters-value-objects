@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use io\flexio\utils\FlexDate;
 use org\generated\ArraySimpleProps;
 use org\generated\json\ArraySimplePropsReader;
+use org\generated\json\ArraySimplePropsWriter;
 
 use org\generated\arraysimpleprops\ArraySimplePropsStringListList;
 use org\generated\arraysimpleprops\ArraySimplePropsIntegerListList;
@@ -211,7 +212,8 @@ class EmptyObjectTest extends TestCase {
         $arrayProp -> withDateTimeSet( new ArraySimplePropsDateTimeSetList( array( FlexDate::newDateTime( '2017-01-18T20:00:00' ))));
         $arrayProp -> withTzDateTimeSet( new ArraySimplePropsTzDateTimeSetList( array( FlexDate::newTzDateTime( '2018-10-17T15:07:20+01:00' ))));
 
-        $content = json_encode( $arrayProp, JSON_PRESERVE_ZERO_FRACTION );
+        $writer = new ArraySimplePropsWriter();
+        $content = $writer->write( $arrayProp );
 
         $reader = new ArraySimplePropsReader();
         $object = $reader->read( $content );

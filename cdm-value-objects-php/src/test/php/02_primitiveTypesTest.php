@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 use org\generated\PrimitiveProps;
 use org\generated\json\PrimitivePropsReader;
+use org\generated\json\PrimitivePropsWriter;
 use io\flexio\utils\FlexDate;
 
 
@@ -52,7 +53,10 @@ class EmptyObjectTest extends TestCase {
             -> withDateTimeProp( FlexDate::newDateTime('2011-09-01T15:04:01') )
             -> withTzDateTimeProp( FlexDate::newTzDateTime('2011-09-01T15:04:01+01:00') );
 
-        $content = json_encode( $primitiveProps, JSON_PRESERVE_ZERO_FRACTION );
+        $writer = new PrimitivePropsWriter();
+        $content = $writer->write( $primitiveProps );
+
+        $this->assertSame( '{"stringProp":"str","bytesProp":"bytes","integerProp":9,"longProp":7,"floatProp":9,"doubleProp":7.9,"booleanProp":true,"dateProp":"2011-08-01","timeProp":"15:05:01Z","dateTimeProp":"2011-09-01T15:04:01Z","tzDateTimeProp":"2011-09-01T15:04:01+01:00"}', $content);
 
         $reader = new PrimitivePropsReader();
         $object = $reader->read( $content );
