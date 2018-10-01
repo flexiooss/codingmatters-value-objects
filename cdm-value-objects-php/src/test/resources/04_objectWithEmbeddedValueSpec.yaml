@@ -3,5 +3,5 @@ complexType:
     stringProp: string
     intList:
       $list: int
-  testIsOk: bool
+  test-is-ok: bool
   foo: float
