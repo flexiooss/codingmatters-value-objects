@@ -29,7 +29,7 @@ public class MainClass {
         for( File file : new File( rootPath ).listFiles() ) {
             if( file.getName().endsWith( "yaml" ) ) {
                 Spec spec = loadSpec( rootPath + "/" + file.getName() );
-                new SpecPhpGenerator( spec, "org.generated", new File( rootPath ) ).generate();
+                new SpecPhpGenerator( spec, "org.generated", new File( rootPath ), false ).generate();
             }
         }
     }

@@ -120,7 +120,7 @@ public class SpecProcessorTest {
 
         // ***** ROOT SPEC - PROP 2 ***** \\
         PropertySpec testIsOKProperty = rootSpec.valueSpec().propertySpecs().get( 1 );
-        assertThat( testIsOKProperty.name(), is( "testIsOk" ) );
+        assertThat( testIsOKProperty.name(), is( "test-is-ok" ) );
         assertThat( testIsOKProperty.typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
         assertThat( testIsOKProperty.typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
         assertThat( testIsOKProperty.typeSpec().typeRef(), is( "bool" ) );

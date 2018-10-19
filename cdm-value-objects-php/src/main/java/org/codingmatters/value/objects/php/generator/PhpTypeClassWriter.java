@@ -123,7 +123,7 @@ public class PhpTypeClassWriter {
         twoLine( 0 );
     }
 
-    public void writeValueObject( PhpPackagedValueSpec spec, boolean serializable ) throws IOException {
+    public void writeValueObject( PhpPackagedValueSpec spec, boolean serializable, boolean useReturnType ) throws IOException {
         startPhpFile();
 
         for( String importation : spec.imports() ) {
@@ -156,7 +156,7 @@ public class PhpTypeClassWriter {
             writer.write( String.join( ", ", phpMethod.parameters().stream().map( param->param.type() + " $" + param.name() ).collect( Collectors.toList() ) ) );
             writer.write( ")" );
             String returnType = phpMethod.type();
-            if( returnType != null ) {
+            if( returnType != null && useReturnType ) {
                 writer.write( ": " + returnType );
             }
             writer.write( " {" );
@@ -175,7 +175,7 @@ public class PhpTypeClassWriter {
             indent( 1 );
             writer.write( "public function jsonSerialize() {" );
             newLine( 2 );
-            writer.write( "return get_object_vars($this);" );
+            writer.write( "return new \\ArrayObject( get_object_vars($this));" );
             newLine( 1 );
             writer.write( "}" );
             newLine( 0 );
@@ -195,10 +195,26 @@ public class PhpTypeClassWriter {
         writer.write( "class " + this.objectName + " {" );
         twoLine( 1 );
         String objectToWrite = this.objectName.substring( 0, this.objectName.length() - 6 );
-
-        writer.write( "public function write( " + objectToWrite + " $object ) : string {" );
+        twoLine( 1 );
+        writer.write( "public function write( " + objectToWrite + " $object ){ " );
         newLine( 2 );
-        writer.write( "return json_encode( $object );" );
+        writer.write( "return json_encode( $this->getArray( $object ));" );
+        newLine( 1 );
+        writer.write( "}" );
+        twoLine( 1 );
+        writer.write( "public function getArray( " + objectToWrite + " $object ) : \\ArrayObject {" );
+        newLine( 2 );
+        writer.write( "$array = new \\ArrayObject();" );
+        newLine( 2 );
+        for( PhpPropertySpec property : spec.propertySpecs() ) {
+            if( property.typeSpec().cardinality() == PropertyCardinality.LIST || property.typeSpec().cardinality() == PropertyCardinality.SET ) {
+                writeFieldList( spec, property );
+            } else {
+                writeSingleField( property );
+            }
+        }
+        newLine( 2 );
+        writer.write( "return $array;" );
         newLine( 1 );
         writer.write( "}" );
         newLine( 0 );
@@ -206,6 +222,91 @@ public class PhpTypeClassWriter {
 
         writer.flush();
         writer.close();
+    }
+
+    private void writeSingleField( PhpPropertySpec property ) throws IOException {
+        if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
+            writer.write( "$var = $object->" + property.name() + "();" );
+            newLine( 2 );
+            writer.write( "if( isset( $var )){" );
+            newLine( 3 );
+            writer.write( "$array['" + property.realName() + "'] = $var->jsonSerialize();" );
+            newLine( 2 );
+            writer.write( "}" );
+            newLine( 2 );
+        } else if( "io.flexio.utils.FlexDate".equals( property.typeSpec().typeRef() ) ) {
+            writer.write( "$var = $object->" + property.name() + "();" );
+            newLine( 2 );
+            writer.write( "if( isset( $var )){" );
+            newLine( 3 );
+            writer.write( "$array['" + property.realName() + "'] = $var->jsonSerialize();" );
+            newLine( 2 );
+            writer.write( "}" );
+            newLine( 2 );
+        } else if( property.typeSpec().typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT || property.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT ) {
+            writer.write( "$var = $object->" + property.name() + "();" );
+            newLine( 2 );
+            writer.write( "if( isset( $var )){" );
+            newLine( 3 );
+            writer.write( "$writer = new \\" + getWriterFromReference( property.typeSpec().typeRef() ) + "();" );
+            newLine( 3 );
+            writer.write( "$array['" + property.realName() + "'] = " + "$writer->getArray( $var );" );
+            newLine( 2 );
+            writer.write( "}" );
+            newLine( 2 );
+        } else if( property.typeSpec().typeRef().equals( "\\ArrayObject" ) ) {
+            writer.write( "$var = $object->" + property.name() + "();" );
+            newLine( 2 );
+            writer.write( "if( isset( $var )){" );
+            newLine( 3 );
+            writer.write( "$array['" + property.realName() + "'] = $var;" );
+            newLine( 2 );
+            writer.write( "}" );
+            newLine( 2 );
+        } else {
+            writer.write( "$var = $object->" + property.name() + "();" );
+            newLine( 2 );
+            writer.write( "if( isset( $var )){" );
+            newLine( 3 );
+            writer.write( "$array['" + property.realName() + "'] = $var;" );
+            newLine( 2 );
+            writer.write( "}" );
+            newLine( 2 );
+        }
+    }
+
+    private void writeFieldList( PhpPackagedValueSpec spec, PhpPropertySpec property ) throws IOException {
+        writer.write( "$var = $object->" + property.name() + "();" );
+        newLine( 2 );
+        writer.write( "if( isset( $var )){" );
+        newLine( 3 );
+        writer.write( "$list = array();" );
+        newLine( 3 );
+        writer.write( "foreach( $var as $item ){" );
+
+        if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
+            newLine( 4 );
+            writer.write( "$list[] = $item->jsonSerialize();" );
+        } else if( (property.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT && property.typeSpec().embeddedValueSpec() != null) || property.typeSpec().typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT ) {
+            if( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() == TypeKind.JAVA_TYPE ) {
+                writer.write( "$list[] = $item;" );
+            } else if( "io.flexio.utils.FlexDate".equals( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) ) {
+                writer.write( "$list[] = $item->jsonSerialize();" );
+            } else {
+                writer.write( "$writer = new \\" + getWriterFromReference( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) + "();" );
+                newLine( 4 );
+                writer.write( "$list[] = $writer->getArray( $item );" );
+            }
+        } else {
+            newLine( 3 );
+            writer.write( "$list[] = $item;" );
+        }
+        newLine( 3 );
+        writer.write( "}" );
+        newLine( 2 );
+        writer.write( "$array['" + property.realName() + "'] = $list;" );
+        newLine( 2 );
+        writer.write( "}" );
     }
 
     public void writeReader( PhpPackagedValueSpec spec ) throws IOException {
@@ -237,9 +338,9 @@ public class PhpTypeClassWriter {
         newLine( 2 );
         for( PhpPropertySpec property : spec.propertySpecs() ) {
             if( property.typeSpec().cardinality() == PropertyCardinality.LIST || property.typeSpec().cardinality() == PropertyCardinality.SET ) {
-                processFieldList( spec, resultVar, property );
+                readFieldList( spec, resultVar, property );
             } else {
-                processSingleField( resultVar, property );
+                readSingleField( resultVar, property );
             }
         }
         writer.write( "return " + resultVar + ";" );
@@ -253,17 +354,17 @@ public class PhpTypeClassWriter {
         writer.close();
     }
 
-    private void processFieldList( PhpPackagedValueSpec spec, String resultVar, PhpPropertySpec property ) throws IOException {
-        writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
+    private void readFieldList( PhpPackagedValueSpec spec, String resultVar, PhpPropertySpec property ) throws IOException {
+        writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
         newLine( 3 );
         String listType = "\\" + property.typeSpec().typeRef().replace( ".", "\\" );
         writer.write( "$list = new " + listType + "();" );
         newLine( 3 );
-        writer.write( "foreach( $decode['" + property.name() + "'] as $item ){" );
+        writer.write( "foreach( $decode['" + property.realName() + "'] as $item ){" );
         newLine( 4 );
         if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
             writer.write( "$list[] = \\" + property.typeSpec().typeRef().substring( 0, property.typeSpec().typeRef().length() - 4 ).replace( ".", "\\" ) + "::valueOf( $item );" );
-        } else if( property.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT && property.typeSpec().embeddedValueSpec() != null ) {
+        } else if( (property.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT && property.typeSpec().embeddedValueSpec() != null) || property.typeSpec().typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT ) {
             if( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() == TypeKind.JAVA_TYPE ) {
                 writer.write( "$list[] = $item;" );
             } else if( "io.flexio.utils.FlexDate".equals( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) ) {
@@ -285,34 +386,48 @@ public class PhpTypeClassWriter {
         newLine( 2 );
     }
 
-    private void processSingleField( String resultVar, PhpPropertySpec property ) throws IOException {
+
+    private void readSingleField( String resultVar, PhpPropertySpec property ) throws IOException {
         if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
-            writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
+            writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
             newLine( 3 );
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( \\" + property.typeSpec().typeRef().replace( ".", "\\" ) + "::valueOf( $decode['" + property.name() + "'] ));" );
+            writer.write( resultVar +
+                    "->with" +
+                    firstLetterUpperCase( property.name() ) +
+                    "( \\" + property.typeSpec().typeRef().replace( ".", "\\" ) +
+                    "::valueOf( $decode['" + property.realName() +
+                    "'] ));"
+            );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );
         } else if( "io.flexio.utils.FlexDate".equals( property.typeSpec().typeRef() ) ) {
-            writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
+            writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
             newLine( 3 );
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( \\io\\flexio\\utils\\FlexDate::parse( $decode['" + property.name() + "'] ));" );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( \\io\\flexio\\utils\\FlexDate::parse( $decode['" + property.realName() + "'] ));" );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );
         } else if( property.typeSpec().typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT || property.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT ) {
-            writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
+            writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
             newLine( 3 );
             writer.write( "$reader = new \\" + getReaderFromReference( property.typeSpec().typeRef() ) + "();" );
             newLine( 3 );
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $reader->readArray( $decode['" + property.name() + "'] ));" );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $reader->readArray( $decode['" + property.realName() + "'] ));" );
+            newLine( 2 );
+            writer.write( "}" );
+            newLine( 2 );
+        } else if( property.typeSpec().typeRef().equals( "\\ArrayObject" ) ) {
+            writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
+            newLine( 3 );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( new \\ArrayObject( $decode['" + property.realName() + "'] ));" );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );
         } else {
-            writer.write( "if( isset( $decode['" + property.name() + "'] )){" );
+            writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
             newLine( 3 );
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $decode['" + property.name() + "'] );" );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $decode['" + property.realName() + "'] );" );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );
@@ -322,7 +437,11 @@ public class PhpTypeClassWriter {
     private String getReaderFromReference( String typeRef ) {
         int index = typeRef.lastIndexOf( "." );
         return (typeRef.substring( 0, index ) + ".json" + typeRef.substring( index ) + "Reader").replace( ".", "\\" );
+    }
 
+    private String getWriterFromReference( String typeRef ) {
+        int index = typeRef.lastIndexOf( "." );
+        return (typeRef.substring( 0, index ) + ".json" + typeRef.substring( index ) + "Writer").replace( ".", "\\" );
     }
 
     private String getDateClass( String dateClass ) {

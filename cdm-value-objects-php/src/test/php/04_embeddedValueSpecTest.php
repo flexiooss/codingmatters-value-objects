@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 use org\generated\ComplexType;
 use org\generated\json\ComplexTypeReader;
+use org\generated\json\ComplexTypeWriter;
 use org\generated\complextype\ComplexProps;
 use org\generated\complextype\complexprops\ComplexPropsIntListList;
 
@@ -42,7 +43,10 @@ class EmbeddedObjectTest extends TestCase {
             -> withTestIsOk( true )
             ->withFoo( 74.9 );
 
-        $content = json_encode( $complex );
+        $writer = new ComplexTypeWriter();
+        $content = $writer->write( $complex );
+
+        $this->assertSame('{"complexProps":{"stringProp":"toto","intList":[7,9,20]},"test-is-ok":true,"foo":74.9}', $content );
 
         $reader = new ComplexTypeReader();
         $object = $reader->read( $content );

@@ -1,5 +1,6 @@
 package org.codingmatters.value.objects.php.generator;
 
+import org.codingmatters.rest.api.generator.utils.Naming;
 import org.codingmatters.value.objects.generation.preprocessor.PackagedValueSpec;
 import org.codingmatters.value.objects.spec.*;
 
@@ -13,6 +14,7 @@ public class PhpSpecPreprocessor {
 
     private final Spec spec;
     private final String packageName;
+    private final Naming naming = new Naming();
 
     public PhpSpecPreprocessor( Spec spec, String rootPackage ) {
         this.spec = spec;
@@ -27,16 +29,17 @@ public class PhpSpecPreprocessor {
         return result;
     }
 
-    private List<PackagedValueSpec> preProcess( ValueSpec  valueSpec, String valuePackage ) {
+    private List<PackagedValueSpec> preProcess( ValueSpec valueSpec, String valuePackage ) {
         List<PackagedValueSpec> valueSpecs = new ArrayList<>();
         ValueSpec.Builder rootValueSpec = ValueSpec.valueSpec().name( capitalizedFirst( valueSpec.name() ) );
 
         for( PropertySpec propertySpec : valueSpec.propertySpecs() ) {
+            String propertyName = naming.property( propertySpec.name() );
             if( propertySpec.typeSpec().typeKind() == TypeKind.EMBEDDED ) {
-                PropertySpec listType ;
-                if( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().isEmpty() ){
+                PropertySpec listType;
+                if( propertySpec.typeSpec().embeddedValueSpec().propertySpecs().isEmpty() ) {
                     listType = PropertySpec.property().build();
-                }else{
+                } else {
                     listType = propertySpec.typeSpec().embeddedValueSpec().propertySpecs().get( 0 );
                 }
                 if( isListOrSet( propertySpec ) ) {
@@ -61,13 +64,13 @@ public class PhpSpecPreprocessor {
                     rootValueSpec.addProperty( createInSpecPropertyForEmbeddedType( propertySpec, embeddedPackage ) );
                 }
             } else if( isEnum( propertySpec ) ) {
-                    String enumName = capitalizedFirst( valueSpec.name() ) + capitalizedFirst( propertySpec.name() );
-                    rootValueSpec.addProperty( createEnumProperty(
-                            propertySpec.typeSpec().enumValues(),
-                            valuePackage + "." + valueSpec.name().toLowerCase() + "." + enumName,
-                            propertySpec.typeSpec().cardinality(),
-                            propertySpec.name() )
-                    );
+                String enumName = capitalizedFirst( valueSpec.name() ) + capitalizedFirst( propertyName );
+                rootValueSpec.addProperty( createEnumProperty(
+                        propertySpec.typeSpec().enumValues(),
+                        valuePackage + "." + valueSpec.name().toLowerCase() + "." + enumName,
+                        propertySpec.typeSpec().cardinality(),
+                        propertySpec.name() )
+                );
             } else if( propertySpec.typeSpec().typeKind() == IN_SPEC_VALUE_OBJECT ) {
                 rootValueSpec.addProperty( PropertySpec.property()
                         .name( propertySpec.name() )
@@ -97,14 +100,15 @@ public class PhpSpecPreprocessor {
     }
 
     private void processListProperty( ValueSpec valueSpec, String valuePackage, ValueSpec.Builder rootValueSpec, PropertySpec propertySpec, PropertySpec listType ) {
+        String name = naming.property( propertySpec.name() );
         if( listType.typeSpec().typeKind() == ENUM ) {
-                String enumName = capitalizedFirst( valueSpec.name() ) + capitalizedFirst( propertySpec.name() );
-                rootValueSpec.addProperty( createEnumProperty(
-                        listType.typeSpec().enumValues(),
-                        valuePackage + "." + valueSpec.name().toLowerCase() + "." + enumName + "List",
-                        propertySpec.typeSpec().cardinality(),
-                        propertySpec.name()
-                ) );
+            String enumName = capitalizedFirst( valueSpec.name() ) + capitalizedFirst( name );
+            rootValueSpec.addProperty( createEnumProperty(
+                    listType.typeSpec().enumValues(),
+                    valuePackage + "." + valueSpec.name().toLowerCase() + "." + enumName + "List",
+                    propertySpec.typeSpec().cardinality(),
+                    name
+            ) );
         } else if( listType.typeSpec().typeKind() == TypeKind.EMBEDDED ) {
             if( "$value-object".equals( listType.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).name() ) ) {
                 rootValueSpec.addProperty(
@@ -113,7 +117,7 @@ public class PhpSpecPreprocessor {
                                 .type( PropertyTypeSpec.type()
                                         .cardinality( PropertyCardinality.LIST )
                                         .typeKind( TypeKind.EXTERNAL_VALUE_OBJECT )
-                                        .typeRef( packageName + "." + valueSpec.name().toLowerCase() + "." + capitalizedFirst( valueSpec.name() ) + capitalizedFirst( propertySpec.name() ) + "List" )
+                                        .typeRef( packageName + "." + valueSpec.name().toLowerCase() + "." + capitalizedFirst( valueSpec.name() ) + capitalizedFirst( name ) + "List" )
                                         .embeddedValueSpec( AnonymousValueSpec.anonymousValueSpec().addProperty( PropertySpec.property().type( PropertyTypeSpec.type().typeRef( listType.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) ).build() ).build() )
                                 )
                                 .build()
@@ -128,12 +132,14 @@ public class PhpSpecPreprocessor {
             AnonymousValueSpec listElementType = AnonymousValueSpec.anonymousValueSpec()
                     .addProperty( PropertySpec.property().type( elementType ).build() ).build();
 
+            String listTypeName = capitalizedFirst( valueSpec.name() ) + capitalizedFirst( name ) + "List";
+
             rootValueSpec.addProperty( PropertySpec.property()
                     .name( propertySpec.name() )
                     .type( new PropertyTypeSpec.Builder()
                             .cardinality( propertySpec.typeSpec().cardinality() )
                             .typeKind( listType.typeSpec().typeKind() )
-                            .typeRef( packageName + "." + valueSpec.name().toLowerCase() + "." + capitalizedFirst( valueSpec.name() ) + capitalizedFirst( propertySpec.name() ) + "List" )
+                            .typeRef( packageName + "." + valueSpec.name().toLowerCase() + "." + listTypeName )
                             .embeddedValueSpec( listElementType )
                     ).build()
             );
@@ -155,7 +161,7 @@ public class PhpSpecPreprocessor {
                     .name( propertySpec.name() )
                     .type( PropertyTypeSpec.type()
                             .typeKind( TypeKind.EXTERNAL_VALUE_OBJECT )
-                            .typeRef( valuePackage + "." + valueSpec.name().toLowerCase() + "." + capitalizedFirst( valueSpec.name() ) + capitalizedFirst( propertySpec.name() ) + "List" )
+                            .typeRef( valuePackage + "." + valueSpec.name().toLowerCase() + "." + capitalizedFirst( valueSpec.name() ) + capitalizedFirst( name ) + "List" )
                             .cardinality( PropertyCardinality.LIST )
                             .embeddedValueSpec( listElementType )
                     )
@@ -165,7 +171,7 @@ public class PhpSpecPreprocessor {
     }
 
 
-    private PropertySpec createEnumProperty( String[] enumValues, String typeRef, PropertyCardinality cardinality, String propName  ) {
+    private PropertySpec createEnumProperty( String[] enumValues, String typeRef, PropertyCardinality cardinality, String propName ) {
         PropertyTypeSpec.Builder type = PropertyTypeSpec.type()
                 .typeRef( typeRef )
                 .typeKind( TypeKind.ENUM )

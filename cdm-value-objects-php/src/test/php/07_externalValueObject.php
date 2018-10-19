@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use io\flexio\utils\FlexDate;
 use org\generated\ValueObjectProps;
 use org\generated\json\ValueObjectPropsReader;
+use org\generated\json\ValueObjectPropsWriter;
 use org\generated\valueobjectprops\ValueObjectPropsPropListList;
 use org\generated\PrimitiveProps;
 
@@ -43,7 +44,8 @@ class ExternalValueObjectTest extends TestCase {
         $valueObjectProps->withProp( $object )
                 -> withPropList( new ValueObjectPropsPropListList( array( $object, $object2 )));
 
-        $content = json_encode( $valueObjectProps, true );
+        $writer = new ValueObjectPropsWriter();
+        $content = $writer->write( $valueObjectProps, true );
 
         $reader = new ValueObjectPropsReader();
         $parsed = $reader->read( $content );

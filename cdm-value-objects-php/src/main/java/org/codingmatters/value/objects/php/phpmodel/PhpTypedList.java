@@ -38,23 +38,25 @@ public class PhpTypedList {
         String parentConstructorCall = "parent::__construct( function( " + type + " $item ){";
         switch( type ) {
             case "string":
-                parentConstructorCall += "return strval( $item );";
+                parentConstructorCall += "return strval( $item ); }, $input )";
                 break;
             case "double":
             case "float":
-                parentConstructorCall += "return floatval( $item );";
+                parentConstructorCall += "return floatval( $item ); }, $input )";
                 break;
             case "int":
             case "long":
-                parentConstructorCall += "return intval( $item );";
+                parentConstructorCall += "return intval( $item ); }, $input )";
                 break;
             case "bool":
-                parentConstructorCall += "return boolval( $item );";
+                parentConstructorCall += "return boolval( $item ); }, $input )";
+                break;
+            case "\\ArrayObject":
+                parentConstructorCall += "return $item; }, $input, true )"; // true to cast array to ArrayObject
                 break;
             default:
-                parentConstructorCall += "return $item;";
+                parentConstructorCall += "return $item; }, $input )";
         }
-        parentConstructorCall += "}, $input )";
         constructor.addInstruction( parentConstructorCall );
         listSpec.addMethod( constructor );
 
