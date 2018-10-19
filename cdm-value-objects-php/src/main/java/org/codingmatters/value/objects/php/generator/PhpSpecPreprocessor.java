@@ -1,6 +1,6 @@
 package org.codingmatters.value.objects.php.generator;
 
-import org.codingmatters.rest.api.generator.utils.Naming;
+import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.value.objects.generation.preprocessor.PackagedValueSpec;
 import org.codingmatters.value.objects.spec.*;
 

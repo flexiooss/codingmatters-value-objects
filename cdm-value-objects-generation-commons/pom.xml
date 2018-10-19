@@ -20,10 +20,13 @@
             <groupId>org.codingmatters.value.objects</groupId>
             <artifactId>cdm-value-objects-spec</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.squareup</groupId>
             <artifactId>javapoet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.raml</groupId>
+            <artifactId>raml-parser-2</artifactId>
         </dependency>
     </dependencies>
     
