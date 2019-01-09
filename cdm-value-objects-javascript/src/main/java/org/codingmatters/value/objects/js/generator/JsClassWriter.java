@@ -78,8 +78,9 @@ public class JsClassWriter {
         write( "}" );
         unindent();
         newLine();
+        write( "}" );
         newLine();
-
+        newLine();
         write( "export {" + builderName + "}" );
     }
 
