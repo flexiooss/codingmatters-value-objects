@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.js;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -22,15 +23,15 @@ public class RunJsTest {
         processBuilder = new ProcessBuilder();
         processBuilder.directory( new File( dir ) );
         processBuilder.command( "yarn", "install" );
-        /*
-        // BIND LOCAL SOURCE
+
         Process process = processBuilder.start();
         process.waitFor( 60, TimeUnit.SECONDS );
         if( process.exitValue() != 0 ) {
             printError( process );
         }
         assertThat( process.exitValue(), is( 0 ) );
-        new ProcessBuilder().directory( new File( dir + "/js-test" ) );
+
+        // BIND LOCAL SOURCE
         processBuilder.command( "yarn", "link", "flexio-jshelpers" );
         process = processBuilder.start();
         process.waitFor( 60, TimeUnit.SECONDS );
@@ -38,7 +39,6 @@ public class RunJsTest {
             printError( process );
         }
         assertThat( process.exitValue(), is( 0 ) );
-        */
     }
 
     private static void printError( Process process ) throws IOException {
@@ -58,8 +58,12 @@ public class RunJsTest {
         }
     }
 
+    @Ignore
     @Test
     public void whenName_then() throws Exception {
+        String dir = System.getProperty( "project.build.directory" ) + "/js-test";
+        System.out.println("Running yarn test in " + dir );
+        processBuilder.directory( new File( dir ) );
         processBuilder.command( "yarn", "test" );
         Process process = processBuilder.start();
         process.waitFor( 60, TimeUnit.SECONDS );
