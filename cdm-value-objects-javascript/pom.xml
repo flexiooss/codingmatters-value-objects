@@ -60,7 +60,7 @@
                                 <resource>
                                     <directory>${project.basedir}/src/test/resources/</directory>
                                     <include>package.json</include>
-                                    <!--<include>.babelrc</include>-->
+                                    <include>.babelrc</include>
                                 </resource>
                             </resources>
                         </configuration>

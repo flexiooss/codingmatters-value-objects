@@ -3,6 +3,7 @@ package org.codingmatters.value.objects.js.generator;
 import org.codingmatters.value.objects.php.phpmodel.PhpPackagedValueSpec;
 import org.codingmatters.value.objects.php.phpmodel.PhpPropertySpec;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
+import org.codingmatters.value.objects.spec.TypeKind;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -140,6 +141,10 @@ public class JsClassWriter {
                         write( "builder." + property.name() + "( jsonObject[\"" + property.realName() + "\"] );" );
                         break;
                     case IN_SPEC_VALUE_OBJECT:
+                        System.out.println( "IN SPEC VO " + property.name() );
+                        String[] split = property.typeSpec().typeRef().split( "\\." );
+                        String builderName = split[split.length - 1] + "Builder";
+                        write( "builder." + property.name() + "( " + builderName + ".fromObject( jsonObject[\"" + property.realName() + "\"] ));" );
                         break;
                     case EXTERNAL_VALUE_OBJECT:
                         if( "date".equals( property.typeSpec().typeRef() ) ) {
@@ -191,9 +196,6 @@ public class JsClassWriter {
             write( "}" );
             newLine();
         }
-//        write( String.join( ";\n", spec.propertySpecs().stream()
-//                .map( prop->"builder." + prop.name() + "( jsonObject[\"" + prop.realName() + "\"] )" )
-//                .collect( Collectors.toList() ) ) );
         newLine();
         write( "return builder.build();" );
         unindent();
@@ -239,6 +241,7 @@ public class JsClassWriter {
 
     private void generateClass() throws IOException {
         write( "import { deepFreezeSeal, FlexDate, FlexDateTime, FlexTime, FlexZonedDateTime } from 'flexio-jshelpers' " );
+        addImport();
         newLine();
         newLine();
         write( "class " + this.objectName + " {" );
@@ -258,6 +261,19 @@ public class JsClassWriter {
         newLine();
 
         write( "export {" + this.objectName + "}" );
+    }
+
+    private void addImport() throws IOException {
+        for( PhpPropertySpec property : this.spec.propertySpecs() ) {
+            System.out.println( "TYPE:" + property.typeSpec().typeKind() + " : " + property.typeSpec().typeRef() + " from " + this.spec.packageName() );
+            if( property.typeSpec().typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT ) {
+                newLine();
+                String packageName = Naming.findPackage( this.spec.packageName(), property.typeSpec().typeRef() );
+                String builderName = Naming.builderName( property.typeSpec().typeRef() );
+                String className = Naming.className( property.typeSpec().typeRef() );
+                write( "import { " + className + ", " + builderName + " } from '" + packageName + "'" );
+            }
+        }
     }
 
     private void writerGetters() throws IOException {
