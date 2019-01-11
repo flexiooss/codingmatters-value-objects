@@ -1,7 +1,7 @@
 package org.codingmatters.value.objects.js;
 
 import org.codingmatters.value.objects.js.generator.SpecJsGenerator;
-import org.codingmatters.value.objects.php.generator.SpecReaderPhp;
+import org.codingmatters.value.objects.js.parser.SpecReaderJs;
 import org.codingmatters.value.objects.spec.Spec;
 
 import java.io.File;
@@ -12,7 +12,7 @@ public class MainClass {
 
     static private Spec loadSpec( String resource ) {
         try {
-            return new SpecReaderPhp().read( new FileInputStream( resource ) );
+            return new SpecReaderJs().read( new FileInputStream( resource ) );
         } catch( Exception e ) {
             throw new RuntimeException( "error loading spec", e );
         }

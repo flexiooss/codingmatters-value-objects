@@ -1,0 +1,7 @@
+enumListInEmbedded:
+  dontCare: string
+  complexProperty:
+    stringProp: string
+    enums:
+      $list:
+        $enum: A, B, C

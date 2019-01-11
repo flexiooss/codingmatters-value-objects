@@ -1,7 +1,6 @@
 package org.codingmatters.value.objects.js.generator;
 
-import org.codingmatters.value.objects.php.phpmodel.PhpPackagedValueSpec;
-import org.codingmatters.value.objects.php.phpmodel.PhpPropertySpec;
+
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.TypeKind;
 
@@ -9,12 +8,13 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class JsClassWriter {
 
     private final File targetDirectory;
-    private final PhpPackagedValueSpec spec;
+    private final JsPackagedValueSpec spec;
     private final String fileName;
     private final String objectName;
     private final String targetFile;
@@ -22,7 +22,7 @@ public class JsClassWriter {
     private int indent;
     private BufferedWriter classWriter;
 
-    public JsClassWriter( File packageDestination, PhpPackagedValueSpec valueSpec ) {
+    public JsClassWriter( File packageDestination, JsPackagedValueSpec valueSpec ) {
         this.targetDirectory = packageDestination;
         this.spec = valueSpec;
         this.objectName = Naming.firstLetterUpperCase( valueSpec.name() );
@@ -35,7 +35,6 @@ public class JsClassWriter {
     public void writeClassAndBuilder() throws IOException {
         File file = new File( targetFile );
         if( !file.exists() ) {
-            System.out.println( "create " + targetFile );
             file.createNewFile();
         }
         try( BufferedWriter writer = new BufferedWriter( new FileWriter( targetFile ) ) ) {
@@ -48,21 +47,21 @@ public class JsClassWriter {
         }
     }
 
-    public void writeList( PhpPackagedValueSpec listValue ) throws IOException {
+    public void writeList( JsPackagedValueSpec listValue ) throws IOException {
         File file = new File( targetFile );
         if( !file.exists() ) {
             file.createNewFile();
         }
         try( BufferedWriter writer = new BufferedWriter( new FileWriter( targetFile ) ) ) {
             this.classWriter = writer;
-            generateList();
+            generateList( listValue );
             newLine();
             newLine();
             classWriter.flush();
         }
     }
 
-    private void generateList() throws IOException {
+    private void generateList( JsPackagedValueSpec listValue ) throws IOException {
         write( "import { deepFreezeSeal, FlexDate, FlexDateTime, FlexTime, FlexZonedDateTime } from 'flexio-jshelpers' " );
         newLine();
         newLine();
@@ -76,6 +75,22 @@ public class JsClassWriter {
         write( "super( ... args );" );
         newLine();
         unindent();
+        write( "}" );
+        newLine();
+        newLine();
+        write( "fromObject( jsonObject ){" );
+        indent();
+        newLine();
+        write( "for( int i=0; i<jsonObject.length; i++ ){" );
+        indent();
+        newLine();
+        System.out.println( "EMBED = " + listValue.propertySpecs().get( 0 ).typeSpec().typeRef() );
+        write( "this[i] = " );
+        unindent();
+        newLine();
+        write( "}" );
+        unindent();
+        newLine();
         write( "}" );
         unindent();
         newLine();
@@ -131,7 +146,7 @@ public class JsClassWriter {
         newLine();
         write( "var builder = new " + builderName + "()" );
         newLine();
-        for( PhpPropertySpec property : spec.propertySpecs() ) {
+        for( JsPropertySpec property : spec.propertySpecs() ) {
             write( "if( jsonObject[\"" + property.realName() + "\"] != undefined ){" );
             newLine();
             indent();
@@ -141,7 +156,6 @@ public class JsClassWriter {
                         write( "builder." + property.name() + "( jsonObject[\"" + property.realName() + "\"] );" );
                         break;
                     case IN_SPEC_VALUE_OBJECT:
-                        System.out.println( "IN SPEC VO " + property.name() );
                         String[] split = property.typeSpec().typeRef().split( "\\." );
                         String builderName = split[split.length - 1] + "Builder";
                         write( "builder." + property.name() + "( " + builderName + ".fromObject( jsonObject[\"" + property.realName() + "\"] ));" );
@@ -162,10 +176,17 @@ public class JsClassWriter {
                     case EMBEDDED:
                         break;
                     case ENUM:
+                        write( "builder." + property.name() + "( " + Naming.className( property.typeSpec().typeRef() ) + ".enumValueOf( jsonObject[\"" + property.realName() + "\"] ));" );
                         break;
                 }
             } else {
-                switch( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() ) {
+                TypeKind typeKind;
+                if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
+                    typeKind = TypeKind.ENUM;
+                } else {
+                    typeKind = property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind();
+                }
+                switch( typeKind ) {
                     case JAVA_TYPE:
                         write( "builder." + property.name() + "( jsonObject[\"" + property.realName() + "\"] );" );
                         break;
@@ -188,6 +209,8 @@ public class JsClassWriter {
                     case EMBEDDED:
                         break;
                     case ENUM:
+//                        System.out.println( "TRef = " );
+                        write( "builder." + property.name() + "( jsonObject[\"" + property.realName() + "\"].map( enumeration => " + Naming.className( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) + ".enumValueOf( enumeration )));" );
                         break;
                 }
             }
@@ -221,7 +244,7 @@ public class JsClassWriter {
 
     private void writeSetters() throws IOException {
         newLine();
-        for( PhpPropertySpec fieldSpec : spec.propertySpecs() ) {
+        for( JsPropertySpec fieldSpec : spec.propertySpecs() ) {
             write( fieldSpec.name() + "( " + fieldSpec.name() + ") {" );
             indent();
             newLine();
@@ -241,7 +264,7 @@ public class JsClassWriter {
 
     private void generateClass() throws IOException {
         write( "import { deepFreezeSeal, FlexDate, FlexDateTime, FlexTime, FlexZonedDateTime } from 'flexio-jshelpers' " );
-        addImport();
+        addImports();
         newLine();
         newLine();
         write( "class " + this.objectName + " {" );
@@ -263,9 +286,8 @@ public class JsClassWriter {
         write( "export {" + this.objectName + "}" );
     }
 
-    private void addImport() throws IOException {
-        for( PhpPropertySpec property : this.spec.propertySpecs() ) {
-            System.out.println( "TYPE:" + property.typeSpec().typeKind() + " : " + property.typeSpec().typeRef() + " from " + this.spec.packageName() );
+    private void addImports() throws IOException {
+        for( JsPropertySpec property : this.spec.propertySpecs() ) {
             if( property.typeSpec().typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT ) {
                 newLine();
                 String packageName = Naming.findPackage( this.spec.packageName(), property.typeSpec().typeRef() );
@@ -273,12 +295,19 @@ public class JsClassWriter {
                 String className = Naming.className( property.typeSpec().typeRef() );
                 write( "import { " + className + ", " + builderName + " } from '" + packageName + "'" );
             }
+            if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
+                newLine();
+                String packageName = Naming.findPackage( this.spec.packageName(), property.typeSpec().typeRef() );
+                String builderName = Naming.builderName( property.typeSpec().typeRef() );
+                String className = Naming.className( property.typeSpec().typeRef() );
+                write( "import { " + className + " } from '" + packageName + "'" );
+            }
         }
     }
 
     private void writerGetters() throws IOException {
         newLine();
-        for( PhpPropertySpec fieldSpec : spec.propertySpecs() ) {
+        for( JsPropertySpec fieldSpec : spec.propertySpecs() ) {
             write( fieldSpec.name() + "() {" );
             indent();
             newLine();
@@ -291,9 +320,8 @@ public class JsClassWriter {
     }
 
     private void generateConstructor() throws IOException {
-        write( "constructor (" );
-        classWriter.write( String.join( ",", spec.propertySpecs().stream().map( prop->prop.name() ).collect( Collectors.toList() ) ) );
-        write( ") {" );
+        List<String> names = spec.propertySpecs().stream().map( prop->prop.name() ).collect( Collectors.toList() );
+        write( "constructor ( " + String.join( ", ", names ) + " ){" );
         indent();
         newLine();
         write( "" );
@@ -312,7 +340,7 @@ public class JsClassWriter {
         newLine();
         write( "var jsonObject = {};" );
         newLine();
-        for( PhpPropertySpec property : this.spec.propertySpecs() ) {
+        for( JsPropertySpec property : this.spec.propertySpecs() ) {
             if( property.typeSpec().cardinality() == PropertyCardinality.SINGLE ) {
                 String assign = "jsonObject[\"" + property.realName() + "\"] = ";
                 switch( property.typeSpec().typeKind() ) {
@@ -336,14 +364,20 @@ public class JsClassWriter {
                         assign += "this." + property.name() + ".toObject();";
                         break;
                     case ENUM:
-                        assign += "this." + property.name() + ".name();";
+                        assign += "this." + property.name() + ".name;";
                         break;
                 }
                 write( assign );
                 newLine();
             } else {
+                TypeKind typeKind;
+                if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
+                    typeKind = TypeKind.ENUM;
+                } else {
+                    typeKind = property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind();
+                }
                 String assign = "jsonObject[\"" + property.realName() + "\"] = ";
-                switch( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() ) {
+                switch( typeKind ) {
                     case JAVA_TYPE:
                         assign += "this." + property.name() + ";";
                         break;
@@ -359,15 +393,14 @@ public class JsClassWriter {
                                 ("tz-date-time".equals( typeRef )) ) {
                             assign += "this." + property.name() + ";";
                         } else {
-                            System.out.println( "TYPE REF = " + typeRef );
-                            assign += "this." + property.name() + ".map( x => x.toObject() ); // Ext";
+                            assign += "this." + property.name() + ".map( extObj => extObj.toObject() ); // Ext";
                         }
                         break;
                     case EMBEDDED:
-                        assign += "this." + property.name() + ".map( x => x.toObject() ); // embed";
+                        assign += "this." + property.name() + ".map( obj => obj.toObject() ); // embed";
                         break;
                     case ENUM:
-                        assign += "this." + property.name() + ".map( enum => enum.name() );";
+                        assign += "this." + property.name() + ".map( enumeration => enumeration.name );";
                         break;
                 }
                 write( assign );

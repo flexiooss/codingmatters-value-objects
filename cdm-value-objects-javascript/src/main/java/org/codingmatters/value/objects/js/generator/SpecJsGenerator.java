@@ -1,9 +1,6 @@
 package org.codingmatters.value.objects.js.generator;
 
 import org.codingmatters.value.objects.generation.preprocessor.PackagedValueSpec;
-import org.codingmatters.value.objects.php.generator.PhpModelParser;
-import org.codingmatters.value.objects.php.phpmodel.PhpPackagedValueSpec;
-import org.codingmatters.value.objects.php.phpmodel.PhpTypedList;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.Spec;
@@ -29,7 +26,7 @@ public class SpecJsGenerator {
     public void generate() throws IOException {
         List<PackagedValueSpec> packagedValueSpecs = new JsSpecPreProcessor( this.spec, this.rootPackage ).packagedValueSpec();
         List<JsEnum> enumValues = new ArrayList<>();
-        ArrayList<PhpPackagedValueSpec> listValues = new ArrayList<>();
+        ArrayList<JsPackagedValueSpec> listValues = new ArrayList<>();
         for( PackagedValueSpec valueSpec : packagedValueSpecs ) {
             for( PropertySpec propertySpec : valueSpec.valueSpec().propertySpecs() ) {
                 if( propertySpec.typeSpec().typeKind() == TypeKind.ENUM ) {
@@ -40,7 +37,7 @@ public class SpecJsGenerator {
                     enumValues.add( new JsEnum( typeRef, propertySpec.typeSpec().enumValues() ) );
                 }
                 if( propertySpec.typeSpec().cardinality() == PropertyCardinality.LIST ) {
-                    listValues.add( PhpTypedList.createPhpPackagedValueSpec( valueSpec, propertySpec ) );
+                    listValues.add( JsTypedList.createJsPackagedValueSpec( valueSpec, propertySpec ) );
                 }
             }
         }
@@ -53,7 +50,7 @@ public class SpecJsGenerator {
 
 
 //        GENERATE LIST
-        for( PhpPackagedValueSpec listValue : listValues ) {
+        for( JsPackagedValueSpec listValue : listValues ) {
             File packageDestination = new File( rootDirectory, listValue.packageName().replace( ".", "/" ) );
             packageDestination.mkdirs();
             JsClassWriter fileWriter = new JsClassWriter( packageDestination, listValue );
@@ -69,7 +66,7 @@ public class SpecJsGenerator {
     }
 
     private void writeJsClass( File packageDestination, PackagedValueSpec valueSpec ) throws IOException {
-        PhpPackagedValueSpec phpValueObject = new PhpModelParser().parseValueSpec( valueSpec );
+        JsPackagedValueSpec phpValueObject = new JsModelParser().parseValueSpec( valueSpec );
         JsClassWriter fileWriter = new JsClassWriter( packageDestination, phpValueObject );
         fileWriter.writeClassAndBuilder();
     }
