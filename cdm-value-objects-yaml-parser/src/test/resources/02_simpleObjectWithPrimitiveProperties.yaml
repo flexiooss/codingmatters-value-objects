@@ -1,0 +1,12 @@
+primitiveProps:
+  stringProp: string
+  bytesProp: bytes
+  integerProp: int
+  longProp: long
+  floatProp: float
+  doubleProp: double
+  booleanProp: bool
+  date-prop: date
+  timeProp: time
+  dateTimeProp: date-time
+  tzDateTimeProp: tz-date-time

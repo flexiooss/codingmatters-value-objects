@@ -1,0 +1,83 @@
+exampleValue:
+  prop: string
+  listProp:
+    $list: string
+  complex:
+    sub: string
+  complexList:
+    $list:
+      sub: string
+
+simpleProps:
+  stringProp: string
+  integerProp: int
+  longProp: long
+  floatProp: float
+  doubleProp: double
+  booleanProp: bool
+  dateProp: date
+  timeProp: time
+  dateTimeProp: date-time
+  tzDateTimeProp: tz-date-time
+
+arraySimpleProps:
+  stringProp:
+    $list: string
+  integerProp:
+    $list: int
+  longProp:
+    $list: long
+  floatProp:
+    $list: float
+  doubleProp:
+    $list: double
+  booleanProp:
+    $list: bool
+  dateProp:
+    $list: date
+  timeProp:
+    $list: time
+  dateTimeProp:
+    $list: date-time
+  tzDateTimeProp:
+    $list: tz-date-time
+
+refValue:
+  ref: $referenced
+  refs:
+    $list: $referenced
+
+referenced:
+  prop: string
+
+enumProperties:
+  single:
+    $enum:
+      $type: java.time.DayOfWeek
+  multiple:
+    $list:
+      $enum:
+        $type: java.time.DayOfWeek
+
+inSpecEnumProperties:
+  single:
+    $enum: A, B, C
+  multiple:
+    $list:
+      $enum: A, B, C
+
+valueObjectProps:
+  prop:
+    $value-object: org.generated.ref.ExtReferenced
+
+
+hints:
+  propName:
+    $type: string
+    $hints:
+      - property:raw(Raw Property Name)
+
+noprop:
+
+binary:
+  prop: bytes
