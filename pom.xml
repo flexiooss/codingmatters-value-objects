@@ -90,6 +90,7 @@
         <module>cdm-value-objects-php</module>
         <module>cdm-value-objects-javascript</module>
         <module>cdm-value-objects-yaml-parser</module>
+        <module>cdm-value-objects-js</module>
     </modules>
 
     <prerequisites>
