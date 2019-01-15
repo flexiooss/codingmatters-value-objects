@@ -1,5 +1,7 @@
 package org.codingmatters.value.objects.js.generator;
 
+import java.io.IOException;
+
 public class GenerationContext {
 
     private final String currentPackage;
@@ -9,11 +11,11 @@ public class GenerationContext {
         this.currentPackage = rootPackage;
     }
 
-    public String currentPackage() {
+    public String currentPackage( ) {
         return currentPackage;
     }
 
-    public String currentPackagePath() {
+    public String currentPackagePath( ) {
         return this.currentPackage.replace( ".", "/" );
     }
 
@@ -21,7 +23,7 @@ public class GenerationContext {
         this.writer = writer;
     }
 
-    public JsClassWriter write() {
+    public JsClassWriter write( ) {
         return writer;
     }
 }

@@ -17,7 +17,6 @@ public class Main {
             System.exit( 1 );
         }
         System.out.println( "Generating in " + rootPath );
-
         for( File file : new File( rootPath ).listFiles() ) {
             if( file.getName().endsWith( "yaml" ) ) {
                 ParsedYAMLSpec spec = loadSpec( rootPath + "/" + file.getName() );
