@@ -28,10 +28,6 @@
             <groupId>org.codingmatters.value.objects</groupId>
             <artifactId>cdm-value-objects-generation-commons</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.codingmatters.rest</groupId>
-            <artifactId>cdm-rest-api-generator</artifactId>
-        </dependency>
     </dependencies>
 
     <build>

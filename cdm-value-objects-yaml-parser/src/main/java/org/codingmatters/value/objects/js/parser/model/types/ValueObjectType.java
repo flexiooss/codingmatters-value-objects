@@ -1,4 +1,6 @@
 package org.codingmatters.value.objects.js.parser.model.types;
 
-public interface ValueObjectType {
+import org.codingmatters.value.objects.js.parser.processing.ProcessableYaml;
+
+public interface ValueObjectType extends ProcessableYaml {
 }

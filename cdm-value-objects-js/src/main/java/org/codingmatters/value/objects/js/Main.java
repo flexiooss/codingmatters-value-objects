@@ -1,7 +1,8 @@
 package org.codingmatters.value.objects.js;
 
+import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.SpecJsGenerator;
-import org.codingmatters.value.objects.js.parser.SpecParserJs;
+import org.codingmatters.value.objects.js.parser.YamlSpecParser;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 
 import java.io.File;
@@ -9,7 +10,7 @@ import java.io.FileInputStream;
 
 public class Main {
 
-    public static void main( String[] args ) {
+    public static void main( String[] args ) throws ProcessingException {
         String rootPath = System.getProperty( "generationTargetDir", "" );
         if( rootPath.equals( "" ) ) {
             System.out.println( "Generation target dir property not found" );
@@ -27,7 +28,7 @@ public class Main {
 
     static private ParsedYAMLSpec loadSpec( String resource ) {
         try {
-            return new SpecParserJs().parse( new FileInputStream( resource ) );
+            return new YamlSpecParser().parse( new FileInputStream( resource ) );
         } catch( Exception e ) {
             throw new RuntimeException( "error loading spec", e );
         }

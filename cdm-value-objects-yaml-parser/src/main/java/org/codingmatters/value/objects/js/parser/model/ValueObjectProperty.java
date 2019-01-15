@@ -1,28 +1,28 @@
 package org.codingmatters.value.objects.js.parser.model;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
+import org.codingmatters.value.objects.js.parser.model.types.ValueObjectType;
 import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
 import org.codingmatters.value.objects.js.parser.processing.ProcessableYaml;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
-public class ParsedValueObject implements ProcessableYaml {
+public class ValueObjectProperty implements ProcessableYaml {
 
     private final String name;
-    private final List<ValueObjectProperty> properties;
+    private final ValueObjectType type;
 
-    public ParsedValueObject( String name ) {
-        this.properties = new ArrayList<>();
+    public ValueObjectProperty( String name, ValueObjectType type ) {
         this.name = name;
+        this.type = type;
     }
 
     public String name() {
-        return this.name;
+        return name;
     }
 
-    public List<ValueObjectProperty> properties() {
-        return this.properties;
+    public ValueObjectType type() {
+        return type;
     }
 
     @Override

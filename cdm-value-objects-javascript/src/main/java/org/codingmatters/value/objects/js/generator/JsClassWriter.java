@@ -84,8 +84,8 @@ public class JsClassWriter {
         write( "for( int i=0; i<jsonObject.length; i++ ){" );
         indent();
         newLine();
-        System.out.println( "EMBED = " + listValue.propertySpecs().get( 0 ).typeSpec().typeRef() );
-        write( "this[i] = " );
+//        System.out.println( "EMBED = " + listValue.propertySpecs().get( 0 ).typeSpec().typeRef() );
+//        write( "this[i] = " );
         unindent();
         newLine();
         write( "}" );
@@ -210,7 +210,7 @@ public class JsClassWriter {
                         break;
                     case ENUM:
 //                        System.out.println( "TRef = " );
-                        write( "builder." + property.name() + "( jsonObject[\"" + property.realName() + "\"].map( enumeration => " + Naming.className( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) + ".enumValueOf( enumeration )));" );
+//                        write( "builder." + property.name() + "( jsonObject[\"" + property.realName() + "\"].map( enumeration => " + Naming.className( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) + ".enumValueOf( enumeration )));" );
                         break;
                 }
             }

@@ -1,13 +1,20 @@
 package org.codingmatters.value.objects.js.parser.model.types;
 
+import org.codingmatters.value.objects.js.error.ProcessingException;
+import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
+
 import java.util.Objects;
 
-public class PrimitiveYamlType implements ValueObjectType {
+public class ValueObjectTypePrimitiveType implements ValueObjectType {
 
     private final YAML_PRIMITIVE_TYPES type;
 
-    public PrimitiveYamlType( String type ) {
+    public ValueObjectTypePrimitiveType( String type ) {
         this.type = YAML_PRIMITIVE_TYPES.from( type );
+    }
+
+    public YAML_PRIMITIVE_TYPES type() {
+        return type;
     }
 
     public enum YAML_PRIMITIVE_TYPES {
@@ -33,16 +40,7 @@ public class PrimitiveYamlType implements ValueObjectType {
     }
 
     @Override
-    public boolean equals( Object o ) {
-        if( this == o ) { return true; }
-        if( o == null || getClass() != o.getClass() ) { return false; }
-        PrimitiveYamlType that = (PrimitiveYamlType) o;
-        return type == that.type;
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash( type );
+    public void process( ParsedYamlProcessor processor ) throws ProcessingException {
+        processor.process( this );
     }
 }

@@ -5,16 +5,18 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.codingmatters.value.objects.js.error.SyntaxError;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
+import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
 import org.codingmatters.value.objects.js.parser.model.types.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-public class SpecParserJs {
+public class YamlSpecParser {
 
     public static final ObjectMapper MAPPER = new ObjectMapper( new YAMLFactory() );
     private Stack<String> context;
@@ -40,7 +42,7 @@ public class SpecParserJs {
 
     private ParsedValueObject parseValueObject( Map<String, ?> valueSpecs, String valueObjectName ) throws SyntaxError {
         this.context.push( valueObjectName );
-        ParsedValueObject valueObject = new ParsedValueObject( valueObjectName );
+        ParsedValueObject valueObject = new ParsedValueObject( NamingUtils.nestedTypeName( context ) );
         Map<String, ?> properties = (Map<String, ?>) valueSpecs.get( valueObjectName );
         if( properties != null ) {
             parseProperties( valueObject, properties );
@@ -63,9 +65,9 @@ public class SpecParserJs {
         try {
             if( object instanceof String ) {
                 if( isPrimitiveType( (String) object ) ) {
-                    return new PrimitiveYamlType( (String) object );
+                    return new ValueObjectTypePrimitiveType( (String) object );
                 } else if( isInternalValueObject( (String) object ) ) {
-                    return new InSpecValueObjectType( ((String) object).substring( 1 ) );
+                    return new ObjectTypeInSpecValueObject( ((String) object).substring( 1 ) );
                 } else {
                     throw new SyntaxError( "Cannot parse this type" );
                 }
@@ -75,7 +77,7 @@ public class SpecParserJs {
                 } else if( isEnum( (Map) object ) ) {
                     return this.parseEnum( (Map) object );
                 } else if( isExternalValueObject( (Map) object ) ) {
-                    return new ExternalValueObjectType( (String) ((Map) object).get( "$value-object" ) );
+                    return new ObjectTypeExternalValue( (String) ((Map) object).get( "$value-object" ) );
                 } else {
                     return this.parseNestedTypeProperty( (Map) object );
                 }
@@ -96,7 +98,7 @@ public class SpecParserJs {
     }
 
     private boolean isPrimitiveType( String type ) {
-        return PrimitiveYamlType.YAML_PRIMITIVE_TYPES.from( type ) != null;
+        return ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.from( type ) != null;
     }
 
     private boolean isEnum( Map object ) {
@@ -113,26 +115,29 @@ public class SpecParserJs {
             throw new SyntaxError( "The list cannot be parsed" );
         }
         ValueObjectType type = parseType( context.peek(), listType );
-        return new ListType( type );
+        String name = NamingUtils.camelCase( context.get( context.size() - 2 ) ) + NamingUtils.camelCase( context.get( context.size() - 1 ) ) + "List";
+        return new ValueObjectTypeList( name, type, context.subList( 0, 1 ) );
     }
 
     private ValueObjectType parseEnum( Map object ) throws SyntaxError {
         if( object.get( "$enum" ) instanceof String ) {
             String enumValue = (String) object.get( "$enum" );
             if( enumValue.contains( "," ) ) {
-                return new InSpecEnum( Arrays.stream( enumValue.split( "," ) ).map( field->field.trim().toUpperCase() ).collect( Collectors.toList() ) );
+                String name = NamingUtils.camelCase( context.get( 0 ) ) + NamingUtils.camelCase( context.get( 1 ) );
+                return new YamlEnumInSpecEnum( name, context, Arrays.stream( enumValue.split( "," ) ).map( field->field.trim().toUpperCase() ).collect( Collectors.toList() ) );
             }
         } else if( object.get( "$enum" ) instanceof Map ) {
             String enumReference = (String) ((Map) object.get( "$enum" )).get( "$type" );
-            return new ExternalEnum( enumReference );
+            return new YamlEnumExternalEnum( enumReference );
         }
         throw new SyntaxError( "Cannot parse this enum" );
     }
 
     private ValueObjectType parseNestedTypeProperty( Map<String, ?> properties ) throws SyntaxError {
-        ParsedValueObject nestValueObject = new ParsedValueObject( NamingUtils.nestedTypeName( context ) );
+        List<String> subList = this.context.subList( this.context.size() - 2, this.context.size() );
+        ParsedValueObject nestValueObject = new ParsedValueObject( NamingUtils.nestedTypeName( subList ) );
         this.parseProperties( nestValueObject, properties );
-        return new NestedObjectType( nestValueObject );
+        return new ObjectTypeNested( nestValueObject, String.join( ".", this.context.subList( this.context.size() - 2, this.context.size() - 1 ) ) );
     }
 
 }
