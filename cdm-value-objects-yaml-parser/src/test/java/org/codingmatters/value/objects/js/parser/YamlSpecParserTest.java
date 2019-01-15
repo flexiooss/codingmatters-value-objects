@@ -1,17 +1,14 @@
 package org.codingmatters.value.objects.js.parser;
 
+
 import org.codingmatters.value.objects.js.error.SyntaxError;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
-import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
 import org.codingmatters.value.objects.js.parser.model.types.*;
 import org.junit.Test;
 
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Stack;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -26,7 +23,7 @@ public class YamlSpecParserTest {
         InputStream resource = loadSpec( "01_emptyObject.yaml" );
         ParsedYAMLSpec spec = parser.parse( resource );
         assertThat( spec.valueObjects().size(), is( 1 ) );
-        assertThat( spec.valueObjects().get( 0 ).name(), is( "emptyObject" ) );
+        assertThat( spec.valueObjects().get( 0 ).name(), is( "EmptyObject" ) );
         assertThat( spec.valueObjects().get( 0 ).properties().size(), is( 0 ) );
     }
 
@@ -36,6 +33,7 @@ public class YamlSpecParserTest {
         ParsedYAMLSpec spec = parser.parse( resource );
         assertThat( spec.valueObjects().size(), is( 1 ) );
         ParsedValueObject value = spec.valueObjects().get( 0 );
+        assertThat( value.name(), is( "PrimitiveProps" ) );
 
         assertThat( value.properties().get( 0 ).name(), is( "stringProp" ) );
         assertThat( ((ValueObjectTypePrimitiveType) value.properties().get( 0 ).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.STRING ) );
@@ -152,7 +150,7 @@ public class YamlSpecParserTest {
         assertThat( value.properties().get( 1 ).name(), is( "test-is-ok" ) );
         assertThat( ((ValueObjectTypePrimitiveType) value.properties().get( 1 ).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.BOOL ) );
 
-        assertThat( value.properties().get( 1 ).name(), is( "foo" ) );
+        assertThat( value.properties().get( 2 ).name(), is( "foo" ) );
         assertThat( ((ValueObjectTypePrimitiveType) value.properties().get( 2 ).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.FLOAT ) );
     }
 
@@ -162,14 +160,18 @@ public class YamlSpecParserTest {
         ParsedYAMLSpec spec = parser.parse( resource );
         assertThat( spec.valueObjects().size(), is( 1 ) );
         ParsedValueObject value = spec.valueObjects().get( 0 );
-        Stack<String> context = new Stack();
-        context.push( "inSpecEnumProperties" );
-        context.push( "single" );
-        assertThat( value.properties().get( 0 ), is( new ValueObjectProperty( "single", new YamlEnumInSpecEnum( "InSpecEnumPropertiesSingle", context, "SA", "SB", "SC" ) ) ) );
-        context = new Stack();
-        context.push( "inSpecEnumProperties" );
-        context.push( "multiple" );
-        assertThat( value.properties().get( 1 ), is( new ValueObjectProperty( "multiple", new ValueObjectTypeList( "InSpecEnumPropertiesMultipleList", new YamlEnumInSpecEnum( "InSpecEnumPropertiesMultiple", context, "MA", "MB", "MC" ), context ) ) ) );
+
+        assertThat( value.properties().get( 0 ).name(), is( "single" ) );
+        assertThat( ((YamlEnumInSpecEnum) value.properties().get( 0 ).type()).name(), is( "InSpecEnumPropertiesSingle" ) );
+        assertThat( ((YamlEnumInSpecEnum) value.properties().get( 0 ).type()).namespace(), is( "inSpecEnumProperties" ) );
+        assertThat( ((YamlEnumInSpecEnum) value.properties().get( 0 ).type()).values().toArray(), is( new String[]{ "SA", "SB", "SC" } ) );
+
+        assertThat( value.properties().get( 1 ).name(), is( "multiple" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 1 ).type()).name(), is( "InSpecEnumPropertiesMultipleList" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 1 ).type()).namespace(), is( "inSpecEnumProperties" ) );
+        assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) value.properties().get( 1 ).type()).type()).name(), is( "InSpecEnumPropertiesMultiple" ) );
+        assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) value.properties().get( 1 ).type()).type()).namespace(), is( "inSpecEnumProperties" ) );
+        assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) value.properties().get( 1 ).type()).type()).values().toArray(), is( new String[]{ "MA", "MB", "MC" } ) );
     }
 
     @Test
@@ -178,15 +180,25 @@ public class YamlSpecParserTest {
         ParsedYAMLSpec spec = parser.parse( resource );
         assertThat( spec.valueObjects().size(), is( 2 ) );
         ParsedValueObject value = spec.valueObjects().get( 0 );
-        assertThat( value.properties().get( 0 ), is( new ValueObjectProperty( "single", new YamlEnumExternalEnum( "java.time.DayOfWeek" ) ) ) );
-        List<String> context = Arrays.stream( new String[]{ "enumProperties", "multiple" } ).collect( Collectors.toList() );
-        assertThat( value.properties().get( 1 ), is( new ValueObjectProperty( "multiple", new ValueObjectTypeList( "EnumPropertiesMultipleList", new YamlEnumExternalEnum( "java.time.DayOfWeek" ), context ) ) ) );
-        assertThat( value.properties().get( 2 ), is( new ValueObjectProperty( "reference", new ObjectTypeExternalValue( "org.generated.ref.ExtReferenced" ) ) ) );
-        context = Arrays.stream( new String[]{ "enumProperties", "referenceList" } ).collect( Collectors.toList() );
-        assertThat( value.properties().get( 3 ), is( new ValueObjectProperty( "referenceList", new ValueObjectTypeList( "EnumPropertiesReferenceListList", new ObjectTypeExternalValue( "org.generated.ref.ExtReferenced" ), context ) ) ) );
-        assertThat( value.properties().get( 4 ), is( new ValueObjectProperty( "internalReference", new ObjectTypeInSpecValueObject( "internal" ) ) ) );
 
-        assertThat( spec.valueObjects().get( 1 ).properties().get( 0 ), is( new ValueObjectProperty( "toto", new ValueObjectTypePrimitiveType( "string" ) ) ) );
+        assertThat( value.properties().get( 0 ).name(), is( "single" ) );
+        assertThat( ((YamlEnumExternalEnum) value.properties().get( 0 ).type()).enumReference(), is( "java.time.DayOfWeek" ) );
+
+        assertThat( value.properties().get( 1 ).name(), is( "multiple" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 1 ).type()).name(), is( "EnumPropertiesMultipleList" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 1 ).type()).namespace(), is( "enumProperties" ) );
+        assertThat( ((YamlEnumExternalEnum) ((ValueObjectTypeList) value.properties().get( 1 ).type()).type()).enumReference(), is( "java.time.DayOfWeek" ) );
+
+        assertThat( value.properties().get( 2 ).name(), is( "reference" ) );
+        assertThat( ((ObjectTypeExternalValue) value.properties().get( 2 ).type()).objectReference(), is( "org.generated.ref.ExtReferenced" ) );
+
+        assertThat( value.properties().get( 3 ).name(), is( "referenceList" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 3 ).type()).name(), is( "EnumPropertiesReferenceListList" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 3 ).type()).namespace(), is( "enumProperties" ) );
+        assertThat( ((ObjectTypeExternalValue) ((ValueObjectTypeList) value.properties().get( 3 ).type()).type()).objectReference(), is( "org.generated.ref.ExtReferenced" ) );
+
+        assertThat( value.properties().get( 4 ).name(), is( "internalReference" ) );
+        assertThat( ((ObjectTypeInSpecValueObject) value.properties().get( 4 ).type()).inSpecValueObjectName(), is( "internal" ) );
     }
 
     @Test
@@ -198,14 +210,23 @@ public class YamlSpecParserTest {
         Stack<String> context = new Stack<>();
         context.push( "enumListInEmbedded" );
         context.push( "complexProperty" );
-        ParsedValueObject complexProperty = new ParsedValueObject( "" );
 
-        complexProperty.properties().add( new ValueObjectProperty( "stringProp", new ValueObjectTypePrimitiveType( "string" ) ) );
-        complexProperty.properties().add( new ValueObjectProperty( "enums", new ValueObjectTypeList( "EnumListInEmbeddedComplexPropertyEnumsList", new YamlEnumInSpecEnum( "EnumListInEmbeddedComplexPropertyEnums", context, "A", "B", "C" ), context ) ) );
-        ObjectTypeNested nestedObjectType = new ObjectTypeNested( complexProperty, "" );
+        assertThat( value.properties().get( 0 ).name(), is( "dontCare" ) );
+        assertThat( ((ValueObjectTypePrimitiveType) value.properties().get( 0 ).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.STRING ) );
 
-        assertThat( value.properties().get( 0 ), is( new ValueObjectProperty( "dontCare", new ValueObjectTypePrimitiveType( "string" ) ) ) );
-        assertThat( value.properties().get( 1 ), is( new ValueObjectProperty( "complexProperty", nestedObjectType ) ) );
+        assertThat( value.properties().get( 1 ).name(), is( "complexProperty" ) );
+        assertThat( ((ObjectTypeNested) value.properties().get( 1 ).type()).namespace(), is( "enumListInEmbedded" ) );
+        assertThat( ((ObjectTypeNested) value.properties().get( 1 ).type()).nestValueObject().name(), is( "ComplexProperty" ) );
+        assertThat( ((ObjectTypeNested) value.properties().get( 1 ).type()).nestValueObject().properties().size(), is( 2 ) );
+
+        assertThat( ((ObjectTypeNested) value.properties().get( 1 ).type()).nestValueObject().properties().get( 0 ).name(), is( "stringProp" ) );
+        assertThat( ((ValueObjectTypePrimitiveType) ((ObjectTypeNested) value.properties().get( 1 ).type()).nestValueObject().properties().get( 0 ).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.STRING ) );
+
+        assertThat( ((ObjectTypeNested) value.properties().get( 1 ).type()).nestValueObject().properties().get( 1 ).name(), is( "enums" ) );
+        assertThat( ((ValueObjectTypeList) ((ObjectTypeNested) value.properties().get( 1 ).type()).nestValueObject().properties().get( 1 ).type()).name(), is( "ComplexPropertyEnumsList" ) );
+        assertThat( ((ValueObjectTypeList) ((ObjectTypeNested) value.properties().get( 1 ).type()).nestValueObject().properties().get( 1 ).type()).namespace(), is( "enumListInEmbedded.complexProperty" ) );
+        assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) ((ObjectTypeNested) value.properties().get( 1 ).type()).nestValueObject().properties().get( 1 ).type()).type()).name(), is( "ComplexPropertyEnums" ) );
+        assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) ((ObjectTypeNested) value.properties().get( 1 ).type()).nestValueObject().properties().get( 1 ).type()).type()).values().toArray(), is( new String[]{ "A", "B", "C" } ) );
     }
 
     private InputStream loadSpec( String name ) {

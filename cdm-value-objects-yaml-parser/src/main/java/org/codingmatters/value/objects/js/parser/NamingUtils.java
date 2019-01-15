@@ -14,4 +14,8 @@ public class NamingUtils {
     public static String camelCase( String str ) {
         return str.substring( 0, 1 ).toUpperCase() + str.substring( 1 );
     }
+
+    public static String namespace( Stack<String> context ) {
+        return String.join( ".", context.subList( 0, context.size() - 1 ) );
+    }
 }

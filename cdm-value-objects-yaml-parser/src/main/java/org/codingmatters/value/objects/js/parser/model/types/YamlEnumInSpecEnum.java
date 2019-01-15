@@ -5,8 +5,6 @@ import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.Stack;
 import java.util.stream.Collectors;
 
 public class YamlEnumInSpecEnum implements YamlEnum {
@@ -14,15 +12,15 @@ public class YamlEnumInSpecEnum implements YamlEnum {
     private final String namespace;
     private String name;
 
-    public YamlEnumInSpecEnum( String name, Stack<String> context, List<String> values ) {
+    public YamlEnumInSpecEnum( String name, String namespace, List<String> values ) {
         this.name = name;
-        this.namespace = String.join( ".", context );
+        this.namespace = namespace;
         this.values = values;
     }
 
-    public YamlEnumInSpecEnum( String name, Stack<String> context, String... values ) {
+    public YamlEnumInSpecEnum( String name, String namespace, String... values ) {
         this.name = name;
-        this.namespace = String.join( ".", context );
+        this.namespace = namespace;
         this.values = Arrays.stream( values ).collect( Collectors.toList() );
     }
 

@@ -11,7 +11,6 @@ import org.codingmatters.value.objects.js.parser.model.types.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.stream.Collectors;
@@ -114,17 +113,20 @@ public class YamlSpecParser {
         if( listType == null ) {
             throw new SyntaxError( "The list cannot be parsed" );
         }
-        ValueObjectType type = parseType( context.peek(), listType );
+        String pop = context.pop();
+        ValueObjectType type = parseType( pop, listType );
+        context.push( pop );
         String name = NamingUtils.camelCase( context.get( context.size() - 2 ) ) + NamingUtils.camelCase( context.get( context.size() - 1 ) ) + "List";
-        return new ValueObjectTypeList( name, type, context.subList( 0, 1 ) );
+        String namespace = NamingUtils.namespace( this.context );
+        return new ValueObjectTypeList( name, type, namespace );
     }
 
     private ValueObjectType parseEnum( Map object ) throws SyntaxError {
         if( object.get( "$enum" ) instanceof String ) {
             String enumValue = (String) object.get( "$enum" );
             if( enumValue.contains( "," ) ) {
-                String name = NamingUtils.camelCase( context.get( 0 ) ) + NamingUtils.camelCase( context.get( 1 ) );
-                return new YamlEnumInSpecEnum( name, context, Arrays.stream( enumValue.split( "," ) ).map( field->field.trim().toUpperCase() ).collect( Collectors.toList() ) );
+                String name = NamingUtils.camelCase( context.get( context.size() - 2 ) ) + NamingUtils.camelCase( context.get( context.size() - 1 ) );
+                return new YamlEnumInSpecEnum( name, NamingUtils.namespace( this.context ), Arrays.stream( enumValue.split( "," ) ).map( field->field.trim().toUpperCase() ).collect( Collectors.toList() ) );
             }
         } else if( object.get( "$enum" ) instanceof Map ) {
             String enumReference = (String) ((Map) object.get( "$enum" )).get( "$type" );
@@ -134,8 +136,7 @@ public class YamlSpecParser {
     }
 
     private ValueObjectType parseNestedTypeProperty( Map<String, ?> properties ) throws SyntaxError {
-        List<String> subList = this.context.subList( this.context.size() - 2, this.context.size() );
-        ParsedValueObject nestValueObject = new ParsedValueObject( NamingUtils.nestedTypeName( subList ) );
+        ParsedValueObject nestValueObject = new ParsedValueObject( NamingUtils.camelCase( context.peek() ) );
         this.parseProperties( nestValueObject, properties );
         return new ObjectTypeNested( nestValueObject, String.join( ".", this.context.subList( this.context.size() - 2, this.context.size() - 1 ) ) );
     }
