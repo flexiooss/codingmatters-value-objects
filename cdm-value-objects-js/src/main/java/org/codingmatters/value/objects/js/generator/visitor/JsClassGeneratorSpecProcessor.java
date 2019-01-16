@@ -1,25 +1,27 @@
-package org.codingmatters.value.objects.js.generator;
+package org.codingmatters.value.objects.js.generator.visitor;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
+import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.generator.valueObject.GenerationContext;
+import org.codingmatters.value.objects.js.generator.valueObject.JsClassGenerator;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
 import org.codingmatters.value.objects.js.parser.model.types.*;
 import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
-import org.codingmatters.value.objects.js.generator.valueObject.JsClassWriter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 
-public class JsSpecProcessor implements ParsedYamlProcessor {
+public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
 
     private final File rootDirectory;
     private final String rootPackage;
     private final GenerationContext generationContext;
 
-    public JsSpecProcessor( File rootDirectory, String rootPackage ) {
+    public JsClassGeneratorSpecProcessor( File rootDirectory, String rootPackage ) {
         this.rootDirectory = rootDirectory;
         this.rootPackage = rootPackage;
         this.generationContext = new GenerationContext( rootPackage );
@@ -36,40 +38,72 @@ public class JsSpecProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ParsedValueObject valueObject ) throws ProcessingException {
         try {
-            String objectName = NamingUtility.className( valueObject.name() );
-            String fileName = objectName + ".js";
+            generateClass( valueObject );
+        } catch( Exception e ) {
+            throw new ProcessingException( "Error processing value object", e );
+        }
+    }
 
-            File targetDirectory = new File( rootDirectory, generationContext.currentPackagePath() );
-            String targetFile = String.join( "/", targetDirectory.getPath(), fileName );
-            JsClassWriter write = new JsClassWriter( targetFile );
+    private void generateClass( ParsedValueObject valueObject ) throws Exception {
+        String objectName = NamingUtility.className( valueObject.name() );
+        String fileName = objectName + ".js";
+
+        File targetDirectory = new File( rootDirectory, generationContext.currentPackagePath() );
+        String targetFile = String.join( "/", targetDirectory.getPath(), fileName );
+        try( JsClassGenerator write = new JsClassGenerator( targetFile ); ) {
             generationContext.writer( write );
-
             for( ValueObjectProperty property : valueObject.properties() ) {
                 property.process( this );
             }
             write.line( "import { deepFreezeSeal, FlexDate, FlexDateTime, FlexTime, FlexZonedDateTime } from 'flexio-jshelpers' " ); // TODO don't necessary need all date
             write.newLine();
-            write.line( "class " + objectName + " {" );
-            write.generateConstructor( valueObject.properties() );
-            write.generateGetters( valueObject.properties() );
-            write.generateToObjectMethod( valueObject.properties() );
-            write.generateToJsonMethod();
-            write.line( "}" );
-            write.line( "export { " + objectName + "}" );
-
+            write.valueObjectClass( valueObject, objectName, write );
             write.newLine();
+            write.builderClass( valueObject, objectName, write );
+        }
+    }
 
-            String builderName = NamingUtility.builderName( objectName );
-            write.line( "class " + builderName + " {" );
-            write.writeLine( "constructor(){}" );
-            write.generateSetters( valueObject.properties() );
-            write.generateBuildMethod( objectName, valueObject.properties() );
-            write.generateFromObjectMethod( builderName, valueObject.properties() );
-            write.line( "}" );
-            generationContext.write().flush();
+    private void generateList( ValueObjectTypeList list ) throws ProcessingException {
+        try {
+            String objectName = NamingUtility.className( list.name() );
+            String fileName = objectName + ".js";
+            String targetPackage = this.rootPackage + "." + list.namespace();
+            File targetDirectory = new File( rootDirectory, targetPackage.replace( ".", "/" ) );
+            String targetFile = String.join( "/", targetDirectory.getPath(), fileName );
 
+            try( JsClassGenerator write = new JsClassGenerator( targetFile ) ) {
+                JsClassGeneratorSpecProcessor processor = new JsClassGeneratorSpecProcessor( this.rootDirectory, targetPackage );
+                processor.generationContext.writer( write );
+                list.type().process( processor );
+
+                String className = NamingUtility.className( list.name() );
+                write.line( "class " + className + " extends Array {" );
+                write.line( "constructor( ...args ){" );
+                write.line( "super( ...args );" );
+                write.line( "}" );
+                write.line( "}" );
+                write.line( "export { " + className + " }" );
+                write.flush();
+            }
         } catch( Exception e ) {
-            throw new ProcessingException( "Error processing value object", e );
+            throw new ProcessingException( "Error processing list", e );
+        }
+    }
+
+    private void generateEnum( YamlEnumInSpecEnum inSpecEnum ) throws Exception {
+        String objectName = NamingUtility.className( inSpecEnum.name() );
+        String fileName = objectName + ".js";
+        String targetPackage = this.rootPackage + "." + inSpecEnum.namespace();
+        File targetDirectory = new File( rootDirectory, targetPackage.replace( ".", "/" ) );
+        String targetFile = String.join( "/", targetDirectory.getPath(), fileName );
+        try( JsClassGenerator write = new JsClassGenerator( targetFile ) ) {
+            write.line( "import { FlexEnum } from 'flexio-jshelpers'" );
+            write.line( "class " + objectName + " extends FlexEnum {" );
+            write.line( "}" );
+            write.line( objectName + ".initEnum([ " +
+                    String.join( ", ", inSpecEnum.values().stream().map( val->"'" + val + "'" ).collect( Collectors.toList() ) )
+                    + " ]);" );
+            write.line( "export { " + objectName + "}" );
         }
     }
 
@@ -101,7 +135,11 @@ public class JsSpecProcessor implements ParsedYamlProcessor {
             String className = NamingUtility.className( nestedValueObject.nestValueObject().name() );
             String builderName = NamingUtility.builderName( nestedValueObject.nestValueObject().name() );
             String packageName = NamingUtility.findPackage( generationContext.currentPackage(), rootPackage + "." + nestedValueObject.namespace() );
-            generationContext.write().line( "import { " + className + ", " + builderName + " } from '" + packageName + "'" );
+            generationContext.write().line( "import { " + className + ", " + builderName + " } from '" + packageName + "/" + className +"'" );
+
+            JsClassGeneratorSpecProcessor processor = new JsClassGeneratorSpecProcessor( this.rootDirectory, this.rootPackage + "." + nestedValueObject.namespace() );
+            processor.process( nestedValueObject.nestValueObject() );
+
         } catch( IOException e ) {
             throw new ProcessingException( "Error processing in spec value object", e );
         }
@@ -113,6 +151,9 @@ public class JsSpecProcessor implements ParsedYamlProcessor {
             String className = NamingUtility.className( list.name() );
             String packageName = NamingUtility.findPackage( generationContext.currentPackage(), rootPackage + "." + list.namespace() + "." + className );
             generationContext.write().line( "import { " + className + " } from '" + packageName + "'" );
+
+            generateList( list );
+
         } catch( IOException e ) {
             throw new ProcessingException( "Error processing in spec value object list: " + list.name(), e );
         }
@@ -125,6 +166,7 @@ public class JsSpecProcessor implements ParsedYamlProcessor {
 
     @Override
     public void process( YamlEnumExternalEnum externalEnum ) {
+        // TODO import
     }
 
     @Override
@@ -132,9 +174,14 @@ public class JsSpecProcessor implements ParsedYamlProcessor {
         try {
             String className = NamingUtility.className( inSpecEnum.name() );
             String packageName = NamingUtility.findPackage( generationContext.currentPackage(), rootPackage + "." + inSpecEnum.namespace() + "." + className );
-            generationContext.write().line( "import { " + className + " } from '" + packageName + "'" );
-        } catch( IOException e ) {
+            System.out.println( className + " / " + packageName + " / " + generationContext + " / " + generationContext.write() );
+            generationContext.write().line( "import { " + className + " } from '" + packageName + "'" ); // TODO ?
+
+            generateEnum( inSpecEnum );
+
+        } catch( Exception e ) {
             throw new ProcessingException( "Error processing in spec enum", e );
         }
     }
+
 }

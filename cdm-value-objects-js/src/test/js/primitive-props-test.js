@@ -14,13 +14,13 @@ test( 'test builder', () => {
 
     var primitiveProp = builder.build();
 
-    expect( primitiveProp.stringProp ).toBe( "str" );
-    expect( primitiveProp.bytesProp ).toBe( "bytes" );
-    expect( primitiveProp.integerProp ).toBe( 9 );
-    expect( primitiveProp.longProp ).toBe( 7 );
-    expect( primitiveProp.floatProp ).toBe( 9.7 );
-    expect( primitiveProp.doubleProp ).toBe( 7.9 );
-    expect( primitiveProp.booleanProp ).toBe( true );
+    expect( primitiveProp.stringProp() ).toBe( "str" );
+    expect( primitiveProp.bytesProp() ).toBe( "bytes" );
+    expect( primitiveProp.integerProp() ).toBe( 9 );
+    expect( primitiveProp.longProp() ).toBe( 7 );
+    expect( primitiveProp.floatProp() ).toBe( 9.7 );
+    expect( primitiveProp.doubleProp() ).toBe( 7.9 );
+    expect( primitiveProp.booleanProp() ).toBe( true );
 } );
 
 test( 'assert object immutable', () => {
@@ -66,20 +66,20 @@ test( 'test serialization', () => {
 test( 'test deserialization', () => {
     var json = "{\"stringProp\":\"str\",\"bytesProp\":\"bytes\",\"integerProp\":9,\"longProp\":7,\"floatProp\":9.7,\"doubleProp\":7.9,\"booleanProp\":true,\"date-prop\":\"2019-01-09\",\"timeProp\":\"14:17:32\",\"dateTimeProp\":\"2019-01-09T14:17:32\",\"tzDateTimeProp\":\"2019-01-09T14:17:32-03:00\"}";
     var primitiveProp = PrimitivePropsBuilder.fromJson( json );
-    expect( primitiveProp.stringProp ).toBe( "str" );
-    expect( primitiveProp.bytesProp ).toBe( "bytes" );
-    expect( primitiveProp.integerProp ).toBe( 9 );
-    expect( primitiveProp.longProp ).toBe( 7 );
-    expect( primitiveProp.floatProp ).toBe( 9.7 );
-    expect( primitiveProp.doubleProp ).toBe( 7.9 );
-    expect( primitiveProp.booleanProp ).toBe( true );
-    expect( primitiveProp.dateProp.toJSON() ).toBe("2019-01-09" );
-    expect( primitiveProp.timeProp.toJSON() ).toBe( "14:17:32" );
-    expect( primitiveProp.dateTimeProp.toJSON() ).toBe( "2019-01-09T14:17:32" );
-    expect( primitiveProp.tzDateTimeProp.toJSON() ).toBe(  "2019-01-09T14:17:32-03:00" );
-    expect( typeof(primitiveProp.tzDateTimeProp )).toBe( "object" );
-    expect( typeof(primitiveProp.dateTimeProp )).toBe( "object" );
-    expect( typeof(primitiveProp.dateProp )).toBe( "object" );
-    expect( typeof(primitiveProp.timeProp )).toBe( "object" );
+    expect( primitiveProp.stringProp() ).toBe( "str" );
+    expect( primitiveProp.bytesProp() ).toBe( "bytes" );
+    expect( primitiveProp.integerProp() ).toBe( 9 );
+    expect( primitiveProp.longProp() ).toBe( 7 );
+    expect( primitiveProp.floatProp() ).toBe( 9.7 );
+    expect( primitiveProp.doubleProp() ).toBe( 7.9 );
+    expect( primitiveProp.booleanProp() ).toBe( true );
+    expect( primitiveProp.dateProp().toJSON() ).toBe("2019-01-09" );
+    expect( primitiveProp.timeProp().toJSON() ).toBe( "14:17:32" );
+    expect( primitiveProp.dateTimeProp().toJSON() ).toBe( "2019-01-09T14:17:32" );
+    expect( primitiveProp.tzDateTimeProp().toJSON() ).toBe(  "2019-01-09T14:17:32-03:00" );
+    expect( typeof(primitiveProp.tzDateTimeProp() )).toBe( "object" );
+    expect( typeof(primitiveProp.dateTimeProp() )).toBe( "object" );
+    expect( typeof(primitiveProp.dateProp() )).toBe( "object" );
+    expect( typeof(primitiveProp.timeProp() )).toBe( "object" );
 } );
 

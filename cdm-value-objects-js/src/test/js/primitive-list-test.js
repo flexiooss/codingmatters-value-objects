@@ -16,16 +16,16 @@ test( 'test builder', () => {
 
     var arrayProps = builder.build();
 
-    expect( arrayProps.booleanList ).toEqual( [true, true, false] );
-    expect( arrayProps.dateList[0].toJSON() ).toEqual( "2019-01-17" );
-    expect( arrayProps.dateTimeList[0].toJSON() ).toEqual( "2019-01-17T14:15:37" );
-    expect( arrayProps.timeList[0].toJSON() ).toEqual( "14:15:37" );
-    expect( arrayProps.tzDateTimeList[0].toJSON() ).toEqual( "2019-01-17T14:15:37+04:30" );
-    expect( arrayProps.doubleList ).toEqual( [1.4, 1.7, 1.9] );
-    expect( arrayProps.floatList ).toEqual( [1.5, 1.6, 1.9] );
-    expect( arrayProps.integerList ).toEqual( [1, 2, 3] );
-    expect( arrayProps.longList ).toEqual( [4, 5, 6] );
-    expect( arrayProps.stringList ).toEqual( ["1", "2", "3"] );
+    expect( arrayProps.booleanList() ).toEqual( [true, true, false] );
+    expect( arrayProps.dateList()[0].toJSON() ).toEqual( "2019-01-17" );
+    expect( arrayProps.dateTimeList()[0].toJSON() ).toEqual( "2019-01-17T14:15:37" );
+    expect( arrayProps.timeList()[0].toJSON() ).toEqual( "14:15:37" );
+    expect( arrayProps.tzDateTimeList()[0].toJSON() ).toEqual( "2019-01-17T14:15:37+04:30" );
+    expect( arrayProps.doubleList() ).toEqual( [1.4, 1.7, 1.9] );
+    expect( arrayProps.floatList() ).toEqual( [1.5, 1.6, 1.9] );
+    expect( arrayProps.integerList() ).toEqual( [1, 2, 3] );
+    expect( arrayProps.longList() ).toEqual( [4, 5, 6] );
+    expect( arrayProps.stringList() ).toEqual( ["1", "2", "3"] );
 
     // TODO test check types
 } );
@@ -73,14 +73,14 @@ test( 'test deserialization', () => {
     var json = "{\"stringList\":[\"1\",\"2\",\"3\"],\"integerList\":[1,2,3],\"longList\":[4,5,6],\"floatList\":[1.5,1.6,1.9],\"doubleList\":[1.4,1.7,1.9],\"booleanList\":[true,true,false],\"dateList\":[\"2019-01-17\"],\"timeList\":[\"14:15:37\"],\"dateTimeList\":[\"2019-01-17T14:15:37\"],\"tzDateTimeList\":[\"2019-01-17T14:15:37+04:30\"]}"
 
     var arrayProps = ArraySimplePropsBuilder.fromJson( json );
-    expect( arrayProps.booleanList ).toEqual( [true, true, false] );
-    expect( arrayProps.dateList[0].toJSON() ).toEqual( "2019-01-17" );
-    expect( arrayProps.dateTimeList[0].toJSON() ).toEqual( "2019-01-17T14:15:37" );
-    expect( arrayProps.timeList[0].toJSON() ).toEqual( "14:15:37" );
-    expect( arrayProps.tzDateTimeList[0].toJSON() ).toEqual( "2019-01-17T14:15:37+04:30" );
-    expect( arrayProps.doubleList ).toEqual( [1.4, 1.7, 1.9] );
-    expect( arrayProps.floatList ).toEqual( [1.5, 1.6, 1.9] );
-    expect( arrayProps.integerList ).toEqual( [1, 2, 3] );
-    expect( arrayProps.longList ).toEqual( [4, 5, 6] );
-    expect( arrayProps.stringList ).toEqual( ["1", "2", "3"] );
+    expect( arrayProps.booleanList() ).toEqual( [true, true, false] );
+    expect( arrayProps.dateList()[0].toJSON() ).toEqual( "2019-01-17" );
+    expect( arrayProps.dateTimeList()[0].toJSON() ).toEqual( "2019-01-17T14:15:37" );
+    expect( arrayProps.timeList()[0].toJSON() ).toEqual( "14:15:37" );
+    expect( arrayProps.tzDateTimeList()[0].toJSON() ).toEqual( "2019-01-17T14:15:37+04:30" );
+    expect( arrayProps.doubleList() ).toEqual( [1.4, 1.7, 1.9] );
+    expect( arrayProps.floatList() ).toEqual( [1.5, 1.6, 1.9] );
+    expect( arrayProps.integerList() ).toEqual( [1, 2, 3] );
+    expect( arrayProps.longList() ).toEqual( [4, 5, 6] );
+    expect( arrayProps.stringList() ).toEqual( ["1", "2", "3"] );
 } );

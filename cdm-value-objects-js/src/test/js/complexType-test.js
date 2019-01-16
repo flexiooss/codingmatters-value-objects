@@ -1,5 +1,5 @@
 import {ComplexTypeBuilder} from '../org/generated/ComplexType'
-import {ComplexPropsBuilder} from '../org/generated/complextype/ComplexProps'
+import {ComplexPropsBuilder} from '../org/generated/complexType/ComplexProps'
 
 test( 'test builder', () => {
     var propBuilder = new ComplexPropsBuilder();
@@ -13,11 +13,10 @@ test( 'test builder', () => {
     builder.testIsOk( true );
     var complexType = builder.build();
 
-    expect( complexType.testIsOk ).toEqual( true );
-    expect( complexType.foo ).toEqual( "foo" );
-    expect( complexType.complexProps.stringProp ).toEqual( "toto" );
-    expect( complexType.complexProps.intList ).toEqual( [4, 7, 5] );
-
+    expect( complexType.testIsOk() ).toEqual( true );
+    expect( complexType.foo() ).toEqual( "foo" );
+    expect( complexType.complexProps().stringProp() ).toEqual( "toto" );
+    expect( complexType.complexProps().intList() ).toEqual( [4, 7, 5] );
 } );
 
 test( 'assert object immutable', () => {
@@ -81,8 +80,8 @@ test( 'test serialization', () => {
 test( 'test deserialization', () => {
     var json = "{\"complexProps\":{\"string-prop\":\"toto\",\"intList\":[4,7,5]},\"test-is-ok\":true,\"foo\":\"foo\"}";
     var complexType = ComplexTypeBuilder.fromJson( json );
-    expect( complexType.testIsOk ).toEqual( true );
-    expect( complexType.foo ).toEqual( "foo" );
-    expect( complexType.complexProps.stringProp ).toEqual( "toto" );
-    expect( complexType.complexProps.intList ).toEqual( [4, 7, 5] );
+    expect( complexType.testIsOk() ).toEqual( true );
+    expect( complexType.foo() ).toEqual( "foo" );
+    expect( complexType.complexProps().stringProp() ).toEqual( "toto" );
+    expect( complexType.complexProps().intList() ).toEqual( [4, 7, 5] );
 });

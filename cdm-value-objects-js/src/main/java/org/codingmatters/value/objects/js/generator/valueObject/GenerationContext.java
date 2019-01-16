@@ -1,29 +1,27 @@
 package org.codingmatters.value.objects.js.generator.valueObject;
 
-import org.codingmatters.value.objects.js.generator.valueObject.JsClassWriter;
-
 public class GenerationContext {
 
     private final String currentPackage;
-    private JsClassWriter writer;
+    private JsClassGenerator writer;
 
     public GenerationContext( String rootPackage ) {
         this.currentPackage = rootPackage;
     }
 
-    public String currentPackage( ) {
+    public String currentPackage() {
         return currentPackage;
     }
 
-    public String currentPackagePath( ) {
+    public String currentPackagePath() {
         return this.currentPackage.replace( ".", "/" );
     }
 
-    public void writer( JsClassWriter writer ) {
+    public void writer( JsClassGenerator writer ) {
         this.writer = writer;
     }
 
-    public JsClassWriter write( ) {
+    public JsClassGenerator write() {
         return writer;
     }
 }

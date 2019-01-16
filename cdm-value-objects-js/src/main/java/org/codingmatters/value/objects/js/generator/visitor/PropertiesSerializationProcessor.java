@@ -1,17 +1,12 @@
 package org.codingmatters.value.objects.js.generator.visitor;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
-import org.codingmatters.value.objects.js.generator.valueObject.JsClassWriter;
+import org.codingmatters.value.objects.js.generator.NamingUtility;
+import org.codingmatters.value.objects.js.generator.valueObject.JsClassGenerator;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
-import org.codingmatters.value.objects.js.parser.model.types.ObjectTypeExternalValue;
-import org.codingmatters.value.objects.js.parser.model.types.ObjectTypeInSpecValueObject;
-import org.codingmatters.value.objects.js.parser.model.types.ObjectTypeNested;
-import org.codingmatters.value.objects.js.parser.model.types.ValueObjectTypeList;
-import org.codingmatters.value.objects.js.parser.model.types.ValueObjectTypePrimitiveType;
-import org.codingmatters.value.objects.js.parser.model.types.YamlEnumExternalEnum;
-import org.codingmatters.value.objects.js.parser.model.types.YamlEnumInSpecEnum;
+import org.codingmatters.value.objects.js.parser.model.types.*;
 import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
 
 import java.io.IOException;
@@ -20,11 +15,11 @@ import java.io.IOException;
  * Created by nico on 15/01/19.
  */
 public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
-    private final JsClassWriter writer;
+    private final JsClassGenerator writer;
     private String currentProperty;
 
-    public PropertiesSerializationProcessor( JsClassWriter jsClassWriter ) {
-        this.writer = jsClassWriter;
+    public PropertiesSerializationProcessor( JsClassGenerator jsClassGenerator ) {
+        this.writer = jsClassGenerator;
     }
 
     @Override
@@ -41,11 +36,13 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     public void process( ValueObjectProperty property ) throws ProcessingException {
         this.currentProperty = property.name();
         try {
+            writer.line( "if( this." + NamingUtility.attributeName( currentProperty ) + " != undefined ){" );
             writer.indent();
-            writer.string( "jsonObject[\"" + currentProperty + "\"] = this." + currentProperty + "()" );
+            writer.string( "jsonObject[\"" + currentProperty + "\"] = this." + NamingUtility.attributeName( currentProperty ) );
             property.type().process( this );
             writer.string( ";" );
             writer.newLine();
+            writer.line( "}" );
         } catch( IOException e ) {
             throw new ProcessingException( "Error processing object value", e );
         }
