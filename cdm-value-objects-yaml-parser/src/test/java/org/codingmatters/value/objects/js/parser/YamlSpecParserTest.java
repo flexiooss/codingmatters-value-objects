@@ -126,6 +126,56 @@ public class YamlSpecParserTest {
         assertThat( ((ValueObjectTypeList) value.properties().get( 9 ).type()).namespace(), is( "arraySimpleProps" ) );
         assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) value.properties().get( 9 ).type()).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.TZ_DATE_TIME ) );
 
+
+        assertThat( value.properties().get( 10 ).name(), is( "stringSet" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 10 ).type()).name(), is( "ArraySimplePropsStringSetList" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 10 ).type()).namespace(), is( "arraySimpleProps" ) );
+        assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) value.properties().get( 10 ).type()).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.STRING ) );
+
+        assertThat( value.properties().get( 11 ).name(), is( "integerSet" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 11 ).type()).name(), is( "ArraySimplePropsIntegerSetList" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 11 ).type()).namespace(), is( "arraySimpleProps" ) );
+        assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) value.properties().get( 11 ).type()).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.INT ) );
+
+        assertThat( value.properties().get( 12 ).name(), is( "longSet" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 12 ).type()).name(), is( "ArraySimplePropsLongSetList" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 12 ).type()).namespace(), is( "arraySimpleProps" ) );
+        assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) value.properties().get( 12 ).type()).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.LONG ) );
+
+        assertThat( value.properties().get( 13 ).name(), is( "floatSet" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 13 ).type()).name(), is( "ArraySimplePropsFloatSetList" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 13 ).type()).namespace(), is( "arraySimpleProps" ) );
+        assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) value.properties().get( 13 ).type()).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.FLOAT ) );
+
+        assertThat( value.properties().get( 14 ).name(), is( "doubleSet" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 14 ).type()).name(), is( "ArraySimplePropsDoubleSetList" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 14 ).type()).namespace(), is( "arraySimpleProps" ) );
+        assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) value.properties().get( 14 ).type()).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.DOUBLE ) );
+
+        assertThat( value.properties().get( 15 ).name(), is( "booleanSet" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 15 ).type()).name(), is( "ArraySimplePropsBooleanSetList" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 15 ).type()).namespace(), is( "arraySimpleProps" ) );
+        assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) value.properties().get( 15 ).type()).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.BOOL ) );
+
+        assertThat( value.properties().get( 16 ).name(), is( "dateSet" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 16 ).type()).name(), is( "ArraySimplePropsDateSetList" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 16 ).type()).namespace(), is( "arraySimpleProps" ) );
+        assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) value.properties().get( 16 ).type()).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.DATE ) );
+
+        assertThat( value.properties().get( 17 ).name(), is( "timeSet" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 17 ).type()).name(), is( "ArraySimplePropsTimeSetList" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 17 ).type()).namespace(), is( "arraySimpleProps" ) );
+        assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) value.properties().get( 17 ).type()).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.TIME ) );
+
+        assertThat( value.properties().get( 18 ).name(), is( "dateTimeSet" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 18 ).type()).name(), is( "ArraySimplePropsDateTimeSetList" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 18 ).type()).namespace(), is( "arraySimpleProps" ) );
+        assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) value.properties().get( 18 ).type()).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.DATE_TIME ) );
+
+        assertThat( value.properties().get( 19 ).name(), is( "tzDateTimeSet" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 19 ).type()).name(), is( "ArraySimplePropsTzDateTimeSetList" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 19 ).type()).namespace(), is( "arraySimpleProps" ) );
+        assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) value.properties().get( 19 ).type()).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.TZ_DATE_TIME ) );
     }
 
     @Test

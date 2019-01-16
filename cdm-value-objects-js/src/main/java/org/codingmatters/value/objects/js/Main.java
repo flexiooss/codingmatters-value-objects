@@ -1,7 +1,6 @@
 package org.codingmatters.value.objects.js;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
-import org.codingmatters.value.objects.js.generator.SpecJsGenerator;
 import org.codingmatters.value.objects.js.parser.YamlSpecParser;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 

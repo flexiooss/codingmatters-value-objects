@@ -1,6 +1,6 @@
-package org.codingmatters.value.objects.js.generator;
+package org.codingmatters.value.objects.js.generator.valueObject;
 
-import java.io.IOException;
+import org.codingmatters.value.objects.js.generator.valueObject.JsClassWriter;
 
 public class GenerationContext {
 

@@ -105,7 +105,7 @@ public class YamlSpecParser {
     }
 
     private boolean isList( Map object ) {
-        return object.keySet().size() == 1 && (object.get( "$list" ) != null || object.get( "$list" ) != null);
+        return object.keySet().size() == 1 && (object.get( "$list" ) != null || object.get( "$set" ) != null);
     }
 
     private ValueObjectType parseList( Map object ) throws SyntaxError {
