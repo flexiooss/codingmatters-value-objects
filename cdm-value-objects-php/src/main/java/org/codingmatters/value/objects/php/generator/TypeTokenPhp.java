@@ -13,7 +13,7 @@ public enum TypeTokenPhp {
     DATE( "date", "\\io\\flexio\\utils\\FlexDate" ),
     TIME( "time", "\\io\\flexio\\utils\\FlexDate" ),
     DATE_TIME( "date-time", "\\io\\flexio\\utils\\FlexDate" ),
-    TZ_DATE_TIME( "date-time", "\\io\\flexio\\utils\\FlexDate" );
+    TZ_DATE_TIME( "tz-date-time", "\\io\\flexio\\utils\\FlexDate" );
 
     private final String type;
     private String implementationType;
