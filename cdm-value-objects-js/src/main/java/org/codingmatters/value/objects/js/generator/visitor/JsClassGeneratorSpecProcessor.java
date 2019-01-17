@@ -151,6 +151,7 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
             String className = NamingUtility.className( list.name() );
             String packageName = NamingUtility.findPackage( generationContext.currentPackage(), rootPackage + "." + list.namespace() + "." + className );
             generationContext.write().line( "import { " + className + " } from '" + packageName + "'" );
+            list.type().process( this );
 
             generateList( list );
 

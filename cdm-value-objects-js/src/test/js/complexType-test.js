@@ -36,7 +36,7 @@ test( 'assert object immutable', () => {
     } ).toThrow( TypeError );
 
     expect( () => {
-        complexType.complexProps.stringProp = "yoyo"
+        complexType.complexProps()._stringProp = "yoyo"
     } ).toThrow( TypeError );
 } );
 
@@ -57,7 +57,7 @@ test( 'assert object frozen', () => {
     } ).toThrow( TypeError );
 
     expect( () => {
-        complexType.complexProps.toto = 12.5
+        complexType.complexProps().toto = 12.5
     } ).toThrow( TypeError );
 } );
 
