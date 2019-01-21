@@ -30,7 +30,6 @@ onSuccess:
       - $TRIGGER_DOWNSTREAM
     onlyWhen:
       - branch in (master, develop)
-
   - name: notify-flexio
     exec:
       - $NOTIFY --data-urlencode "status=0" --data-urlencode "current-stage="

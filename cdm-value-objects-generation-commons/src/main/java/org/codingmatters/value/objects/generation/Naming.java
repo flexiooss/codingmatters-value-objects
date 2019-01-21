@@ -117,4 +117,9 @@ public class Naming {
 
         return false;
     }
+
+    public String apiName( String apiTitle ) {
+        return apiTitle.toLowerCase().replaceAll( "\\s+", "-" );
+    }
+
 }

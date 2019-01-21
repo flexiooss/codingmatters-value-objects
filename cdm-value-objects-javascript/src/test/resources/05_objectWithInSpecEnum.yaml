@@ -1,6 +1,0 @@
-inSpecEnumProperties:
-  single:
-    $enum: SA, SB, SC
-  multiple:
-    $list:
-      $enum: MA, MB, MC
