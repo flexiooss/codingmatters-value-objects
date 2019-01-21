@@ -12,6 +12,8 @@ import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -20,11 +22,14 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
     private final File rootDirectory;
     private final String rootPackage;
     private final GenerationContext generationContext;
+    private Set<String> flexioJsHelpersImport;
 
     public JsClassGeneratorSpecProcessor( File rootDirectory, String rootPackage ) {
         this.rootDirectory = rootDirectory;
         this.rootPackage = rootPackage;
         this.generationContext = new GenerationContext( rootPackage );
+        this.flexioJsHelpersImport = new HashSet<>();
+        this.flexioJsHelpersImport.add( "deepFreezeSeal" );
     }
 
     @Override
@@ -55,7 +60,8 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
             for( ValueObjectProperty property : valueObject.properties() ) {
                 property.process( this );
             }
-            write.line( "import { deepFreezeSeal, FlexDate, FlexDateTime, FlexTime, FlexZonedDateTime } from 'flexio-jshelpers' " ); // TODO don't necessary need all date
+            String line = "import { " + String.join( ", ", this.flexioJsHelpersImport ) + " } from 'flexio-jshelpers' ";
+            write.line( line );
             write.newLine();
             write.valueObjectClass( valueObject, objectName, write );
             write.newLine();
@@ -135,7 +141,7 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
             String className = NamingUtility.className( nestedValueObject.nestValueObject().name() );
             String builderName = NamingUtility.builderName( nestedValueObject.nestValueObject().name() );
             String packageName = NamingUtility.findPackage( generationContext.currentPackage(), rootPackage + "." + nestedValueObject.namespace() );
-            generationContext.write().line( "import { " + className + ", " + builderName + " } from '" + packageName + "/" + className +"'" );
+            generationContext.write().line( "import { " + className + ", " + builderName + " } from '" + packageName + "/" + className + "'" );
 
             JsClassGeneratorSpecProcessor processor = new JsClassGeneratorSpecProcessor( this.rootDirectory, this.rootPackage + "." + nestedValueObject.namespace() );
             processor.process( nestedValueObject.nestValueObject() );
@@ -161,8 +167,24 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
     }
 
     @Override
-    public void process( ValueObjectTypePrimitiveType primitiveType ) {
-
+    public void process( ValueObjectTypePrimitiveType primitiveType ) throws ProcessingException {
+        switch( primitiveType.type() ) {
+            case DATE:
+                this.flexioJsHelpersImport.add( "FlexDate" );
+                break;
+            case TIME:
+                this.flexioJsHelpersImport.add( "FlexTime" );
+                break;
+            case DATE_TIME:
+                this.flexioJsHelpersImport.add( "FlexDateTime" );
+                break;
+            case TZ_DATE_TIME:
+                this.flexioJsHelpersImport.add( "FlexZonedDateTime" );
+                break;
+            default:
+                // nothing to do
+                break;
+        }
     }
 
     @Override
@@ -179,7 +201,6 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
             generationContext.write().line( "import { " + className + " } from '" + packageName + "'" ); // TODO ?
 
             generateEnum( inSpecEnum );
-
         } catch( Exception e ) {
             throw new ProcessingException( "Error processing in spec enum", e );
         }
