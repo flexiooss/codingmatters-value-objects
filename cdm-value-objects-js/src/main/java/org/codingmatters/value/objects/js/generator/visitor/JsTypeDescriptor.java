@@ -99,6 +99,9 @@ public class JsTypeDescriptor implements ParsedYamlProcessor {
                 case TZ_DATE_TIME:
                     write.string( "FlexZonedDateTime" );
                     break;
+                case OBJECT:
+                    write.string( "object" );
+                    break;
                 default:
                     throw new ProcessingException( "Type is not defined" );
             }

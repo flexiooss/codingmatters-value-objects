@@ -3,8 +3,6 @@ package org.codingmatters.value.objects.js.parser.model.types;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
 
-import java.util.Objects;
-
 public class ValueObjectTypePrimitiveType implements ValueObjectType {
 
     private final YAML_PRIMITIVE_TYPES type;
@@ -28,12 +26,14 @@ public class ValueObjectTypePrimitiveType implements ValueObjectType {
         DATE,
         TIME,
         DATE_TIME,
-        TZ_DATE_TIME;
+        TZ_DATE_TIME,
+        OBJECT;
 
         public static YAML_PRIMITIVE_TYPES from( String type ) {
             try {
                 return YAML_PRIMITIVE_TYPES.valueOf( type.toUpperCase().replace( "-", "_" ) );
             } catch( IllegalArgumentException e ) {
+                System.out.println( "Error not enum " + type );
                 return null;
             }
         }

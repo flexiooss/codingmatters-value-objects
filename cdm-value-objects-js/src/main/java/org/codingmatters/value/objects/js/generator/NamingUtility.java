@@ -38,7 +38,7 @@ public class NamingUtility {
 
     public static String className( String valueObjectName ) {
         String[] split = valueObjectName.split( "\\." );
-        return firstLetterUpperCase( split[split.length - 1] );
+        return getJoinedName( split[split.length - 1] );
     }
 
     public static String builderName( String valueObjectName ) {
@@ -53,4 +53,9 @@ public class NamingUtility {
     public static String attributeName( String name ) {
         return "_" + firstLetterLowerCase( String.join( "", Arrays.stream( name.split( "-" ) ).map( NamingUtility::firstLetterUpperCase ).collect( Collectors.toList() ) ) );
     }
+
+    public static String getJoinedName( String value ) {
+        return String.join( "", Arrays.stream( value.split( "\\s" ) ).map( NamingUtility::firstLetterUpperCase ).collect( Collectors.toList() ) );
+    }
+
 }

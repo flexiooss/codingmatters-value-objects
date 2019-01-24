@@ -55,7 +55,7 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
 
         File targetDirectory = new File( rootDirectory, generationContext.currentPackagePath() );
         String targetFile = String.join( "/", targetDirectory.getPath(), fileName );
-        try( JsClassGenerator write = new JsClassGenerator( targetFile ); ) {
+        try( JsClassGenerator write = new JsClassGenerator( targetFile ) ) {
             generationContext.writer( write );
             for( ValueObjectProperty property : valueObject.properties() ) {
                 property.process( this );
@@ -66,6 +66,7 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
             write.valueObjectClass( valueObject, objectName, write );
             write.newLine();
             write.builderClass( valueObject, objectName, write );
+            write.flush();
         }
     }
 
