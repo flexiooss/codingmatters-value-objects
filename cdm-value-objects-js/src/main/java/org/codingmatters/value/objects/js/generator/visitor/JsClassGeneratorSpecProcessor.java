@@ -2,6 +2,7 @@ package org.codingmatters.value.objects.js.generator.visitor;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
+import org.codingmatters.value.objects.js.generator.packages.PackageFilesBuilder;
 import org.codingmatters.value.objects.js.generator.valueObject.GenerationContext;
 import org.codingmatters.value.objects.js.generator.valueObject.JsClassGenerator;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
@@ -22,6 +23,7 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
     private final File rootDirectory;
     private final String rootPackage;
     private final GenerationContext generationContext;
+    private final PackageFilesBuilder packageBuilder;
     private Set<String> flexioJsHelpersImport;
 
     public JsClassGeneratorSpecProcessor( File rootDirectory, String rootPackage ) {
@@ -30,6 +32,7 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
         this.generationContext = new GenerationContext( rootPackage );
         this.flexioJsHelpersImport = new HashSet<>();
         this.flexioJsHelpersImport.add( "deepFreezeSeal" );
+        this.packageBuilder = new PackageFilesBuilder();
     }
 
     @Override
@@ -54,6 +57,7 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
         String fileName = objectName + ".js";
 
         File targetDirectory = new File( rootDirectory, generationContext.currentPackagePath() );
+        packageBuilder.addClass( generationContext.currentPackage(), objectName );
         String targetFile = String.join( "/", targetDirectory.getPath(), fileName );
         try( JsClassGenerator write = new JsClassGenerator( targetFile ) ) {
             generationContext.writer( write );
@@ -75,6 +79,7 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
             String objectName = NamingUtility.className( list.name() );
             String fileName = objectName + ".js";
             String targetPackage = this.rootPackage + "." + list.namespace();
+            packageBuilder.addList( targetPackage, objectName );
             File targetDirectory = new File( rootDirectory, targetPackage.replace( ".", "/" ) );
             String targetFile = String.join( "/", targetDirectory.getPath(), fileName );
 
