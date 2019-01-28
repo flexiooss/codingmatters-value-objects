@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.js;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
+import org.codingmatters.value.objects.js.generator.packages.PackageFilesBuilder;
 import org.codingmatters.value.objects.js.generator.visitor.JsClassGeneratorSpecProcessor;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 
@@ -18,8 +19,8 @@ public class SpecJsGenerator {
         this.targetDirectory = targetDirectory;
     }
 
-    public void generate() throws ProcessingException {
-        JsClassGeneratorSpecProcessor processor = new JsClassGeneratorSpecProcessor(targetDirectory, rootPackage);
+    public void generate( PackageFilesBuilder packageFilesBuilder ) throws ProcessingException {
+        JsClassGeneratorSpecProcessor processor = new JsClassGeneratorSpecProcessor( targetDirectory, rootPackage, packageFilesBuilder );
         processor.process( spec );
     }
 }
