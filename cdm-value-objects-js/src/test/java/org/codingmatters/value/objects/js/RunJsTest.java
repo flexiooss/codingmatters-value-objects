@@ -59,7 +59,7 @@ public class RunJsTest {
         }
     }
 
-    @Ignore
+//    @Ignore
     @Test
     public void whenName_then() throws Exception {
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";

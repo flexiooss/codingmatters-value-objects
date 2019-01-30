@@ -6,7 +6,7 @@
       "__ASSERT__": true,
       "window": {}
     },
-    "testEnvironment": "jsdom"
+    "testEnvironment": "node"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
