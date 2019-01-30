@@ -127,7 +127,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>executable</id>
+                        <id>embedded</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
