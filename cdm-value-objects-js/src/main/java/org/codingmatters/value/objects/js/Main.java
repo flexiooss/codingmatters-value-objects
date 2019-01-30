@@ -13,28 +13,45 @@ import java.io.FileInputStream;
 public class Main {
 
     public static void main( String[] args ) throws ProcessingException, GenerationException {
-        String rootPath = System.getProperty( "generationTargetDir", "/home/nico/workspace/codingmatters-value-objects/cdm-value-objects-js/target/js-test" );
-        if( rootPath.equals( "" ) ) {
-            System.out.println( "Generation target dir property not found" );
+        if( args.length != 3 || args[2].isEmpty() ){
+            System.out.println( "Args: <yaml spec file path> <target directory> <root package>" );
+            System.out.println( "    <yaml spec file path>: Yaml file path OR directory. If dir, then all yaml files in this dir will be generated in the same package" );
+            System.out.println( "    <target directory>: generation target directory" );
+            System.out.println( "    <root package>: The root package of sources" );
             System.exit( 1 );
         }
-        System.out.println( "Generating in " + rootPath );
-        File targetDirectory = new File( rootPath );
+        String specFilePath = args[0];
+        String targetDir = args[1];
+        String rootPackage = args[2];
+        System.out.println( "Processing generation of " + specFilePath + " in " + targetDir + " with root package " + rootPackage );
+
+        File specFile = new File( specFilePath );
         PackageFilesBuilder packageBuilder = new PackageFilesBuilder();
-        for( File file : targetDirectory.listFiles() ) {
-            if( file.getName().endsWith( "yaml" ) ) {
-                ParsedYAMLSpec spec = loadSpec( rootPath + "/" + file.getName() );
-                new SpecJsGenerator( spec, "org.generated", targetDirectory ).generate(packageBuilder);
+        if( specFile.exists() ){
+            if( specFile.isDirectory() ){
+                for( File file : specFile.listFiles() ){
+                    if( file.getName().endsWith( ".yaml" ) ){
+                        generateSpec( targetDir, rootPackage, file, packageBuilder );
+                    }
+                }
+            } else {
+                generateSpec( targetDir, rootPackage, specFile, packageBuilder );
             }
+            PackageFilesGenerator packageFilesGenerator = new PackageFilesGenerator( packageBuilder, targetDir );
+            packageFilesGenerator.generateFiles();
         }
-        PackageFilesGenerator packageFilesGenerator = new PackageFilesGenerator( packageBuilder, rootPath );
-        packageFilesGenerator.generateFiles();
+    }
+
+    private static void generateSpec( String targetDir, String rootPackage, File specFile, PackageFilesBuilder packageBuilder ) throws ProcessingException {
+        File targetDirectory = new File( targetDir );
+        ParsedYAMLSpec spec = loadSpec( specFile.getPath() );
+        new SpecJsGenerator( spec, rootPackage, targetDirectory ).generate( packageBuilder );
     }
 
     static private ParsedYAMLSpec loadSpec( String resource ) {
         try {
             return new YamlSpecParser().parse( new FileInputStream( resource ) );
-        } catch( Exception e ) {
+        } catch( Exception e ){
             throw new RuntimeException( "error loading spec", e );
         }
     }

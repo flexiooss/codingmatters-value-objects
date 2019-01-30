@@ -94,21 +94,16 @@
                         <goals>
                             <goal>java</goal>
                         </goals>
+                        <configuration>
+                            <mainClass>org.codingmatters.value.objects.js.Main</mainClass>
+                            <arguments>
+                                <argument>${project.build.directory}/js-test</argument>
+                                <argument>${project.build.directory}/js-test</argument>
+                                <argument>org.generated</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <mainClass>org.codingmatters.value.objects.js.Main</mainClass>
-                    <systemProperties>
-                        <systemProperty>
-                            <key>exec.classpathScope</key>
-                            <value>test</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <key>generationTargetDir</key>
-                            <value>${project.build.directory}/js-test</value><!-- target/test-classes/ -->
-                        </systemProperty>
-                    </systemProperties>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
