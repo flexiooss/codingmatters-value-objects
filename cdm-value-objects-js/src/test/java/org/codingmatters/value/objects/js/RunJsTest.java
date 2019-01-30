@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.js;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -58,6 +59,7 @@ public class RunJsTest {
         }
     }
 
+    @Ignore
     @Test
     public void whenName_then() throws Exception {
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
