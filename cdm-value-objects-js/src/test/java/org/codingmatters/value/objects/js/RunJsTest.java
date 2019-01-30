@@ -1,7 +1,6 @@
 package org.codingmatters.value.objects.js;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -23,19 +22,20 @@ public class RunJsTest {
         processBuilder = new ProcessBuilder();
         processBuilder.directory( new File( dir ) );
         processBuilder.command( "yarn", "install" );
-
+        System.out.println( "Running 'yarn install'" );
         Process process = processBuilder.start();
         process.waitFor( 60, TimeUnit.SECONDS );
-        if( process.exitValue() != 0 ) {
+        if( process.exitValue() != 0 ){
             printError( process );
         }
         assertThat( process.exitValue(), is( 0 ) );
 
         // BIND LOCAL SOURCE
         processBuilder.command( "yarn", "link", "flexio-jshelpers" );
+        System.out.println( "Running 'yarn link flexio-jshelpers'" );
         process = processBuilder.start();
         process.waitFor( 60, TimeUnit.SECONDS );
-        if( process.exitValue() != 0 ) {
+        if( process.exitValue() != 0 ){
             printError( process );
         }
         assertThat( process.exitValue(), is( 0 ) );
@@ -45,13 +45,13 @@ public class RunJsTest {
         byte[] buffer = new byte[1024];
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try( InputStream stream = process.getInputStream() ) {
-            while( stream.read( buffer ) != -1 ) {
+            while( stream.read( buffer ) != -1 ){
                 out.write( buffer );
             }
             System.out.println( "Out = " + new String( out.toByteArray() ) );
         }
         try( InputStream stream = process.getErrorStream() ) {
-            while( stream.read( buffer ) != -1 ) {
+            while( stream.read( buffer ) != -1 ){
                 out.write( buffer );
             }
             System.out.println( "Error = " + new String( out.toByteArray() ) );
@@ -61,15 +61,24 @@ public class RunJsTest {
     @Test
     public void whenName_then() throws Exception {
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
-        System.out.println("Running yarn test in " + dir );
+        System.out.println( "Running 'yarn test' in " + dir );
         processBuilder.directory( new File( dir ) );
         processBuilder.command( "yarn", "test" );
-        Process process = processBuilder.start();
-        process.waitFor( 60, TimeUnit.SECONDS );
-        if( process.exitValue() != 0 ) {
-            printError( process );
+        Process process = null;
+        try {
+            process = processBuilder.start();
+        } catch( Exception e ){
+            e.printStackTrace();
         }
-        assertThat( process.exitValue(), is( 0 ) );
-        System.out.println( "EXIT == " + process.exitValue() );
+        if( process != null ){
+            process.waitFor( 120, TimeUnit.SECONDS );
+            if( process.exitValue() != 0 ){
+                printError( process );
+            }
+            assertThat( process.exitValue(), is( 0 ) );
+            System.out.println( "EXIT == " + process.exitValue() );
+        } else {
+            System.out.println( "Process is null" );
+        }
     }
 }

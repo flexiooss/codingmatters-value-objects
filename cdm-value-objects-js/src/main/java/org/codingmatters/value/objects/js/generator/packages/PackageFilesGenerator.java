@@ -27,24 +27,35 @@ public class PackageFilesGenerator {
     private void generatePackageFile( PackageConfiguration rootPackage ) throws GenerationException {
         String targetFile = targetDirectory + "/" + rootPackage.fullName().replace( ".", "/" ) + "/package.js";
         try( JsFileWriter fileWriter = new JsFileWriter( targetFile ) ) {
+            fileWriter.line( "import{ FLEXIO_IMPORT_OBJECT, deepKeyAssigner } from 'flexio-jshelpers' " );
+
             for( String className : rootPackage.classes() ){
-                fileWriter.writeLine( "import {" + className + "} from \"./" + className + "\";" );
+                String builder = className + "Builder";
+                fileWriter.line( "import {" + className + ", " + builder + "} from \"./" + className + "\";" );
             }
             for( String className : rootPackage.lists() ){
-                fileWriter.writeLine( "import {" + className + "} from \"./" + className + "\";" );
+                fileWriter.line( "import {" + className + "} from \"./" + className + "\";" );
             }
+            fileWriter.newLine();
             for( String classe : rootPackage.classes() ){
-                fileWriter.writeLine( "Object.assign( " + rootPackage.wrapInObject( "{\"" + classe + "\": " + classe + "}" ) + ", window );" );
+                String builder = classe + "Builder";
+                fileWriter.line( line( rootPackage, classe ) );
+                fileWriter.line( line( rootPackage, builder ) );
             }
             for( String classe : rootPackage.lists() ){
-                fileWriter.writeLine( "Object.assign( " + rootPackage.wrapInObject( "{\"" + classe + "\": " + classe + "}" ) + ", window );" );
+                fileWriter.line( line( rootPackage, classe ) );
             }
+            fileWriter.newLine();
             for( PackageConfiguration subPackage : rootPackage.subPackages() ){
-                fileWriter.writeLine( "import('./" + subPackage.name() + "/package');" );
+                fileWriter.line( "import './" + subPackage.name() + "/package';" );
             }
         } catch( Exception e ){
             throw new GenerationException( "Error generating package files", e );
         }
+    }
+
+    private String line( PackageConfiguration rootPackage, String classe ) {
+        return "deepKeyAssigner( window.FLEXIO_IMPORT_OBJECT, '" + rootPackage.fullName() + "." + classe + "' ," + classe + " );";
     }
 
 }

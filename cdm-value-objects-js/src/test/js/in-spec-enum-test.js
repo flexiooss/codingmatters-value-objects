@@ -1,11 +1,9 @@
-import {InSpecEnumProperties, InSpecEnumPropertiesBuilder} from '../org/generated/InSpecEnumProperties'
-import {InSpecEnumPropertiesSingle} from '../org/generated/inSpecEnumProperties/InSpecEnumPropertiesSingle'
-import {InSpecEnumPropertiesMultiple} from '../org/generated/inSpecEnumProperties/InSpecEnumPropertiesMultiple'
+import "../org/package"
 
 test( 'test builder', () => {
-    var builder = new InSpecEnumPropertiesBuilder();
-    builder.single( InSpecEnumPropertiesSingle.SA );
-    builder.multiple( [InSpecEnumPropertiesMultiple.MB, InSpecEnumPropertiesMultiple.MC] );
+    var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.InSpecEnumPropertiesBuilder();
+    builder.single( window.FLEXIO_IMPORT_OBJECT.org.generated.inSpecEnumProperties.InSpecEnumPropertiesSingle.SA );
+    builder.multiple( [window.FLEXIO_IMPORT_OBJECT.org.generated.inSpecEnumProperties.InSpecEnumPropertiesMultiple.MB, window.FLEXIO_IMPORT_OBJECT.org.generated.inSpecEnumProperties.InSpecEnumPropertiesMultiple.MC] );
     var inSpecEnum = builder.build();
 
     expect( inSpecEnum.single().name ).toEqual( "SA" );
@@ -15,20 +13,20 @@ test( 'test builder', () => {
 } );
 
 test( 'assert object immutable', () => {
-    var builder = new InSpecEnumPropertiesBuilder();
-    builder.single( InSpecEnumPropertiesSingle.SA );
-    builder.multiple( [InSpecEnumPropertiesMultiple.MB, InSpecEnumPropertiesMultiple.MC] );
+    var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.InSpecEnumPropertiesBuilder();
+    builder.single( window.FLEXIO_IMPORT_OBJECT.org.generated.inSpecEnumProperties.InSpecEnumPropertiesSingle.SA );
+    builder.multiple( [window.FLEXIO_IMPORT_OBJECT.org.generated.inSpecEnumProperties.InSpecEnumPropertiesMultiple.MB, window.FLEXIO_IMPORT_OBJECT.org.generated.inSpecEnumProperties.InSpecEnumPropertiesMultiple.MC] );
     var inSpecEnum = builder.build();
 
     expect( () => {
-        inSpecEnum._single = InSpecEnumPropertiesSingle.SB;
+        inSpecEnum._single = window.FLEXIO_IMPORT_OBJECT.org.generated.inSpecEnumProperties.InSpecEnumPropertiesSingle.SB;
     } ).toThrow( TypeError );
 } );
 
 test( 'assert object frozen', () => {
-    var builder = new InSpecEnumPropertiesBuilder();
-    builder.single( InSpecEnumPropertiesSingle.SA );
-    builder.multiple( [InSpecEnumPropertiesMultiple.MB, InSpecEnumPropertiesMultiple.MC] );
+    var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.InSpecEnumPropertiesBuilder();
+    builder.single( window.FLEXIO_IMPORT_OBJECT.org.generated.inSpecEnumProperties.InSpecEnumPropertiesSingle.SA );
+    builder.multiple( [window.FLEXIO_IMPORT_OBJECT.org.generated.inSpecEnumProperties.InSpecEnumPropertiesMultiple.MB, window.FLEXIO_IMPORT_OBJECT.org.generated.inSpecEnumProperties.InSpecEnumPropertiesMultiple.MC] );
     var inSpecEnum = builder.build();
 
     expect( () => {
@@ -37,16 +35,16 @@ test( 'assert object frozen', () => {
 } );
 
 test( 'test serialization', () => {
-    var builder = new InSpecEnumPropertiesBuilder();
-    builder.single( InSpecEnumPropertiesSingle.SA );
-    builder.multiple( [InSpecEnumPropertiesMultiple.MB, InSpecEnumPropertiesMultiple.MC] );
+    var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.InSpecEnumPropertiesBuilder();
+    builder.single( window.FLEXIO_IMPORT_OBJECT.org.generated.inSpecEnumProperties.InSpecEnumPropertiesSingle.SA );
+    builder.multiple( [window.FLEXIO_IMPORT_OBJECT.org.generated.inSpecEnumProperties.InSpecEnumPropertiesMultiple.MB, window.FLEXIO_IMPORT_OBJECT.org.generated.inSpecEnumProperties.InSpecEnumPropertiesMultiple.MC] );
     var inSpecEnum = builder.build();
     expect( JSON.stringify( inSpecEnum ) ).toBe( "{\"single\":\"SA\",\"multiple\":[\"MB\",\"MC\"]}" );
 } );
 
 test( 'test deserialization', () => {
     var json = "{\"single\":\"SA\",\"multiple\":[\"MB\",\"MC\"]}";
-    var inSpecEnum = InSpecEnumPropertiesBuilder.fromJson( json );
+    var inSpecEnum = window.FLEXIO_IMPORT_OBJECT.org.generated.InSpecEnumPropertiesBuilder.fromJson( json );
     expect( inSpecEnum.single().name ).toEqual( "SA" );
     expect( inSpecEnum.multiple()[0].name ).toEqual( "MB" );
     expect( inSpecEnum.multiple()[1].name ).toEqual( "MC" );

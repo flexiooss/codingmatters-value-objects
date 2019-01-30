@@ -3,7 +3,8 @@
   "jest": {
     "verbose": true,
     "globals": {
-      "__ASSERT__": true
+      "__ASSERT__": true,
+      "window": {}
     },
     "testEnvironment": "jsdom"
   },

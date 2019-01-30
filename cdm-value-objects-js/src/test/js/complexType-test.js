@@ -1,13 +1,12 @@
-import {ComplexTypeBuilder} from '../org/generated/ComplexType'
-import {ComplexPropsBuilder} from '../org/generated/complexType/ComplexProps'
+import "../org/package"
 
 test( 'test builder', () => {
-    var propBuilder = new ComplexPropsBuilder();
+    var propBuilder = new window.FLEXIO_IMPORT_OBJECT.org.generated.complexType.ComplexPropsBuilder();
     propBuilder.stringProp( "toto" );
     propBuilder.intList( [4, 7, 5] );
     var prop = propBuilder.build();
 
-    var builder = new ComplexTypeBuilder();
+    var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.ComplexTypeBuilder();
     builder.complexProps( prop );
     builder.foo( "foo" );
     builder.testIsOk( true );
@@ -20,12 +19,12 @@ test( 'test builder', () => {
 } );
 
 test( 'assert object immutable', () => {
- var propBuilder = new ComplexPropsBuilder();
+ var propBuilder = new window.FLEXIO_IMPORT_OBJECT.org.generated.complexType.ComplexPropsBuilder();
     propBuilder.stringProp( "toto" );
     propBuilder.intList( [4, 7, 5] );
     var prop = propBuilder.build();
 
-    var builder = new ComplexTypeBuilder();
+    var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.ComplexTypeBuilder();
     builder.complexProps( prop );
     builder.foo( "foo" );
     builder.testIsOk( true );
@@ -41,12 +40,12 @@ test( 'assert object immutable', () => {
 } );
 
 test( 'assert object frozen', () => {
-    var propBuilder = new ComplexPropsBuilder();
+    var propBuilder = new window.FLEXIO_IMPORT_OBJECT.org.generated.complexType.ComplexPropsBuilder();
     propBuilder.stringProp( "toto" );
     propBuilder.intList( [4, 7, 5] );
     var prop = propBuilder.build();
 
-    var builder = new ComplexTypeBuilder();
+    var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.ComplexTypeBuilder();
     builder.complexProps( prop );
     builder.foo( "foo" );
     builder.testIsOk( true );
@@ -62,12 +61,12 @@ test( 'assert object frozen', () => {
 } );
 
 test( 'test serialization', () => {
-    var propBuilder = new ComplexPropsBuilder();
+    var propBuilder = new window.FLEXIO_IMPORT_OBJECT.org.generated.complexType.ComplexPropsBuilder();
     propBuilder.stringProp( "toto" );
     propBuilder.intList( [4, 7, 5] );
     var prop = propBuilder.build();
 
-    var builder = new ComplexTypeBuilder();
+    var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.ComplexTypeBuilder();
     builder.complexProps( prop );
     builder.foo( "foo" );
     builder.testIsOk( true );
@@ -79,7 +78,7 @@ test( 'test serialization', () => {
 
 test( 'test deserialization', () => {
     var json = "{\"complexProps\":{\"string-prop\":\"toto\",\"intList\":[4,7,5]},\"test-is-ok\":true,\"foo\":\"foo\"}";
-    var complexType = ComplexTypeBuilder.fromJson( json );
+    var complexType = window.FLEXIO_IMPORT_OBJECT.org.generated.ComplexTypeBuilder.fromJson( json );
     expect( complexType.testIsOk() ).toEqual( true );
     expect( complexType.foo() ).toEqual( "foo" );
     expect( complexType.complexProps().stringProp() ).toEqual( "toto" );

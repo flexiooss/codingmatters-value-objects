@@ -1,9 +1,8 @@
-import {PrimitiveProps} from '../org/generated/PrimitiveProps'
-import {PrimitivePropsBuilder} from '../org/generated/PrimitiveProps'
-import {FlexDate, FlexDateTime, FlexTime, FlexZonedDateTime} from 'flexio-jshelpers'
+import {FLEXIO_IMPORT_OBJECT, FlexDate, FlexDateTime, FlexTime, FlexZonedDateTime} from 'flexio-jshelpers'
+import "../org/package"
 
 test( 'test builder', () => {
-    var builder = new PrimitivePropsBuilder();
+    var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.PrimitivePropsBuilder();
     builder.stringProp( "str" );
     builder.bytesProp( "bytes" );
     builder.integerProp( 9 );
@@ -24,7 +23,7 @@ test( 'test builder', () => {
 } );
 
 test( 'assert object immutable', () => {
-    var builder = new PrimitivePropsBuilder();
+    var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.PrimitivePropsBuilder();
     builder.stringProp( "str" )
 
     var primitiveProp = builder.build()
@@ -36,7 +35,7 @@ test( 'assert object immutable', () => {
 } );
 
 test( 'assert object freezed', () => {
-    var builder = new PrimitivePropsBuilder();
+    var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.PrimitivePropsBuilder();
     builder.stringProp( "str" )
 
     var primitiveProp = builder.build()
@@ -47,7 +46,7 @@ test( 'assert object freezed', () => {
 } );
 
 test( 'test serialization', () => {
-    var builder = new PrimitivePropsBuilder();
+    var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.PrimitivePropsBuilder();
     builder.stringProp( "str" );
     builder.bytesProp( "bytes" );
     builder.integerProp( 9 );
@@ -65,7 +64,7 @@ test( 'test serialization', () => {
 
 test( 'test deserialization', () => {
     var json = "{\"stringProp\":\"str\",\"bytesProp\":\"bytes\",\"integerProp\":9,\"longProp\":7,\"floatProp\":9.7,\"doubleProp\":7.9,\"booleanProp\":true,\"date-prop\":\"2019-01-09\",\"timeProp\":\"14:17:32\",\"dateTimeProp\":\"2019-01-09T14:17:32\",\"tzDateTimeProp\":\"2019-01-09T14:17:32-03:00\"}";
-    var primitiveProp = PrimitivePropsBuilder.fromJson( json );
+    var primitiveProp = window.FLEXIO_IMPORT_OBJECT.org.generated.PrimitivePropsBuilder.fromJson( json );
     expect( primitiveProp.stringProp() ).toBe( "str" );
     expect( primitiveProp.bytesProp() ).toBe( "bytes" );
     expect( primitiveProp.integerProp() ).toBe( 9 );
