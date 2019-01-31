@@ -1,7 +1,7 @@
 import "../org/package"
 
 test( 'test builder', () => {
-    var propBuilder = new window.FLEXIO_IMPORT_OBJECT.org.generated.complexType.ComplexPropsBuilder();
+    var propBuilder = new window.FLEXIO_IMPORT_OBJECT.org.generated.complextype.ComplexPropsBuilder();
     propBuilder.stringProp( "toto" );
     propBuilder.intList( [4, 7, 5] );
     var prop = propBuilder.build();
@@ -19,7 +19,7 @@ test( 'test builder', () => {
 } );
 
 test( 'assert object immutable', () => {
- var propBuilder = new window.FLEXIO_IMPORT_OBJECT.org.generated.complexType.ComplexPropsBuilder();
+ var propBuilder = new window.FLEXIO_IMPORT_OBJECT.org.generated.complextype.ComplexPropsBuilder();
     propBuilder.stringProp( "toto" );
     propBuilder.intList( [4, 7, 5] );
     var prop = propBuilder.build();
@@ -40,7 +40,7 @@ test( 'assert object immutable', () => {
 } );
 
 test( 'assert object frozen', () => {
-    var propBuilder = new window.FLEXIO_IMPORT_OBJECT.org.generated.complexType.ComplexPropsBuilder();
+    var propBuilder = new window.FLEXIO_IMPORT_OBJECT.org.generated.complextype.ComplexPropsBuilder();
     propBuilder.stringProp( "toto" );
     propBuilder.intList( [4, 7, 5] );
     var prop = propBuilder.build();
@@ -61,7 +61,7 @@ test( 'assert object frozen', () => {
 } );
 
 test( 'test serialization', () => {
-    var propBuilder = new window.FLEXIO_IMPORT_OBJECT.org.generated.complexType.ComplexPropsBuilder();
+    var propBuilder = new window.FLEXIO_IMPORT_OBJECT.org.generated.complextype.ComplexPropsBuilder();
     propBuilder.stringProp( "toto" );
     propBuilder.intList( [4, 7, 5] );
     var prop = propBuilder.build();

@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.js.parser.model.types;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
+import org.codingmatters.value.objects.js.parser.NamingUtils;
 import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
 
 import java.util.Arrays;
@@ -14,7 +15,7 @@ public class YamlEnumInSpecEnum implements YamlEnum {
 
     public YamlEnumInSpecEnum( String name, String namespace, List<String> values ) {
         this.name = name;
-        this.namespace = namespace;
+        this.namespace = NamingUtils.convertToNameSpace( namespace );
         this.values = values;
     }
 

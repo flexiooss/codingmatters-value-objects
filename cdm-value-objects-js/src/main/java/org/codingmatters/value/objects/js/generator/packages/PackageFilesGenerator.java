@@ -49,6 +49,7 @@ public class PackageFilesGenerator {
             for( PackageConfiguration subPackage : rootPackage.subPackages() ){
                 fileWriter.line( "import './" + subPackage.name() + "/package';" );
             }
+            fileWriter.flush();
         } catch( Exception e ){
             throw new GenerationException( "Error generating package files", e );
         }

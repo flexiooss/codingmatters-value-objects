@@ -1,7 +1,6 @@
 package org.codingmatters.value.objects.js.parser;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
@@ -17,5 +16,9 @@ public class NamingUtils {
 
     public static String namespace( Stack<String> context ) {
         return String.join( ".", context.subList( 0, context.size() - 1 ) );
+    }
+
+    public static String convertToNameSpace( String namespace ) {
+        return namespace.toLowerCase();
     }
 }

@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.js.parser.model.types;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
+import org.codingmatters.value.objects.js.parser.NamingUtils;
 import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
 
 
@@ -13,7 +14,7 @@ public class ValueObjectTypeList implements ValueObjectType {
     public ValueObjectTypeList( String name, ValueObjectType type, String namespace ) {
         this.type = type;
         this.name = name;
-        this.namespace = namespace;
+        this.namespace = NamingUtils.convertToNameSpace( namespace );
     }
 
     public ValueObjectType type() {

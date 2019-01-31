@@ -19,21 +19,25 @@ public class NamingUtility {
         String[] typeRefParts = typeRef.split( "\\." );
 //        typeRefParts[typeRefParts.length - 1] = className( typeRefParts[typeRefParts.length - 1] );
         int index = 0;
-        while( index < currentPackageParts.length && index < typeRefParts.length && currentPackageParts[index].equals( typeRefParts[index] ) ) {
+        while( index < currentPackageParts.length && index < typeRefParts.length && currentPackageParts[index].equals( typeRefParts[index] ) ){
             index++;
         }
         return rewind( currentPackageParts.length - index ) + String.join( "/", Arrays.copyOfRange( typeRefParts, index, typeRefParts.length ) );
     }
 
     private static String rewind( int length ) {
-        if( length == 0 ) {
+        if( length == 0 ){
             return "./";
         }
         StringBuilder rewind = new StringBuilder();
-        for( int i = 0; i < length; i++ ) {
+        for( int i = 0; i < length; i++ ){
             rewind.append( "../" );
         }
         return rewind.toString();
+    }
+
+    public static String className( String... valueObjectName ) {
+        return getJoinedName( String.join( " ", valueObjectName ) );
     }
 
     public static String className( String valueObjectName ) {
