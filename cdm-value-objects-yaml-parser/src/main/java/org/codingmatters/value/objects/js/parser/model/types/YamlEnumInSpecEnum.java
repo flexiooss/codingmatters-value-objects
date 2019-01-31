@@ -20,9 +20,7 @@ public class YamlEnumInSpecEnum implements YamlEnum {
     }
 
     public YamlEnumInSpecEnum( String name, String namespace, String... values ) {
-        this.name = name;
-        this.namespace = namespace;
-        this.values = Arrays.stream( values ).collect( Collectors.toList() );
+        this( name, namespace, Arrays.stream( values ).collect( Collectors.toList() ) );
     }
 
     public List<String> values() {
