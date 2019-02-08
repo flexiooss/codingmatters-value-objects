@@ -72,7 +72,7 @@ test( 'test serialization', () => {
 test( 'test deserialization', () => {
     var json = "{\"stringList\":[\"1\",\"2\",\"3\"],\"integerList\":[1,2,3],\"longList\":[4,5,6],\"floatList\":[1.5,1.6,1.9],\"doubleList\":[1.4,1.7,1.9],\"booleanList\":[true,true,false],\"dateList\":[\"2019-01-17\"],\"timeList\":[\"14:15:37\"],\"dateTimeList\":[\"2019-01-17T14:15:37\"],\"tzDateTimeList\":[\"2019-01-17T14:15:37+04:30\"]}"
 
-    var arrayProps = window.FLEXIO_IMPORT_OBJECT.org.generated.ArraySimplePropsBuilder.fromJson( json );
+    var arrayProps = window.FLEXIO_IMPORT_OBJECT.org.generated.ArraySimplePropsBuilder.fromJson( json ).build();
     expect( arrayProps.booleanList() ).toEqual( [true, true, false] );
     expect( arrayProps.dateList()[0].toJSON() ).toEqual( "2019-01-17" );
     expect( arrayProps.dateTimeList()[0].toJSON() ).toEqual( "2019-01-17T14:15:37" );

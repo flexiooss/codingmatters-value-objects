@@ -29,6 +29,7 @@ public class JsClassGenerator extends JsFileWriter {
         write.line( "class " + objectName + " {" );
         write.constructor( valueObject.properties() );
         write.getters( valueObject.properties() );
+        write.withMethods( valueObject.properties(), NamingUtility.builderName( objectName ) );
         write.toObjectMethod( valueObject.properties() );
         write.toJsonMethod();
         write.line( "}" );
@@ -46,7 +47,7 @@ public class JsClassGenerator extends JsFileWriter {
                 prop.type().process( jsTypeDescriptor );
                 string( "}" );
                 newLine();
-            } catch( Exception e ) {
+            } catch( Exception e ){
                 System.out.println( "Error processing constructor" );
             }
         } );
@@ -64,7 +65,7 @@ public class JsClassGenerator extends JsFileWriter {
     }
 
     public void getters( List<ValueObjectProperty> properties ) throws IOException, ProcessingException {
-        for( ValueObjectProperty property : properties ) {
+        for( ValueObjectProperty property : properties ){
             line( "/**" );
             indent();
             string( "* @returns {" );
@@ -82,7 +83,7 @@ public class JsClassGenerator extends JsFileWriter {
         line( "toObject() {" );
         line( "var jsonObject = {};" );
         PropertiesSerializationProcessor propertiesSerializationProcessor = new PropertiesSerializationProcessor( this );
-        for( ValueObjectProperty property : properties ) {
+        for( ValueObjectProperty property : properties ){
             propertiesSerializationProcessor.process( property );
         }
         line( "return jsonObject;" );
@@ -115,9 +116,8 @@ public class JsClassGenerator extends JsFileWriter {
         write.line( "export { " + builderName + "}" );
     }
 
-
     public void setters( List<ValueObjectProperty> properties ) throws IOException, ProcessingException {
-        for( ValueObjectProperty property : properties ) {
+        for( ValueObjectProperty property : properties ){
             String propertyName = propertyName( property.name() );
             line( "/**" );
             indent();
@@ -129,6 +129,25 @@ public class JsClassGenerator extends JsFileWriter {
             line( propertyName + "( " + propertyName + " ) {" );
             line( "this." + attributeName( property.name() ) + " = " + propertyName + ";" );
             line( "return this;" );
+            line( "}" );
+        }
+    }
+
+    private void withMethods( List<ValueObjectProperty> properties, String builderName ) throws IOException, ProcessingException {
+        for( ValueObjectProperty property : properties ){
+            String propertyName = propertyName( property.name() );
+            line( "/**" );
+            indent();
+            string( "* @param { " );
+            property.type().process( jsTypeDescriptor );
+            string( " } " + propertyName );
+            newLine();
+            line( "*/" );
+            line( "with" + NamingUtility.firstLetterUpperCase( propertyName ) + "( " + propertyName + " ) {" );
+            line( "object = this.toObject();" );
+            line( "builder = " + builderName + ".fromObject( this.toObject() );" );
+            line( "builder." + propertyName + "( " + propertyName + ");" );
+            line( "return builder.build();" );
             line( "}" );
         }
     }
@@ -152,12 +171,12 @@ public class JsClassGenerator extends JsFileWriter {
         line( "static fromObject( jsonObject ) {" );
         line( "var builder = new " + builderName + "()" );
         PropertiesDeserializationProcessor propertiesDeserializationProcessor = new PropertiesDeserializationProcessor( this );
-        for( ValueObjectProperty property : properties ) {
+        for( ValueObjectProperty property : properties ){
             line( "if( jsonObject[\"" + property.name() + "\"] != undefined ){" );
             propertiesDeserializationProcessor.process( property );
             line( "}" );
         }
-        line( "return builder.build();" );
+        line( "return builder;" );
         line( "}" );
     }
 

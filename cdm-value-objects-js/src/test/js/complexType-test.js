@@ -77,10 +77,10 @@ test( 'test serialization', () => {
 } );
 
 test( 'test deserialization', () => {
-    var json = "{\"complexProps\":{\"string-prop\":\"toto\",\"intList\":[4,7,5]},\"test-is-ok\":true,\"foo\":\"foo\"}";
-    var complexType = window.FLEXIO_IMPORT_OBJECT.org.generated.ComplexTypeBuilder.fromJson( json );
+    var json = "{\"complexProps\":{\"string-prop\":\"toto\",\"intList\":[4,7,5]},\"test-is-ok\":true,\"foo\":2.1}";
+    var complexType = window.FLEXIO_IMPORT_OBJECT.org.generated.ComplexTypeBuilder.fromJson( json ).build();
     expect( complexType.testIsOk() ).toEqual( true );
-    expect( complexType.foo() ).toEqual( "foo" );
+    expect( complexType.foo() ).toEqual( 2.1 );
     expect( complexType.complexProps().stringProp() ).toEqual( "toto" );
     expect( complexType.complexProps().intList() ).toEqual( [4, 7, 5] );
 });

@@ -64,7 +64,7 @@ test( 'test serialization', () => {
 
 test( 'test deserialization', () => {
     var json = "{\"stringProp\":\"str\",\"bytesProp\":\"bytes\",\"integerProp\":9,\"longProp\":7,\"floatProp\":9.7,\"doubleProp\":7.9,\"booleanProp\":true,\"date-prop\":\"2019-01-09\",\"timeProp\":\"14:17:32\",\"dateTimeProp\":\"2019-01-09T14:17:32\",\"tzDateTimeProp\":\"2019-01-09T14:17:32-03:00\"}";
-    var primitiveProp = window.FLEXIO_IMPORT_OBJECT.org.generated.PrimitivePropsBuilder.fromJson( json );
+    var primitiveProp = window.FLEXIO_IMPORT_OBJECT.org.generated.PrimitivePropsBuilder.fromJson( json ).build();
     expect( primitiveProp.stringProp() ).toBe( "str" );
     expect( primitiveProp.bytesProp() ).toBe( "bytes" );
     expect( primitiveProp.integerProp() ).toBe( 9 );

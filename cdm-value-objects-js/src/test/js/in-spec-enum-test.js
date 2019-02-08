@@ -44,7 +44,7 @@ test( 'test serialization', () => {
 
 test( 'test deserialization', () => {
     var json = "{\"single\":\"SA\",\"multiple\":[\"MB\",\"MC\"]}";
-    var inSpecEnum = window.FLEXIO_IMPORT_OBJECT.org.generated.InSpecEnumPropertiesBuilder.fromJson( json );
+    var inSpecEnum = window.FLEXIO_IMPORT_OBJECT.org.generated.InSpecEnumPropertiesBuilder.fromJson( json ).build();
     expect( inSpecEnum.single().name ).toEqual( "SA" );
     expect( inSpecEnum.multiple()[0].name ).toEqual( "MB" );
     expect( inSpecEnum.multiple()[1].name ).toEqual( "MC" );
