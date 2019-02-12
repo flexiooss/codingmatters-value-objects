@@ -26,6 +26,22 @@ class PrimitivePropsTest extends TestCase {
         assert.equal( primitiveProp.booleanProp(), true );
     }
 
+    testWithMethod(){
+        var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.PrimitivePropsBuilder();
+        builder.stringProp( "str" );
+        builder.bytesProp( "bytes" );
+        builder.integerProp( 9 );
+        builder.longProp( 7 );
+        builder.floatProp( 9.7 );
+        builder.doubleProp( 7.9 );
+        builder.booleanProp( true );
+        var primitiveProp = builder.build();
+
+        assert.equal( primitiveProp.stringProp(), "str" );
+        var primitiveProp2 = primitiveProp.withStringProp( "str2" );
+        assert.equal( primitiveProp.stringProp(), "str" );
+        assert.equal( primitiveProp2.stringProp(), "str2" );
+    }
 
     testObjectImmutable() {
         var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.PrimitivePropsBuilder();
