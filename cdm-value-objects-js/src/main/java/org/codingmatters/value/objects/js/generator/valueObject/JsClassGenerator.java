@@ -144,7 +144,6 @@ public class JsClassGenerator extends JsFileWriter {
             newLine();
             line( "*/" );
             line( "with" + NamingUtility.firstLetterUpperCase( propertyName ) + "( " + propertyName + " ) {" );
-            line( "object = this.toObject();" );
             line( "builder = " + builderName + ".fromObject( this.toObject() );" );
             line( "builder." + propertyName + "( " + propertyName + ");" );
             line( "return builder.build();" );

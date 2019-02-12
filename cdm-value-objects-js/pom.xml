@@ -61,7 +61,7 @@
                                 <resource>
                                     <directory>${project.basedir}/src/test/resources/</directory>
                                     <include>package.json</include>
-                                    <include>.babelrc</include>
+                                    <!--<include>.babelrc</include>-->
                                 </resource>
                             </resources>
                         </configuration>
@@ -77,7 +77,12 @@
                             <resources>
                                 <resource>
                                     <directory>${project.basedir}/src/test/js/</directory>
-                                    <include>*.js</include>
+                                    <include>empty-object-test.js</include>
+                                    <include>primitive-props-test.js</include>
+                                    <include>primitive-list-test.js</include>
+                                    <include>complexType-test.js</include>
+                                    <include>in-spec-enum-test.js</include>
+                                    <include>external-value-object-test.js</include>
                                 </resource>
                             </resources>
                         </configuration>

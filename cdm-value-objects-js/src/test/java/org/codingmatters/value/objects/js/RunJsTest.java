@@ -32,6 +32,8 @@ public class RunJsTest {
         assertThat( process.exitValue(), is( 0 ) );
 
         // BIND LOCAL SOURCE
+        /*
+        */
         processBuilder.command( "yarn", "link", "flexio-jshelpers" );
         System.out.println( "Running 'yarn link flexio-jshelpers'" );
         process = processBuilder.start();
@@ -65,7 +67,7 @@ public class RunJsTest {
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
         System.out.println( "Running 'yarn test' in " + dir );
         processBuilder.directory( new File( dir ) );
-        processBuilder.command( "yarn", "test" );
+        processBuilder.command( "yarn", "test", "-v" );
         Process process = null;
         try {
             process = processBuilder.start();

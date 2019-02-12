@@ -50,7 +50,8 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ObjectTypeExternalValue externalValueObject ) throws ProcessingException {
         try {
-            String builderName = NamingUtility.builderName( externalValueObject.objectReference() );
+            String reference = externalValueObject.objectReference();
+            String builderName = "window.FLEXIO_IMPORT_OBJECT." + reference.substring( 0, reference.lastIndexOf( "." )+1 ) + NamingUtility.builderName( reference );
             write.string( builderName + ".fromObject( " + currentVariable + " ).build()" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );

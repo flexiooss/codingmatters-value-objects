@@ -1,25 +1,32 @@
+import {TestCase} from 'code-altimeter-js'
+const assert = require('assert')
 import "../org/package"
 
-test('test initialization', () => {
-    var myEmptyObject = new window.FLEXIO_IMPORT_OBJECT.org.generated.EmptyObject();
-    expect( myEmptyObject ).not.toBeNull();
-});
+class EmptyObjectTest extends TestCase {
 
-test('test serialization', () => {
-    var myEmptyObject = new window.FLEXIO_IMPORT_OBJECT.org.generated.EmptyObject();
-    expect( JSON.stringify(myEmptyObject)).toBe( "{}" );
-});
+    testInitialization() {
+        var myEmptyObject = new window.FLEXIO_IMPORT_OBJECT.org.generated.EmptyObject();
+        assert.notEqual( myEmptyObject, null );
+    }
 
-test('test deserialization', () => {
-    var myEmptyObject = window.FLEXIO_IMPORT_OBJECT.org.generated.EmptyObjectBuilder.fromJson("{}");
-    expect( myEmptyObject ).not.toBeNull();
-    expect( JSON.stringify(myEmptyObject) ).toBe( "{}" );
-});
+    testSerialization() {
+        var myEmptyObject = new window.FLEXIO_IMPORT_OBJECT.org.generated.EmptyObject();
+        assert.equal( JSON.stringify(myEmptyObject),  "{}" );
+    }
 
-test('test object immutable', () => {
-    var myEmptyObject = new window.FLEXIO_IMPORT_OBJECT.org.generated.EmptyObject();
-    expect(() => {
-        myEmptyObject.floatProp = 12.5
-    }).toThrow(TypeError);
-});
+    testDeserialization() {
+        var myEmptyObject = window.FLEXIO_IMPORT_OBJECT.org.generated.EmptyObjectBuilder.fromJson("{}");
+        assert.notEqual( myEmptyObject, null );
+        assert.equal( JSON.stringify(myEmptyObject), "{}" );
+    }
 
+    testObjectImmutable() {
+        var myEmptyObject = new window.FLEXIO_IMPORT_OBJECT.org.generated.EmptyObject();
+        assert.throws(() => {
+            myEmptyObject.floatProp = 12.5
+        }, TypeError);
+    }
+
+}
+
+runTest( EmptyObjectTest );
