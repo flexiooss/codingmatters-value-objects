@@ -5,25 +5,22 @@
     <modelVersion>4.0.0</modelVersion>
 
 
-    <parent>
-        <groupId>org.codingmatters.value.objects</groupId>
-        <artifactId>codingmatters-value-objects</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../</relativePath>
-    </parent>
+    <!--<parent>-->
+        <!--<groupId>org.codingmatters.value.objects</groupId>-->
+        <!--<artifactId>codingmatters-value-objects</artifactId>-->
+        <!--<version>0.0.1-SNAPSHOT</version>-->
+        <!--<relativePath>../</relativePath>-->
+    <!--</parent>-->
 
+    <groupId>org.codingmatters.value.objects</groupId>
     <artifactId>cdm-value-objects-bom</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>cdm-value-objects-parent</artifactId>
-                <version>${project.version}</version>
-            </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>cdm-value-objects-spec</artifactId>

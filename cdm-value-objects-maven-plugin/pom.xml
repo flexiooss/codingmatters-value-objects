@@ -6,9 +6,9 @@
 
     <parent>
         <groupId>org.codingmatters.value.objects</groupId>
-        <artifactId>cdm-value-objects-parent</artifactId>
+        <artifactId>codingmatters-value-objects</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../cdm-value-objects-parent</relativePath>
+        <relativePath>../</relativePath>
     </parent>
 
     <artifactId>cdm-value-objects-maven-plugin</artifactId>
