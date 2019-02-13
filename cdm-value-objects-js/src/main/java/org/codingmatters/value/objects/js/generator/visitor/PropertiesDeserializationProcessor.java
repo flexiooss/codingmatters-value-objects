@@ -62,7 +62,6 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
 
     @Override
     public void process( ObjectTypeInSpecValueObject inSpecValueObject ) throws ProcessingException {
-        System.out.println( "DESERIALIZE IN SPEC VALUE OBJECT" );
         try {
             String builderName = NamingUtility.builderFullName( typesPackage + "." + inSpecValueObject.inSpecValueObjectName() );
             write.string( builderName + ".fromObject( " + currentVariable + " ).build()" );

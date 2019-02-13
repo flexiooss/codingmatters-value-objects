@@ -136,7 +136,6 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ObjectTypeInSpecValueObject inSpecValueObject ) throws ProcessingException {
 //        try {
-        System.out.println( "IN SPEC VALULE OBJECT" );
         String className = NamingUtility.className( inSpecValueObject.inSpecValueObjectName() );
         String builderName = NamingUtility.builderName( inSpecValueObject.inSpecValueObjectName() );
         String packageName = NamingUtility.findPackage( generationContext.currentPackage(), rootPackage + "." + inSpecValueObject.inSpecValueObjectName() );
