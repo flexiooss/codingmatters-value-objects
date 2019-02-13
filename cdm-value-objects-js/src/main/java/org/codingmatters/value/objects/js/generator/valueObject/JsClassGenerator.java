@@ -19,10 +19,12 @@ import static org.codingmatters.value.objects.js.generator.NamingUtility.propert
 public class JsClassGenerator extends JsFileWriter {
 
     private final JsTypeDescriptor jsTypeDescriptor;
+    private final String typesPackage;
 
-    public JsClassGenerator( String filePath ) throws IOException {
+    public JsClassGenerator( String filePath, String typesPackage ) throws IOException {
         super( filePath );
         this.jsTypeDescriptor = new JsTypeDescriptor( this );
+        this.typesPackage = typesPackage;
     }
 
     public void valueObjectClass( ParsedValueObject valueObject, String objectName, JsClassGenerator write ) throws IOException, ProcessingException {
@@ -169,7 +171,7 @@ public class JsClassGenerator extends JsFileWriter {
         line( "*/" );
         line( "static fromObject( jsonObject ) {" );
         line( "var builder = new " + builderName + "()" );
-        PropertiesDeserializationProcessor propertiesDeserializationProcessor = new PropertiesDeserializationProcessor( this );
+        PropertiesDeserializationProcessor propertiesDeserializationProcessor = new PropertiesDeserializationProcessor( this, typesPackage );
         for( ValueObjectProperty property : properties ){
             line( "if( jsonObject[\"" + property.name() + "\"] != undefined ){" );
             propertiesDeserializationProcessor.process( property );

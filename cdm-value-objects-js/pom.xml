@@ -8,7 +8,6 @@
         <groupId>org.codingmatters.value.objects</groupId>
         <artifactId>cdm-value-objects-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../cdm-value-objects-parent</relativePath>
     </parent>
 
     <artifactId>cdm-value-objects-js</artifactId>
@@ -61,7 +60,6 @@
                                 <resource>
                                     <directory>${project.basedir}/src/test/resources/</directory>
                                     <include>package.json</include>
-                                    <!--<include>.babelrc</include>-->
                                 </resource>
                             </resources>
                         </configuration>
@@ -77,12 +75,7 @@
                             <resources>
                                 <resource>
                                     <directory>${project.basedir}/src/test/js/</directory>
-                                    <include>empty-object-test.js</include>
-                                    <include>primitive-props-test.js</include>
-                                    <include>primitive-list-test.js</include>
-                                    <include>complexType-test.js</include>
-                                    <include>in-spec-enum-test.js</include>
-                                    <include>external-value-object-test.js</include>
+                                    <include>*.js</include>
                                 </resource>
                             </resources>
                         </configuration>

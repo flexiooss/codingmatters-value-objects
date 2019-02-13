@@ -76,7 +76,7 @@
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
-                <artifactId>cdm-value-objects-javascript</artifactId>
+                <artifactId>cdm-value-objects-js</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

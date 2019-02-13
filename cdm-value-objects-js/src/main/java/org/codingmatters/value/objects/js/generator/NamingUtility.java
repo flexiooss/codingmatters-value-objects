@@ -62,4 +62,11 @@ public class NamingUtility {
         return String.join( "", Arrays.stream( value.split( "\\s" ) ).map( NamingUtility::firstLetterUpperCase ).collect( Collectors.toList() ) );
     }
 
+    public static String builderFullName( String reference ) {
+        return "window.FLEXIO_IMPORT_OBJECT." + reference.substring( 0, reference.lastIndexOf( "." ) + 1 ) + NamingUtility.builderName( reference );
+    }
+
+    public static String classFullName( String reference ) {
+        return "window.FLEXIO_IMPORT_OBJECT." + reference;
+    }
 }

@@ -4,9 +4,11 @@ public class GenerationContext {
 
     private final String currentPackage;
     private JsClassGenerator writer;
+    private final String typesPackage;
 
-    public GenerationContext( String rootPackage ) {
+    public GenerationContext( String rootPackage, String typesPackage ) {
         this.currentPackage = rootPackage;
+        this.typesPackage = typesPackage;
     }
 
     public String currentPackage() {
@@ -23,5 +25,9 @@ public class GenerationContext {
 
     public JsClassGenerator write() {
         return writer;
+    }
+
+    public String typesPackage() {
+        return this.typesPackage;
     }
 }
