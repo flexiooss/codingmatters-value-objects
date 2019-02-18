@@ -171,8 +171,7 @@ class PropertyValueImpl implements PropertyValue {
 
         if (type != that.type) return false;
         if (cardinality != that.cardinality) return false;
-        // Probably incorrect - comparing Object[] arrays with Arrays.equals
-        return Arrays.equals(value, that.value);
+        return Arrays.deepEquals(value, that.value);
     }
 
     @Override
@@ -189,7 +188,7 @@ class PropertyValueImpl implements PropertyValue {
             return "null";
         }
         if(Cardinality.MULTIPLE.equals(this.cardinality)) {
-            return Arrays.toString(this.value);
+            return Arrays.deepToString(this.value);
         }
         if(this.value.length > 0) {
             return "" + this.value[0];
