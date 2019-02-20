@@ -82,12 +82,12 @@
             <dependency>
                 <groupId>org.codingmatters.tests</groupId>
                 <artifactId>codingmatters-reflect-unit</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>0.1.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-bom</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>0.1.0-SNAPSHOT</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
