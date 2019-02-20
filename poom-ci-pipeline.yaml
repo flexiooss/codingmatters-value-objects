@@ -15,7 +15,7 @@ stages:
     timeout: 16
     exec:
       - $NOTIFY --data-urlencode "status=2" --data-urlencode "current-stage=$STAGE"
-      - $MVN clean install
+      - $MVN clean install -e
 
   - name: deploy
     timeout: 15
