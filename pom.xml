@@ -58,8 +58,6 @@
     </pluginRepositories>
 
     <modules>
-        <!--<module>cdm-value-objects-bom</module>-->
-
         <module>cdm-value-objects-spec</module>
         <module>cdm-value-objects-generation-commons</module>
         <module>cdm-value-objects-generation</module>
@@ -139,10 +137,6 @@
             <!--//BOM-->
         </dependencies>
     </dependencyManagement>
-
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
 
     <build>
         <pluginManagement>
