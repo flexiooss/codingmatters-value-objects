@@ -7,12 +7,12 @@
     <parent>
         <groupId>org.codingmatters</groupId>
         <artifactId>codingmatters-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <groupId>org.codingmatters.value.objects</groupId>
     <artifactId>codingmatters-value-objects</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
 
     <name>Value Objects Generator</name>
@@ -42,38 +42,31 @@
 
     <repositories>
         <repository>
-            <id>oss-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases><enabled>false</enabled></releases>
+            <id>oss-staging</id>
+            <url>https://oss.sonatype.org/content/groups/staging</url>
+            <releases><enabled>true</enabled></releases>
             <snapshots><enabled>true</enabled></snapshots>
         </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
-            <id>oss-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases><enabled>false</enabled></releases>
+            <id>oss-staging</id>
+            <url>https://oss.sonatype.org/content/groups/staging</url>
+            <releases><enabled>true</enabled></releases>
             <snapshots><enabled>true</enabled></snapshots>
         </pluginRepository>
     </pluginRepositories>
 
     <modules>
-        <module>cdm-value-objects-bom</module>
-
         <module>cdm-value-objects-spec</module>
         <module>cdm-value-objects-generation-commons</module>
         <module>cdm-value-objects-generation</module>
         <module>cdm-value-objects-maven-plugin</module>
         <module>cdm-value-objects-json</module>
-
         <module>cdm-value-objects-doc</module>
-
         <module>cdm-value-objects-generation-main</module>
-
         <module>cdm-value-objects-values</module>
-
         <module>cdm-value-objects-demo</module>
-
         <module>cdm-value-objects-php</module>
     </modules>
 
@@ -82,21 +75,63 @@
             <dependency>
                 <groupId>org.codingmatters.tests</groupId>
                 <artifactId>codingmatters-reflect-unit</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>1.3.0</version>
+            </dependency>
+
+            <!--BOM-->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>cdm-value-objects-spec</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>cdm-value-objects-generation-commons</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>cdm-value-objects-generation</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>cdm-value-objects-generation-main</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>cdm-value-objects-json</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>cdm-value-objects-maven-plugin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>cdm-value-objects-demo</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>cdm-value-objects-values</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
-                <artifactId>cdm-value-objects-bom</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
-                <scope>import</scope>
-                <type>pom</type>
+                <artifactId>cdm-value-objects-doc</artifactId>
+                <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.codingmatters.value.objects</groupId>
+                <artifactId>cdm-value-objects-php</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!--//BOM-->
         </dependencies>
     </dependencyManagement>
-
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
 
     <build>
         <pluginManagement>
@@ -104,10 +139,22 @@
                 <plugin>
                     <groupId>org.codingmatters.value.objects</groupId>
                     <artifactId>cdm-value-objects-maven-plugin</artifactId>
-                    <version>0.0.1-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
 </project>
