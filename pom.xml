@@ -47,11 +47,23 @@
             <releases><enabled>false</enabled></releases>
             <snapshots><enabled>true</enabled></snapshots>
         </repository>
+        <repository>
+            <id>oss-staging</id>
+            <url>https://oss.sonatype.org/content/groups/staging</url>
+            <releases><enabled>false</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
             <id>oss-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases><enabled>false</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>oss-staging</id>
+            <url>https://oss.sonatype.org/content/groups/staging</url>
             <releases><enabled>false</enabled></releases>
             <snapshots><enabled>true</enabled></snapshots>
         </pluginRepository>
@@ -63,15 +75,10 @@
         <module>cdm-value-objects-generation</module>
         <module>cdm-value-objects-maven-plugin</module>
         <module>cdm-value-objects-json</module>
-
         <module>cdm-value-objects-doc</module>
-
         <module>cdm-value-objects-generation-main</module>
-
         <module>cdm-value-objects-values</module>
-
         <module>cdm-value-objects-demo</module>
-
         <module>cdm-value-objects-php</module>
     </modules>
 
