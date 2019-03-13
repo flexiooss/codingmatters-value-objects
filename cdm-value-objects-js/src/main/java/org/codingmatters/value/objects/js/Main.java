@@ -30,7 +30,7 @@ public class Main {
         if( specFile.exists() ){
             if( specFile.isDirectory() ){
                 for( File file : specFile.listFiles() ){
-                    if( file.getName().endsWith( ".yaml" ) ){
+                    if( file.getName().endsWith( ".yaml" ) || file.getName().endsWith( ".yml" ) ){
                         generateSpec( targetDir, rootPackage, file, packageBuilder );
                     }
                 }

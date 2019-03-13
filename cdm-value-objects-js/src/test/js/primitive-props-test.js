@@ -6,7 +6,7 @@ import "../org/package"
 class PrimitivePropsTest extends TestCase {
 
     testBuilder() {
-        var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.PrimitivePropsBuilder();
+        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.PrimitivePropsBuilder();
         builder.stringProp( "str" );
         builder.bytesProp( "bytes" );
         builder.integerProp( 9 );
@@ -27,7 +27,7 @@ class PrimitivePropsTest extends TestCase {
     }
 
     testWithMethod(){
-        var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.PrimitivePropsBuilder();
+        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.PrimitivePropsBuilder();
         builder.stringProp( "str" );
         builder.bytesProp( "bytes" );
         builder.integerProp( 9 );
@@ -44,7 +44,7 @@ class PrimitivePropsTest extends TestCase {
     }
 
     testObjectImmutable() {
-        var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.PrimitivePropsBuilder();
+        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.PrimitivePropsBuilder();
         builder.stringProp( "str" )
 
         var primitiveProp = builder.build()
@@ -55,7 +55,7 @@ class PrimitivePropsTest extends TestCase {
     }
 
     testObjectFrozen() {
-        var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.PrimitivePropsBuilder();
+        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.PrimitivePropsBuilder();
         builder.stringProp( "str" )
 
         var primitiveProp = builder.build()
@@ -66,7 +66,7 @@ class PrimitivePropsTest extends TestCase {
     }
 
     testSerialization() {
-        var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.PrimitivePropsBuilder();
+        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.PrimitivePropsBuilder();
         builder.stringProp( "str" );
         builder.bytesProp( "bytes" );
         builder.integerProp( 9 );
@@ -84,7 +84,7 @@ class PrimitivePropsTest extends TestCase {
 
     testDeserialization() {
         var json = "{\"stringProp\":\"str\",\"bytesProp\":\"bytes\",\"integerProp\":9,\"longProp\":7,\"floatProp\":9.7,\"doubleProp\":7.9,\"booleanProp\":true,\"date-prop\":\"2019-01-09\",\"timeProp\":\"14:17:32\",\"dateTimeProp\":\"2019-01-09T14:17:32\",\"tzDateTimeProp\":\"2019-01-09T14:17:32-03:00\"}";
-        var primitiveProp = window.FLEXIO_IMPORT_OBJECT.org.generated.PrimitivePropsBuilder.fromJson( json ).build();
+        var primitiveProp = window[FLEXIO_IMPORT_OBJECT].org.generated.PrimitivePropsBuilder.fromJson( json ).build();
         assert.equal( primitiveProp.stringProp() , "str" );
         assert.equal( primitiveProp.bytesProp() , "bytes" );
         assert.equal( primitiveProp.integerProp() , 9 );

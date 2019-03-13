@@ -11,10 +11,10 @@ import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
 
 import java.io.IOException;
 
-public class JsTypeDescriptor implements ParsedYamlProcessor {
+public class JsTypeReferenceProcessor implements ParsedYamlProcessor {
     private final JsClassGenerator write;
 
-    public JsTypeDescriptor( JsClassGenerator jsClassGenerator ) {
+    public JsTypeReferenceProcessor( JsClassGenerator jsClassGenerator ) {
         this.write = jsClassGenerator;
     }
 

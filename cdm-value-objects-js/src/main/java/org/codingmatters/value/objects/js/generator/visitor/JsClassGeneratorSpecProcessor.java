@@ -31,6 +31,8 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
         this.generationContext = new GenerationContext( rootPackage, typesPackage );
         this.flexioJsHelpersImport = new HashSet<>();
         this.flexioJsHelpersImport.add( "deepFreezeSeal" );
+        this.flexioJsHelpersImport.add( "assert" );
+        this.flexioJsHelpersImport.add( "isNull" );
         this.packageBuilder = packageBuilder;
     }
 
@@ -66,6 +68,9 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
             generationContext.writer( write );
             for( ValueObjectProperty property : valueObject.properties() ){
                 property.process( this );
+            }
+            for( String inport : generationContext.imports() ){
+                write.line( inport );
             }
             String line = "import { " + String.join( ", ", this.flexioJsHelpersImport ) + " } from 'flexio-jshelpers' ";
             write.line( line );
@@ -129,51 +134,26 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
     }
 
     @Override
-    public void process( ObjectTypeExternalValue externalValueObject ) {
-        // TODO import
+    public void process( ObjectTypeExternalValue externalValueObject ) throws ProcessingException {
+        generationContext.addImport( "import {FLEXIO_IMPORT_OBJECT} from 'flexio-jshelpers'" );
     }
 
     @Override
     public void process( ObjectTypeInSpecValueObject inSpecValueObject ) throws ProcessingException {
-//        try {
-        String className = NamingUtility.className( inSpecValueObject.inSpecValueObjectName() );
-        String builderName = NamingUtility.builderName( inSpecValueObject.inSpecValueObjectName() );
-        String packageName = NamingUtility.findPackage( generationContext.currentPackage(), rootPackage + "." + inSpecValueObject.inSpecValueObjectName() );
-//            generationContext.write().line( "import { " + className + ", " + builderName + " } from '" + packageName + "'" );
-//        } catch( Exception e ){
-//            throw new ProcessingException( "Error processing in spec value object", e );
-//        }
+        generationContext.addImport( "import {FLEXIO_IMPORT_OBJECT} from 'flexio-jshelpers'" );
     }
 
     @Override
     public void process( ObjectTypeNested nestedValueObject ) throws ProcessingException {
-//        try {
-        String className = NamingUtility.className( nestedValueObject.nestValueObject().name() );
-        String builderName = NamingUtility.builderName( nestedValueObject.nestValueObject().name() );
-        String packageName = NamingUtility.findPackage( generationContext.currentPackage(), rootPackage + "." + nestedValueObject.namespace() );
-//            generationContext.write().line( "import { " + className + ", " + builderName + " } from '" + packageName + "/" + className + "'" );
-
+        generationContext.addImport( "import {FLEXIO_IMPORT_OBJECT} from 'flexio-jshelpers'" );
         JsClassGeneratorSpecProcessor processor = new JsClassGeneratorSpecProcessor( this.rootDirectory, this.rootPackage + "." + nestedValueObject.namespace(), this.rootPackage, this.packageBuilder );
         processor.process( nestedValueObject.nestValueObject() );
-
-//        } catch( IOException e ){
-//            throw new ProcessingException( "Error processing in spec value object", e );
-//        }
     }
 
     @Override
     public void process( ValueObjectTypeList list ) throws ProcessingException {
-//        try {
-        String className = NamingUtility.className( list.name() );
-        String packageName = NamingUtility.findPackage( generationContext.currentPackage(), rootPackage + "." + list.namespace() + "." + className );
-//            generationContext.write().line( "import { " + className + " } from '" + packageName + "'" );
         list.type().process( this );
-
         generateList( list );
-
-//        } catch( IOException e ){
-//            throw new ProcessingException( "Error processing in spec value object list: " + list.name(), e );
-//        }
     }
 
     @Override
@@ -191,25 +171,45 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
             case TZ_DATE_TIME:
                 this.flexioJsHelpersImport.add( "FlexZonedDateTime" );
                 break;
+            case BOOL:
+                this.flexioJsHelpersImport.add( "isBoolean" );
+                break;
+            case STRING:
+                this.flexioJsHelpersImport.add( "isString" );
+                break;
+            case BYTES:
+                this.flexioJsHelpersImport.add( "isString" );
+                break;
+            case OBJECT:
+                this.flexioJsHelpersImport.add( "isObject" );
+                break;
+            case INT:
+                this.flexioJsHelpersImport.add( "isNumber" );
+                break;
+            case DOUBLE:
+                this.flexioJsHelpersImport.add( "isNumber" );
+                break;
+            case LONG:
+                this.flexioJsHelpersImport.add( "isNumber" );
+                break;
+            case FLOAT:
+                this.flexioJsHelpersImport.add( "isNumber" );
+                break;
             default:
-                // nothing to do
+                System.out.println( "Enum constant import not handled: " + primitiveType.type().name() );
                 break;
         }
     }
 
     @Override
     public void process( YamlEnumExternalEnum externalEnum ) {
-        // TODO import
+        generationContext.addImport( "import {FLEXIO_IMPORT_OBJECT} from 'flexio-jshelpers'" );
     }
 
     @Override
     public void process( YamlEnumInSpecEnum inSpecEnum ) throws ProcessingException {
+        generationContext.addImport( "import {FLEXIO_IMPORT_OBJECT} from 'flexio-jshelpers'" );
         try {
-            String className = NamingUtility.className( inSpecEnum.name() );
-            String packageName = NamingUtility.findPackage( generationContext.currentPackage(), rootPackage + "." + inSpecEnum.namespace() + "." + className );
-//            System.out.println( className + " / " + packageName + " / " + generationContext + " / " + generationContext.write() );
-//            generationContext.write().line( "import { " + className + " } from '" + packageName + "'" ); // TODO ?
-
             generateEnum( inSpecEnum );
         } catch( Exception e ){
             throw new ProcessingException( "Error processing in spec enum", e );

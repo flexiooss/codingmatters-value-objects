@@ -1,12 +1,12 @@
 import {TestCase} from 'code-altimeter-js'
 const assert = require('assert')
-import {FlexDate, FlexDateTime, FlexTime, FlexZonedDateTime} from 'flexio-jshelpers'
+import {FLEXIO_IMPORT_OBJECT, FlexDate, FlexDateTime, FlexTime, FlexZonedDateTime} from 'flexio-jshelpers'
 import "../org/package"
 
 class PrimitiveListTest extends TestCase {
 
     testBuilder() {
-        var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.ArraySimplePropsBuilder();
+        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.ArraySimplePropsBuilder();
         builder.booleanList( [true, true, false] );
         builder.dateList( [new FlexDate( "2019-01-17" )] );
         builder.dateTimeList( [new FlexDateTime( "2019-01-17T14:15:37" )] );
@@ -35,7 +35,7 @@ class PrimitiveListTest extends TestCase {
     }
 
     testObjectImmutable() {
-        var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.ArraySimplePropsBuilder();
+        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.ArraySimplePropsBuilder();
         builder.booleanList( [true, true, false] );
         var primitiveProp = builder.build()
 
@@ -45,7 +45,7 @@ class PrimitiveListTest extends TestCase {
     }
 
     testObjectFrozen() {
-        var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.ArraySimplePropsBuilder();
+        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.ArraySimplePropsBuilder();
         builder.booleanList( [true, true, false] );
 
         var primitiveProp = builder.build();
@@ -56,7 +56,7 @@ class PrimitiveListTest extends TestCase {
     }
 
     testSerialization() {
-        var builder = new window.FLEXIO_IMPORT_OBJECT.org.generated.ArraySimplePropsBuilder();
+        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.ArraySimplePropsBuilder();
         builder.booleanList( [true, true, false] );
         builder.dateList( [new FlexDate( "2019-01-17" )] );
         builder.dateTimeList( [new FlexDateTime( "2019-01-17T14:15:37" )] );
@@ -75,7 +75,7 @@ class PrimitiveListTest extends TestCase {
     testDeserialization() {
         var json = "{\"stringList\":[\"1\",\"2\",\"3\"],\"integerList\":[1,2,3],\"longList\":[4,5,6],\"floatList\":[1.5,1.6,1.9],\"doubleList\":[1.4,1.7,1.9],\"booleanList\":[true,true,false],\"dateList\":[\"2019-01-17\"],\"timeList\":[\"14:15:37\"],\"dateTimeList\":[\"2019-01-17T14:15:37\"],\"tzDateTimeList\":[\"2019-01-17T14:15:37+04:30\"]}"
 
-        var arrayProps = window.FLEXIO_IMPORT_OBJECT.org.generated.ArraySimplePropsBuilder.fromJson( json ).build();
+        var arrayProps = window[FLEXIO_IMPORT_OBJECT].org.generated.ArraySimplePropsBuilder.fromJson( json ).build();
         assert.deepEqual( arrayProps.booleanList(), [true, true, false] );
         assert.equal( arrayProps.dateList()[0].toJSON(), "2019-01-17" );
         assert.equal( arrayProps.dateTimeList()[0].toJSON() , "2019-01-17T14:15:37" );

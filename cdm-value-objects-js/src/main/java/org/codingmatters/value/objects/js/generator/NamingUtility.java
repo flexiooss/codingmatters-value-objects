@@ -63,10 +63,10 @@ public class NamingUtility {
     }
 
     public static String builderFullName( String reference ) {
-        return "window.FLEXIO_IMPORT_OBJECT." + reference.substring( 0, reference.lastIndexOf( "." ) + 1 ) + NamingUtility.builderName( reference );
+        return "window[FLEXIO_IMPORT_OBJECT]." + reference.substring( 0, reference.lastIndexOf( "." ) + 1 ) + NamingUtility.builderName( reference );
     }
 
     public static String classFullName( String reference ) {
-        return "window.FLEXIO_IMPORT_OBJECT." + reference;
+        return "window[FLEXIO_IMPORT_OBJECT]." + reference;
     }
 }

@@ -3,6 +3,8 @@ package org.codingmatters.value.objects.js.generator.packages;
 import org.codingmatters.value.objects.js.generator.GenerationException;
 import org.codingmatters.value.objects.js.generator.JsFileWriter;
 
+import java.io.IOException;
+
 public class PackageFilesGenerator {
 
     private final PackageFilesBuilder filesBuilder;
@@ -39,11 +41,11 @@ public class PackageFilesGenerator {
             fileWriter.newLine();
             for( String classe : rootPackage.classes() ){
                 String builder = classe + "Builder";
-                fileWriter.line( line( rootPackage, classe ) );
-                fileWriter.line( line( rootPackage, builder ) );
+                line( rootPackage, classe, fileWriter );
+                line( rootPackage, builder, fileWriter );
             }
             for( String classe : rootPackage.lists() ){
-                fileWriter.line( line( rootPackage, classe ) );
+                line( rootPackage, classe, fileWriter );
             }
             fileWriter.newLine();
             for( PackageConfiguration subPackage : rootPackage.subPackages() ){
@@ -55,8 +57,15 @@ public class PackageFilesGenerator {
         }
     }
 
-    private String line( PackageConfiguration rootPackage, String classe ) {
-        return "deepKeyAssigner( window.FLEXIO_IMPORT_OBJECT, '" + rootPackage.fullName() + "." + classe + "' ," + classe + " );";
+    private void comment( String packageName, String classe, JsFileWriter fileWriter ) throws IOException {
+        fileWriter.line( "/**" );
+        fileWriter.line( "* @property {" + classe + "} " + String.join( ".", "window[FLEXIO_IMPORT_OBJECT]", packageName, classe ) );
+        fileWriter.line( "*/" );
+    }
+
+    private void line( PackageConfiguration rootPackage, String classe, JsFileWriter fileWriter ) throws IOException {
+        comment( rootPackage.fullName(), classe, fileWriter );
+        fileWriter.line( "deepKeyAssigner( window[FLEXIO_IMPORT_OBJECT], '" + rootPackage.fullName() + "." + classe + "' ," + classe + " );" );
     }
 
 }
