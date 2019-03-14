@@ -6,12 +6,12 @@
 
     <parent>
         <groupId>org.codingmatters.value.objects</groupId>
-        <artifactId>cdm-value-objects-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <artifactId>codingmatters-value-objects</artifactId>
+        <version>1.2.0-SNAPSHOT</version>
+        <relativePath>../</relativePath>
     </parent>
 
     <artifactId>cdm-value-objects-js</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
