@@ -14,6 +14,13 @@ import java.util.Locale;
 public class Main {
 
     public static void main( String[] args ) throws ProcessingException, GenerationException {
+//        args = new String[]{
+//                "/home/nico/workspace/codingmatters-value-objects/cdm-value-objects-js/target/js-test/04_objectWithEmbeddedValueSpec.yaml",
+//                "/home/nico/workspace/codingmatters-value-objects/cdm-value-objects-js/target/js-test",
+//                "org.generated",
+//                "--no-sub-package"
+//        };
+
         if( args.length < 3 || args[2].isEmpty() ){
             System.out.println( "Args: <yaml spec file path> <target directory> <root package> [--no-sub-package]" );
             System.out.println( "    <yaml spec file path>: Yaml file path OR directory. If dir, then all yaml files in this dir will be generated in the same package" );

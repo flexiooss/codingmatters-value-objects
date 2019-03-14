@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.js.generator.visitor;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
+import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.generator.valueObject.JsClassGenerator;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
@@ -18,11 +19,13 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
     private final JsClassGenerator write;
     private final JsTypeReferenceProcessor jsTypeReferenceProcessor;
     private String currentVariable;
+    private String rootPackage;
 
 
-    public JsTypeAssertionProcessor( JsClassGenerator jsClassGenerator ) {
+    public JsTypeAssertionProcessor( JsClassGenerator jsClassGenerator, String rootPackage ) {
         this.write = jsClassGenerator;
         this.jsTypeReferenceProcessor = new JsTypeReferenceProcessor( jsClassGenerator );
+        this.rootPackage = rootPackage;
     }
 
     @Override
@@ -47,7 +50,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
             write.line( "if( !isNull( " + currentVariable + " )){" );
             write.indent();
             write.string( "assert( " + currentVariable + " instanceof " );
-            jsTypeReferenceProcessor.process( externalValueObject );
+            write.string( NamingUtility.classFullName( externalValueObject.objectReference() ) );
             write.string( ", '" + currentVariable + " should be a " );
             jsTypeReferenceProcessor.process( externalValueObject );
             write.string( "' );" );
@@ -64,7 +67,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
             write.line( "if( !isNull( " + currentVariable + " )){" );
             write.indent();
             write.string( "assert( " + currentVariable + " instanceof " );
-            jsTypeReferenceProcessor.process( inSpecValueObject );
+            write.string( NamingUtility.classFullName( rootPackage + "." + inSpecValueObject.inSpecValueObjectName() ) );
             write.string( ", '" + currentVariable + " should be a " );
             jsTypeReferenceProcessor.process( inSpecValueObject );
             write.string( "' );" );
@@ -81,7 +84,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
             write.line( "if( !isNull( " + currentVariable + " )){" );
             write.indent();
             write.string( "assert( " + currentVariable + " instanceof " );
-            jsTypeReferenceProcessor.process( nestedValueObject );
+            write.string( NamingUtility.classFullName( rootPackage + "." + nestedValueObject.namespace() + "." + nestedValueObject.nestValueObject().name() ) );
             write.string( ", '" + currentVariable + " should be a " );
             jsTypeReferenceProcessor.process( nestedValueObject );
             write.string( "' );" );
@@ -98,7 +101,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
             write.line( "if( !isNull( " + currentVariable + " )){" );
             write.indent();
             write.string( "assert( " + currentVariable + " instanceof " );
-            jsTypeReferenceProcessor.process( list );
+            write.string( NamingUtility.classFullName( rootPackage + "." + list.namespace() + "." + list.name() ) );
             write.string( ", '" + currentVariable + " should be a " );
             jsTypeReferenceProcessor.process( list );
             write.string( "' );" );
@@ -169,7 +172,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
             write.line( "if( !isNull( " + currentVariable + " )){" );
             write.indent();
             write.string( "assert( " + currentVariable + " instanceof " );
-            jsTypeReferenceProcessor.process( externalEnum );
+            write.string( NamingUtility.classFullName( externalEnum.enumReference() ) );
             write.string( ", '" + currentVariable + " should be a " );
             jsTypeReferenceProcessor.process( externalEnum );
             write.string( "' );" );
@@ -186,7 +189,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
             write.line( "if( !isNull( " + currentVariable + " )){" );
             write.indent();
             write.string( "assert( " + currentVariable + " instanceof " );
-            jsTypeReferenceProcessor.process( inSpecEnum );
+            write.string( NamingUtility.classFullName( rootPackage + "." + inSpecEnum.namespace() + "." + inSpecEnum.name() ) );
             write.string( ", '" + currentVariable + " should be a " );
             jsTypeReferenceProcessor.process( inSpecEnum );
             write.string( "' );" );

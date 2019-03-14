@@ -8,7 +8,7 @@ class ComplexTypeTest extends TestCase {
     testBuilder() {
         var propBuilder = new window[FLEXIO_IMPORT_OBJECT].org.generated.complextype.ComplexPropsBuilder();
         propBuilder.stringProp( "toto" );
-        propBuilder.intList( [4, 7, 5] );
+        propBuilder.intList( new window[FLEXIO_IMPORT_OBJECT].org.generated.complextype.complexprops.ComplexPropsIntListList( 4, 7, 5 ));
         var prop = propBuilder.build();
 
         var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.ComplexTypeBuilder();
@@ -26,7 +26,7 @@ class ComplexTypeTest extends TestCase {
     testObjectImmutable() {
         var propBuilder = new window[FLEXIO_IMPORT_OBJECT].org.generated.complextype.ComplexPropsBuilder();
         propBuilder.stringProp( "toto" );
-        propBuilder.intList( [4, 7, 5] );
+        propBuilder.intList( new window[FLEXIO_IMPORT_OBJECT].org.generated.complextype.complexprops.ComplexPropsIntListList( 4, 7, 5 ));
         var prop = propBuilder.build();
 
         var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.ComplexTypeBuilder();
@@ -47,7 +47,7 @@ class ComplexTypeTest extends TestCase {
     testObjectFrozen() {
         var propBuilder = new window[FLEXIO_IMPORT_OBJECT].org.generated.complextype.ComplexPropsBuilder();
         propBuilder.stringProp( "toto" );
-        propBuilder.intList( [4, 7, 5] );
+        propBuilder.intList( new window[FLEXIO_IMPORT_OBJECT].org.generated.complextype.complexprops.ComplexPropsIntListList( 4, 7, 5 ));
         var prop = propBuilder.build();
 
         var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.ComplexTypeBuilder();
@@ -68,7 +68,8 @@ class ComplexTypeTest extends TestCase {
     testSerialization() {
         var propBuilder = new window[FLEXIO_IMPORT_OBJECT].org.generated.complextype.ComplexPropsBuilder();
         propBuilder.stringProp( "toto" );
-        propBuilder.intList( [4, 7, 5] );
+        propBuilder.intList( new window[FLEXIO_IMPORT_OBJECT].org.generated.complextype.complexprops.ComplexPropsIntListList( 4, 7, 5 ));
+
         var prop = propBuilder.build();
 
         var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.ComplexTypeBuilder();

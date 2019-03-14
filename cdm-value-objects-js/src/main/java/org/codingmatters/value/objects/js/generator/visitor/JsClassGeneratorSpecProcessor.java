@@ -21,15 +21,15 @@ import java.util.stream.Collectors;
 public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
 
     private final File rootDirectory;
-    private final String rootPackage;
+    private final String currentPackage;
     private final GenerationContext generationContext;
     private final PackageFilesBuilder packageBuilder;
     private Set<String> flexioJsHelpersImport;
 
-    public JsClassGeneratorSpecProcessor( File rootDirectory, String rootPackage, String typesPackage, PackageFilesBuilder packageBuilder ) {
+    public JsClassGeneratorSpecProcessor( File rootDirectory, String currentPackage, String typesPackage, PackageFilesBuilder packageBuilder ) {
         this.rootDirectory = rootDirectory;
-        this.rootPackage = rootPackage;
-        this.generationContext = new GenerationContext( rootPackage, typesPackage );
+        this.currentPackage = currentPackage;
+        this.generationContext = new GenerationContext( currentPackage, typesPackage );
         this.flexioJsHelpersImport = new HashSet<>();
         this.flexioJsHelpersImport.add( "deepFreezeSeal" );
         this.flexioJsHelpersImport.add( "assert" );
@@ -87,7 +87,7 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
         try {
             String objectName = NamingUtility.className( list.name() );
             String fileName = objectName + ".js";
-            String targetPackage = this.rootPackage + "." + list.namespace();
+            String targetPackage = this.generationContext.typesPackage() + "." + list.namespace();
             packageBuilder.addList( targetPackage, objectName );
             File targetDirectory = new File( rootDirectory, targetPackage.replace( ".", "/" ) );
             String targetFile = String.join( "/", targetDirectory.getPath(), fileName );
@@ -114,7 +114,7 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
     private void generateEnum( YamlEnumInSpecEnum inSpecEnum ) throws Exception {
         String objectName = NamingUtility.className( inSpecEnum.name() );
         String fileName = objectName + ".js";
-        String targetPackage = this.rootPackage + "." + inSpecEnum.namespace();
+        String targetPackage = generationContext.typesPackage() + "." + inSpecEnum.namespace();
         packageBuilder.addList( targetPackage, objectName );
         File targetDirectory = new File( rootDirectory, targetPackage.replace( ".", "/" ) );
         String targetFile = String.join( "/", targetDirectory.getPath(), fileName );
@@ -147,12 +147,13 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ObjectTypeNested nestedValueObject ) throws ProcessingException {
         generationContext.addImport( "import {FLEXIO_IMPORT_OBJECT} from 'flexio-jshelpers'" );
-        JsClassGeneratorSpecProcessor processor = new JsClassGeneratorSpecProcessor( this.rootDirectory, this.rootPackage + "." + nestedValueObject.namespace(), this.rootPackage, this.packageBuilder );
+        JsClassGeneratorSpecProcessor processor = new JsClassGeneratorSpecProcessor( this.rootDirectory, this.currentPackage + "." + nestedValueObject.namespace(), this.currentPackage, this.packageBuilder );
         processor.process( nestedValueObject.nestValueObject() );
     }
 
     @Override
     public void process( ValueObjectTypeList list ) throws ProcessingException {
+        generationContext.addImport( "import {FLEXIO_IMPORT_OBJECT} from 'flexio-jshelpers'" );
         list.type().process( this );
         generateList( list );
     }

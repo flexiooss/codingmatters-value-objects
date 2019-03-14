@@ -85,10 +85,11 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
     public void process( ValueObjectTypeList list ) throws ProcessingException {
         try {
             String var = generateVarName();
-            write.string( currentVariable + ".map( " + var + "=>" );
+            String listClassName = NamingUtility.classFullName( typesPackage + "." + list.namespace() + "." + list.name() );
+            write.string( "new " + listClassName + "( ..." + currentVariable + ".map( " + var + "=>" );
             currentVariable = var;
             list.type().process( this );
-            write.string( " )" );
+            write.string( " ))" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );
         }

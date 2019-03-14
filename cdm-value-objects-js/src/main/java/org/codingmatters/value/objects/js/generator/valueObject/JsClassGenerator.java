@@ -26,7 +26,7 @@ public class JsClassGenerator extends JsFileWriter {
     public JsClassGenerator( String filePath, String typesPackage ) throws IOException {
         super( filePath );
         this.jsTypeDescriptor = new JsTypeReferenceProcessor( this );
-        this.jsTypeAssertion = new JsTypeAssertionProcessor( this );
+        this.jsTypeAssertion = new JsTypeAssertionProcessor( this, typesPackage );
         this.typesPackage = typesPackage;
     }
 
@@ -118,7 +118,7 @@ public class JsClassGenerator extends JsFileWriter {
         write.buildMethod( objectName, valueObject.properties() );
         write.fromObjectMethod( builderName, valueObject.properties() );
         write.fromJsonMethod( builderName );
-        write.fromInstanceMethod( objectName, builderName );
+        write.fromInstanceMethod( objectName, builderName, valueObject.properties() );
         write.line( "}" );
         write.line( "export { " + builderName + "}" );
     }
@@ -152,7 +152,7 @@ public class JsClassGenerator extends JsFileWriter {
             newLine();
             line( "*/" );
             line( "with" + NamingUtility.firstLetterUpperCase( propertyName ) + "( " + propertyName + " ) {" );
-            line( "var builder = " + builderName + ".fromObject( this.toObject() );" );
+            line( "var builder = " + builderName + ".from( this );" );
             line( "builder." + propertyName + "( " + propertyName + ");" );
             line( "return builder.build();" );
             line( "}" );
@@ -198,14 +198,18 @@ public class JsClassGenerator extends JsFileWriter {
         line( "}" );
     }
 
-    private void fromInstanceMethod( String objectName, String builderName ) throws IOException {
+    private void fromInstanceMethod( String objectName, String builderName, List<ValueObjectProperty> properties ) throws IOException {
         line( "/**" );
         line( "* @param {" + objectName + "} instance" );
         line( "* @returns {" + builderName + "}" );
         line( "*/" );
         line( "static from( instance ){" );
-        line( "var object = instance.toObject();" );
-        line( "return " + builderName + ".fromObject( object );" );
+        line( "var builder = new " + builderName + "();" );
+        for( ValueObjectProperty property : properties ){
+            String accessor = NamingUtility.propertyName( property.name() );
+            line( "builder." + accessor + "( instance." + accessor + "() );" );
+        }
+        line( "return builder;" );
         line( "}" );
     }
 }

@@ -25,7 +25,7 @@ public class RunJsTest {
         processBuilder.command( "yarn", "install" );
         System.out.println( "Running 'yarn install'" );
         Process process = processBuilder.start();
-        process.waitFor( 60, TimeUnit.SECONDS );
+        process.waitFor( 180, TimeUnit.SECONDS );
         if( process.exitValue() != 0 ){
             printError( process );
         }
@@ -37,7 +37,7 @@ public class RunJsTest {
         processBuilder.command( "yarn", "link", "flexio-jshelpers" );
         System.out.println( "Running 'yarn link flexio-jshelpers'" );
         process = processBuilder.start();
-        process.waitFor( 60, TimeUnit.SECONDS );
+        process.waitFor( 120, TimeUnit.SECONDS );
         if( process.exitValue() != 0 ){
             printError( process );
         }
