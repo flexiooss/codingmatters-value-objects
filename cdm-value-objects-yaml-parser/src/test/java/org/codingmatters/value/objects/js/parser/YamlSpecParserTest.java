@@ -279,6 +279,21 @@ public class YamlSpecParserTest {
         assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) ((ObjectTypeNested) value.properties().get( 1 ).type()).nestValueObject().properties().get( 1 ).type()).type()).values().toArray(), is( new String[]{ "A", "B", "C" } ) );
     }
 
+    @Test
+    public void testExternalType() throws Exception {
+        InputStream resource = loadSpec( "08_propertiesWithExternalType.yaml" );
+        ParsedYAMLSpec spec = parser.parse( resource );
+        assertThat( spec.valueObjects().size(), is( 1 ) );
+        ParsedValueObject value = spec.valueObjects().get( 0 );
+
+        assertThat( value.properties().get( 0 ).name(), is( "prop" ) );
+        assertThat( ((ValueObjectTypeExternalType) value.properties().get( 0 ).type()).typeReference(), is( "org.generated.PrimitiveProps" ) );
+
+        assertThat( value.properties().get( 1 ).name(), is( "propList" ) );
+        assertThat( ((ValueObjectTypeExternalType) ((ValueObjectTypeList) value.properties().get( 1 ).type()).type()).typeReference(), is( "org.generated.PrimitiveProps" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 1 ).type()).namespace(), is( "valueobjectprops" ) );
+    }
+
     private InputStream loadSpec( String name ) {
         return Thread.currentThread().getContextClassLoader().getResourceAsStream( name );
     }

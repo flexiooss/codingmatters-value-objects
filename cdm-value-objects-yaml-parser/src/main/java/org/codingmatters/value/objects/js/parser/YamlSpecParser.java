@@ -25,14 +25,14 @@ public class YamlSpecParser {
         try {
             root = MAPPER.readValue( inputStream, Map.class );
             return this.extractValueObjects( root );
-        } catch( IOException e ) {
+        } catch( IOException e ){
             throw new SyntaxError( e );
         }
     }
 
     private ParsedYAMLSpec extractValueObjects( Map<String, ?> valueSpecs ) throws SyntaxError {
         ParsedYAMLSpec parsedYAMLSpec = new ParsedYAMLSpec();
-        for( String valueObjectName : valueSpecs.keySet() ) {
+        for( String valueObjectName : valueSpecs.keySet() ){
             this.context = new Stack<>();
             parsedYAMLSpec.valueObjects().add( this.parseValueObject( valueSpecs, valueObjectName ) );
         }
@@ -43,7 +43,7 @@ public class YamlSpecParser {
         this.context.push( valueObjectName );
         ParsedValueObject valueObject = new ParsedValueObject( NamingUtils.nestedTypeName( context ) );
         Map<String, ?> properties = (Map<String, ?>) valueSpecs.get( valueObjectName );
-        if( properties != null ) {
+        if( properties != null ){
             parseProperties( valueObject, properties );
         }
         this.context.pop();
@@ -51,7 +51,7 @@ public class YamlSpecParser {
     }
 
     private void parseProperties( ParsedValueObject valueObject, Map<String, ?> properties ) throws SyntaxError {
-        for( String propertyName : properties.keySet() ) {
+        for( String propertyName : properties.keySet() ){
             valueObject.properties().add( new ValueObjectProperty(
                     propertyName,
                     this.parseType( propertyName, properties.get( propertyName ) )
@@ -62,21 +62,23 @@ public class YamlSpecParser {
     private ValueObjectType parseType( String propertyName, Object object ) throws SyntaxError {
         this.context.push( propertyName );
         try {
-            if( object instanceof String ) {
-                if( isPrimitiveType( (String) object ) ) {
+            if( object instanceof String ){
+                if( isPrimitiveType( (String) object ) ){
                     return new ValueObjectTypePrimitiveType( (String) object );
-                } else if( isInternalValueObject( (String) object ) ) {
+                } else if( isInternalValueObject( (String) object ) ){
                     return new ObjectTypeInSpecValueObject( ((String) object).substring( 1 ) );
                 } else {
                     throw new SyntaxError( "Cannot parse this type" );
                 }
-            } else if( object instanceof Map ) {
-                if( isList( (Map) object ) ) {
+            } else if( object instanceof Map ){
+                if( isList( (Map) object ) ){
                     return this.parseList( (Map) object );
-                } else if( isEnum( (Map) object ) ) {
+                } else if( isEnum( (Map) object ) ){
                     return this.parseEnum( (Map) object );
-                } else if( isExternalValueObject( (Map) object ) ) {
+                } else if( isExternalValueObject( (Map) object ) ){
                     return new ObjectTypeExternalValue( (String) ((Map) object).get( "$value-object" ) );
+                } else if( isExternalType( (Map) object ) ){
+                    return new ValueObjectTypeExternalType( (String) ((Map) object).get( "$type" )  );
                 } else {
                     return this.parseNestedTypeProperty( (Map) object );
                 }
@@ -96,6 +98,10 @@ public class YamlSpecParser {
         return object.keySet().size() == 1 && (object.get( "$value-object" ) != null);
     }
 
+    private boolean isExternalType( Map object ) {
+        return object.keySet().size() == 1 && (object.get( "$type" ) != null);
+    }
+
     private boolean isPrimitiveType( String type ) {
         return ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.from( type ) != null;
     }
@@ -110,7 +116,7 @@ public class YamlSpecParser {
 
     private ValueObjectType parseList( Map object ) throws SyntaxError {
         Object listType = object.getOrDefault( "$list", object.get( "$set" ) );
-        if( listType == null ) {
+        if( listType == null ){
             throw new SyntaxError( "The list cannot be parsed" );
         }
         String pop = context.pop();
@@ -122,13 +128,13 @@ public class YamlSpecParser {
     }
 
     private ValueObjectType parseEnum( Map object ) throws SyntaxError {
-        if( object.get( "$enum" ) instanceof String ) {
+        if( object.get( "$enum" ) instanceof String ){
             String enumValue = (String) object.get( "$enum" );
-            if( enumValue.contains( "," ) ) {
+            if( enumValue.contains( "," ) ){
                 String name = NamingUtils.camelCase( context.get( context.size() - 2 ) ) + NamingUtils.camelCase( context.get( context.size() - 1 ) );
                 return new YamlEnumInSpecEnum( name, NamingUtils.namespace( this.context ), Arrays.stream( enumValue.split( "," ) ).map( field->field.trim().toUpperCase() ).collect( Collectors.toList() ) );
             }
-        } else if( object.get( "$enum" ) instanceof Map ) {
+        } else if( object.get( "$enum" ) instanceof Map ){
             String enumReference = (String) ((Map) object.get( "$enum" )).get( "$type" );
             return new YamlEnumExternalEnum( enumReference );
         }

@@ -26,4 +26,6 @@ public interface ParsedYamlProcessor {
     public void process( YamlEnumExternalEnum externalEnum ) throws ProcessingException;
 
     public void process( YamlEnumInSpecEnum inSpecEnum ) throws ProcessingException;
+
+    public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException;
 }
