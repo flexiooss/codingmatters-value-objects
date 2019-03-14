@@ -98,6 +98,7 @@
                                 <argument>${project.build.directory}/js-test</argument>
                                 <argument>${project.build.directory}/js-test</argument>
                                 <argument>org.generated</argument>
+                                <argument>--no-sub-package</argument>
                             </arguments>
                         </configuration>
                     </execution>
