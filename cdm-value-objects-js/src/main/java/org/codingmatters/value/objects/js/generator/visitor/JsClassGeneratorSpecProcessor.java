@@ -10,6 +10,7 @@ import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
 import org.codingmatters.value.objects.js.parser.model.types.*;
 import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.util.HashSet;
@@ -214,6 +215,11 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
         } catch( Exception e ){
             throw new ProcessingException( "Error processing in spec enum", e );
         }
+    }
+
+    @Override
+    public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException {
+        throw new NotImplementedException();
     }
 
 }

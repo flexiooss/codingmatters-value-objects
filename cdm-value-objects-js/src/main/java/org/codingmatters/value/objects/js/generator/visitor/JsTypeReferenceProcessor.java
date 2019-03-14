@@ -8,6 +8,7 @@ import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
 import org.codingmatters.value.objects.js.parser.model.types.*;
 import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 
@@ -63,8 +64,7 @@ public class JsTypeReferenceProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ValueObjectTypeList list ) throws ProcessingException {
         try {
-            list.type().process( this );
-            write.string( "[]" );
+            write.string( NamingUtility.className( list.name() ) );
         } catch( IOException e ) {
             throw new ProcessingException( "Error processing list type", e );
         }
@@ -126,5 +126,10 @@ public class JsTypeReferenceProcessor implements ParsedYamlProcessor {
         } catch( IOException e ) {
             throw new ProcessingException( "Error Processing type", e );
         }
+    }
+
+    @Override
+    public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException {
+        throw new NotImplementedException();
     }
 }

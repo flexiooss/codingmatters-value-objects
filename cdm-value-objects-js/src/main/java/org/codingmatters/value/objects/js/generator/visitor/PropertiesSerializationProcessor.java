@@ -8,6 +8,7 @@ import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
 import org.codingmatters.value.objects.js.parser.model.types.*;
 import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 
@@ -43,7 +44,7 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
             writer.string( ";" );
             writer.newLine();
             writer.line( "}" );
-        } catch( IOException e ) {
+        } catch( IOException e ){
             throw new ProcessingException( "Error processing object value", e );
         }
     }
@@ -52,7 +53,7 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     public void process( ObjectTypeExternalValue externalValueObject ) throws ProcessingException {
         try {
             writer.string( ".toObject()" );
-        } catch( IOException e ) {
+        } catch( IOException e ){
             throw new ProcessingException( "Error processing primitive type: " + currentProperty, e );
         }
     }
@@ -61,7 +62,7 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     public void process( ObjectTypeInSpecValueObject inSpecValueObject ) throws ProcessingException {
         try {
             writer.string( ".toObject()" );
-        } catch( IOException e ) {
+        } catch( IOException e ){
             throw new ProcessingException( "Error processing primitive type: " + currentProperty, e );
         }
     }
@@ -70,7 +71,7 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     public void process( ObjectTypeNested nestedValueObject ) throws ProcessingException {
         try {
             writer.string( ".toObject()" );
-        } catch( IOException e ) {
+        } catch( IOException e ){
             throw new ProcessingException( "Error processing primitive type: " + currentProperty, e );
         }
     }
@@ -81,7 +82,7 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
             writer.string( ".map( x=>x" );
             list.type().process( this );
             writer.string( ")" );
-        } catch( IOException e ) {
+        } catch( IOException e ){
             throw new ProcessingException( "Error processing primitive type: " + currentProperty, e );
         }
     }
@@ -95,7 +96,7 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     public void process( YamlEnumExternalEnum externalEnum ) throws ProcessingException {
         try {
             writer.string( ".name" );
-        } catch( IOException e ) {
+        } catch( IOException e ){
             throw new ProcessingException( "Error processing primitive type: " + currentProperty, e );
         }
     }
@@ -104,8 +105,13 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     public void process( YamlEnumInSpecEnum inSpecEnum ) throws ProcessingException {
         try {
             writer.string( ".name" );
-        } catch( IOException e ) {
+        } catch( IOException e ){
             throw new ProcessingException( "Error processing primitive type: " + currentProperty, e );
         }
+    }
+
+    @Override
+    public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException {
+        throw new NotImplementedException();
     }
 }
