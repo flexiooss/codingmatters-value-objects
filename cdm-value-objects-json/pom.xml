@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.value.objects</groupId>
         <artifactId>codingmatters-value-objects</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.2.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -98,22 +98,22 @@
                     <dependency>
                         <groupId>org.codingmatters.value.objects</groupId>
                         <artifactId>cdm-value-objects-spec</artifactId>
-                        <version>${version}</version>
+                        <version>${project.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.codingmatters.value.objects</groupId>
                         <artifactId>cdm-value-objects-generation</artifactId>
-                        <version>${version}</version>
+                        <version>${project.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.codingmatters.value.objects</groupId>
                         <artifactId>cdm-value-objects-generation-commons</artifactId>
-                        <version>${version}</version>
+                        <version>${project.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.codingmatters.value.objects</groupId>
                         <artifactId>cdm-value-objects-generation-main</artifactId>
-                        <version>${version}</version>
+                        <version>${project.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
