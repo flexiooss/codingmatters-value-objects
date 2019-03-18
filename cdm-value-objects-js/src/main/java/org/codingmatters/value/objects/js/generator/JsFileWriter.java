@@ -47,23 +47,27 @@ public class JsFileWriter implements AutoCloseable {
         writer.write( line );
     }
 
-    public void indent() throws IOException {
+    public void indent( ) throws IOException {
         for( int i = 0; i < indent; i++ ) {
             writer.write( INDENTATION_UNITY );
         }
     }
 
-    public void newLine() throws IOException {
+    public void newLine( ) throws IOException {
         writer.newLine();
     }
 
-    public void flush() throws IOException {
+    public void flush( ) throws IOException {
         writer.flush();
     }
 
     @Override
-    public void close() throws Exception {
+    public void close( ) throws Exception {
         writer.flush();
         writer.close();
+    }
+
+    public void unindent( ) {
+        indent--;
     }
 }
