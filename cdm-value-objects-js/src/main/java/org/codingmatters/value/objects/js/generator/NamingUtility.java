@@ -69,4 +69,24 @@ public class NamingUtility {
     public static String classFullName( String reference ) {
         return "window[FLEXIO_IMPORT_OBJECT]." + reference;
     }
+
+    public static String namespace( String name ) {
+        return name.toLowerCase( Locale.ENGLISH );
+    }
+
+    public static String requestName( String displayName, String method ) {
+        return className( displayName, method.toLowerCase(), "Request" );
+    }
+
+    public static String responseName( String displayName, String method ) {
+        return className( displayName, method.toLowerCase(), "Response" );
+    }
+
+    public static String statusClassName( int code ) {
+        return "Status" + code;
+    }
+
+    public static String statusProperty( int code ) {
+        return "status" + code;
+    }
 }

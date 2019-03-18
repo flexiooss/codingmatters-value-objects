@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.js.generator.visitor;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
+import org.codingmatters.value.objects.js.generator.JsFileWriter;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.generator.valueObject.JsClassGenerator;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
@@ -14,13 +15,13 @@ import java.io.IOException;
 
 public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
 
-    private final JsClassGenerator write;
+    private final JsFileWriter write;
     private String propertyName;
     private String currentVariable;
     private char currentIndex = 'a';
     private final String typesPackage;
 
-    public PropertiesDeserializationProcessor( JsClassGenerator jsClassGenerator, String typesPackage ) {
+    public PropertiesDeserializationProcessor( JsFileWriter jsClassGenerator, String typesPackage ) {
         this.write = jsClassGenerator;
         this.typesPackage = typesPackage;
     }
