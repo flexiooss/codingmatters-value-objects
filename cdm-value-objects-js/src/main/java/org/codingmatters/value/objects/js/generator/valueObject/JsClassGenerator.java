@@ -114,7 +114,7 @@ public class JsClassGenerator extends JsFileWriter {
         write.line( "constructor(){" );
         write.line( String.join( "\n        ", valueObject.properties().stream().map( prop->"this." + NamingUtility.attributeName( prop.name() ) + " = null;" ).collect( Collectors.toList() ) ) );
         write.line( "}" );
-        write.setters( valueObject.properties() );
+        write.setters( valueObject.properties(), builderName );
         write.buildMethod( objectName, valueObject.properties() );
         write.fromObjectMethod( builderName, valueObject.properties() );
         write.fromJsonMethod( builderName );
@@ -123,7 +123,7 @@ public class JsClassGenerator extends JsFileWriter {
         write.line( "export { " + builderName + "}" );
     }
 
-    public void setters( List<ValueObjectProperty> properties ) throws IOException, ProcessingException {
+    public void setters( List<ValueObjectProperty> properties, String builderName ) throws IOException, ProcessingException {
         for( ValueObjectProperty property : properties ){
             String propertyName = propertyName( property.name() );
             line( "/**" );
@@ -132,6 +132,7 @@ public class JsClassGenerator extends JsFileWriter {
             property.type().process( jsTypeDescriptor );
             string( " } " + propertyName );
             newLine();
+            line( "* @returns {" + builderName + "}" );
             line( "*/" );
             line( propertyName + "( " + propertyName + " ) {" );
             property.process( jsTypeAssertion );
