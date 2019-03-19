@@ -65,7 +65,7 @@ public class PackageFilesGenerator {
 
     private void line( PackageConfiguration rootPackage, String classe, JsFileWriter fileWriter ) throws IOException {
         comment( rootPackage.fullName(), classe, fileWriter );
-        fileWriter.line( "deepKeyAssigner( window[FLEXIO_IMPORT_OBJECT], '" + rootPackage.fullName() + "." + classe + "' ," + classe + " );" );
+        fileWriter.line( "deepKeyAssigner( window.FLEXIO_IMPORT_OBJECT, '" + rootPackage.fullName() + "." + classe + "' ," + classe + " );" );
     }
 
 }
