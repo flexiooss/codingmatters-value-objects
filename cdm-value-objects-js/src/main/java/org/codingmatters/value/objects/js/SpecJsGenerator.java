@@ -2,7 +2,7 @@ package org.codingmatters.value.objects.js;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.packages.PackageFilesBuilder;
-import org.codingmatters.value.objects.js.generator.visitor.JsClassGeneratorSpecProcessor;
+import org.codingmatters.value.objects.js.generator.visitor.JsValueObjectGenerator;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 
 import java.io.File;
@@ -20,7 +20,7 @@ public class SpecJsGenerator {
     }
 
     public void generate( PackageFilesBuilder packageFilesBuilder ) throws ProcessingException {
-        JsClassGeneratorSpecProcessor processor = new JsClassGeneratorSpecProcessor( targetDirectory, rootPackage, packageFilesBuilder );
+        JsValueObjectGenerator processor = new JsValueObjectGenerator( targetDirectory, rootPackage, packageFilesBuilder );
         processor.process( spec );
     }
 }

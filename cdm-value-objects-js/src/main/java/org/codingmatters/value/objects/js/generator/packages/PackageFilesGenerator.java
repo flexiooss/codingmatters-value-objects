@@ -59,13 +59,13 @@ public class PackageFilesGenerator {
 
     private void comment( String packageName, String classe, JsFileWriter fileWriter ) throws IOException {
         fileWriter.line( "/**" );
-        fileWriter.line( "* @property {" + classe + "} " + String.join( ".", "window.FLEXIO_IMPORT_OBJECT.", packageName, classe ) );
+        fileWriter.line( "* @property {" + classe + "} " + String.join( ".", "window[FLEXIO_IMPORT_OBJECT]", packageName, classe ) );
         fileWriter.line( "*/" );
     }
 
     private void line( PackageConfiguration rootPackage, String classe, JsFileWriter fileWriter ) throws IOException {
         comment( rootPackage.fullName(), classe, fileWriter );
-        fileWriter.line( "deepKeyAssigner( window.FLEXIO_IMPORT_OBJECT, '" + rootPackage.fullName() + "." + classe + "' ," + classe + " );" );
+        fileWriter.line( "deepKeyAssigner( window[FLEXIO_IMPORT_OBJECT], '" + rootPackage.fullName() + "." + classe + "' ," + classe + " );" );
     }
 
 }

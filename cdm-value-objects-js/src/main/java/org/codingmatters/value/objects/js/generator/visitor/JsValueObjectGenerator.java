@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
-public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
+public class JsValueObjectGenerator implements ParsedYamlProcessor {
 
     private final File rootDirectory;
     private final String currentPackage;
@@ -26,7 +26,7 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
     private final PackageFilesBuilder packageBuilder;
     private Set<String> flexioJsHelpersImport;
 
-    public JsClassGeneratorSpecProcessor( File rootDirectory, String currentPackage, String typesPackage, PackageFilesBuilder packageBuilder ) {
+    public JsValueObjectGenerator( File rootDirectory, String currentPackage, String typesPackage, PackageFilesBuilder packageBuilder ) {
         this.rootDirectory = rootDirectory;
         this.currentPackage = currentPackage;
         this.generationContext = new GenerationContext( currentPackage, typesPackage );
@@ -37,7 +37,7 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
         this.packageBuilder = packageBuilder;
     }
 
-    public JsClassGeneratorSpecProcessor( File rootDir, String typesPackage, PackageFilesBuilder packageBuilder ) {
+    public JsValueObjectGenerator( File rootDir, String typesPackage, PackageFilesBuilder packageBuilder ) {
         this( rootDir, typesPackage, typesPackage, packageBuilder );
     }
 
@@ -93,7 +93,7 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
             String targetFile = String.join( "/", targetDirectory.getPath(), fileName );
 
             try( JsClassGenerator write = new JsClassGenerator( targetFile, generationContext.typesPackage() ) ) {
-                JsClassGeneratorSpecProcessor processor = new JsClassGeneratorSpecProcessor( this.rootDirectory, targetPackage, this.packageBuilder );
+                JsValueObjectGenerator processor = new JsValueObjectGenerator( this.rootDirectory, targetPackage, this.packageBuilder );
                 processor.generationContext.writer( write );
 //                list.type().process( processor );
 
@@ -147,7 +147,7 @@ public class JsClassGeneratorSpecProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ObjectTypeNested nestedValueObject ) throws ProcessingException {
         generationContext.addImport( "import {FLEXIO_IMPORT_OBJECT} from 'flexio-jshelpers'" );
-        JsClassGeneratorSpecProcessor processor = new JsClassGeneratorSpecProcessor( this.rootDirectory, this.currentPackage + "." + nestedValueObject.namespace(), this.currentPackage, this.packageBuilder );
+        JsValueObjectGenerator processor = new JsValueObjectGenerator( this.rootDirectory, this.currentPackage + "." + nestedValueObject.namespace(), this.currentPackage, this.packageBuilder );
         processor.process( nestedValueObject.nestValueObject() );
     }
 

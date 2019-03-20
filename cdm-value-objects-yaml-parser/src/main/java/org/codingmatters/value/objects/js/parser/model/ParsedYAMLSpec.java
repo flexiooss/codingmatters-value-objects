@@ -15,6 +15,10 @@ public class ParsedYAMLSpec implements ProcessableYaml {
         this.valueObjects = new ArrayList<>();
     }
 
+    public ParsedYAMLSpec( List<ParsedValueObject> valueObjects ) {
+        this.valueObjects = valueObjects;
+    }
+
     public List<ParsedValueObject> valueObjects() {
         return this.valueObjects;
     }

@@ -3,7 +3,6 @@ package org.codingmatters.value.objects.js.generator.visitor;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.JsFileWriter;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
-import org.codingmatters.value.objects.js.generator.valueObject.JsClassGenerator;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
@@ -24,6 +23,10 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
     public PropertiesDeserializationProcessor( JsFileWriter jsClassGenerator, String typesPackage ) {
         this.write = jsClassGenerator;
         this.typesPackage = typesPackage;
+    }
+
+    public void currentVariable( String currentVariable ) {
+        this.currentVariable = currentVariable;
     }
 
     @Override
@@ -123,6 +126,9 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
                     break;
                 case TZ_DATE_TIME:
                     write.string( "new FlexZonedDateTime( " + currentVariable + " )" );
+                    break;
+                case BOOL:
+                    write.string( currentVariable + " == 'true' ? true : false" );
                     break;
                 default:
                     write.string( currentVariable );
