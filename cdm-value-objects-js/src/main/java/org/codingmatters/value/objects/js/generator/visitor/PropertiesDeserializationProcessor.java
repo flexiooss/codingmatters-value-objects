@@ -127,9 +127,6 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
                 case TZ_DATE_TIME:
                     write.string( "new FlexZonedDateTime( " + currentVariable + " )" );
                     break;
-                case BOOL:
-                    write.string( currentVariable + " == 'true' ? true : false" );
-                    break;
                 default:
                     write.string( currentVariable );
                     break;

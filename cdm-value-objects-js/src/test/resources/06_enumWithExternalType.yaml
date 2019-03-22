@@ -6,3 +6,14 @@ enumProperties:
     $list:
       $enum:
         $type: java.time.DayOfWeek
+  reference:
+    $value-object: org.generated.ref.ExtReferenced
+  referenceList:
+    $list:
+      $value-object: org.generated.ref.ExtReferenced
+  internalReference: $internal
+  internalReferenceList:
+    $list: $internal
+
+internal:
+  toto: string

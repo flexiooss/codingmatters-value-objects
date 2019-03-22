@@ -16,7 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class YamlSpecParserTest {
 
-    private YamlSpecParser parser = new YamlSpecParser();
+    private YamlSpecParser parser = new YamlSpecParser( "org.generated" );
 
     @Test
     public void testEmptyObject() throws SyntaxError {

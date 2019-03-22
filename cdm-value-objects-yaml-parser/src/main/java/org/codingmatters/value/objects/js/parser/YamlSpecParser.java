@@ -19,6 +19,11 @@ public class YamlSpecParser {
 
     public static final ObjectMapper MAPPER = new ObjectMapper( new YAMLFactory() );
     private Stack<String> context;
+    private final String typesPackage;
+
+    public YamlSpecParser( String typesPackage ) {
+        this.typesPackage = typesPackage;
+    }
 
     public ParsedYAMLSpec parse( InputStream inputStream ) throws SyntaxError {
         Map<String, ?> root = null;
@@ -66,7 +71,7 @@ public class YamlSpecParser {
                 if( isPrimitiveType( (String) object ) ){
                     return new ValueObjectTypePrimitiveType( (String) object );
                 } else if( isInternalValueObject( (String) object ) ){
-                    return new ObjectTypeInSpecValueObject( ((String) object).substring( 1 ) );
+                    return new ObjectTypeInSpecValueObject( ((String) object).substring( 1 ), typesPackage );
                 } else {
                     throw new SyntaxError( "Cannot parse this type" );
                 }

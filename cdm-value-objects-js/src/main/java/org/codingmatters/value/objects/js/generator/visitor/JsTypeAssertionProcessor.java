@@ -67,7 +67,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
             write.line( "if( !isNull( " + currentVariable + " )){" );
             write.indent();
             write.string( "assert( " + currentVariable + " instanceof " );
-            write.string( NamingUtility.classFullName( rootPackage + "." + inSpecValueObject.inSpecValueObjectName() ) );
+            write.string( NamingUtility.classFullName( inSpecValueObject.packageName() + "." + inSpecValueObject.inSpecValueObjectName() ) );
             write.string( ", '" + currentVariable + " should be a " );
             jsTypeReferenceProcessor.process( inSpecValueObject );
             write.string( "' );" );

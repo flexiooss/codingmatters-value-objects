@@ -58,13 +58,14 @@ public class Main {
 
     private static void generateSpec( String targetDir, String rootPackage, File specFile, PackageFilesBuilder packageBuilder ) throws ProcessingException {
         File targetDirectory = new File( targetDir );
-        ParsedYAMLSpec spec = loadSpec( specFile.getPath() );
+        ParsedYAMLSpec spec = loadSpec( specFile.getPath(), rootPackage );
         new SpecJsGenerator( spec, rootPackage, targetDirectory ).generate( packageBuilder );
     }
 
-    static private ParsedYAMLSpec loadSpec( String resource ) {
+    static private ParsedYAMLSpec loadSpec( String resource, String typesPackage ) {
         try {
-            return new YamlSpecParser().parse( new FileInputStream( resource ) );
+            YamlSpecParser yamlSpecParser = new YamlSpecParser( typesPackage );
+            return yamlSpecParser.parse( new FileInputStream( resource ) );
         } catch( Exception e ){
             throw new RuntimeException( "error loading spec", e );
         }
