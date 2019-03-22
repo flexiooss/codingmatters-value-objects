@@ -12,6 +12,8 @@ enumProperties:
     $list:
       $value-object: org.generated.ref.ExtReferenced
   internalReference: $internal
+  internalReferenceList:
+    $list: $internal
 
 internal:
   toto: string

@@ -33,7 +33,6 @@ public class ValueObjectTypePrimitiveType implements ValueObjectType {
             try {
                 return YAML_PRIMITIVE_TYPES.valueOf( type.toUpperCase().replace( "-", "_" ) );
             } catch( IllegalArgumentException e ) {
-                System.out.println( "Error not enum " + type );
                 return null;
             }
         }

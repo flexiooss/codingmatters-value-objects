@@ -249,6 +249,11 @@ public class YamlSpecParserTest {
 
         assertThat( value.properties().get( 4 ).name(), is( "internalReference" ) );
         assertThat( ((ObjectTypeInSpecValueObject) value.properties().get( 4 ).type()).inSpecValueObjectName(), is( "internal" ) );
+
+        assertThat( value.properties().get( 5 ).name(), is( "internalReferenceList" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 5 ).type()).name(), is( "EnumPropertiesInternalReferenceListList" ) );
+        assertThat( ((ValueObjectTypeList) value.properties().get( 5 ).type()).namespace(), is( "enumproperties" ) );
+        assertThat( ((ObjectTypeInSpecValueObject) ((ValueObjectTypeList) value.properties().get( 5 ).type()).type()).inSpecValueObjectName(), is( "internal" ) );
     }
 
     @Test
