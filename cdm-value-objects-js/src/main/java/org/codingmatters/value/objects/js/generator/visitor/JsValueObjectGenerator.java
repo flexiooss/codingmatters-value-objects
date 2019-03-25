@@ -87,7 +87,7 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
         try {
             String objectName = NamingUtility.className( list.name() );
             String fileName = objectName + ".js";
-            String targetPackage = this.generationContext.typesPackage() + "." + list.namespace();
+            String targetPackage = list.packageName();
             packageBuilder.addList( targetPackage, objectName );
             File targetDirectory = new File( rootDirectory, targetPackage.replace( ".", "/" ) );
             String targetFile = String.join( "/", targetDirectory.getPath(), fileName );

@@ -9,12 +9,12 @@ public class ValueObjectTypeList implements ValueObjectType {
 
     private final String name;
     private final ValueObjectType type;
-    private final String namespace;
+    private final String packageName;
 
-    public ValueObjectTypeList( String name, ValueObjectType type, String namespace ) {
+    public ValueObjectTypeList( String name, ValueObjectType type, String packageName ) {
         this.type = type;
         this.name = name;
-        this.namespace = NamingUtils.convertToNameSpace( namespace );
+        this.packageName = NamingUtils.convertToNameSpace( packageName );
     }
 
     public ValueObjectType type() {
@@ -25,8 +25,8 @@ public class ValueObjectTypeList implements ValueObjectType {
         return name;
     }
 
-    public String namespace() {
-        return namespace;
+    public String packageName() {
+        return packageName;
     }
 
     @Override

@@ -11,10 +11,12 @@ public class ParsedValueObject implements ProcessableYaml {
 
     private final String name;
     private final List<ValueObjectProperty> properties;
+    private final String packageName;
 
-    public ParsedValueObject( String name ) {
+    public ParsedValueObject( String name, String packageName ) {
         this.properties = new ArrayList<>();
         this.name = name;
+        this.packageName = packageName;
     }
 
     public String name() {
@@ -28,5 +30,9 @@ public class ParsedValueObject implements ProcessableYaml {
     @Override
     public void process( ParsedYamlProcessor processor ) throws ProcessingException {
         processor.process( this );
+    }
+
+    public String packageName() {
+        return packageName;
     }
 }

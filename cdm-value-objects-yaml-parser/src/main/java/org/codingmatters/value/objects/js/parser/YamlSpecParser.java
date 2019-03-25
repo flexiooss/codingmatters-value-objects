@@ -46,7 +46,7 @@ public class YamlSpecParser {
 
     private ParsedValueObject parseValueObject( Map<String, ?> valueSpecs, String valueObjectName ) throws SyntaxError {
         this.context.push( valueObjectName );
-        ParsedValueObject valueObject = new ParsedValueObject( NamingUtils.nestedTypeName( context ) );
+        ParsedValueObject valueObject = new ParsedValueObject( NamingUtils.nestedTypeName( context ), typesPackage );
         Map<String, ?> properties = (Map<String, ?>) valueSpecs.get( valueObjectName );
         if( properties != null ){
             parseProperties( valueObject, properties );
@@ -83,7 +83,7 @@ public class YamlSpecParser {
                 } else if( isExternalValueObject( (Map) object ) ){
                     return new ObjectTypeExternalValue( (String) ((Map) object).get( "$value-object" ) );
                 } else if( isExternalType( (Map) object ) ){
-                    return new ValueObjectTypeExternalType( (String) ((Map) object).get( "$type" )  );
+                    return new ValueObjectTypeExternalType( (String) ((Map) object).get( "$type" ) );
                 } else {
                     return this.parseNestedTypeProperty( (Map) object );
                 }
@@ -129,7 +129,7 @@ public class YamlSpecParser {
         context.push( pop );
         String name = NamingUtils.camelCase( context.get( context.size() - 2 ) ) + NamingUtils.camelCase( context.get( context.size() - 1 ) ) + "List";
         String namespace = NamingUtils.namespace( this.context );
-        return new ValueObjectTypeList( name, type, namespace );
+        return new ValueObjectTypeList( name, type, typesPackage + "." + namespace );
     }
 
     private ValueObjectType parseEnum( Map object ) throws SyntaxError {
@@ -147,7 +147,7 @@ public class YamlSpecParser {
     }
 
     private ValueObjectType parseNestedTypeProperty( Map<String, ?> properties ) throws SyntaxError {
-        ParsedValueObject nestValueObject = new ParsedValueObject( NamingUtils.camelCase( context.peek() ) );
+        ParsedValueObject nestValueObject = new ParsedValueObject( NamingUtils.camelCase( context.peek() ), typesPackage );
         this.parseProperties( nestValueObject, properties );
         return new ObjectTypeNested( nestValueObject, String.join( ".", this.context.subList( this.context.size() - 2, this.context.size() - 1 ) ) );
     }
