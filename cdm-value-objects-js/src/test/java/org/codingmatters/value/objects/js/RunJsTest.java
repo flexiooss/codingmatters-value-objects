@@ -34,14 +34,14 @@ public class RunJsTest {
         // BIND LOCAL SOURCE
         /*
         */
-        processBuilder.command( "yarn", "link", "flexio-jshelpers" );
-        System.out.println( "Running 'yarn link flexio-jshelpers'" );
-        process = processBuilder.start();
-        process.waitFor( 120, TimeUnit.SECONDS );
-        if( process.exitValue() != 0 ){
-            printError( process );
-        }
-        assertThat( process.exitValue(), is( 0 ) );
+//        processBuilder.command( "yarn", "link", "flexio-jshelpers" );
+//        System.out.println( "Running 'yarn link flexio-jshelpers'" );
+//        process = processBuilder.start();
+//        process.waitFor( 120, TimeUnit.SECONDS );
+//        if( process.exitValue() != 0 ){
+//            printError( process );
+//        }
+//        assertThat( process.exitValue(), is( 0 ) );
     }
 
     private static void printError( Process process ) throws IOException {
