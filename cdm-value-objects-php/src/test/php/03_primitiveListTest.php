@@ -1,6 +1,6 @@
 <?php
 
-packageName Test;
+namespace Test;
 
 use PHPUnit\Framework\TestCase;
 use io\flexio\utils\FlexDate;
