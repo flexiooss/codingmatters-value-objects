@@ -204,4 +204,8 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
     public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException {
         throw new NotImplementedException();
     }
+
+    public void currentVariable( String currentVariable ) {
+        this.currentVariable = currentVariable;
+    }
 }

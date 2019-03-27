@@ -9,6 +9,7 @@ import org.codingmatters.value.objects.js.generator.visitor.PropertiesDeserializ
 import org.codingmatters.value.objects.js.generator.visitor.PropertiesSerializationProcessor;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
+import org.codingmatters.value.objects.js.parser.model.types.ValueObjectType;
 
 import java.io.IOException;
 import java.util.List;
@@ -211,6 +212,18 @@ public class JsClassGenerator extends JsFileWriter {
             line( "builder." + accessor + "( instance." + accessor + "() );" );
         }
         line( "return builder;" );
+        line( "}" );
+    }
+
+    public void elementAccessor( ValueObjectType type ) throws IOException, ProcessingException {
+        line( "/**" );
+        line( "* @param {integer} index" );
+        line( "* @returns {" );
+        type.process( jsTypeDescriptor );
+        line( "}" );
+        line( "*/" );
+        line( "get( index ){" );
+        line( "return this[index];" );
         line( "}" );
     }
 }
