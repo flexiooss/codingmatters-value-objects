@@ -218,9 +218,11 @@ public class JsClassGenerator extends JsFileWriter {
     public void elementAccessor( ValueObjectType type ) throws IOException, ProcessingException {
         line( "/**" );
         line( "* @param {integer} index" );
-        line( "* @returns {" );
+        indent();
+        string( "* @returns {" );
         type.process( jsTypeDescriptor );
-        line( "}" );
+        string( "}" );
+        newLine();
         line( "*/" );
         line( "get( index ){" );
         line( "return this[index];" );
