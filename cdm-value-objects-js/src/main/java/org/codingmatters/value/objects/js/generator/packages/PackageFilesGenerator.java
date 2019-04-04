@@ -59,7 +59,8 @@ public class PackageFilesGenerator {
 
     private void comment( String packageName, String classe, JsFileWriter fileWriter ) throws IOException {
         fileWriter.line( "/**" );
-        fileWriter.line( "* @property {" + classe + "} " + String.join( ".", "window[FLEXIO_IMPORT_OBJECT]", packageName, classe ) );
+//        fileWriter.line( "* @property {" + classe + "} " + String.join( ".", "window[FLEXIO_IMPORT_OBJECT]", packageName, classe ) );
+        fileWriter.line( "* @property {" + classe + "} " + classe );
         fileWriter.line( "*/" );
     }
 
