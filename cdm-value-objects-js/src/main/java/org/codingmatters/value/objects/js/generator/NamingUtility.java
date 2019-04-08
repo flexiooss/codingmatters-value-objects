@@ -79,7 +79,10 @@ public class NamingUtility {
     }
 
     public static String responseName( String displayName, String method, String ... parts ) {
-        return className( displayName, method.toLowerCase(), className( parts ), "Response" );
+        if( parts.length > 0){
+            return className( displayName, method.toLowerCase(), className( parts ), "Response" );
+        }
+        return className( displayName, method.toLowerCase(), "Response" );
     }
 
     public static String statusClassName( int code ) {
