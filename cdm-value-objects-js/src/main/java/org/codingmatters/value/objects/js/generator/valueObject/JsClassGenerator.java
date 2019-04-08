@@ -124,6 +124,22 @@ public class JsClassGenerator extends JsFileWriter {
         write.line( "export { " + builderName + "}" );
     }
 
+    public void validateElement( ValueObjectType type ) throws ProcessingException, IOException {
+//        line( "/**" );
+//        indent();
+//        string( "* @param {" );
+//        type.process( jsTypeDescriptor );
+//        string( "} element" );
+//        newLine();
+//        line( "* @protected" );
+//        line( "* @throws Error" );
+//        line( "*/" );
+        line( "_validate( element ){" );
+        jsTypeAssertion.currentVariable( "element" );
+        type.process( jsTypeAssertion );
+        line( "}" );
+    }
+
     public void setters( List<ValueObjectProperty> properties, String builderName ) throws IOException, ProcessingException {
         for( ValueObjectProperty property : properties ){
             String propertyName = propertyName( property.name() );
@@ -226,6 +242,24 @@ public class JsClassGenerator extends JsFileWriter {
         line( "*/" );
         line( "get( index ){" );
         line( "return this[index];" );
+        line( "}" );
+    }
+
+    public void extendGenericTypeJsDoc( ValueObjectType type ) throws IOException, ProcessingException {
+        line( "import {FlexArray} from 'flexio-js-helpers'" );
+        line( "/**" );
+        indent();
+        string( "* @extends {FlexArray<?" );
+        type.process( jsTypeDescriptor );
+        string( ">}" );
+        newLine();
+        line( "*/" );
+
+    }
+
+    public void listConstructor() throws IOException {
+        line( "constructor( ...args ){" );
+        line( "super( ...args );" );
         line( "}" );
     }
 }

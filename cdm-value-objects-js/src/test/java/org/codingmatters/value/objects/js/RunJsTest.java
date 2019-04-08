@@ -67,7 +67,7 @@ public class RunJsTest {
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
         System.out.println( "Running 'yarn test' in " + dir );
         processBuilder.directory( new File( dir ) );
-        processBuilder.command( "yarn", "test", "-v" );
+        processBuilder.command( "hbshed", "test", "-V" );
         Process process = null;
         try {
             process = processBuilder.start();

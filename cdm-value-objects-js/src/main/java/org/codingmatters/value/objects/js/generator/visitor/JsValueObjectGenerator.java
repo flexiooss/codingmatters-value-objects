@@ -94,13 +94,11 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
 
             try( JsClassGenerator write = new JsClassGenerator( targetFile, generationContext.typesPackage() ) ) {
                 String className = NamingUtility.className( list.name() );
-                write.line( "class " + className + " extends Array {" );
-                write.line( "constructor( ...args ){" );
-                write.line( "super( ...args );" );
-                write.line( "}" );
-
+                write.extendGenericTypeJsDoc( list.type() );
+                write.line( "class " + className + " extends FlexArray {" );
+                write.listConstructor();
                 write.elementAccessor( list.type() );
-
+                write.validateElement( list.type() );
                 write.line( "}" );
                 write.line( "export { " + className + " }" );
                 write.flush();

@@ -78,8 +78,8 @@ public class NamingUtility {
         return className( displayName, method.toLowerCase(), "Request" );
     }
 
-    public static String responseName( String displayName, String method ) {
-        return className( displayName, method.toLowerCase(), "Response" );
+    public static String responseName( String displayName, String method, String ... parts ) {
+        return className( displayName, method.toLowerCase(), className( parts ), "Response" );
     }
 
     public static String statusClassName( int code ) {
