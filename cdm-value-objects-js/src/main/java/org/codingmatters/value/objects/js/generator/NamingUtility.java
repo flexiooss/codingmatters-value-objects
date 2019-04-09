@@ -78,8 +78,8 @@ public class NamingUtility {
         return className( displayName, method.toLowerCase(), "Request" );
     }
 
-    public static String responseName( String displayName, String method, String ... parts ) {
-        if( parts.length > 0){
+    public static String responseName( String displayName, String method, String... parts ) {
+        if( parts.length > 0 ){
             return className( displayName, method.toLowerCase(), className( parts ), "Response" );
         }
         return className( displayName, method.toLowerCase(), "Response" );
@@ -91,5 +91,9 @@ public class NamingUtility {
 
     public static String statusProperty( int code ) {
         return "status" + code;
+    }
+
+    public static String getApiName( String apiNameV10 ) {
+        return apiNameV10.toLowerCase().replaceAll( "\\s+", "-" );
     }
 }
