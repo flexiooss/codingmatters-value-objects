@@ -93,6 +93,13 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
             String targetFile = String.join( "/", targetDirectory.getPath(), fileName );
 
             try( JsClassGenerator write = new JsClassGenerator( targetFile, generationContext.typesPackage() ) ) {
+                list.type().process( this );
+                for( String inport : generationContext.imports() ){
+                    write.line( inport );
+                }
+                flexioJsHelpersImport.add( "FlexArray" );
+                String line = "import { " + String.join( ", ", this.flexioJsHelpersImport ) + " } from 'flexio-jshelpers' ";
+                write.line( line );
                 String className = NamingUtility.className( list.name() );
                 write.extendGenericTypeJsDoc( list.type() );
                 write.line( "class " + className + " extends FlexArray {" );

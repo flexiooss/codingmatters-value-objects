@@ -246,7 +246,6 @@ public class JsClassGenerator extends JsFileWriter {
     }
 
     public void extendGenericTypeJsDoc( ValueObjectType type ) throws IOException, ProcessingException {
-        line( "import {FlexArray} from 'flexio-jshelpers'" );
         line( "/**" );
         indent();
         string( "* @extends {FlexArray<?" );
