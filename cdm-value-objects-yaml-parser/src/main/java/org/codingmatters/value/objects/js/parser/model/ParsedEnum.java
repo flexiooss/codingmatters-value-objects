@@ -2,22 +2,16 @@ package org.codingmatters.value.objects.js.parser.model;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
-import org.codingmatters.value.objects.js.parser.processing.ProcessableYaml;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class ParsedValueObject extends ParsedType {
+public class ParsedEnum extends ParsedType {
 
-    private final List<ValueObjectProperty> properties;
+    private final List<String> enumValues;
 
-    public ParsedValueObject( String name, String packageName ) {
+    public ParsedEnum( String name, String packageName, List<String> enumValues ) {
         super( name, packageName );
-        this.properties = new ArrayList<>();
-    }
-
-    public List<ValueObjectProperty> properties() {
-        return this.properties;
+        this.enumValues = enumValues;
     }
 
     @Override
@@ -25,4 +19,7 @@ public class ParsedValueObject extends ParsedType {
         processor.process( this );
     }
 
+    public List<String> enumValues() {
+        return this.enumValues;
+    }
 }

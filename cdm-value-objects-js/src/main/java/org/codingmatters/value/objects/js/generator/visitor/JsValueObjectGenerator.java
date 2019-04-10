@@ -5,15 +5,14 @@ import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.generator.packages.PackageFilesBuilder;
 import org.codingmatters.value.objects.js.generator.valueObject.GenerationContext;
 import org.codingmatters.value.objects.js.generator.valueObject.JsClassGenerator;
-import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
-import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
-import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
+import org.codingmatters.value.objects.js.parser.model.*;
 import org.codingmatters.value.objects.js.parser.model.types.*;
 import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,7 +43,7 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
     @Override
     public void process( ParsedYAMLSpec spec ) throws ProcessingException {
         rootDirectory.mkdirs();
-        for( ParsedValueObject valueObject : spec.valueObjects() ){
+        for( ParsedType valueObject : spec.valueObjects() ){
             valueObject.process( this );
         }
     }
@@ -115,19 +114,29 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
         }
     }
 
-    private void generateEnum( YamlEnumInSpecEnum inSpecEnum ) throws Exception {
+    private void generateInSpecEnum( YamlEnumInSpecEnum inSpecEnum ) throws Exception {
         String objectName = NamingUtility.className( inSpecEnum.name() );
-        String fileName = objectName + ".js";
         String targetPackage = generationContext.typesPackage() + "." + inSpecEnum.namespace();
+        generateEnum( objectName, targetPackage, inSpecEnum.values() );
+    }
+
+    private void generateTypeEnum( ParsedEnum parsedEnum ) throws Exception {
+        String objectName = NamingUtility.className( parsedEnum.name() );
+        String targetPackage = generationContext.typesPackage();
+        generateEnum( objectName, targetPackage, parsedEnum.enumValues() );
+    }
+
+    private void generateEnum( String objectName, String targetPackage, List<String> values ) throws Exception {
         packageBuilder.addList( targetPackage, objectName );
+        String fileName = objectName + ".js";
         File targetDirectory = new File( rootDirectory, targetPackage.replace( ".", "/" ) );
-        String targetFile = String.join( "/", targetDirectory.getPath(), fileName );
-        try( JsClassGenerator write = new JsClassGenerator( targetFile, generationContext.typesPackage() ) ) {
+        File targetFile = new File( targetDirectory, fileName );
+        try( JsClassGenerator write = new JsClassGenerator( targetFile.getPath(), generationContext.typesPackage() ) ) {
             write.line( "import { FlexEnum } from 'flexio-jshelpers'" );
             write.line( "class " + objectName + " extends FlexEnum {" );
             write.line( "}" );
             write.line( objectName + ".initEnum([ " +
-                    String.join( ", ", inSpecEnum.values().stream().map( val->"'" + val + "'" ).collect( Collectors.toList() ) )
+                    String.join( ", ", values.stream().map( val->"'" + val + "'" ).collect( Collectors.toList() ) )
                     + " ]);" );
             write.line( "export { " + objectName + "}" );
         }
@@ -216,7 +225,7 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
     public void process( YamlEnumInSpecEnum inSpecEnum ) throws ProcessingException {
         generationContext.addImport( "import {FLEXIO_IMPORT_OBJECT} from 'flexio-jshelpers'" );
         try {
-            generateEnum( inSpecEnum );
+            generateInSpecEnum( inSpecEnum );
         } catch( Exception e ){
             throw new ProcessingException( "Error processing in spec enum", e );
         }
@@ -226,5 +235,16 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
     public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException {
         throw new NotImplementedException();
     }
+
+    @Override
+    public void process( ParsedEnum parsedEnum ) throws ProcessingException {
+        generationContext.addImport( "import {FLEXIO_IMPORT_OBJECT} from 'flexio-jshelpers'" );
+        try {
+            generateTypeEnum( parsedEnum );
+        } catch( Exception e ){
+            throw new ProcessingException( "Error processing in spec enum", e );
+        }
+    }
+
 
 }

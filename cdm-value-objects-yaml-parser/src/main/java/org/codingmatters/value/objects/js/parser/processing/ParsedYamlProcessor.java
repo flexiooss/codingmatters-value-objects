@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.js.parser.processing;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
+import org.codingmatters.value.objects.js.parser.model.ParsedEnum;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
@@ -28,4 +29,6 @@ public interface ParsedYamlProcessor {
     public void process( YamlEnumInSpecEnum inSpecEnum ) throws ProcessingException;
 
     public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException;
+
+    public void process( ParsedEnum parsedEnum ) throws ProcessingException;
 }

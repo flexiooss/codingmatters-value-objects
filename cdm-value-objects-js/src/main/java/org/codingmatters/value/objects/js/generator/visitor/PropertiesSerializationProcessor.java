@@ -3,6 +3,7 @@ package org.codingmatters.value.objects.js.generator.visitor;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.generator.valueObject.JsClassGenerator;
+import org.codingmatters.value.objects.js.parser.model.ParsedEnum;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
@@ -79,7 +80,7 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ValueObjectTypeList list ) throws ProcessingException {
         try {
-            writer.string( ".map( x=>x" );
+            writer.string( ".mapToArray( x=>x" );
             list.type().process( this );
             writer.string( ")" );
         } catch( IOException e ){
@@ -113,5 +114,14 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException {
         throw new NotImplementedException();
+    }
+
+    @Override
+    public void process( ParsedEnum parsedEnum ) throws ProcessingException {
+        try {
+            writer.string( ".name" );
+        } catch( IOException e ){
+            throw new ProcessingException( "Error processing primitive type: " + currentProperty, e );
+        }
     }
 }

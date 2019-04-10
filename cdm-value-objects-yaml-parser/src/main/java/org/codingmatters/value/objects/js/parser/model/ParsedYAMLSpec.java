@@ -9,17 +9,17 @@ import java.util.List;
 
 public class ParsedYAMLSpec implements ProcessableYaml {
 
-    private final List<ParsedValueObject> valueObjects;
+    private final List<ParsedType> valueObjects;
 
     public ParsedYAMLSpec() {
         this.valueObjects = new ArrayList<>();
     }
 
-    public ParsedYAMLSpec( List<ParsedValueObject> valueObjects ) {
+    public ParsedYAMLSpec( List<ParsedType> valueObjects ) {
         this.valueObjects = valueObjects;
     }
 
-    public List<ParsedValueObject> valueObjects() {
+    public List<ParsedType> valueObjects() {
         return this.valueObjects;
     }
 

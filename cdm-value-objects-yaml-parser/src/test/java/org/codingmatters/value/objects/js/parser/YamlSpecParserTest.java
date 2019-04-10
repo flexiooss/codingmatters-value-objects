@@ -24,7 +24,7 @@ public class YamlSpecParserTest {
         ParsedYAMLSpec spec = parser.parse( resource );
         assertThat( spec.valueObjects().size(), is( 1 ) );
         assertThat( spec.valueObjects().get( 0 ).name(), is( "EmptyObject" ) );
-        assertThat( spec.valueObjects().get( 0 ).properties().size(), is( 0 ) );
+        assertThat( ((ParsedValueObject) spec.valueObjects().get( 0 )).properties().size(), is( 0 ) );
     }
 
     @Test
@@ -32,7 +32,7 @@ public class YamlSpecParserTest {
         InputStream resource = loadSpec( "02_simpleObjectWithPrimitiveProperties.yaml" );
         ParsedYAMLSpec spec = parser.parse( resource );
         assertThat( spec.valueObjects().size(), is( 1 ) );
-        ParsedValueObject value = spec.valueObjects().get( 0 );
+        ParsedValueObject value = (ParsedValueObject) spec.valueObjects().get( 0 );
         assertThat( value.name(), is( "PrimitiveProps" ) );
 
         assertThat( value.properties().get( 0 ).name(), is( "stringProp" ) );
@@ -74,7 +74,7 @@ public class YamlSpecParserTest {
         InputStream resource = loadSpec( "03_simpleObjectWithPrimitiveList.yaml" );
         ParsedYAMLSpec spec = parser.parse( resource );
         assertThat( spec.valueObjects().size(), is( 1 ) );
-        ParsedValueObject value = spec.valueObjects().get( 0 );
+        ParsedValueObject value = (ParsedValueObject) spec.valueObjects().get( 0 );
 
         assertThat( value.properties().get( 0 ).name(), is( "stringList" ) );
         assertThat( ((ValueObjectTypeList) value.properties().get( 0 ).type()).name(), is( "ArraySimplePropsStringListList" ) );
@@ -183,7 +183,7 @@ public class YamlSpecParserTest {
         InputStream resource = loadSpec( "04_objectWithEmbeddedValueSpec.yaml" );
         ParsedYAMLSpec spec = parser.parse( resource );
         assertThat( spec.valueObjects().size(), is( 1 ) );
-        ParsedValueObject value = spec.valueObjects().get( 0 );
+        ParsedValueObject value = (ParsedValueObject) spec.valueObjects().get( 0 );
 
         assertThat( value.properties().get( 0 ).name(), is( "complexProps" ) );
         assertThat( ((ObjectTypeNested) value.properties().get( 0 ).type()).namespace(), is( "complextype" ) );
@@ -209,7 +209,7 @@ public class YamlSpecParserTest {
         InputStream resource = loadSpec( "05_objectWithInSpecEnum.yaml" );
         ParsedYAMLSpec spec = parser.parse( resource );
         assertThat( spec.valueObjects().size(), is( 1 ) );
-        ParsedValueObject value = spec.valueObjects().get( 0 );
+        ParsedValueObject value = (ParsedValueObject) spec.valueObjects().get( 0 );
 
         assertThat( value.properties().get( 0 ).name(), is( "single" ) );
         assertThat( ((YamlEnumInSpecEnum) value.properties().get( 0 ).type()).name(), is( "InSpecEnumPropertiesSingle" ) );
@@ -229,7 +229,7 @@ public class YamlSpecParserTest {
         InputStream resource = loadSpec( "06_enumWithExternalType.yaml" );
         ParsedYAMLSpec spec = parser.parse( resource );
         assertThat( spec.valueObjects().size(), is( 2 ) );
-        ParsedValueObject value = spec.valueObjects().get( 0 );
+        ParsedValueObject value = (ParsedValueObject) spec.valueObjects().get( 0 );
 
         assertThat( value.properties().get( 0 ).name(), is( "single" ) );
         assertThat( ((YamlEnumExternalEnum) value.properties().get( 0 ).type()).enumReference(), is( "java.time.DayOfWeek" ) );
@@ -261,7 +261,7 @@ public class YamlSpecParserTest {
         InputStream resource = loadSpec( "07_enumListInEmbeddedSpec.yaml" );
         ParsedYAMLSpec spec = parser.parse( resource );
         assertThat( spec.valueObjects().size(), is( 1 ) );
-        ParsedValueObject value = spec.valueObjects().get( 0 );
+        ParsedValueObject value = (ParsedValueObject) spec.valueObjects().get( 0 );
         Stack<String> context = new Stack<>();
         context.push( "enumListInEmbedded" );
         context.push( "complexProperty" );
@@ -289,7 +289,7 @@ public class YamlSpecParserTest {
         InputStream resource = loadSpec( "08_propertiesWithExternalType.yaml" );
         ParsedYAMLSpec spec = parser.parse( resource );
         assertThat( spec.valueObjects().size(), is( 1 ) );
-        ParsedValueObject value = spec.valueObjects().get( 0 );
+        ParsedValueObject value = (ParsedValueObject) spec.valueObjects().get( 0 );
 
         assertThat( value.properties().get( 0 ).name(), is( "prop" ) );
         assertThat( ((ValueObjectTypeExternalType) value.properties().get( 0 ).type()).typeReference(), is( "org.generated.PrimitiveProps" ) );

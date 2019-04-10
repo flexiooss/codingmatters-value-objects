@@ -3,6 +3,7 @@ package org.codingmatters.value.objects.js.generator.visitor;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.generator.valueObject.JsClassGenerator;
+import org.codingmatters.value.objects.js.parser.model.ParsedEnum;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
@@ -131,5 +132,14 @@ public class JsTypeReferenceProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException {
         throw new NotImplementedException();
+    }
+
+    @Override
+    public void process( ParsedEnum parsedEnum ) throws ProcessingException {
+        try {
+            write.string( parsedEnum.name() );
+        } catch( IOException e ){
+            throw new ProcessingException( "Error Processing type", e );
+        }
     }
 }

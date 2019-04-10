@@ -3,6 +3,7 @@ package org.codingmatters.value.objects.js.generator.visitor;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.generator.valueObject.JsClassGenerator;
+import org.codingmatters.value.objects.js.parser.model.ParsedEnum;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
@@ -203,6 +204,23 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException {
         throw new NotImplementedException();
+    }
+
+    @Override
+    public void process( ParsedEnum parsedEnum ) throws ProcessingException {
+        try {
+            write.line( "if( !isNull( " + currentVariable + " )){" );
+            write.indent();
+            write.string( "assert( " + currentVariable + " instanceof " );
+            write.string( NamingUtility.classFullName( parsedEnum.packageName() + "." + parsedEnum.name() ) );
+            write.string( ", '" + currentVariable + " should be a " );
+            jsTypeReferenceProcessor.process( parsedEnum );
+            write.string( "' );" );
+            write.newLine();
+            write.line( "}" );
+        } catch( IOException e ){
+            throw new ProcessingException( "Error processing assertion", e );
+        }
     }
 
     public void currentVariable( String currentVariable ) {

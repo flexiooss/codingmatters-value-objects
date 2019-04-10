@@ -9,8 +9,8 @@ public class YamlEnumExternalEnum implements YamlEnum {
 
     private final String enumReference;
 
-    public YamlEnumExternalEnum( String enumValue ) {
-        this.enumReference = enumValue;
+    public YamlEnumExternalEnum( String enumReference ) {
+        this.enumReference = enumReference;
     }
 
     public String enumReference() {
