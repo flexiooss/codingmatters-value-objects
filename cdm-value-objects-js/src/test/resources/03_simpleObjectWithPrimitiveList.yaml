@@ -1,0 +1,42 @@
+arraySimpleProps:
+  stringList:
+    $list: string
+  integerList:
+    $list: int
+  longList:
+    $list: long
+  floatList:
+    $list: float
+  doubleList:
+    $list: double
+  booleanList:
+    $list: bool
+  dateList:
+    $list: date
+  timeList:
+    $list: time
+  dateTimeList:
+    $list: date-time
+  tzDateTimeList:
+    $list: tz-date-time
+
+  stringSet:
+    $set: string
+  integerSet:
+    $set: int
+  longSet:
+    $set: long
+  floatSet:
+    $set: float
+  doubleSet:
+    $set: double
+  booleanSet:
+    $set: bool
+  dateSet:
+    $set: date
+  timeSet:
+    $set: time
+  dateTimeSet:
+    $set: date-time
+  tzDateTimeSet:
+    $set: tz-date-time

@@ -1,0 +1,6 @@
+valueObjectProps:
+  prop:
+    $value-object: org.generated.PrimitiveProps
+  propList:
+    $list:
+      $value-object: org.generated.PrimitiveProps

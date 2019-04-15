@@ -1,0 +1,21 @@
+{
+  "name": "value-object-js-tests",
+  "hotballoon-shed": {
+    "build": {
+      "builder": "webpack4",
+      "entries": [
+        "src/main/js/bootstrap.js"
+      ],
+      "html_template": "src/main/js/index.html",
+      "output": "./dist"
+    },
+    "test": {
+      "tester": "code-altimeter-js",
+      "path": "__tests__"
+    }
+  },
+  "dependencies": {
+    "flexio-jshelpers": "https://github.com/flexiooss/flexio-jshelpers.git",
+    "code-altimeter-js": "https://github.com/flexiooss/code-altimeter-js.git"
+  }
+}
