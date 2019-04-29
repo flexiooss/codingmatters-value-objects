@@ -69,7 +69,7 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ObjectTypeInSpecValueObject inSpecValueObject ) throws ProcessingException {
         try {
-            String builderName = NamingUtility.builderFullName( typesPackage + "." + inSpecValueObject.inSpecValueObjectName() );
+            String builderName = NamingUtility.builderFullName( inSpecValueObject.packageName() + "." + inSpecValueObject.inSpecValueObjectName() );
             write.string( builderName + ".fromObject( " + currentVariable + " ).build()" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );
