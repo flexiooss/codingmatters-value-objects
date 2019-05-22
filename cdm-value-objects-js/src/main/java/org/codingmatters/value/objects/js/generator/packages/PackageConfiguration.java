@@ -2,32 +2,29 @@ package org.codingmatters.value.objects.js.generator.packages;
 
 import org.codingmatters.value.objects.js.generator.GenerationException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class PackageConfiguration {
 
     private final String name;
     private final PackageConfiguration parent;
-    private final List<PackageConfiguration> subPackages;
-    private final List<String> classes;
-    private final List<String> lists;
+    private final Set<PackageConfiguration> subPackages;
+    private final Set<String> classes;
+    private final Set<String> lists;
 
     public PackageConfiguration( PackageConfiguration parent, String name ) {
         if( name.contains( "." ) ){
             String[] packageParts = name.split( "\\." );
             this.name = packageParts[0];
-            this.subPackages = new ArrayList<>();
+            this.subPackages = new HashSet<>();
             String[] elements = Arrays.copyOfRange( packageParts, 1, packageParts.length );
             subPackages.add( new PackageConfiguration( this, String.join( ".", elements ) ) );
         } else {
             this.name = name;
-            this.subPackages = new ArrayList<>();
+            this.subPackages = new HashSet<>();
         }
-        this.lists = new ArrayList<>();
-        this.classes = new ArrayList<>();
+        this.lists = new HashSet<>();
+        this.classes = new HashSet<>();
         this.parent = parent;
     }
 
