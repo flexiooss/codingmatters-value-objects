@@ -29,7 +29,7 @@ public class PackageFilesGenerator {
     private void generatePackageFile( PackageConfiguration rootPackage ) throws GenerationException {
         String targetFile = targetDirectory + "/" + rootPackage.fullName().replace( ".", "/" ) + "/package.js";
         try( JsFileWriter fileWriter = new JsFileWriter( targetFile ) ) {
-            fileWriter.line( "import{ FLEXIO_IMPORT_OBJECT, deepKeyAssigner } from 'flexio-jshelpers' " );
+            fileWriter.line( "import{ globalScope, FLEXIO_IMPORT_OBJECT, deepKeyAssigner } from 'flexio-jshelpers' " );
 
             for( String className : rootPackage.classes() ){
                 String builder = className + "Builder";
@@ -59,14 +59,14 @@ public class PackageFilesGenerator {
 
     private void comment( String packageName, String classe, JsFileWriter fileWriter ) throws IOException {
         fileWriter.line( "/**" );
-//        fileWriter.line( "* @property {" + classe + "} " + String.join( ".", "window[FLEXIO_IMPORT_OBJECT]", packageName, classe ) );
+//        fileWriter.line( "* @property {" + classe + "} " + String.join( ".", "globalScope[FLEXIO_IMPORT_OBJECT]", packageName, classe ) );
         fileWriter.line( "* @property {" + classe + "} " + classe );
         fileWriter.line( "*/" );
     }
 
     private void line( PackageConfiguration rootPackage, String classe, JsFileWriter fileWriter ) throws IOException {
         comment( rootPackage.fullName(), classe, fileWriter );
-        fileWriter.line( "deepKeyAssigner( window[FLEXIO_IMPORT_OBJECT], '" + rootPackage.fullName() + "." + classe + "' ," + classe + " );" );
+        fileWriter.line( "deepKeyAssigner( globalScope[FLEXIO_IMPORT_OBJECT], '" + rootPackage.fullName() + "." + classe + "' ," + classe + " );" );
     }
 
 }

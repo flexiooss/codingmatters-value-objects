@@ -22,9 +22,15 @@ public class PhpTypedList {
                 typeRef = String.join( ".", listProperty.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() );
                 listSpec.addImport( typeRef );
             } else {
-                typeRef = listProperty.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef();
-                if( listProperty.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() != TypeKind.JAVA_TYPE ) {
-                    listSpec.addImport( typeRef );
+                if( listProperty.typeSpec().embeddedValueSpec() != null ) {
+                    typeRef = listProperty.typeSpec().embeddedValueSpec().propertySpecs().get(0).typeSpec().typeRef();
+                    if( listProperty.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() != TypeKind.JAVA_TYPE ) {
+                        listSpec.addImport( typeRef );
+                    }
+                }else {
+                    if( listProperty.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT ){
+                        listSpec.addImport( typeRef );
+                    }
                 }
             }
         }
