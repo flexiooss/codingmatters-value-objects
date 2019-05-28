@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class JsFileWriter implements AutoCloseable {
 
-    public static final String INDENTATION_UNITY = "    ";
+    public static final String INDENTATION_UNITY = "  ";
     protected BufferedWriter writer;
     protected int indent;
 
