@@ -16,10 +16,10 @@ class InSpecEnumTest extends TestCase {
         );
         let inSpecEnum = builder.build();
 
-        assert.equal( inSpecEnum.single().name, "SA" );
-        assert.equal( inSpecEnum.multiple()[0].name, "MB" );
-        assert.equal( inSpecEnum.multiple()[1].name, "MC" );
-        assert.equal( inSpecEnum.multiple().length, 2 );
+        assert.strictEqual( inSpecEnum.single().name, "SA" );
+        assert.strictEqual( inSpecEnum.multiple()[0].name, "MB" );
+        assert.strictEqual( inSpecEnum.multiple()[1].name, "MC" );
+        assert.strictEqual( inSpecEnum.multiple().length, 2 );
     }
 
     testObjectImmutable(){
@@ -61,16 +61,16 @@ class InSpecEnumTest extends TestCase {
                     )
                 );
         let inSpecEnum = builder.build();
-        assert.equal( JSON.stringify( inSpecEnum ), "{\"single\":\"SA\",\"multiple\":[\"MB\",\"MC\"]}" );
+        assert.strictEqual( JSON.stringify( inSpecEnum ), "{\"single\":\"SA\",\"multiple\":[\"MB\",\"MC\"]}" );
     }
 
     testDeserialization(){
         let json = "{\"single\":\"SA\",\"multiple\":[\"MB\",\"MC\"]}";
         let inSpecEnum = globalFlexioImport.org.generated.InSpecEnumPropertiesBuilder.fromJson( json ).build();
-        assert.equal( inSpecEnum.single().name, "SA" );
-        assert.equal( inSpecEnum.multiple()[0].name, "MB" );
-        assert.equal( inSpecEnum.multiple()[1].name, "MC" );
-        assert.equal( inSpecEnum.multiple().length, 2 );
+        assert.strictEqual( inSpecEnum.single().name, "SA" );
+        assert.strictEqual( inSpecEnum.multiple()[0].name, "MB" );
+        assert.strictEqual( inSpecEnum.multiple()[1].name, "MC" );
+        assert.strictEqual( inSpecEnum.multiple().length, 2 );
     }
 }
 

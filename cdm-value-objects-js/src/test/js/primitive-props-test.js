@@ -19,13 +19,13 @@ class PrimitivePropsTest extends TestCase {
 
         let primitiveProp = builder.build();
 
-        assert.equal( primitiveProp.stringProp(), "str" );
-        assert.equal( primitiveProp.bytesProp(), "bytes" );
-        assert.equal( primitiveProp.integerProp(), 9 );
-        assert.equal( primitiveProp.longProp(), 7 );
-        assert.equal( primitiveProp.floatProp(), 9.7 );
-        assert.equal( primitiveProp.doubleProp(), 7.9 );
-        assert.equal( primitiveProp.booleanProp(), true );
+        assert.strictEqual( primitiveProp.stringProp(), "str" );
+        assert.strictEqual( primitiveProp.bytesProp(), "bytes" );
+        assert.strictEqual( primitiveProp.integerProp(), 9 );
+        assert.strictEqual( primitiveProp.longProp(), 7 );
+        assert.strictEqual( primitiveProp.floatProp(), 9.7 );
+        assert.strictEqual( primitiveProp.doubleProp(), 7.9 );
+        assert.strictEqual( primitiveProp.booleanProp(), true );
     }
 
     testWithMethod(){
@@ -39,10 +39,10 @@ class PrimitivePropsTest extends TestCase {
         builder.booleanProp( true );
         let primitiveProp = builder.build();
 
-        assert.equal( primitiveProp.stringProp(), "str" );
+        assert.strictEqual( primitiveProp.stringProp(), "str" );
         let primitiveProp2 = primitiveProp.withStringProp( "str2" );
-        assert.equal( primitiveProp.stringProp(), "str" );
-        assert.equal( primitiveProp2.stringProp(), "str2" );
+        assert.strictEqual( primitiveProp.stringProp(), "str" );
+        assert.strictEqual( primitiveProp2.stringProp(), "str2" );
     }
 
     testObjectImmutable() {
@@ -81,27 +81,27 @@ class PrimitivePropsTest extends TestCase {
         builder.dateTimeProp( new FlexDateTime( "2019-01-09T14:17:32" ) );
         builder.tzDateTimeProp( new FlexZonedDateTime( "2019-01-09T14:17:32-03:00" ) );
         let primitiveProp = builder.build();
-        assert.equal( JSON.stringify( primitiveProp ), "{\"stringProp\":\"str\",\"bytesProp\":\"bytes\",\"integerProp\":9,\"longProp\":7,\"floatProp\":9.7,\"doubleProp\":7.9,\"booleanProp\":true,\"date-prop\":\"2019-01-09\",\"timeProp\":\"14:17:32\",\"dateTimeProp\":\"2019-01-09T14:17:32\",\"tzDateTimeProp\":\"2019-01-09T14:17:32-03:00\"}" );
+        assert.strictEqual( JSON.stringify( primitiveProp ), "{\"stringProp\":\"str\",\"bytesProp\":\"bytes\",\"integerProp\":9,\"longProp\":7,\"floatProp\":9.7,\"doubleProp\":7.9,\"booleanProp\":true,\"date-prop\":\"2019-01-09\",\"timeProp\":\"14:17:32\",\"dateTimeProp\":\"2019-01-09T14:17:32\",\"tzDateTimeProp\":\"2019-01-09T14:17:32-03:00\"}" );
     }
 
     testDeserialization() {
         let json = "{\"stringProp\":\"str\",\"bytesProp\":\"bytes\",\"integerProp\":9,\"longProp\":7,\"floatProp\":9.7,\"doubleProp\":7.9,\"booleanProp\":true,\"date-prop\":\"2019-01-09\",\"timeProp\":\"14:17:32\",\"dateTimeProp\":\"2019-01-09T14:17:32\",\"tzDateTimeProp\":\"2019-01-09T14:17:32-03:00\"}";
         let primitiveProp = globalFlexioImport.org.generated.PrimitivePropsBuilder.fromJson( json ).build();
-        assert.equal( primitiveProp.stringProp() , "str" );
-        assert.equal( primitiveProp.bytesProp() , "bytes" );
-        assert.equal( primitiveProp.integerProp() , 9 );
-        assert.equal( primitiveProp.longProp() , 7 );
-        assert.equal( primitiveProp.floatProp() , 9.7 );
-        assert.equal( primitiveProp.doubleProp() , 7.9 );
-        assert.equal( primitiveProp.booleanProp() , true );
-        assert.equal( primitiveProp.dateProp().toJSON() ,"2019-01-09" );
-        assert.equal( primitiveProp.timeProp().toJSON() , "14:17:32" );
-        assert.equal( primitiveProp.dateTimeProp().toJSON() , "2019-01-09T14:17:32" );
-        assert.equal( primitiveProp.tzDateTimeProp().toJSON() ,  "2019-01-09T14:17:32-03:00" );
-        assert.equal( typeof(primitiveProp.tzDateTimeProp() ), "object" );
-        assert.equal( typeof(primitiveProp.dateTimeProp() ), "object" );
-        assert.equal( typeof(primitiveProp.dateProp() ), "object" );
-        assert.equal( typeof(primitiveProp.timeProp() ), "object" );
+        assert.strictEqual( primitiveProp.stringProp() , "str" );
+        assert.strictEqual( primitiveProp.bytesProp() , "bytes" );
+        assert.strictEqual( primitiveProp.integerProp() , 9 );
+        assert.strictEqual( primitiveProp.longProp() , 7 );
+        assert.strictEqual( primitiveProp.floatProp() , 9.7 );
+        assert.strictEqual( primitiveProp.doubleProp() , 7.9 );
+        assert.strictEqual( primitiveProp.booleanProp() , true );
+        assert.strictEqual( primitiveProp.dateProp().toJSON() ,"2019-01-09" );
+        assert.strictEqual( primitiveProp.timeProp().toJSON() , "14:17:32" );
+        assert.strictEqual( primitiveProp.dateTimeProp().toJSON() , "2019-01-09T14:17:32" );
+        assert.strictEqual( primitiveProp.tzDateTimeProp().toJSON() ,  "2019-01-09T14:17:32-03:00" );
+        assert.strictEqual( typeof(primitiveProp.tzDateTimeProp() ), "object" );
+        assert.strictEqual( typeof(primitiveProp.dateTimeProp() ), "object" );
+        assert.strictEqual( typeof(primitiveProp.dateProp() ), "object" );
+        assert.strictEqual( typeof(primitiveProp.timeProp() ), "object" );
     }
 
 }

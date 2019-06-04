@@ -79,16 +79,16 @@ class ComplexType extends TestCase {
         builder.testIsOk( true );
         let complexType = builder.build();
 
-        assert.equal( JSON.stringify( prop ), "{\"string-prop\":\"toto\",\"intList\":[4,7,5]}" );
-        assert.equal( JSON.stringify( complexType ), "{\"complexProps\":{\"string-prop\":\"toto\",\"intList\":[4,7,5]},\"test-is-ok\":true,\"foo\":1}" );
+        assert.strictEqual( JSON.stringify( prop ), "{\"string-prop\":\"toto\",\"intList\":[4,7,5]}" );
+        assert.strictEqual( JSON.stringify( complexType ), "{\"complexProps\":{\"string-prop\":\"toto\",\"intList\":[4,7,5]},\"test-is-ok\":true,\"foo\":1}" );
     }
 
     testDeserialization() {
         let json = "{\"complexProps\":{\"string-prop\":\"toto\",\"intList\":[4,7,5]},\"test-is-ok\":true,\"foo\":2.1}";
         let complexType = globalFlexioImport.org.generated.ComplexTypeBuilder.fromJson( json ).build();
-        assert.equal( complexType.testIsOk(), true );
-        assert.equal( complexType.foo(), 2.1 );
-        assert.equal( complexType.complexProps().stringProp(), "toto" );
+        assert.strictEqual( complexType.testIsOk(), true );
+        assert.strictEqual( complexType.foo(), 2.1 );
+        assert.strictEqual( complexType.complexProps().stringProp(), "toto" );
         assert.deepEqual( complexType.complexProps().intList(), [4, 7, 5] );
     }
 

@@ -13,13 +13,13 @@ class EmptyObjectTest extends TestCase {
 
     testSerialization() {
         let myEmptyObject = new globalFlexioImport.org.generated.EmptyObject();
-        assert.equal( JSON.stringify(myEmptyObject),  "{}" );
+        assert.strictEqual( JSON.stringify(myEmptyObject),  "{}" );
     }
 
     testDeserialization() {
         let myEmptyObject = globalFlexioImport.org.generated.EmptyObjectBuilder.fromJson("{}");
         assert.notEqual( myEmptyObject, null );
-        assert.equal( JSON.stringify(myEmptyObject), "{}" );
+        assert.strictEqual( JSON.stringify(myEmptyObject), "{}" );
     }
 
     testObjectImmutable() {
