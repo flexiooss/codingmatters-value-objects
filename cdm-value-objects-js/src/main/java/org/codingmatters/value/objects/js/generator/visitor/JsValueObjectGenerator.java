@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 public class JsValueObjectGenerator implements ParsedYamlProcessor {
 
     private final File rootDirectory;
@@ -73,17 +72,8 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
             for (ValueObjectProperty property : valueObject.properties()) {
                 property.process(this);
             }
-            for (String inport : generationContext.imports()) {
-                write.line(inport);
-            }
-            if (!this.flexioAssertImport.isEmpty()) {
-                String line = "import { " + String.join(", ", this.flexioAssertImport) + " } from '@flexio-oss/assert' ";
-                write.line(line);
-            }
-            if (!this.flexioGeneratorHelperImport.isEmpty()) {
-                String line = "import { " + String.join(", ", this.flexioGeneratorHelperImport) + " } from '@flexio-oss/js-generator-helpers' ";
-                write.line(line);
-            }
+            this.writeImports(write);
+
             write.newLine();
             write.valueObjectClass(valueObject, objectName, write);
             write.newLine();
@@ -103,12 +93,9 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
 
             try (JsClassGenerator write = new JsClassGenerator(targetFile, generationContext.typesPackage())) {
                 list.type().process(this);
-                for (String inport : generationContext.imports()) {
-                    write.line(inport);
-                }
                 flexioTypesImport.add("FlexArray");
-                String line = "import { " + String.join(", ", this.flexioTypesImport) + " } from '@flexio-oss/flex-types' ";
-                write.line(line);
+                this.writeImports(write);
+
                 String className = NamingUtility.className(list.name());
                 write.extendGenericTypeJsDoc(list.type());
                 write.line("class " + className + " extends FlexArray {");
@@ -152,8 +139,27 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
         }
     }
 
+    private void writeImports(JsClassGenerator write) throws Exception {
+        for (String inport : generationContext.imports()) {
+            write.line(inport);
+        }
+        if (!this.flexioAssertImport.isEmpty()) {
+            String line = "import { " + String.join(", ", this.flexioAssertImport) + " } from '@flexio-oss/assert' ";
+            write.line(line);
+        }
+        if (!this.flexioGeneratorHelperImport.isEmpty()) {
+            String line = "import { " + String.join(", ", this.flexioGeneratorHelperImport) + " } from '@flexio-oss/js-generator-helpers' ";
+            write.line(line);
+        }
+        if (!this.flexioTypesImport.isEmpty()) {
+            String line = "import { " + String.join(", ", this.flexioTypesImport) + " } from '@flexio-oss/flex-types' ";
+            write.line(line);
+        }
+    }
+
     @Override
     public void process(ValueObjectProperty property) throws ProcessingException {
+        generationContext.addImport("import { globalFlexioImport } from '@flexio-oss/global-import-registry'");
         property.type().process(this);
     }
 
@@ -176,8 +182,6 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
 
     @Override
     public void process(ValueObjectTypeList list) throws ProcessingException {
-        generationContext.addImport("import { globalFlexioImport } from '@flexio-oss/global-import-registry'");
-
         list.type().process(this);
         generateList(list);
     }

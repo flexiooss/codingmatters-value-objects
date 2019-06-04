@@ -1,12 +1,14 @@
 import {TestCase} from 'code-altimeter-js'
-const assert = require('assert')
-import {FLEXIO_IMPORT_OBJECT, FlexDate, FlexDateTime, FlexTime, FlexZonedDateTime} from 'flexio-jshelpers'
 import "../org/package"
+import { globalFlexioImport } from '@flexio-oss/global-import-registry'
+import {FlexDate, FlexDateTime, FlexTime, FlexZonedDateTime} from '@flexio-oss/flex-types'
+
+const assert = require('assert')
 
 class PrimitivePropsTest extends TestCase {
 
     testBuilder() {
-        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.PrimitivePropsBuilder();
+        let builder = new globalFlexioImport.org.generated.PrimitivePropsBuilder();
         builder.stringProp( "str" );
         builder.bytesProp( "bytes" );
         builder.integerProp( 9 );
@@ -15,7 +17,7 @@ class PrimitivePropsTest extends TestCase {
         builder.doubleProp( 7.9 );
         builder.booleanProp( true );
 
-        var primitiveProp = builder.build();
+        let primitiveProp = builder.build();
 
         assert.equal( primitiveProp.stringProp(), "str" );
         assert.equal( primitiveProp.bytesProp(), "bytes" );
@@ -27,7 +29,7 @@ class PrimitivePropsTest extends TestCase {
     }
 
     testWithMethod(){
-        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.PrimitivePropsBuilder();
+        let builder = new globalFlexioImport.org.generated.PrimitivePropsBuilder();
         builder.stringProp( "str" );
         builder.bytesProp( "bytes" );
         builder.integerProp( 9 );
@@ -35,19 +37,19 @@ class PrimitivePropsTest extends TestCase {
         builder.floatProp( 9.7 );
         builder.doubleProp( 7.9 );
         builder.booleanProp( true );
-        var primitiveProp = builder.build();
+        let primitiveProp = builder.build();
 
         assert.equal( primitiveProp.stringProp(), "str" );
-        var primitiveProp2 = primitiveProp.withStringProp( "str2" );
+        let primitiveProp2 = primitiveProp.withStringProp( "str2" );
         assert.equal( primitiveProp.stringProp(), "str" );
         assert.equal( primitiveProp2.stringProp(), "str2" );
     }
 
     testObjectImmutable() {
-        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.PrimitivePropsBuilder();
+        let builder = new globalFlexioImport.org.generated.PrimitivePropsBuilder();
         builder.stringProp( "str" )
 
-        var primitiveProp = builder.build()
+        let primitiveProp = builder.build()
 
         assert.throws(() => {
             primitiveProp.floatProp = 12.5
@@ -55,10 +57,10 @@ class PrimitivePropsTest extends TestCase {
     }
 
     testObjectFrozen() {
-        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.PrimitivePropsBuilder();
+        let builder = new globalFlexioImport.org.generated.PrimitivePropsBuilder();
         builder.stringProp( "str" )
 
-        var primitiveProp = builder.build()
+        let primitiveProp = builder.build()
 
         assert.throws(() => {
             primitiveProp.newProp = 12.5
@@ -66,7 +68,7 @@ class PrimitivePropsTest extends TestCase {
     }
 
     testSerialization() {
-        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.PrimitivePropsBuilder();
+        let builder = new globalFlexioImport.org.generated.PrimitivePropsBuilder();
         builder.stringProp( "str" );
         builder.bytesProp( "bytes" );
         builder.integerProp( 9 );
@@ -78,13 +80,13 @@ class PrimitivePropsTest extends TestCase {
         builder.timeProp( new FlexTime( "14:17:32" ) );
         builder.dateTimeProp( new FlexDateTime( "2019-01-09T14:17:32" ) );
         builder.tzDateTimeProp( new FlexZonedDateTime( "2019-01-09T14:17:32-03:00" ) );
-        var primitiveProp = builder.build();
+        let primitiveProp = builder.build();
         assert.equal( JSON.stringify( primitiveProp ), "{\"stringProp\":\"str\",\"bytesProp\":\"bytes\",\"integerProp\":9,\"longProp\":7,\"floatProp\":9.7,\"doubleProp\":7.9,\"booleanProp\":true,\"date-prop\":\"2019-01-09\",\"timeProp\":\"14:17:32\",\"dateTimeProp\":\"2019-01-09T14:17:32\",\"tzDateTimeProp\":\"2019-01-09T14:17:32-03:00\"}" );
     }
 
     testDeserialization() {
-        var json = "{\"stringProp\":\"str\",\"bytesProp\":\"bytes\",\"integerProp\":9,\"longProp\":7,\"floatProp\":9.7,\"doubleProp\":7.9,\"booleanProp\":true,\"date-prop\":\"2019-01-09\",\"timeProp\":\"14:17:32\",\"dateTimeProp\":\"2019-01-09T14:17:32\",\"tzDateTimeProp\":\"2019-01-09T14:17:32-03:00\"}";
-        var primitiveProp = window[FLEXIO_IMPORT_OBJECT].org.generated.PrimitivePropsBuilder.fromJson( json ).build();
+        let json = "{\"stringProp\":\"str\",\"bytesProp\":\"bytes\",\"integerProp\":9,\"longProp\":7,\"floatProp\":9.7,\"doubleProp\":7.9,\"booleanProp\":true,\"date-prop\":\"2019-01-09\",\"timeProp\":\"14:17:32\",\"dateTimeProp\":\"2019-01-09T14:17:32\",\"tzDateTimeProp\":\"2019-01-09T14:17:32-03:00\"}";
+        let primitiveProp = globalFlexioImport.org.generated.PrimitivePropsBuilder.fromJson( json ).build();
         assert.equal( primitiveProp.stringProp() , "str" );
         assert.equal( primitiveProp.bytesProp() , "bytes" );
         assert.equal( primitiveProp.integerProp() , 9 );

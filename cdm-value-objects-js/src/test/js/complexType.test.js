@@ -21,8 +21,7 @@ class ComplexType extends TestCase {
         assert.strictEqual( complexType.testIsOk(), true );
         assert.strictEqual( complexType.foo(), 1 );
         assert.strictEqual( complexType.complexProps().stringProp(), "toto" );
-        assert.strictDeepEqual( complexType.complexProps().intList(), [4, 7, 5] );
-        console.log("plokoko")
+        assert.deepEqual( complexType.complexProps().intList(), [4, 7, 5] );
     }
 
     testObjectImmutable() {
