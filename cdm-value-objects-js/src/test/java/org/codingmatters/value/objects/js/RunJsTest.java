@@ -22,8 +22,8 @@ public class RunJsTest {
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
         processBuilder = new ProcessBuilder();
         processBuilder.directory( new File( dir ) );
-        processBuilder.command( "yarn", "install" );
-        System.out.println( "Running 'yarn install'" );
+        processBuilder.command( "hbshed", "install" );
+        System.out.println( "Running 'hbshed install'" );
         Process process = processBuilder.start();
         process.waitFor( 180, TimeUnit.SECONDS );
         if( process.exitValue() != 0 ){
@@ -65,7 +65,7 @@ public class RunJsTest {
     @Test
     public void whenName_then() throws Exception {
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
-        System.out.println( "Running 'yarn test' in " + dir );
+        System.out.println( "Running 'hbshed test' in " + dir );
         processBuilder.directory( new File( dir ) );
         processBuilder.command( "hbshed", "test", "-V" );
         Process process = null;
