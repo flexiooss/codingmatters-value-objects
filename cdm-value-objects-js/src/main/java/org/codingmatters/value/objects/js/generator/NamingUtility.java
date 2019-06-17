@@ -63,11 +63,11 @@ public class NamingUtility {
     }
 
     public static String builderFullName( String reference ) {
-        return "globalScope[FLEXIO_IMPORT_OBJECT]." + reference.substring( 0, reference.lastIndexOf( "." ) + 1 ) + NamingUtility.builderName( reference );
+        return "globalFlexioImport." + reference.substring( 0, reference.lastIndexOf( "." ) + 1 ) + NamingUtility.builderName( reference );
     }
 
     public static String classFullName( String reference ) {
-        return "globalScope[FLEXIO_IMPORT_OBJECT]." + reference;
+        return "globalFlexioImport." + reference;
     }
 
     public static String namespace( String name ) {

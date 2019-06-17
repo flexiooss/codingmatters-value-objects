@@ -1,28 +1,29 @@
 import {TestCase} from 'code-altimeter-js'
-const assert = require('assert')
 import "../org/package"
-import {FLEXIO_IMPORT_OBJECT } from 'flexio-jshelpers'
+import { globalFlexioImport } from '@flexio-oss/global-import-registry'
+
+const assert = require('assert')
 
 class EmptyObjectTest extends TestCase {
 
     testInitialization() {
-        var myEmptyObject = new window[FLEXIO_IMPORT_OBJECT].org.generated.EmptyObject();
+        let myEmptyObject = new globalFlexioImport.org.generated.EmptyObject();
         assert.notEqual( myEmptyObject, null );
     }
 
     testSerialization() {
-        var myEmptyObject = new window[FLEXIO_IMPORT_OBJECT].org.generated.EmptyObject();
-        assert.equal( JSON.stringify(myEmptyObject),  "{}" );
+        let myEmptyObject = new globalFlexioImport.org.generated.EmptyObject();
+        assert.strictEqual( JSON.stringify(myEmptyObject),  "{}" );
     }
 
     testDeserialization() {
-        var myEmptyObject = window[FLEXIO_IMPORT_OBJECT].org.generated.EmptyObjectBuilder.fromJson("{}");
+        let myEmptyObject = globalFlexioImport.org.generated.EmptyObjectBuilder.fromJson("{}");
         assert.notEqual( myEmptyObject, null );
-        assert.equal( JSON.stringify(myEmptyObject), "{}" );
+        assert.strictEqual( JSON.stringify(myEmptyObject), "{}" );
     }
 
     testObjectImmutable() {
-        var myEmptyObject = new window[FLEXIO_IMPORT_OBJECT].org.generated.EmptyObject();
+        let myEmptyObject = new globalFlexioImport.org.generated.EmptyObject();
         assert.throws(() => {
             myEmptyObject.floatProp = 12.5
         }, TypeError);
