@@ -1,51 +1,51 @@
 import {TestCase} from 'code-altimeter-js'
-
-const assert = require( 'assert' )
 import "../org/package"
-import {FLEXIO_IMPORT_OBJECT} from 'flexio-jshelpers'
+import { globalFlexioImport } from '@flexio-oss/global-import-registry'
+
+const assert = require('assert')
 
 class InSpecEnumTest extends TestCase {
 
     testBuilder(){
-        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.InSpecEnumPropertiesBuilder();
-        builder.single( window[FLEXIO_IMPORT_OBJECT].org.generated.inspecenumproperties.InSpecEnumPropertiesSingle.SA );
-        builder.multiple( new window[FLEXIO_IMPORT_OBJECT].org.generated.inspecenumproperties.InSpecEnumPropertiesMultipleList(
-            window[FLEXIO_IMPORT_OBJECT].org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MB,
-            window[FLEXIO_IMPORT_OBJECT].org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MC
+        let builder = new globalFlexioImport.org.generated.InSpecEnumPropertiesBuilder();
+        builder.single( globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesSingle.SA );
+        builder.multiple( new globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultipleList(
+            globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MB,
+            globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MC
             )
         );
-        var inSpecEnum = builder.build();
+        let inSpecEnum = builder.build();
 
-        assert.equal( inSpecEnum.single().name, "SA" );
-        assert.equal( inSpecEnum.multiple()[0].name, "MB" );
-        assert.equal( inSpecEnum.multiple()[1].name, "MC" );
-        assert.equal( inSpecEnum.multiple().length, 2 );
+        assert.strictEqual( inSpecEnum.single().name, "SA" );
+        assert.strictEqual( inSpecEnum.multiple()[0].name, "MB" );
+        assert.strictEqual( inSpecEnum.multiple()[1].name, "MC" );
+        assert.strictEqual( inSpecEnum.multiple().length, 2 );
     }
 
     testObjectImmutable(){
-        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.InSpecEnumPropertiesBuilder();
-        builder.single( window[FLEXIO_IMPORT_OBJECT].org.generated.inspecenumproperties.InSpecEnumPropertiesSingle.SA );
-        builder.multiple( new window[FLEXIO_IMPORT_OBJECT].org.generated.inspecenumproperties.InSpecEnumPropertiesMultipleList(
-            window[FLEXIO_IMPORT_OBJECT].org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MB,
-            window[FLEXIO_IMPORT_OBJECT].org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MC
+        let builder = new globalFlexioImport.org.generated.InSpecEnumPropertiesBuilder();
+        builder.single( globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesSingle.SA );
+        builder.multiple( new globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultipleList(
+            globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MB,
+            globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MC
             )
         );
-        var inSpecEnum = builder.build();
+        let inSpecEnum = builder.build();
 
         assert.throws( () => {
-            inSpecEnum._single = window[FLEXIO_IMPORT_OBJECT].org.generated.inspecenumproperties.InSpecEnumPropertiesSingle.SB;
+            inSpecEnum._single = globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesSingle.SB;
         }, TypeError );
     }
 
     testObjectFrozen(){
-        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.InSpecEnumPropertiesBuilder();
-        builder.single( window[FLEXIO_IMPORT_OBJECT].org.generated.inspecenumproperties.InSpecEnumPropertiesSingle.SA );
-        builder.multiple( new window[FLEXIO_IMPORT_OBJECT].org.generated.inspecenumproperties.InSpecEnumPropertiesMultipleList(
-            window[FLEXIO_IMPORT_OBJECT].org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MB,
-            window[FLEXIO_IMPORT_OBJECT].org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MC
+        let builder = new globalFlexioImport.org.generated.InSpecEnumPropertiesBuilder();
+        builder.single( globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesSingle.SA );
+        builder.multiple( new globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultipleList(
+            globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MB,
+            globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MC
             )
         );
-                var inSpecEnum = builder.build();
+                let inSpecEnum = builder.build();
 
         assert.throws( () => {
             inSpecEnum.toto = "toto";
@@ -53,24 +53,24 @@ class InSpecEnumTest extends TestCase {
     }
 
     testSerialization(){
-        var builder = new window[FLEXIO_IMPORT_OBJECT].org.generated.InSpecEnumPropertiesBuilder();
-        builder.single( window[FLEXIO_IMPORT_OBJECT].org.generated.inspecenumproperties.InSpecEnumPropertiesSingle.SA );
-        builder.multiple( new window[FLEXIO_IMPORT_OBJECT].org.generated.inspecenumproperties.InSpecEnumPropertiesMultipleList(
-                    window[FLEXIO_IMPORT_OBJECT].org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MB,
-                    window[FLEXIO_IMPORT_OBJECT].org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MC
+        let builder = new globalFlexioImport.org.generated.InSpecEnumPropertiesBuilder();
+        builder.single( globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesSingle.SA );
+        builder.multiple( new globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultipleList(
+                    globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MB,
+                    globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MC
                     )
                 );
-        var inSpecEnum = builder.build();
-        assert.equal( JSON.stringify( inSpecEnum ), "{\"single\":\"SA\",\"multiple\":[\"MB\",\"MC\"]}" );
+        let inSpecEnum = builder.build();
+        assert.strictEqual( JSON.stringify( inSpecEnum ), "{\"single\":\"SA\",\"multiple\":[\"MB\",\"MC\"]}" );
     }
 
     testDeserialization(){
-        var json = "{\"single\":\"SA\",\"multiple\":[\"MB\",\"MC\"]}";
-        var inSpecEnum = window[FLEXIO_IMPORT_OBJECT].org.generated.InSpecEnumPropertiesBuilder.fromJson( json ).build();
-        assert.equal( inSpecEnum.single().name, "SA" );
-        assert.equal( inSpecEnum.multiple()[0].name, "MB" );
-        assert.equal( inSpecEnum.multiple()[1].name, "MC" );
-        assert.equal( inSpecEnum.multiple().length, 2 );
+        let json = "{\"single\":\"SA\",\"multiple\":[\"MB\",\"MC\"]}";
+        let inSpecEnum = globalFlexioImport.org.generated.InSpecEnumPropertiesBuilder.fromJson( json ).build();
+        assert.strictEqual( inSpecEnum.single().name, "SA" );
+        assert.strictEqual( inSpecEnum.multiple()[0].name, "MB" );
+        assert.strictEqual( inSpecEnum.multiple()[1].name, "MC" );
+        assert.strictEqual( inSpecEnum.multiple().length, 2 );
     }
 }
 

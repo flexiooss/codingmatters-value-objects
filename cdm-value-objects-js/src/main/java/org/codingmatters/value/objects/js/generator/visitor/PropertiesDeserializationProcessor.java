@@ -45,10 +45,10 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
         try {
             this.propertyName = property.name();
             write.indent();
-            write.string( "builder." + NamingUtility.propertyName( property.name() ) + "( " );
+            write.string( "builder." + NamingUtility.propertyName( property.name() ) + "(" );
             currentVariable = "jsonObject['" + propertyName + "']";
             property.type().process( this );
-            write.string( ");" );
+            write.string( ")" );
             write.newLine();
         } catch( IOException e ){
             throw new ProcessingException( "Error processing property " + property.name(), e );
@@ -60,7 +60,7 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
         try {
             String reference = externalValueObject.objectReference();
             String builderName = NamingUtility.builderFullName( reference );
-            write.string( builderName + ".fromObject( " + currentVariable + " ).build()" );
+            write.string( builderName + ".fromObject(" + currentVariable + ").build()" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );
         }
@@ -70,7 +70,7 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
     public void process( ObjectTypeInSpecValueObject inSpecValueObject ) throws ProcessingException {
         try {
             String builderName = NamingUtility.builderFullName( inSpecValueObject.packageName() + "." + inSpecValueObject.inSpecValueObjectName() );
-            write.string( builderName + ".fromObject( " + currentVariable + " ).build()" );
+            write.string( builderName + ".fromObject(" + currentVariable + ").build()" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );
         }
@@ -80,7 +80,7 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
     public void process( ObjectTypeNested nestedValueObject ) throws ProcessingException {
         try {
             String builderName = NamingUtility.builderFullName( typesPackage + "." + nestedValueObject.namespace() + "." + nestedValueObject.nestValueObject().name() );
-            write.string( builderName + ".fromObject( " + currentVariable + " ).build()" );
+            write.string( builderName + ".fromObject(" + currentVariable + ").build()" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );
         }
@@ -91,10 +91,10 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
         try {
             String var = generateVarName();
             String listClassName = NamingUtility.classFullName( list.packageName() + "." + list.name() );
-            write.string( "new " + listClassName + "( ..." + currentVariable + ".map( " + var + "=>" );
+            write.string( "new " + listClassName + "(..." + currentVariable + ".map(" + var + " => " );
             currentVariable = var;
             list.type().process( this );
-            write.string( " ))" );
+            write.string( "))" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );
         }
@@ -117,16 +117,16 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
                     write.string( "parseFloat(" + currentVariable + ")" );
                     break;
                 case DATE:
-                    write.string( "new FlexDate( " + currentVariable + " )" );
+                    write.string( "new FlexDate(" + currentVariable + ")" );
                     break;
                 case TIME:
-                    write.string( "new FlexTime( " + currentVariable + " )" );
+                    write.string( "new FlexTime(" + currentVariable + ")" );
                     break;
                 case DATE_TIME:
-                    write.string( "new FlexDateTime( " + currentVariable + " )" );
+                    write.string( "new FlexDateTime(" + currentVariable + ")" );
                     break;
                 case TZ_DATE_TIME:
-                    write.string( "new FlexZonedDateTime( " + currentVariable + " )" );
+                    write.string( "new FlexZonedDateTime(" + currentVariable + ")" );
                     break;
                 default:
                     write.string( currentVariable );
@@ -141,7 +141,7 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
     public void process( YamlEnumExternalEnum externalEnum ) throws ProcessingException {
         try {
             String className = NamingUtility.classFullName( externalEnum.enumReference() );
-            write.string( className + ".enumValueOf( " + currentVariable + " )" );
+            write.string( className + ".enumValueOf(" + currentVariable + ")" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );
         }
@@ -151,7 +151,7 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
     public void process( YamlEnumInSpecEnum inSpecEnum ) throws ProcessingException {
         try {
             String className = NamingUtility.classFullName( typesPackage + "." + inSpecEnum.namespace() + "." + inSpecEnum.name() );
-            write.string( className + ".enumValueOf( " + currentVariable + " )" );
+            write.string( className + ".enumValueOf(" + currentVariable + ")" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );
         }
@@ -166,7 +166,7 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
     public void process( ParsedEnum parsedEnum ) throws ProcessingException {
         try {
             String className = NamingUtility.classFullName( parsedEnum.packageName() + "." + parsedEnum.name() );
-            write.string( className + ".enumValueOf( " + currentVariable + " )" );
+            write.string( className + ".enumValueOf(" + currentVariable + ")" );
             throw new ProcessingException( "HELLO"  );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );
