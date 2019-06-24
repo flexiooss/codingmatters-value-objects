@@ -1,7 +1,7 @@
 complexType:
-  complexProps:
+  complex-props:
     string-prop: string
-    intList:
+    int-list:
       $list: int
   test-is-ok: bool
   foo: float

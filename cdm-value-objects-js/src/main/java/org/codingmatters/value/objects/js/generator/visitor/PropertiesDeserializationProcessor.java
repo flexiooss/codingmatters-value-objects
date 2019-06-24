@@ -167,7 +167,6 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
         try {
             String className = NamingUtility.classFullName( parsedEnum.packageName() + "." + parsedEnum.name() );
             write.string( className + ".enumValueOf(" + currentVariable + ")" );
-            throw new ProcessingException( "HELLO"  );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );
         }
