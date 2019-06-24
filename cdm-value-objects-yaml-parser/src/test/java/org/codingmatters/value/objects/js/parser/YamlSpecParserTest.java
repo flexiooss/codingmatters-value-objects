@@ -185,14 +185,14 @@ public class YamlSpecParserTest {
         assertThat( spec.valueObjects().size(), is( 1 ) );
         ParsedValueObject value = (ParsedValueObject) spec.valueObjects().get( 0 );
 
-        assertThat( value.properties().get( 0 ).name(), is( "complexProps" ) );
+        assertThat( value.properties().get( 0 ).name(), is( "complex-props" ) );
         assertThat( ((ObjectTypeNested) value.properties().get( 0 ).type()).namespace(), is( "complextype" ) );
         assertThat( ((ObjectTypeNested) value.properties().get( 0 ).type()).nestValueObject().name(), is( "ComplexProps" ) );
         assertThat( ((ObjectTypeNested) value.properties().get( 0 ).type()).nestValueObject().properties().size(), is( 2 ) );
         assertThat( ((ObjectTypeNested) value.properties().get( 0 ).type()).nestValueObject().properties().get( 0 ).name(), is( "string-prop" ) );
         assertThat( ((ValueObjectTypePrimitiveType) ((ObjectTypeNested) value.properties().get( 0 ).type()).nestValueObject().properties().get( 0 ).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.STRING ) );
 
-        assertThat( ((ObjectTypeNested) value.properties().get( 0 ).type()).nestValueObject().properties().get( 1 ).name(), is( "intList" ) );
+        assertThat( ((ObjectTypeNested) value.properties().get( 0 ).type()).nestValueObject().properties().get( 1 ).name(), is( "int-list" ) );
         assertThat( ((ValueObjectTypePrimitiveType) ((ValueObjectTypeList) ((ObjectTypeNested) value.properties().get( 0 ).type()).nestValueObject().properties().get( 1 ).type()).type()).type(), is( ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.INT ) );
         assertThat( ((ValueObjectTypeList) ((ObjectTypeNested) value.properties().get( 0 ).type()).nestValueObject().properties().get( 1 ).type()).name(), is( "ComplexPropsIntListList" ) );
         assertThat( ((ValueObjectTypeList) ((ObjectTypeNested) value.properties().get( 0 ).type()).nestValueObject().properties().get( 1 ).type()).packageName(), is( "org.generated.complextype.complexprops" ) );
