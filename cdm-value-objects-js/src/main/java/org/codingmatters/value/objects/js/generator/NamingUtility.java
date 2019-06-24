@@ -59,7 +59,8 @@ public class NamingUtility {
     }
 
     public static String getJoinedName( String value ) {
-        return String.join( "", Arrays.stream( value.split( "\\s" ) ).map( NamingUtility::firstLetterUpperCase ).collect( Collectors.toList() ) );
+//        return String.join( "", Arrays.stream( value.split( "\\s" ) ).map( NamingUtility::firstLetterUpperCase ).collect( Collectors.toList() ) );
+        return String.join( "", Arrays.stream( value.replace("-", " ").split( "\\s" ) ).map( NamingUtility::firstLetterUpperCase ).collect( Collectors.toList() ) );
     }
 
     public static String builderFullName( String reference ) {
@@ -71,7 +72,7 @@ public class NamingUtility {
     }
 
     public static String namespace( String name ) {
-        return name.toLowerCase( Locale.ENGLISH );
+        return name.replaceAll("[\\s-]", "").toLowerCase(Locale.ENGLISH);
     }
 
     public static String requestName( String displayName, String method ) {
