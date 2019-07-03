@@ -205,7 +205,7 @@ public class JsClassGenerator extends JsFileWriter {
         line( "let builder = new " + builderName + "()" );
         PropertiesDeserializationProcessor propertiesDeserializationProcessor = new PropertiesDeserializationProcessor( this, typesPackage );
         for( ValueObjectProperty property : properties ){
-            line( "if (jsonObject['" + property.name() + "'] !== undefined) {" );
+            line( "if (jsonObject['" + property.name() + "'] !== undefined && jsonObject['" + property.name() + "'] !== null ) {" );
             propertiesDeserializationProcessor.process( property );
             line( "}" );
         }
