@@ -114,8 +114,10 @@ public class ValTest {
     @Test
     public void object() throws Exception {
         assertThat(
-                Val.object().property("p1", Val.stringValue("v1")).build().toString(),
-                is("{p1=v1 (STRING)}")
+                Val.object()
+                        .property("p1", Val.stringValue("v1"))
+                        .property("p2", Val.stringValue("v2")).build().toString(),
+                is("{p1=v1 (STRING), p2=v2 (STRING)}")
         );
     }
 

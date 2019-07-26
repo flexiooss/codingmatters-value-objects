@@ -105,8 +105,6 @@ public interface Val {
                 return new ObjectValImpl(this.properties);
             }
         }
-
-
     }
 
     interface BaseTypeVal<T> extends Val {

@@ -3,6 +3,7 @@ package org.codingmatters.value.objects.values.vals;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 class ObjectValImpl implements Val.ObjectVal {
 
@@ -24,9 +25,7 @@ class ObjectValImpl implements Val.ObjectVal {
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder("{");
-        this.props.entrySet().forEach(entry -> result.append(String.format("%s=%s", entry.getKey(), entry.getValue())));
-        return result.append("}").toString();
+        return this.props.toString();
     }
 
     @Override
