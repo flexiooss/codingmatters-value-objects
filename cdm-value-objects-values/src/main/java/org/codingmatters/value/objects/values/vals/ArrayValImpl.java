@@ -23,6 +23,11 @@ class ArrayValImpl implements Val.ArrayVal {
     }
 
     @Override
+    public <T> T accept(ValVisitor<T> visitor) {
+        return visitor.visitArray(this);
+    }
+
+    @Override
     public String toString() {
         return this.vals.toString();
     }

@@ -1,17 +1,15 @@
 package org.codingmatters.value.objects.values.vals;
 
-import org.omg.CORBA.DATA_CONVERSION;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 public interface Val {
 
     VType type();
+    <T> T accept(ValVisitor<T> visitor);
 
     static BaseTypeVal<String> stringValue(String v) {
         return new BaseTypeValImpl<>(VType.STRING, v);
@@ -88,6 +86,7 @@ public interface Val {
 
     interface ObjectVal extends Val {
         Val property(String name);
+        String[] propertyNames();
 
         static Builder builder() {
             return new Builder();

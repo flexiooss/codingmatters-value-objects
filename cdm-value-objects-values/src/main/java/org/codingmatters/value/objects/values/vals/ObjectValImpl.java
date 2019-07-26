@@ -19,8 +19,18 @@ class ObjectValImpl implements Val.ObjectVal {
     }
 
     @Override
+    public String[] propertyNames() {
+        return this.props.keySet().toArray(new String[0]);
+    }
+
+    @Override
     public VType type() {
         return VType.OBJECT;
+    }
+
+    @Override
+    public <T> T accept(ValVisitor<T> visitor) {
+        return visitor.visitObject(this);
     }
 
     @Override

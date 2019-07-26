@@ -17,6 +17,11 @@ class BaseTypeValImpl<T> implements Val.BaseTypeVal<T> {
     }
 
     @Override
+    public <V> V accept(ValVisitor<V> visitor) {
+        return visitor.visitBaseValue(this);
+    }
+
+    @Override
     public T value() {
         return this.value;
     }
