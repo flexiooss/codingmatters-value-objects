@@ -8,6 +8,31 @@ import java.util.LinkedList;
 
 public interface Val {
 
+    static Builder builder() {
+        return new Builder();
+    }
+
+    class Builder {
+        private Val val;
+
+        public Builder object(ObjectVal.Builder builder) {
+            this.val = builder.build();
+            return this;
+        }
+        public Builder array(ArrayVal.Builder builder) {
+            this.val = builder.build();
+            return this;
+        }
+        public Builder val(BaseTypeVal.Builder builder) {
+            this.val = builder.build();
+            return this;
+        }
+
+        public Val build() {
+            return val;
+        }
+    }
+
     VType type();
     <T> T accept(ValVisitor<T> visitor);
 

@@ -1,6 +1,8 @@
 package org.codingmatters.value.objects.generation;
 
 import com.squareup.javapoet.ClassName;
+import org.codingmatters.value.objects.values.ObjectValue;
+import org.codingmatters.value.objects.values.vals.Val;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.ObjectTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
@@ -67,6 +69,19 @@ public class Naming {
         } else {
             return false;
         }
+    }
+
+    public String arbitraryObjectImpl(TypeDeclaration typeDeclaration) {
+        if(typeDeclaration.annotations() != null) {
+            for (AnnotationRef annotation : typeDeclaration.annotations()) {
+                if(annotation.name().equalsIgnoreCase("(object-impl)")) {
+                    if(annotation.structuredValue().value().equals("Val")) {
+                        return Val.class.getName();
+                    }
+                }
+            }
+        }
+        return ObjectValue.class.getName();
     }
 
     public  boolean isAlreadyDefined(TypeDeclaration typeDeclaration) {

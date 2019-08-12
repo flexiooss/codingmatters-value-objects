@@ -2,6 +2,7 @@ package org.codingmatters.value.objects.values.vals.json;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.SerializableString;
+import org.codingmatters.value.objects.values.ObjectValue;
 import org.codingmatters.value.objects.values.vals.Val;
 import org.codingmatters.value.objects.values.vals.ValVisitor;
 
@@ -18,6 +19,10 @@ public class ValWriter {
         if(result.isPresent()) {
             throw result.get();
         }
+    }
+
+    public void writeArray(JsonGenerator generator, Val[] values) throws IOException {
+        this.write(generator, Val.array().values(values).build());
     }
 
     static class WriterVisitor implements ValVisitor<Optional<IOException>> {
