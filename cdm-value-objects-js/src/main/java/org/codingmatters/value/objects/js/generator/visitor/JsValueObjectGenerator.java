@@ -130,7 +130,17 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
         File targetFile = new File(targetDirectory, fileName);
         try (JsClassGenerator write = new JsClassGenerator(targetFile.getPath(), generationContext.typesPackage())) {
             write.line("import { FlexEnum } from '@flexio-oss/flex-types'");
+            write.line( "/**" );
+            write.line( "* @readonly" );
+            write.line( "* @enum {" + objectName + "}" );
+            write.line( "*/" );
             write.line("class " + objectName + " extends FlexEnum {");
+            for( String value : values ){
+                write.line( "/**" );
+                write.line( "* @static" );
+                write.line( "* @property {" + objectName + "} " + value );
+                write.line( "*/" );
+            }
             write.line("}");
             write.line(objectName + ".initEnum([" +
                     String.join(", ", values.stream().map(val -> "'" + val + "'").collect(Collectors.toList()))
