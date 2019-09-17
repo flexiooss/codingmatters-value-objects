@@ -60,8 +60,8 @@ public class PackageFilesGenerator {
 
     private void comment( String packageName, String classe, JsFileWriter fileWriter ) throws IOException {
         fileWriter.line( "/**" );
-//        fileWriter.line( "* @property {" + classe + "} " + String.join( ".", "globalScope[FLEXIO_IMPORT_OBJECT]", packageName, classe ) );
-        fileWriter.line( "* @property {" + classe + "} " + classe );
+        fileWriter.line( "* @property {" + classe + "} " + String.join( ".", "globalFlexioImport", packageName, classe ) );
+//        fileWriter.line( "* @property {" + classe + "} " + classe );
         fileWriter.line( "*/" );
     }
 
