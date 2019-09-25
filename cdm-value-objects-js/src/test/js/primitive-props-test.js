@@ -61,7 +61,6 @@ class PrimitivePropsTest extends TestCase {
 
     assert.strictEqual(primitiveProp.stringProp(), "str");
     assert.strictEqual(primitiveProp.bytesProp(), "bytes");
-
     assert.strictEqual(primitiveProp2.stringProp(), "str2");
     assert.strictEqual(primitiveProp2.bytesProp(), "bytes");
   }
