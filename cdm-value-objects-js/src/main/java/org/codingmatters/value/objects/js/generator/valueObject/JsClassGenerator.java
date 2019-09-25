@@ -67,9 +67,13 @@ public class JsClassGenerator extends JsFileWriter {
         List<String> names = properties.stream().map(prop -> propertyName(prop.name())).collect(Collectors.toList());
         line("constructor(" + String.join(", ", names) + ") {");
 
-        line(String.join("\n    ", properties.stream().map(prop ->
-                "this." + attributeName(prop.name()) + " = " + propertyName(prop.name())
-        ).collect(Collectors.toList())));
+        for (ValueObjectProperty prop : properties){
+            line("/**");
+            line(" * @private");
+            line(" */");
+            line("this." + attributeName(prop.name()) + " = " + propertyName(prop.name()));
+            newLine();
+        }
 
         line("deepFreezeSeal(this)");
         line("}");
@@ -103,7 +107,7 @@ public class JsClassGenerator extends JsFileWriter {
         newLine();
     }
 
-    public void builderFromInstanceMethod(String objectName, String builderName) throws IOException{
+    public void builderFromInstanceMethod(String objectName, String builderName) throws IOException {
         line("/**");
         line(" * @param {" + objectName + "} instance");
         line(" * @returns {" + builderName + "}");
@@ -114,7 +118,7 @@ public class JsClassGenerator extends JsFileWriter {
         newLine();
     }
 
-    public void builderFromObjectMethod(String builderName) throws IOException{
+    public void builderFromObjectMethod(String builderName) throws IOException {
         line("/**");
         line(" * @param {Object} jsonObject");
         line(" * @returns {" + builderName + "}");
@@ -124,7 +128,8 @@ public class JsClassGenerator extends JsFileWriter {
         line("}");
         newLine();
     }
-    public void builderFromJSONMethod(String builderName) throws IOException{
+
+    public void builderFromJSONMethod(String builderName) throws IOException {
         line("/**");
         line(" * @param {Object} jsonObject");
         line(" * @returns {" + builderName + "}");
@@ -224,7 +229,7 @@ public class JsClassGenerator extends JsFileWriter {
             property.type().process(jsTypeDescriptor);
             string("} " + propertyName);
             newLine();
-            line(" * @returns {" + builderName+"}");
+            line(" * @returns {" + builderName + "}");
             line(" */");
             line("with" + NamingUtility.firstLetterUpperCase(propertyName) + "(" + propertyName + ") {");
             line("let builder = " + builderName + ".from(this);");
