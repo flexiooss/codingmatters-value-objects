@@ -34,6 +34,7 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
         this.flexioGeneratorHelperImport = new HashSet<>();
         this.flexioAssertImport = new HashSet<>();
         this.flexioAssertImport.add("assert");
+        this.flexioAssertImport.add("assertType");
         this.flexioAssertImport.add("isNull");
         this.flexioGeneratorHelperImport.add("deepFreezeSeal");
         this.packageBuilder = packageBuilder;
@@ -129,7 +130,7 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
         File targetDirectory = new File(rootDirectory, targetPackage.replace(".", "/"));
         File targetFile = new File(targetDirectory, fileName);
         try (JsClassGenerator write = new JsClassGenerator(targetFile.getPath(), generationContext.typesPackage())) {
-            write.line("import { FlexEnum } from '@flexio-oss/flex-types'");
+            write.line("import {FlexEnum} from '@flexio-oss/flex-types'");
             write.line( "/**" );
             write.line( "* @readonly" );
             write.line( "* @enum {" + objectName + "}" );
@@ -145,7 +146,7 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
             write.line(objectName + ".initEnum([" +
                     String.join(", ", values.stream().map(val -> "'" + val + "'").collect(Collectors.toList()))
                     + "])");
-            write.line("export { " + objectName + " }");
+            write.line("export {" + objectName + "}");
         }
     }
 
@@ -154,38 +155,38 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
             write.line(inport);
         }
         if (!this.flexioAssertImport.isEmpty()) {
-            String line = "import { " + String.join(", ", this.flexioAssertImport) + " } from '@flexio-oss/assert' ";
+            String line = "import {" + String.join(", ", this.flexioAssertImport) + "} from '@flexio-oss/assert' ";
             write.line(line);
         }
         if (!this.flexioGeneratorHelperImport.isEmpty()) {
-            String line = "import { " + String.join(", ", this.flexioGeneratorHelperImport) + " } from '@flexio-oss/js-generator-helpers' ";
+            String line = "import {" + String.join(", ", this.flexioGeneratorHelperImport) + "} from '@flexio-oss/js-generator-helpers' ";
             write.line(line);
         }
         if (!this.flexioTypesImport.isEmpty()) {
-            String line = "import { " + String.join(", ", this.flexioTypesImport) + " } from '@flexio-oss/flex-types' ";
+            String line = "import {" + String.join(", ", this.flexioTypesImport) + "} from '@flexio-oss/flex-types' ";
             write.line(line);
         }
     }
 
     @Override
     public void process(ValueObjectProperty property) throws ProcessingException {
-        generationContext.addImport("import { globalFlexioImport } from '@flexio-oss/global-import-registry'");
+        generationContext.addImport("import {globalFlexioImport} from '@flexio-oss/global-import-registry'");
         property.type().process(this);
     }
 
     @Override
     public void process(ObjectTypeExternalValue externalValueObject) throws ProcessingException {
-        generationContext.addImport("import { globalFlexioImport } from '@flexio-oss/global-import-registry'");
+        generationContext.addImport("import {globalFlexioImport} from '@flexio-oss/global-import-registry'");
     }
 
     @Override
     public void process(ObjectTypeInSpecValueObject inSpecValueObject) throws ProcessingException {
-        generationContext.addImport("import { globalFlexioImport } from '@flexio-oss/global-import-registry'");
+        generationContext.addImport("import {globalFlexioImport} from '@flexio-oss/global-import-registry'");
     }
 
     @Override
     public void process(ObjectTypeNested nestedValueObject) throws ProcessingException {
-        generationContext.addImport("import { globalFlexioImport } from '@flexio-oss/global-import-registry'");
+        generationContext.addImport("import {globalFlexioImport} from '@flexio-oss/global-import-registry'");
         JsValueObjectGenerator processor = new JsValueObjectGenerator(this.rootDirectory, this.currentPackage + "." + nestedValueObject.namespace(), this.currentPackage, this.packageBuilder);
         processor.process(nestedValueObject.nestValueObject());
     }
@@ -215,8 +216,6 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
                 this.flexioAssertImport.add("isBoolean");
                 break;
             case STRING:
-                this.flexioAssertImport.add("isString");
-                break;
             case BYTES:
                 this.flexioAssertImport.add("isString");
                 break;
@@ -224,14 +223,8 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
                 this.flexioAssertImport.add("isObject");
                 break;
             case INT:
-                this.flexioAssertImport.add("isNumber");
-                break;
             case DOUBLE:
-                this.flexioAssertImport.add("isNumber");
-                break;
             case LONG:
-                this.flexioAssertImport.add("isNumber");
-                break;
             case FLOAT:
                 this.flexioAssertImport.add("isNumber");
                 break;
@@ -243,12 +236,12 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
 
     @Override
     public void process(YamlEnumExternalEnum externalEnum) {
-        generationContext.addImport("import { globalFlexioImport } from '@flexio-oss/global-import-registry'");
+        generationContext.addImport("import {globalFlexioImport} from '@flexio-oss/global-import-registry'");
     }
 
     @Override
     public void process(YamlEnumInSpecEnum inSpecEnum) throws ProcessingException {
-        generationContext.addImport("import { globalFlexioImport } from '@flexio-oss/global-import-registry'");
+        generationContext.addImport("import {globalFlexioImport} from '@flexio-oss/global-import-registry'");
         try {
             generateInSpecEnum(inSpecEnum);
         } catch (Exception e) {
@@ -263,7 +256,7 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
 
     @Override
     public void process(ParsedEnum parsedEnum) throws ProcessingException {
-        generationContext.addImport("import { globalFlexioImport } from '@flexio-oss/global-import-registry'");
+        generationContext.addImport("import {globalFlexioImport} from '@flexio-oss/global-import-registry'");
         try {
             generateTypeEnum(parsedEnum);
         } catch (Exception e) {

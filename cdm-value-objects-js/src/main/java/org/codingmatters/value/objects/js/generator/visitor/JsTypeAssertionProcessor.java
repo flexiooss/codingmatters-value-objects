@@ -122,43 +122,43 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
                 case LONG:
                 case DOUBLE:
                     write.line( "if (!isNull( " + currentVariable + ")) {" );
-                    write.line( "assert(isNumber(" + currentVariable + "), '" + currentVariable + " should be a number')" );
+                    write.line( "assertType(isNumber(" + currentVariable + "), '" + currentVariable + " should be a number')" );
                     write.line( "}" );
                     break;
                 case OBJECT:
                     write.line( "if (!isNull( " + currentVariable + ")) {" );
-                    write.line( "assert(isObject(" + currentVariable + "), '" + currentVariable + " should be an object')" );
+                    write.line( "assertType(isObject(" + currentVariable + "), '" + currentVariable + " should be an object')" );
                     write.line( "}" );
                     break;
                 case BYTES:
                 case STRING:
                     write.line( "if (!isNull(" + currentVariable + ")) {" );
-                    write.line( "assert(isString(" + currentVariable + "), '" + currentVariable + " should be a string')" );
+                    write.line( "assertType(isString(" + currentVariable + "), '" + currentVariable + " should be a string')" );
                     write.line( "}" );
                     break;
                 case BOOL:
                     write.line( "if (!isNull(" + currentVariable + ")) {" );
-                    write.line( "assert(isBoolean(" + currentVariable + "), '" + currentVariable + " should be a bool')" );
+                    write.line( "assertType(isBoolean(" + currentVariable + "), '" + currentVariable + " should be a bool')" );
                     write.line( "}" );
                     break;
                 case DATE:
                     write.line( "if (!isNull(" + currentVariable + ")) {" );
-                    write.line( "assert(" + currentVariable + " instanceof FlexDate, '" + currentVariable + " should be a FlexDate')" );
+                    write.line( "assertType(" + currentVariable + " instanceof FlexDate, '" + currentVariable + " should be a FlexDate')" );
                     write.line( "}" );
                     break;
                 case TIME:
                     write.line( "if (!isNull( " + currentVariable + ")) {" );
-                    write.line( "assert(" + currentVariable + " instanceof FlexTime, '" + currentVariable + " should be a FlexTime')" );
+                    write.line( "assertType(" + currentVariable + " instanceof FlexTime, '" + currentVariable + " should be a FlexTime')" );
                     write.line( "}" );
                     break;
                 case DATE_TIME:
                     write.line( "if (!isNull( " + currentVariable + ")) {" );
-                    write.line( "assert(" + currentVariable + " instanceof FlexDateTime, '" + currentVariable + " should be a FlexDateTime')" );
+                    write.line( "assertType(" + currentVariable + " instanceof FlexDateTime, '" + currentVariable + " should be a FlexDateTime')" );
                     write.line( "}" );
                     break;
                 case TZ_DATE_TIME:
                     write.line( "if (!isNull( " + currentVariable + ")) {" );
-                    write.line( "assert(" + currentVariable + " instanceof FlexZonedDateTime, '" + currentVariable + " should be a FlexZonedDateTime')" );
+                    write.line( "assertType(" + currentVariable + " instanceof FlexZonedDateTime, '" + currentVariable + " should be a FlexZonedDateTime')" );
                     write.line( "}" );
                     break;
             }
