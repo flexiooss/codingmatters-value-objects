@@ -44,12 +44,11 @@ public class JsClassGenerator extends JsFileWriter {
         write.valueObjectToObjectMethod(valueObject.properties());
         write.valueObjectToJsonMethod();
         write.line("}");
-        write.line("export {" + objectName + "}");
+        write.newLine();
+        write.line("export { " + objectName + " }");
     }
 
     public void constructor(List<ValueObjectProperty> properties) throws IOException {
-        newLine();
-
         line("/**");
         properties.forEach(prop -> {
             try {
@@ -180,7 +179,8 @@ public class JsClassGenerator extends JsFileWriter {
         write.builderFromJsonMethod(builderName);
         write.builderFromInstanceMethod(objectName, builderName, valueObject.properties());
         write.line("}");
-        write.line("export {" + builderName + "}");
+        write.newLine();
+        write.line("export { " + builderName + " }");
     }
 
     public void builderValidateElement(ValueObjectType type) throws ProcessingException, IOException {
@@ -246,7 +246,7 @@ public class JsClassGenerator extends JsFileWriter {
         line(" */");
         line("build() {");
         line("return new " + objectName + "(" +
-                String.join(",", properties.stream().map(prop -> "this." + attributeName(prop.name())).collect(Collectors.toList())) +
+                String.join(", ", properties.stream().map(prop -> "this." + attributeName(prop.name())).collect(Collectors.toList())) +
                 ")");
         line("}");
         newLine();

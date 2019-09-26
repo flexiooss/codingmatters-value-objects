@@ -29,15 +29,15 @@ public class PackageFilesGenerator {
     private void generatePackageFile( PackageConfiguration rootPackage ) throws GenerationException {
         String targetFile = targetDirectory + "/" + rootPackage.fullName().replace( ".", "/" ) + "/package.js";
         try( JsFileWriter fileWriter = new JsFileWriter( targetFile ) ) {
-            fileWriter.line( "import {globalFlexioImport} from '@flexio-oss/global-import-registry' " );
-            fileWriter.line( "import {deepKeyAssigner} from '@flexio-oss/js-generator-helpers' " );
+            fileWriter.line( "import { globalFlexioImport } from '@flexio-oss/global-import-registry' " );
+            fileWriter.line( "import { deepKeyAssigner } from '@flexio-oss/js-generator-helpers' " );
 
             for( String className : rootPackage.classes() ){
                 String builder = className + "Builder";
-                fileWriter.line( "import {" + className + ", " + builder + "} from \"./" + className + "\";" );
+                fileWriter.line( "import { " + className + ", " + builder + " } from \"./" + className + "\";" );
             }
             for( String className : rootPackage.lists() ){
-                fileWriter.line( "import {" + className + "} from \"./" + className + "\";" );
+                fileWriter.line( "import { " + className + " } from \"./" + className + "\";" );
             }
             fileWriter.newLine();
             for( String classe : rootPackage.classes() ){
