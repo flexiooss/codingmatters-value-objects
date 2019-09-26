@@ -50,7 +50,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
         try {
             write.line( "if (!isNull(" + currentVariable + ")) {" );
             write.indent();
-            write.string( "assert(" + currentVariable + " instanceof " );
+            write.string( "assertType(" + currentVariable + " instanceof " );
             write.string( NamingUtility.classFullName( externalValueObject.objectReference() ) );
             write.string(", '" + currentVariable + " should be a " );
             jsTypeReferenceProcessor.process( externalValueObject );
@@ -67,7 +67,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
         try {
             write.line( "if (!isNull( " + currentVariable + ")) {" );
             write.indent();
-            write.string( "assert( " + currentVariable + " instanceof " );
+            write.string( "assertType( " + currentVariable + " instanceof " );
             write.string( NamingUtility.classFullName( inSpecValueObject.packageName() + "." + inSpecValueObject.inSpecValueObjectName() ) );
             write.string( ", '" + currentVariable + " should be a " );
             jsTypeReferenceProcessor.process( inSpecValueObject );
@@ -84,7 +84,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
         try {
             write.line( "if (!isNull( " + currentVariable + ")) {" );
             write.indent();
-            write.string( "assert(" + currentVariable + " instanceof " );
+            write.string( "assertType(" + currentVariable + " instanceof " );
             write.string( NamingUtility.classFullName( rootPackage + "." + nestedValueObject.namespace() + "." + nestedValueObject.nestValueObject().name() ) );
             write.string( ", '" + currentVariable + " should be a " );
             jsTypeReferenceProcessor.process( nestedValueObject );
@@ -101,7 +101,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
         try {
             write.line( "if (!isNull(" + currentVariable + ")) {" );
             write.indent();
-            write.string( "assert(" + currentVariable + " instanceof " );
+            write.string( "assertType(" + currentVariable + " instanceof " );
             write.string( NamingUtility.classFullName( list.packageName() + "." + list.name() ) );
             write.string( ", '" + currentVariable + " should be a " );
             jsTypeReferenceProcessor.process( list );
@@ -172,7 +172,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
         try {
             write.line( "if (!isNull(" + currentVariable + ")) {" );
             write.indent();
-            write.string( "assert(" + currentVariable + " instanceof " );
+            write.string( "assertType(" + currentVariable + " instanceof " );
             write.string( NamingUtility.classFullName( externalEnum.enumReference() ) );
             write.string( ", '" + currentVariable + " should be a " );
             jsTypeReferenceProcessor.process( externalEnum );
@@ -189,7 +189,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
         try {
             write.line( "if (!isNull(" + currentVariable + ")) {" );
             write.indent();
-            write.string( "assert(" + currentVariable + " instanceof " );
+            write.string( "assertType(" + currentVariable + " instanceof " );
             write.string( NamingUtility.classFullName( rootPackage + "." + inSpecEnum.namespace() + "." + inSpecEnum.name() ) );
             write.string( ", '" + currentVariable + " should be a " );
             jsTypeReferenceProcessor.process( inSpecEnum );
@@ -211,7 +211,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
         try {
             write.line( "if (!isNull( " + currentVariable + ")) {" );
             write.indent();
-            write.string( "assert(" + currentVariable + " instanceof " );
+            write.string( "assertType(" + currentVariable + " instanceof " );
             write.string( NamingUtility.classFullName( parsedEnum.packageName() + "." + parsedEnum.name() ) );
             write.string( ", '" + currentVariable + " should be a " );
             jsTypeReferenceProcessor.process( parsedEnum );
