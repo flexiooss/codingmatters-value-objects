@@ -36,6 +36,8 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
         this.flexioAssertImport.add("assert");
         this.flexioAssertImport.add("assertType");
         this.flexioAssertImport.add("isNull");
+        this.flexioAssertImport.add("isObject");
+        this.flexioAssertImport.add("isString");
         this.flexioGeneratorHelperImport.add("deepFreezeSeal");
         this.packageBuilder = packageBuilder;
     }
@@ -102,7 +104,7 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
                 write.line("class " + className + " extends FlexArray {");
                 write.listConstructor();
                 write.elementAccessor(list.type());
-                write.validateElement(list.type());
+                write.builderValidateElement(list.type());
                 write.line("}");
                 write.line("export { " + className + " }");
                 write.flush();
