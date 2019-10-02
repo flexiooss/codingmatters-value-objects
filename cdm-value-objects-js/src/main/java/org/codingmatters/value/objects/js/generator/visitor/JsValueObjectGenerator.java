@@ -158,15 +158,15 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
             write.line(inport);
         }
         if (!this.flexioAssertImport.isEmpty()) {
-            String line = "import { " + String.join(", ", this.flexioAssertImport) + " } from '@flexio-oss/assert' ";
+            String line = "import { " + String.join(", ", this.flexioAssertImport) + " } from '@flexio-oss/assert'";
             write.line(line);
         }
         if (!this.flexioGeneratorHelperImport.isEmpty()) {
-            String line = "import { " + String.join(", ", this.flexioGeneratorHelperImport) + " } from '@flexio-oss/js-generator-helpers' ";
+            String line = "import { " + String.join(", ", this.flexioGeneratorHelperImport) + " } from '@flexio-oss/js-generator-helpers'";
             write.line(line);
         }
         if (!this.flexioTypesImport.isEmpty()) {
-            String line = "import { " + String.join(", ", this.flexioTypesImport) + " } from '@flexio-oss/flex-types' ";
+            String line = "import { " + String.join(", ", this.flexioTypesImport) + " } from '@flexio-oss/flex-types'";
             write.line(line);
         }
     }
