@@ -66,7 +66,7 @@ public class JsClassGenerator extends JsFileWriter {
         List<String> names = properties.stream().map(prop -> propertyName(prop.name())).collect(Collectors.toList());
         line("constructor(" + String.join(", ", names) + ") {");
 
-        for (ValueObjectProperty prop : properties){
+        for (ValueObjectProperty prop : properties) {
             line("/**");
             line(" * @private");
             line(" */");
@@ -220,7 +220,7 @@ public class JsClassGenerator extends JsFileWriter {
         }
     }
 
-    private void valueObjectWithMethods(List<ValueObjectProperty> properties,String objectName, String builderName) throws IOException, ProcessingException {
+    private void valueObjectWithMethods(List<ValueObjectProperty> properties, String objectName, String builderName) throws IOException, ProcessingException {
         for (ValueObjectProperty property : properties) {
             String propertyName = propertyName(property.name());
             line("/**");
@@ -262,7 +262,7 @@ public class JsClassGenerator extends JsFileWriter {
         line("let builder = new " + builderName + "()");
         PropertiesDeserializationProcessor propertiesDeserializationProcessor = new PropertiesDeserializationProcessor(this, typesPackage);
         for (ValueObjectProperty property : properties) {
-            line("if (jsonObject['" + property.name() + "'] !== undefined) {");
+            line("if (jsonObject['" + property.name() + "'] !== undefined && !isNull(jsonObject['" + property.name() + "'])) {");
             propertiesDeserializationProcessor.process(property);
             line("}");
         }
@@ -290,7 +290,7 @@ public class JsClassGenerator extends JsFileWriter {
         line(" * @returns {" + builderName + "}");
         line(" */");
         line("static from(instance) {");
-        line("assertType(instance instanceof "+objectName+", 'input should be an instance of "+objectName+"')");
+        line("assertType(instance instanceof " + objectName + ", 'input should be an instance of " + objectName + "')");
         line("let builder = new " + builderName + "()");
         for (ValueObjectProperty property : properties) {
             String accessor = NamingUtility.propertyName(property.name());

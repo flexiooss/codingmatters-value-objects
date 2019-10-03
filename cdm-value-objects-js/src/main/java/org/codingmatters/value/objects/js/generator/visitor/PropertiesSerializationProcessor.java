@@ -38,7 +38,7 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     public void process( ValueObjectProperty property ) throws ProcessingException {
         this.currentProperty = property.name();
         try {
-            writer.line( "if (this." + NamingUtility.attributeName( currentProperty ) + " !== null) {" );
+            writer.line( "if (!isNull(this." + NamingUtility.attributeName( currentProperty ) + ")) {" );
             writer.indent();
             writer.string( "jsonObject['" + currentProperty + "'] = this." + NamingUtility.attributeName( currentProperty ) );
             property.type().process( this );
