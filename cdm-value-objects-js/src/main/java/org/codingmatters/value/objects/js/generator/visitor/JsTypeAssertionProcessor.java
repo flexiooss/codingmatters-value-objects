@@ -65,7 +65,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ObjectTypeInSpecValueObject inSpecValueObject ) throws ProcessingException {
         try {
-            write.line( "if (!isNull( " + currentVariable + ")) {" );
+            write.line( "if (!isNull(" + currentVariable + ")) {" );
             write.indent();
             write.string( "assertType( " + currentVariable + " instanceof " );
             write.string( NamingUtility.classFullName( inSpecValueObject.packageName() + "." + inSpecValueObject.inSpecValueObjectName() ) );
@@ -121,7 +121,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
                 case FLOAT:
                 case LONG:
                 case DOUBLE:
-                    write.line( "if (!isNull( " + currentVariable + ")) {" );
+                    write.line( "if (!isNull(" + currentVariable + ")) {" );
                     write.line( "assertType(isNumber(" + currentVariable + "), '" + currentVariable + " should be a number')" );
                     write.line( "}" );
                     break;
@@ -147,17 +147,17 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
                     write.line( "}" );
                     break;
                 case TIME:
-                    write.line( "if (!isNull( " + currentVariable + ")) {" );
+                    write.line( "if (!isNull(" + currentVariable + ")) {" );
                     write.line( "assertType(" + currentVariable + " instanceof FlexTime, '" + currentVariable + " should be a FlexTime')" );
                     write.line( "}" );
                     break;
                 case DATE_TIME:
-                    write.line( "if (!isNull( " + currentVariable + ")) {" );
+                    write.line( "if (!isNull(" + currentVariable + ")) {" );
                     write.line( "assertType(" + currentVariable + " instanceof FlexDateTime, '" + currentVariable + " should be a FlexDateTime')" );
                     write.line( "}" );
                     break;
                 case TZ_DATE_TIME:
-                    write.line( "if (!isNull( " + currentVariable + ")) {" );
+                    write.line( "if (!isNull(" + currentVariable + ")) {" );
                     write.line( "assertType(" + currentVariable + " instanceof FlexZonedDateTime, '" + currentVariable + " should be a FlexZonedDateTime')" );
                     write.line( "}" );
                     break;
