@@ -272,7 +272,49 @@ public class JsonReaderGenerationTest {
         }
     }
 
+    @Test
+    public void readIntegerWithDecimal0() throws Exception {
+        String json = "{" +
+                "\"integerProp\":12.0," +
+                "\"longProp\":12.0" +
+                "}";
 
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            ObjectHelper reader = this.classes.get("org.generated.json.SimplePropsReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
+
+            assertThat(
+                    value.get(),
+                    is(new SimpleProps.Builder()
+                            .integerProp(12)
+                            .longProp(12L)
+                            .build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void readIntegerWithDecimal() throws Exception {
+        String json = "{" +
+                "\"integerProp\":12.12," +
+                "\"longProp\":12.99" +
+                "}";
+
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            ObjectHelper reader = this.classes.get("org.generated.json.SimplePropsReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
+
+            assertThat(
+                    value.get(),
+                    is(new SimpleProps.Builder()
+                            .integerProp(12)
+                            .longProp(12L)
+                            .build()
+                    )
+            );
+        }
+    }
 
     @Test
     public void readSimpleTypes() throws Exception {
@@ -306,6 +348,28 @@ public class JsonReaderGenerationTest {
                             .timeProp(LocalTime.parse("10:15:30"))
                             .dateTimeProp(LocalDateTime.parse("2011-12-03T10:15:30"))
                             .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30+01:00"))
+                            .build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void readFloatWithoutDecimals() throws Exception {
+        String json = "{" +
+                "\"floatProp\":12," +
+                "\"doubleProp\":12" +
+                "}";
+
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            ObjectHelper reader = this.classes.get("org.generated.json.SimplePropsReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
+
+            assertThat(
+                    value.get(),
+                    is(new SimpleProps.Builder()
+                            .floatProp(12f)
+                            .doubleProp(12d)
                             .build()
                     )
             );
