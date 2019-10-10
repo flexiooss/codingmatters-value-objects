@@ -24,14 +24,22 @@ class PropertyValueImpl implements PropertyValue {
 
         @Override
         public Long longValue() {
-            assert this.type.equals(Type.LONG);
-            return (Long) this.value;
+            if( this.type.equals( Type.DOUBLE ) ){
+                return this.doubleValue().longValue();
+            } else {
+                assert this.type.equals( Type.LONG );
+                return (Long) this.value;
+            }
         }
 
         @Override
         public Double doubleValue() {
-            assert this.type.equals(Type.DOUBLE);
-            return (Double) this.value;
+            if( this.type.equals( Type.LONG ) ){
+                return this.longValue().doubleValue();
+            } else {
+                assert this.type.equals( Type.DOUBLE );
+                return (Double) this.value;
+            }
         }
 
         @Override

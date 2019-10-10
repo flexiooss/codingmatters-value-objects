@@ -58,11 +58,25 @@ public class ObjectValueReaderTest {
     }
 
     @Test
+    public void longIsRetrievableAsDouble() throws Exception {
+        ObjectValue read = new ObjectValueReader().read( jsonFactory.createParser( "{\"prop\": 12}" ) );
+        assertThat(read.property( "prop" ).single().longValue(), is( 12L ));
+        assertThat( read.property( "prop" ).single().doubleValue(), is( 12.0 ) );
+    }
+
+    @Test
     public void singleDouble() throws Exception {
         assertThat(
                 new ObjectValueReader().read(jsonFactory.createParser("{\"prop\": 12.0}")),
                 is(ObjectValue.builder().property("prop", builder -> builder.doubleValue(12.0)).build())
         );
+    }
+
+    @Test
+    public void doubleIsRetrievableAsLong() throws Exception {
+        ObjectValue read = new ObjectValueReader().read( jsonFactory.createParser( "{\"prop\": 12.4}" ) );
+        assertThat(read.property( "prop" ).single().doubleValue(), is( 12.4 ));
+        assertThat( read.property( "prop" ).single().longValue(), is( 12L ) );
     }
 
     @Test
