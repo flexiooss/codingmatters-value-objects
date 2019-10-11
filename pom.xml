@@ -83,6 +83,7 @@
         <module>cdm-value-objects-php</module>
         <module>cdm-value-objects-yaml-parser</module>
         <module>cdm-value-objects-js</module>
+        <module>cdm-value-objects-java</module>
     </modules>
 
     <dependencyManagement>
