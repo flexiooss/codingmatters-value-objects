@@ -42,7 +42,7 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
             writer.indent();
             writer.string( "jsonObject['" + currentProperty + "'] = ");
             if (property.type().equals(ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.OBJECT)) {
-                writer.string("JSON.parse(JSON.stringify(this." + NamingUtility.attributeName(currentProperty) + "))");
+                writer.string("Object.assign({}, this." + NamingUtility.attributeName(currentProperty) + ")");
             } else {
                 writer.string("this." +NamingUtility.attributeName(currentProperty));
                 property.type().process( this );
