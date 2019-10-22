@@ -245,6 +245,7 @@ public class ValueReader {
 
         method
                 .addStatement("parser.nextToken()")
+                .addStatement("if (parser.currentToken() == null) return null")
                 .addStatement("if (parser.currentToken() == JsonToken.VALUE_NULL) return null")
                 .beginControlFlow("if (parser.currentToken() == JsonToken.START_ARRAY)")
                     .addStatement("LinkedList<$T> listValue = new LinkedList<>()", this.types.valueType())
@@ -284,6 +285,7 @@ public class ValueReader {
         /*
         if(parser.currentToken() == JsonToken.VALUE_NULL) return null;
         */
+        method.addStatement("if(parser.currentToken() == null) return null");
         method.addStatement("if(parser.currentToken() == $T.VALUE_NULL) return null", JsonToken.class);
         /*
         if (parser.currentToken() != JsonToken.START_OBJECT) {
@@ -459,6 +461,7 @@ public class ValueReader {
                 .returns(TypeVariableName.get("T"))
                 .addException(IOException.class)
                 .addStatement("parser.nextToken()")
+                .addStatement("if (parser.currentToken() == null) return null")
                 .addStatement("if (parser.currentToken() == $T.VALUE_NULL) return null", JsonToken.class)
                 .addStatement("if (expectedTokens.contains(parser.currentToken())) return reader.read(parser)")
                 .addStatement("" +

@@ -15,6 +15,7 @@ public class ObjectValueReader {
         if(parser.getCurrentToken() == null) {
             parser.nextToken();
         }
+        if(parser.currentToken() == null) return null;
         if(parser.currentToken() == JsonToken.VALUE_NULL) return null;
         if(parser.currentToken() != JsonToken.START_OBJECT) {
             throw new IOException(
@@ -89,6 +90,7 @@ public class ObjectValueReader {
 
     public ObjectValue[] readArray(JsonParser parser) throws IOException {
         parser.nextToken();
+        if (parser.currentToken() == null) return null;
         if (parser.currentToken() == JsonToken.VALUE_NULL) return null;
         if (parser.currentToken() == JsonToken.START_ARRAY) {
             LinkedList<ObjectValue> listValue = new LinkedList<>();
