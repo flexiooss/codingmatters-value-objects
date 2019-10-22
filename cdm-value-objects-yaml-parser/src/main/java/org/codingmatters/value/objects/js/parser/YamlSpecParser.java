@@ -149,7 +149,8 @@ public class YamlSpecParser {
     private ValueObjectType parseNestedTypeProperty( Map<String, ?> properties ) throws SyntaxError {
         ParsedValueObject nestValueObject = new ParsedValueObject( NamingUtils.camelCase( context.peek() ), typesPackage );
         this.parseProperties( nestValueObject, properties );
-        return new ObjectTypeNested( nestValueObject, String.join( ".", this.context.subList( this.context.size() - 2, this.context.size() - 1 ) ) );
+        return new ObjectTypeNested( nestValueObject, String.join( ".", this.context.subList( 0, this.context.size() - 1 )
+        ));
     }
 
 }

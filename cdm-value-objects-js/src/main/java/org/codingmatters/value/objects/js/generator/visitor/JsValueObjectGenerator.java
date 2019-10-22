@@ -191,7 +191,12 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
     @Override
     public void process(ObjectTypeNested nestedValueObject) throws ProcessingException {
         generationContext.addImport(FLEXIO_GLOBAL_IMPORT_REGISTRY_LINE);
-        JsValueObjectGenerator processor = new JsValueObjectGenerator(this.rootDirectory, this.currentPackage + "." + nestedValueObject.namespace(), this.currentPackage, this.packageBuilder);
+        JsValueObjectGenerator processor = new JsValueObjectGenerator(
+                this.rootDirectory,
+                this.generationContext.typesPackage() + "." + nestedValueObject.namespace(),
+                this.currentPackage,
+                this.packageBuilder
+        );
         processor.process(nestedValueObject.nestValueObject());
     }
 
