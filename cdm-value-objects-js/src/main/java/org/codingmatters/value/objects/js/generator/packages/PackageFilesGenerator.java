@@ -35,18 +35,22 @@ public class PackageFilesGenerator {
             for( String className : rootPackage.classes() ){
                 String builder = className + "Builder";
                 fileWriter.line( "import { " + className + ", " + builder + " } from './" + className + "'" );
+                fileWriter.line( "import { " + className + "List } from './" + className + "List'" );
             }
             for( String className : rootPackage.lists() ){
                 fileWriter.line( "import { " + className + " } from './" + className + "'" );
+                fileWriter.line( "import { " + className + "List } from './" + className + "List'" );
             }
             fileWriter.newLine();
             for( String classe : rootPackage.classes() ){
                 String builder = classe + "Builder";
                 line( rootPackage, classe, fileWriter );
+                line( rootPackage, classe + "List", fileWriter );
                 line( rootPackage, builder, fileWriter );
             }
             for( String classe : rootPackage.lists() ){
                 line( rootPackage, classe, fileWriter );
+                line( rootPackage, classe + "List", fileWriter );
             }
             fileWriter.newLine();
             for( PackageConfiguration subPackage : rootPackage.subPackages() ){

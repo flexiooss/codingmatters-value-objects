@@ -19,6 +19,8 @@ arraySimpleProps:
     $list: date-time
   tzDateTimeList:
     $list: tz-date-time
+  objectList:
+    $list: object
 
   stringSet:
     $set: string

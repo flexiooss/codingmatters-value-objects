@@ -1,7 +1,7 @@
 import {TestCase} from 'code-altimeter-js'
 import "../org/package"
 import { globalFlexioImport } from '@flexio-oss/global-import-registry'
-
+import "@flexio-oss/flex-types"
 const assert = require('assert')
 
 class ComplexType extends TestCase {
@@ -9,7 +9,7 @@ class ComplexType extends TestCase {
     testBuilder() {
         let propBuilder = new globalFlexioImport.org.generated.complextype.ComplexPropsBuilder();
         propBuilder.stringProp( "toto" );
-        propBuilder.intList( new globalFlexioImport.org.generated.complextype.complexprops.ComplexPropsIntListList( 4, 7, 5 ));
+        propBuilder.intList( new globalFlexioImport.io.flexio.flex_types.arrays.IntegerArray( 4, 7, 5 ));
         let prop = propBuilder.build();
 
         let subComplexPropBuilder = new globalFlexioImport.org.generated.complextype.complexprops.SubComplexPropBuilder();
@@ -31,7 +31,7 @@ class ComplexType extends TestCase {
     testObjectImmutable() {
         let propBuilder = new globalFlexioImport.org.generated.complextype.ComplexPropsBuilder();
         propBuilder.stringProp( "toto" );
-        propBuilder.intList( new globalFlexioImport.org.generated.complextype.complexprops.ComplexPropsIntListList( 4, 7, 5 ));
+        propBuilder.intList( new globalFlexioImport.io.flexio.flex_types.arrays.IntegerArray( 4, 7, 5 ));
         let prop = propBuilder.build();
 
         let builder = new globalFlexioImport.org.generated.ComplexTypeBuilder();
@@ -52,7 +52,7 @@ class ComplexType extends TestCase {
     testObjectFrozen() {
         let propBuilder = new globalFlexioImport.org.generated.complextype.ComplexPropsBuilder();
         propBuilder.stringProp( "toto" );
-        propBuilder.intList( new globalFlexioImport.org.generated.complextype.complexprops.ComplexPropsIntListList( 4, 7, 5 ));
+        propBuilder.intList( new globalFlexioImport.io.flexio.flex_types.arrays.IntegerArray( 4, 7, 5 ));
         let prop = propBuilder.build();
 
         let builder = new globalFlexioImport.org.generated.ComplexTypeBuilder();
@@ -73,7 +73,7 @@ class ComplexType extends TestCase {
     testSerialization() {
         let propBuilder = new globalFlexioImport.org.generated.complextype.ComplexPropsBuilder();
         propBuilder.stringProp( "toto" );
-        propBuilder.intList( new globalFlexioImport.org.generated.complextype.complexprops.ComplexPropsIntListList( 4, 7, 5 ));
+        propBuilder.intList( new globalFlexioImport.io.flexio.flex_types.arrays.IntegerArray( 4, 7, 5 ));
 
         let subComplexPropBuilder = new globalFlexioImport.org.generated.complextype.complexprops.SubComplexPropBuilder();
         subComplexPropBuilder.stringProp("toto")

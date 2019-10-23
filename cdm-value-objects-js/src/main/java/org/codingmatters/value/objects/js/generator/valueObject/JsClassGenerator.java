@@ -4,7 +4,7 @@ import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.JsFileWriter;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.generator.visitor.JsTypeAssertionProcessor;
-import org.codingmatters.value.objects.js.generator.visitor.JsTypeReferenceProcessor;
+import org.codingmatters.value.objects.js.generator.visitor.JsObjectValueTypeReferenceProcessor;
 import org.codingmatters.value.objects.js.generator.visitor.PropertiesDeserializationProcessor;
 import org.codingmatters.value.objects.js.generator.visitor.PropertiesSerializationProcessor;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
@@ -20,13 +20,13 @@ import static org.codingmatters.value.objects.js.generator.NamingUtility.propert
 
 public class JsClassGenerator extends JsFileWriter {
 
-    private final JsTypeReferenceProcessor jsTypeDescriptor;
+    private final JsObjectValueTypeReferenceProcessor jsTypeDescriptor;
     private final JsTypeAssertionProcessor jsTypeAssertion;
     private final String typesPackage;
 
     public JsClassGenerator(String filePath, String typesPackage) throws IOException {
         super(filePath);
-        this.jsTypeDescriptor = new JsTypeReferenceProcessor(this);
+        this.jsTypeDescriptor = new JsObjectValueTypeReferenceProcessor(this);
         this.jsTypeAssertion = new JsTypeAssertionProcessor(this, typesPackage);
         this.typesPackage = typesPackage;
     }

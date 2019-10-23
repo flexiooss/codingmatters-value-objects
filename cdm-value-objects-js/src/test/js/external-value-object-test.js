@@ -19,7 +19,7 @@ class ExternalValueObjectTest extends TestCase {
 
         let builder = new globalFlexioImport.org.generated.ValueObjectPropsBuilder();
         builder.prop( prop1 );
-        builder.propList( new globalFlexioImport.org.generated.valueobjectprops.ValueObjectPropsPropListList (prop2, prop3 ));
+        builder.propList( new globalFlexioImport.org.generated.PrimitivePropsList (prop2, prop3 ));
         return builder.build();
     }
 
