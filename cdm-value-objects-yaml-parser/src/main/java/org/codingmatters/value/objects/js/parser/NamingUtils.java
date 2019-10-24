@@ -25,6 +25,6 @@ public class NamingUtils {
     }
 
     public static String convertToNameSpace(String namespace) {
-        return namespace.toLowerCase();
+        return namespace == null ? null : namespace.toLowerCase();
     }
 }

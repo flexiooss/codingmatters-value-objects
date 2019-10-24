@@ -129,12 +129,17 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
         File targetFile = new File( targetDirectory, objectName + "List.js" );
         String enumReference = targetPackage + "." + objectName;
         System.out.println( "GENERATE ENUM " + enumReference + " IN " + targetFile.getPath().replace( "/home/nico/workspaces/codingmatters/codingmatters-value-objects/cdm-value-objects-js/target/js-test", "OK" ) );
-
         if( generateList ){
+            String namespace;
+            if( targetPackage.equals( generationContext.typesPackage() ) ){
+                namespace = null;
+            } else {
+                namespace = targetPackage.replace( generationContext.typesPackage() + ".", "" );
+            }
             new JsValueListGenerator( generationContext.typesPackage(), targetFile.getPath() ).process(
                     new ValueObjectTypeList(
                             null,
-                            new YamlEnumInSpecEnum( objectName, targetPackage.replace( generationContext.typesPackage() + ".", "" ) ),
+                            new YamlEnumInSpecEnum( objectName, namespace ),
                             targetPackage
                     )
             );

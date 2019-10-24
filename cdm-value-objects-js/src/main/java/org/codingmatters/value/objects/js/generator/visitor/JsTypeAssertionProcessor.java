@@ -194,7 +194,10 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
             write.line( "if (!isNull(" + currentVariable + ")) {" );
             write.indent();
             write.string( "assertType(" + currentVariable + " instanceof " );
-            String line = NamingUtility.classFullName( rootPackage + "." + inSpecEnum.namespace() + "." + inSpecEnum.name() );
+
+            String line = inSpecEnum.namespace() != null ?
+                    NamingUtility.classFullName( rootPackage + "." + inSpecEnum.namespace() + "." + inSpecEnum.name() )
+                    : NamingUtility.classFullName( rootPackage + "." + inSpecEnum.name() );
             write.string( line );
             write.string( ", '" + currentVariable + " should be a " );
             jsTypeReferenceProcessor.process( inSpecEnum );
