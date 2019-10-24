@@ -21,6 +21,7 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
     public static final String FLEXIO_GLOBAL_IMPORT_REGISTRY_LINE = "import { globalFlexioImport } from '@flexio-oss/global-import-registry'";
     private final File rootDirectory;
     private final String currentPackage;
+    private final boolean generateList;
     private final GenerationContext generationContext;
     private final PackageFilesBuilder packageBuilder;
     private Set<String> flexioTypesImport;
@@ -28,6 +29,10 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
     private Set<String> flexioAssertImport;
 
     public JsValueObjectGenerator( File rootDirectory, String currentPackage, String typesPackage, PackageFilesBuilder packageBuilder ) {
+        this( rootDirectory, currentPackage, typesPackage, packageBuilder, true );
+    }
+
+    public JsValueObjectGenerator( File rootDirectory, String currentPackage, String typesPackage, PackageFilesBuilder packageBuilder, boolean generateList ) {
         this.rootDirectory = rootDirectory;
         this.currentPackage = currentPackage;
         this.generationContext = new GenerationContext( currentPackage, typesPackage );
@@ -41,6 +46,7 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
         this.flexioAssertImport.add( "isString" );
         this.flexioGeneratorHelperImport.add( "deepFreezeSeal" );
         this.packageBuilder = packageBuilder;
+        this.generateList = generateList;
     }
 
     public JsValueObjectGenerator( File rootDir, String typesPackage, PackageFilesBuilder packageBuilder ) {
@@ -67,18 +73,20 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
     private void generateClass( ParsedValueObject valueObject ) throws Exception {
         File targetDirectory = new File( rootDirectory, generationContext.currentPackagePath() );
         String objectName = NamingUtility.className( valueObject.name() );
-
         String targetFile = String.join( "/", targetDirectory.getPath(), objectName + "List.js" );
-        new JsValueListGenerator( generationContext.typesPackage(), targetFile ).process(
-                new ValueObjectTypeList(
-                        valueObject.name() + "List",
-                        new ObjectTypeExternalValue( generationContext.currentPackage() + "." + valueObject.name() ),
-                        "null"
-                )
-        );
+
+        if( generateList ){
+            new JsValueListGenerator( generationContext.typesPackage(), targetFile ).process(
+                    new ValueObjectTypeList(
+                            valueObject.name() + "List",
+                            new ObjectTypeExternalValue( generationContext.currentPackage() + "." + valueObject.name() ),
+                            "null"
+                    )
+            );
+        }
 
         String fileName = objectName + ".js";
-        packageBuilder.addClass( generationContext.currentPackage(), objectName );
+        packageBuilder.addClass( generationContext.currentPackage(), objectName, generateList );
 
         targetFile = String.join( "/", targetDirectory.getPath(), fileName );
         try( JsClassGenerator write = new JsClassGenerator( targetFile, generationContext.typesPackage() ) ){
@@ -122,15 +130,17 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
         String enumReference = targetPackage + "." + objectName;
         System.out.println( "GENERATE ENUM " + enumReference + " IN " + targetFile.getPath().replace( "/home/nico/workspaces/codingmatters/codingmatters-value-objects/cdm-value-objects-js/target/js-test", "OK" ) );
 
-        new JsValueListGenerator( generationContext.typesPackage(), targetFile.getPath() ).process(
-                new ValueObjectTypeList(
-                        null,
-                        new YamlEnumInSpecEnum( objectName, targetPackage.replace( generationContext.typesPackage() + ".", "" ) ),
-                        targetPackage
-                )
-        );
-        packageBuilder.addList( targetPackage, objectName );
+        if( generateList ){
+            new JsValueListGenerator( generationContext.typesPackage(), targetFile.getPath() ).process(
+                    new ValueObjectTypeList(
+                            null,
+                            new YamlEnumInSpecEnum( objectName, targetPackage.replace( generationContext.typesPackage() + ".", "" ) ),
+                            targetPackage
+                    )
+            );
+        }
         String fileName = objectName + ".js";
+        packageBuilder.addEnum( targetPackage, objectName, generateList );
         targetFile = new File( targetDirectory, fileName );
         try( JsClassGenerator write = new JsClassGenerator( targetFile.getPath(), generationContext.typesPackage() ) ){
             write.line( "import { FlexEnum } from '@flexio-oss/flex-types'" );

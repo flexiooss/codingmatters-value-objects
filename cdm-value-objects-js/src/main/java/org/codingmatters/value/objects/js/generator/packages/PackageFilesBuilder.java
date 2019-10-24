@@ -13,20 +13,20 @@ public class PackageFilesBuilder {
         packagesConfiguration = new HashMap<>();
     }
 
-    public void addClass( String currentPackage, String objectName ) throws GenerationException {
+    public void addClass( String currentPackage, String objectName, boolean generateList ) throws GenerationException {
         String rootPackage = getRootPackage( currentPackage );
         packagesConfiguration.putIfAbsent( rootPackage, new PackageConfiguration( currentPackage ) );
-        packagesConfiguration.get( rootPackage ).addClass( currentPackage, objectName );
+        packagesConfiguration.get( rootPackage ).addClass( currentPackage, objectName, generateList );
     }
 
     private String getRootPackage( String currentPackage ) {
         return currentPackage.split( "\\." )[0];
     }
 
-    public void addList( String currentPackage, String objectName ) throws GenerationException {
+    public void addEnum( String currentPackage, String objectName, boolean generateList ) throws GenerationException {
         String rootPackage = getRootPackage( currentPackage );
         packagesConfiguration.putIfAbsent( rootPackage, new PackageConfiguration( currentPackage ) );
-        packagesConfiguration.get( rootPackage ).addList( currentPackage, objectName );
+        packagesConfiguration.get( rootPackage ).addEnum( currentPackage, objectName, generateList );
     }
 
     public Map<String, PackageConfiguration> packageConfig() {

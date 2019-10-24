@@ -28,36 +28,44 @@ public class PackageFilesGenerator {
 
     private void generatePackageFile( PackageConfiguration rootPackage ) throws GenerationException {
         String targetFile = targetDirectory + "/" + rootPackage.fullName().replace( ".", "/" ) + "/package.js";
-        try( JsFileWriter fileWriter = new JsFileWriter( targetFile ) ) {
+        try( JsFileWriter fileWriter = new JsFileWriter( targetFile ) ){
             fileWriter.line( "import { globalFlexioImport } from '@flexio-oss/global-import-registry'" );
             fileWriter.line( "import { deepKeyAssigner } from '@flexio-oss/js-generator-helpers'" );
 
-            for( String className : rootPackage.classes() ){
-                String builder = className + "Builder";
-                fileWriter.line( "import { " + className + ", " + builder + " } from './" + className + "'" );
-                fileWriter.line( "import { " + className + "List } from './" + className + "List'" );
+            for( PackageConfiguration.ObjectValueConfiguration objectValueConfig : rootPackage.classes() ){
+                String builder = objectValueConfig.name() + "Builder";
+                fileWriter.line( "import { " + objectValueConfig.name() + ", " + builder + " } from './" + objectValueConfig.name() + "'" );
+                if( objectValueConfig.generateList() ){
+                    fileWriter.line( "import { " + objectValueConfig.name() + "List } from './" + objectValueConfig.name() + "List'" );
+                }
             }
-            for( String className : rootPackage.lists() ){
-                fileWriter.line( "import { " + className + " } from './" + className + "'" );
-                fileWriter.line( "import { " + className + "List } from './" + className + "List'" );
+            for( PackageConfiguration.ObjectValueConfiguration className : rootPackage.lists() ){
+                fileWriter.line( "import { " + className.name() + " } from './" + className.name() + "'" );
+                if( className.generateList() ){
+                    fileWriter.line( "import { " + className.name() + "List } from './" + className.name() + "List'" );
+                }
             }
             fileWriter.newLine();
-            for( String classe : rootPackage.classes() ){
-                String builder = classe + "Builder";
-                line( rootPackage, classe, fileWriter );
-                line( rootPackage, classe + "List", fileWriter );
+            for( PackageConfiguration.ObjectValueConfiguration objectValueConfig : rootPackage.classes() ){
+                String builder = objectValueConfig.name() + "Builder";
+                line( rootPackage, objectValueConfig.name(), fileWriter );
+                if( objectValueConfig.generateList() ){
+                    line( rootPackage, objectValueConfig.name() + "List", fileWriter );
+                }
                 line( rootPackage, builder, fileWriter );
             }
-            for( String classe : rootPackage.lists() ){
-                line( rootPackage, classe, fileWriter );
-                line( rootPackage, classe + "List", fileWriter );
+            for( PackageConfiguration.ObjectValueConfiguration classe : rootPackage.lists() ){
+                line( rootPackage, classe.name(), fileWriter );
+                if( classe.generateList() ){
+                    line( rootPackage, classe.name() + "List", fileWriter );
+                }
             }
             fileWriter.newLine();
             for( PackageConfiguration subPackage : rootPackage.subPackages() ){
                 fileWriter.line( "import './" + subPackage.name() + "/package'" );
             }
             fileWriter.flush();
-        } catch( Exception e ){
+        } catch( Exception e ) {
             throw new GenerationException( "Error generating package files", e );
         }
     }
