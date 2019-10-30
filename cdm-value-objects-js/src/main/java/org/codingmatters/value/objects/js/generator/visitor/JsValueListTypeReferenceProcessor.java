@@ -2,7 +2,6 @@ package org.codingmatters.value.objects.js.generator.visitor;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.JsFileWriter;
-import org.codingmatters.value.objects.js.generator.valueObject.JsClassGenerator;
 import org.codingmatters.value.objects.js.parser.model.ParsedEnum;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
 import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
@@ -36,17 +35,29 @@ public class JsValueListTypeReferenceProcessor implements ParsedYamlProcessor {
 
     @Override
     public void process( ObjectTypeExternalValue externalValueObject ) throws ProcessingException {
-
+        try{
+            write.string( externalValueObject.objectReference().substring( externalValueObject.objectReference().lastIndexOf( "." ) + 1 ) + "List" );
+        } catch( IOException e ) {
+            throw new ProcessingException( e );
+        }
     }
 
     @Override
     public void process( ObjectTypeInSpecValueObject inSpecValueObject ) throws ProcessingException {
-
+        try{
+            write.string( inSpecValueObject.inSpecValueObjectName() + "List" );
+        } catch( IOException e ) {
+            throw new ProcessingException( e );
+        }
     }
 
     @Override
     public void process( ObjectTypeNested nestedValueObject ) throws ProcessingException {
-
+        try{
+            write.string( nestedValueObject.nestValueObject().name() + "List" );
+        } catch( IOException e ) {
+            throw new ProcessingException( e );
+        }
     }
 
     @Override
@@ -102,6 +113,11 @@ public class JsValueListTypeReferenceProcessor implements ParsedYamlProcessor {
 
     @Override
     public void process( YamlEnumExternalEnum externalEnum ) throws ProcessingException {
+        try{
+            write.string( externalEnum.enumReference().substring( externalEnum.enumReference().lastIndexOf( "." ) + 1 ) + "List" );
+        } catch( IOException e ) {
+            throw new ProcessingException( e );
+        }
     }
 
     @Override
@@ -115,7 +131,11 @@ public class JsValueListTypeReferenceProcessor implements ParsedYamlProcessor {
 
     @Override
     public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException {
-
+        try{
+            write.string( externalType.typeReference().substring( externalType.typeReference().indexOf( "." ) + 1 ) + "List" );
+        } catch( IOException e ) {
+            throw new ProcessingException( e );
+        }
     }
 
     @Override
