@@ -121,8 +121,12 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
         try {
             switch( primitiveType.type() ){
                 case INT:
-                case FLOAT:
                 case LONG:
+                    write.line( "if (!isNull(" + currentVariable + ")) {" );
+                    write.line( "assertType(isInteger(" + currentVariable + "), '" + currentVariable + " should be a number')" );
+                    write.line( "}" );
+                    break;
+                case FLOAT:
                 case DOUBLE:
                     write.line( "if (!isNull(" + currentVariable + ")) {" );
                     write.line( "assertType(isNumber(" + currentVariable + "), '" + currentVariable + " should be a number')" );

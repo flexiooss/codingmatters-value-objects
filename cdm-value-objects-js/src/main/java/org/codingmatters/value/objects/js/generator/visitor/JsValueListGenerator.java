@@ -24,7 +24,7 @@ public class JsValueListGenerator implements ParsedYamlProcessor {
 
     private void writeList( JsClassGenerator write, ValueObjectType inSpecValueObject, String name ) throws IOException, ProcessingException {
         write.line( JsValueObjectGenerator.FLEXIO_GLOBAL_IMPORT_REGISTRY_LINE );
-        write.line( "import { assertType, isBoolean, isObject, assert, isNumber, isNull, isString } from '@flexio-oss/assert'" );
+        write.line( "import { assertType, isBoolean, isObject, assert, isNumber, isInteger, isNull, isString } from '@flexio-oss/assert'" );
         write.line( "import { deepFreezeSeal } from '@flexio-oss/js-generator-helpers'" );
         write.line( "import { FlexArray } from '@flexio-oss/flex-types'" );
         write.extendGenericTypeJsDoc( inSpecValueObject );

@@ -247,8 +247,10 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
                 this.flexioAssertImport.add( "isObject" );
                 break;
             case INT:
-            case DOUBLE:
             case LONG:
+                this.flexioAssertImport.add( "isInteger" );
+                break;
+            case DOUBLE:
             case FLOAT:
                 this.flexioAssertImport.add( "isNumber" );
                 break;
