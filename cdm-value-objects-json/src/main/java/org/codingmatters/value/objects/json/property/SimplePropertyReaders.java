@@ -17,10 +17,10 @@ import java.util.HashSet;
  */
 public enum SimplePropertyReaders {
     STRING("getText", String.class, JsonToken.VALUE_STRING),
-    INTEGER("getIntValue", Integer.class, JsonToken.VALUE_NUMBER_INT),
-    LONG("getLongValue", Long.class, JsonToken.VALUE_NUMBER_INT),
-    FLOAT("getFloatValue", Float.class, JsonToken.VALUE_NUMBER_FLOAT),
-    DOUBLE("getDoubleValue", Double.class, JsonToken.VALUE_NUMBER_FLOAT),
+    INTEGER("getIntValue", Integer.class, JsonToken.VALUE_NUMBER_INT, JsonToken.VALUE_NUMBER_FLOAT),
+    LONG("getLongValue", Long.class, JsonToken.VALUE_NUMBER_INT, JsonToken.VALUE_NUMBER_FLOAT),
+    FLOAT("getFloatValue", Float.class, JsonToken.VALUE_NUMBER_FLOAT, JsonToken.VALUE_NUMBER_INT),
+    DOUBLE("getDoubleValue", Double.class, JsonToken.VALUE_NUMBER_FLOAT, JsonToken.VALUE_NUMBER_INT),
     BOOLEAN("getBooleanValue", Boolean.class, JsonToken.VALUE_TRUE, JsonToken.VALUE_FALSE),
     BINARY("getBinaryValue", byte[].class, JsonToken.VALUE_STRING),
     DATE("getText", LocalDate.class, new TemporalPropertyStatement(LocalDate.class), JsonToken.VALUE_STRING),

@@ -64,11 +64,13 @@ public class NamingUtility {
     }
 
     public static String builderFullName( String reference ) {
-        return "globalFlexioImport." + reference.substring( 0, reference.lastIndexOf( "." ) + 1 ) + NamingUtility.builderName( reference );
+        String name = "globalFlexioImport." + reference.substring( 0, reference.lastIndexOf( "." ) + 1 ) + NamingUtility.builderName( reference );
+        return name;
     }
 
     public static String classFullName( String reference ) {
-        return "globalFlexioImport." + reference;
+        String name = "globalFlexioImport." + reference;
+        return name;
     }
 
     public static String namespace( String name ) {

@@ -3,5 +3,7 @@ complexType:
     string-prop: string
     int-list:
       $list: int
+    sub-complex-prop:
+      string-prop: string
   test-is-ok: bool
   foo: float

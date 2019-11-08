@@ -9,8 +9,8 @@ public class PackageConfiguration {
     private final String name;
     private final PackageConfiguration parent;
     private final Set<PackageConfiguration> subPackages;
-    private final Set<String> classes;
-    private final Set<String> lists;
+    private final Set<ObjectValueConfiguration> classes;
+    private final Set<ObjectValueConfiguration> lists;
 
     public PackageConfiguration( PackageConfiguration parent, String name ) {
         if( name.contains( "." ) ){
@@ -28,28 +28,60 @@ public class PackageConfiguration {
         this.parent = parent;
     }
 
+    public static class ObjectValueConfiguration{
+        private final String name;
+        private final boolean generateList;
+
+        public ObjectValueConfiguration( String name, boolean generateList) {
+            this.name = name;
+            this.generateList = generateList;
+        }
+
+        public String name() {
+            return name;
+        }
+
+        public boolean generateList() {
+            return generateList;
+        }
+
+        @Override
+        public boolean equals( Object o ) {
+            if( this == o ) return true;
+            if( !(o instanceof ObjectValueConfiguration) ) return false;
+            ObjectValueConfiguration that = (ObjectValueConfiguration) o;
+            return generateList == that.generateList &&
+                    Objects.equals( name, that.name );
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash( name, generateList );
+        }
+    }
+
     public PackageConfiguration( String name ) {
         this( null, name );
     }
 
-    public void addClass( String currentPackage, String objectName ) throws GenerationException {
-        recursiveAddition( currentPackage, objectName, OBJECT_TYPE.CLASS );
+    public void addClass( String currentPackage, String objectName, boolean generateList ) throws GenerationException {
+        recursiveAddition( currentPackage, objectName, OBJECT_TYPE.CLASS, generateList );
     }
 
-    public void addList( String currentPackage, String objectName ) throws GenerationException {
-        recursiveAddition( currentPackage, objectName, OBJECT_TYPE.LIST );
+    public void addEnum( String currentPackage, String objectName, boolean generateList ) throws GenerationException {
+        recursiveAddition( currentPackage, objectName, OBJECT_TYPE.LIST, generateList );
     }
 
-    private void recursiveAddition( String currentPackage, String objectName, OBJECT_TYPE type ) throws GenerationException {
+    private void recursiveAddition( String currentPackage, String objectName, OBJECT_TYPE type, boolean generateList ) throws GenerationException {
         if( currentPackage.contains( "." ) ){
             String[] packageParts = currentPackage.split( "\\." );
             PackageConfiguration subPackage = subPackage( packageParts[1] );
             if( subPackage == null ){
                 throw new GenerationException( "Cannot add class " + currentPackage + "/" + objectName + " sub package is null" );
             }
-            subPackage.recursiveAddition( currentPackage.substring( packageParts[0].length() + 1 ), objectName, type );
+            subPackage.recursiveAddition( currentPackage.substring( packageParts[0].length() + 1 ), objectName, type, generateList );
         } else if( currentPackage.equals( this.name ) ){
-            type.add( this, objectName );
+            type.add( this, new ObjectValueConfiguration( objectName, generateList ) );
         } else {
             throw new GenerationException( "Cannot add class " + currentPackage + "/" + objectName + " sub package is null" );
         }
@@ -70,16 +102,16 @@ public class PackageConfiguration {
         return subPackages.toArray( new PackageConfiguration[0] );
     }
 
-    public String[] classes() {
-        return this.classes.toArray( new String[classes.size()] );
+    public ObjectValueConfiguration[] classes() {
+        return this.classes.toArray( new ObjectValueConfiguration[classes.size()] );
     }
 
     public String name() {
         return name;
     }
 
-    public String[] lists() {
-        return this.lists.toArray( new String[lists.size()] );
+    public ObjectValueConfiguration[] lists() {
+        return this.lists.toArray( new ObjectValueConfiguration[lists.size()] );
     }
 
     public String fullName() {
@@ -90,29 +122,21 @@ public class PackageConfiguration {
         }
     }
 
-    public String wrapInObject( String object ) {
-        if( parent == null ){
-            return "{\"" + this.name + "\":" + object + "}";
-        } else {
-            return parent.wrapInObject( "{\"" + this.name + "\":" + object + "}" );
-        }
-    }
-
     private enum OBJECT_TYPE {
         CLASS {
             @Override
-            public void add( PackageConfiguration packageConfiguration, String object ) {
+            public void add( PackageConfiguration packageConfiguration, ObjectValueConfiguration object ) {
                 packageConfiguration.classes.add( object );
             }
         },
         LIST {
             @Override
-            public void add( PackageConfiguration packageConfiguration, String object ) {
+            public void add( PackageConfiguration packageConfiguration, ObjectValueConfiguration object ) {
                 packageConfiguration.lists.add( object );
             }
         };
 
-        public abstract void add( PackageConfiguration packageConfiguration, String object );
+        public abstract void add( PackageConfiguration packageConfiguration, ObjectValueConfiguration object );
     }
 
 }

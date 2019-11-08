@@ -38,11 +38,15 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     public void process( ValueObjectProperty property ) throws ProcessingException {
         this.currentProperty = property.name();
         try {
-            writer.line( "if (this." + NamingUtility.attributeName( currentProperty ) + " !== null) {" );
+            writer.line( "if (!isNull(this." + NamingUtility.attributeName( currentProperty ) + ")) {" );
             writer.indent();
-            writer.string( "jsonObject['" + currentProperty + "'] = this." + NamingUtility.attributeName( currentProperty ) );
-            property.type().process( this );
-            writer.string( ";" );
+            writer.string( "jsonObject['" + currentProperty + "'] = ");
+            if (property.type().equals(ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.OBJECT)) {
+                writer.string("Object.assign({}, this." + NamingUtility.attributeName(currentProperty) + ")");
+            } else {
+                writer.string("this." +NamingUtility.attributeName(currentProperty));
+                property.type().process( this );
+            }
             writer.newLine();
             writer.line( "}" );
         } catch( IOException e ){

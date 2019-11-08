@@ -13,10 +13,10 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 
-public class JsTypeReferenceProcessor implements ParsedYamlProcessor {
+public class JsObjectValueTypeReferenceProcessor implements ParsedYamlProcessor {
     private final JsClassGenerator write;
 
-    public JsTypeReferenceProcessor( JsClassGenerator jsClassGenerator ) {
+    public JsObjectValueTypeReferenceProcessor( JsClassGenerator jsClassGenerator ) {
         this.write = jsClassGenerator;
     }
 
@@ -65,8 +65,8 @@ public class JsTypeReferenceProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ValueObjectTypeList list ) throws ProcessingException {
         try {
-            write.string( NamingUtility.className( list.name() ) );
-        } catch( IOException e ) {
+            new JsValueListTypeReferenceProcessor(write).process( list );
+        } catch( Exception e ) {
             throw new ProcessingException( "Error processing list type", e );
         }
     }

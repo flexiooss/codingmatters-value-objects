@@ -1,7 +1,7 @@
 import {TestCase} from 'code-altimeter-js'
 import "../org/package"
 import { globalFlexioImport } from '@flexio-oss/global-import-registry'
-
+import "@flexio-oss/flex-types"
 const assert = require('assert')
 
 class ComplexType extends TestCase {
@@ -9,8 +9,12 @@ class ComplexType extends TestCase {
     testBuilder() {
         let propBuilder = new globalFlexioImport.org.generated.complextype.ComplexPropsBuilder();
         propBuilder.stringProp( "toto" );
-        propBuilder.intList( new globalFlexioImport.org.generated.complextype.complexprops.ComplexPropsIntListList( 4, 7, 5 ));
+        propBuilder.intList( new globalFlexioImport.io.flexio.flex_types.arrays.IntegerArray( 4, 7, 5 ));
         let prop = propBuilder.build();
+
+        let subComplexPropBuilder = new globalFlexioImport.org.generated.complextype.complexprops.SubComplexPropBuilder();
+        subComplexPropBuilder.stringProp("toto")
+        propBuilder.subComplexProp( subComplexPropBuilder.build() );
 
         let builder = new globalFlexioImport.org.generated.ComplexTypeBuilder();
         builder.complexProps( prop );
@@ -27,7 +31,7 @@ class ComplexType extends TestCase {
     testObjectImmutable() {
         let propBuilder = new globalFlexioImport.org.generated.complextype.ComplexPropsBuilder();
         propBuilder.stringProp( "toto" );
-        propBuilder.intList( new globalFlexioImport.org.generated.complextype.complexprops.ComplexPropsIntListList( 4, 7, 5 ));
+        propBuilder.intList( new globalFlexioImport.io.flexio.flex_types.arrays.IntegerArray( 4, 7, 5 ));
         let prop = propBuilder.build();
 
         let builder = new globalFlexioImport.org.generated.ComplexTypeBuilder();
@@ -48,7 +52,7 @@ class ComplexType extends TestCase {
     testObjectFrozen() {
         let propBuilder = new globalFlexioImport.org.generated.complextype.ComplexPropsBuilder();
         propBuilder.stringProp( "toto" );
-        propBuilder.intList( new globalFlexioImport.org.generated.complextype.complexprops.ComplexPropsIntListList( 4, 7, 5 ));
+        propBuilder.intList( new globalFlexioImport.io.flexio.flex_types.arrays.IntegerArray( 4, 7, 5 ));
         let prop = propBuilder.build();
 
         let builder = new globalFlexioImport.org.generated.ComplexTypeBuilder();
@@ -69,7 +73,11 @@ class ComplexType extends TestCase {
     testSerialization() {
         let propBuilder = new globalFlexioImport.org.generated.complextype.ComplexPropsBuilder();
         propBuilder.stringProp( "toto" );
-        propBuilder.intList( new globalFlexioImport.org.generated.complextype.complexprops.ComplexPropsIntListList( 4, 7, 5 ));
+        propBuilder.intList( new globalFlexioImport.io.flexio.flex_types.arrays.IntegerArray( 4, 7, 5 ));
+
+        let subComplexPropBuilder = new globalFlexioImport.org.generated.complextype.complexprops.SubComplexPropBuilder();
+        subComplexPropBuilder.stringProp("toto")
+        propBuilder.subComplexProp( subComplexPropBuilder.build() );
 
         let prop = propBuilder.build();
 
@@ -79,8 +87,8 @@ class ComplexType extends TestCase {
         builder.testIsOk( true );
         let complexType = builder.build();
 
-        assert.strictEqual( JSON.stringify( prop ), "{\"string-prop\":\"toto\",\"intList\":[4,7,5]}" );
-        assert.strictEqual( JSON.stringify( complexType ), "{\"complexProps\":{\"string-prop\":\"toto\",\"intList\":[4,7,5]},\"test-is-ok\":true,\"foo\":1}" );
+        assert.strictEqual( JSON.stringify( prop ), "{\"string-prop\":\"toto\",\"intList\":[4,7,5],\"sub-complex-prop\":{\"string-prop\":\"toto\"}}" );
+        assert.strictEqual( JSON.stringify( complexType ), "{\"complexProps\":{\"string-prop\":\"toto\",\"intList\":[4,7,5],\"sub-complex-prop\":{\"string-prop\":\"toto\"}},\"test-is-ok\":true,\"foo\":1}" );
     }
 
     testDeserialization() {

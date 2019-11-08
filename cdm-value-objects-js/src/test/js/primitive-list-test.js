@@ -2,23 +2,23 @@ import {TestCase} from 'code-altimeter-js'
 import "../org/package"
 import { globalFlexioImport } from '@flexio-oss/global-import-registry'
 import {FlexDate, FlexDateTime, FlexTime, FlexZonedDateTime} from '@flexio-oss/flex-types'
-
+import "@flexio-oss/flex-types"
 const assert = require('assert')
 
 class PrimitiveListTest extends TestCase {
 
     testBuilder(){
         let builder = new globalFlexioImport.org.generated.ArraySimplePropsBuilder();
-        builder.booleanList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsBooleanListList( true, true, false ) );
-        builder.dateList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsDateListList( new FlexDate( "2019-01-17" ) ) );
-        builder.dateTimeList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsDateTimeListList( new FlexDateTime( "2019-01-17T14:15:37" ) ) );
-        builder.timeList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsTimeListList( new FlexTime( "14:15:37" ) ) );
-        builder.tzDateTimeList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsTzDateTimeListList( new FlexZonedDateTime( "2019-01-17T14:15:37+04:30" ) ) );
-        builder.doubleList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsDoubleListList( 1.4, 1.7, 1.9 ) );
-        builder.floatList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsFloatListList( 1.5, 1.6, 1.9 ) );
-        builder.integerList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsIntegerListList( 1, 2, 3 ) );
-        builder.longList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsLongListList( 4, 5, 6 ) );
-        builder.stringList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsStringListList( "1", "2", "3" ) );
+        builder.booleanList( new globalFlexioImport.io.flexio.flex_types.arrays.BooleanArray( true, true, false ) );
+        builder.dateList( new globalFlexioImport.io.flexio.flex_types.arrays.DateArray( new FlexDate( "2019-01-17" ) ) );
+        builder.dateTimeList( new globalFlexioImport.io.flexio.flex_types.arrays.DateTimeArray( new FlexDateTime( "2019-01-17T14:15:37" ) ) );
+        builder.timeList( new globalFlexioImport.io.flexio.flex_types.arrays.TimeArray( new FlexTime( "14:15:37" ) ) );
+        builder.tzDateTimeList( new globalFlexioImport.io.flexio.flex_types.arrays.TzDateTimeArray( new FlexZonedDateTime( "2019-01-17T14:15:37+04:30" ) ) );
+        builder.doubleList( new globalFlexioImport.io.flexio.flex_types.arrays.DoubleArray( 1.4, 1.7, 1.9 ) );
+        builder.floatList( new globalFlexioImport.io.flexio.flex_types.arrays.FloatArray( 1.5, 1.6, 1.9 ) );
+        builder.integerList( new globalFlexioImport.io.flexio.flex_types.arrays.IntegerArray( 1, 2, 3 ) );
+        builder.longList( new globalFlexioImport.io.flexio.flex_types.arrays.LongArray( 4, 5, 6 ) );
+        builder.stringList( new globalFlexioImport.io.flexio.flex_types.arrays.StringArray( "1", "2", "3" ) );
 
         let arrayProps = builder.build();
 
@@ -39,7 +39,7 @@ class PrimitiveListTest extends TestCase {
 
     testObjectImmutable(){
         let builder = new globalFlexioImport.org.generated.ArraySimplePropsBuilder();
-        builder.booleanList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsBooleanListList( true, true, false ) );
+        builder.booleanList( new globalFlexioImport.io.flexio.flex_types.arrays.BooleanArray( true, true, false ) );
         let primitiveProp = builder.build()
 
         assert.throws( () => {
@@ -49,7 +49,7 @@ class PrimitiveListTest extends TestCase {
 
     testObjectFrozen(){
         let builder = new globalFlexioImport.org.generated.ArraySimplePropsBuilder();
-        builder.booleanList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsBooleanListList( true, true, false ) );
+        builder.booleanList( new globalFlexioImport.io.flexio.flex_types.arrays.BooleanArray( true, true, false ) );
 
         let primitiveProp = builder.build();
 
@@ -60,16 +60,16 @@ class PrimitiveListTest extends TestCase {
 
     testSerialization(){
         let builder = new globalFlexioImport.org.generated.ArraySimplePropsBuilder();
-        builder.booleanList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsBooleanListList( true, true, false ) );
-        builder.dateList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsDateListList( new FlexDate( "2019-01-17" ) ) );
-        builder.dateTimeList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsDateTimeListList( new FlexDateTime( "2019-01-17T14:15:37" ) ) );
-        builder.timeList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsTimeListList( new FlexTime( "14:15:37" ) ) );
-        builder.tzDateTimeList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsTzDateTimeListList( new FlexZonedDateTime( "2019-01-17T14:15:37+04:30" ) ) );
-        builder.doubleList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsDoubleListList( 1.4, 1.7, 1.9 ) );
-        builder.floatList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsFloatListList( 1.5, 1.6, 1.9 ) );
-        builder.integerList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsIntegerListList( 1, 2, 3 ) );
-        builder.longList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsLongListList( 4, 5, 6 ) );
-        builder.stringList( new globalFlexioImport.org.generated.arraysimpleprops.ArraySimplePropsStringListList( "1", "2", "3" ) );
+        builder.booleanList( new globalFlexioImport.io.flexio.flex_types.arrays.BooleanArray( true, true, false ) );
+        builder.dateList( new globalFlexioImport.io.flexio.flex_types.arrays.DateArray( new FlexDate( "2019-01-17" ) ) );
+        builder.dateTimeList( new globalFlexioImport.io.flexio.flex_types.arrays.DateTimeArray( new FlexDateTime( "2019-01-17T14:15:37" ) ) );
+        builder.timeList( new globalFlexioImport.io.flexio.flex_types.arrays.TimeArray( new FlexTime( "14:15:37" ) ) );
+        builder.tzDateTimeList( new globalFlexioImport.io.flexio.flex_types.arrays.TzDateTimeArray( new FlexZonedDateTime( "2019-01-17T14:15:37+04:30" ) ) );
+        builder.doubleList( new globalFlexioImport.io.flexio.flex_types.arrays.DoubleArray( 1.4, 1.7, 1.9 ) );
+        builder.floatList( new globalFlexioImport.io.flexio.flex_types.arrays.FloatArray( 1.5, 1.6, 1.9 ) );
+        builder.integerList( new globalFlexioImport.io.flexio.flex_types.arrays.IntegerArray( 1, 2, 3 ) );
+        builder.longList( new globalFlexioImport.io.flexio.flex_types.arrays.LongArray( 4, 5, 6 ) );
+        builder.stringList( new globalFlexioImport.io.flexio.flex_types.arrays.StringArray( "1", "2", "3" ) );
         let arrayProps = builder.build();
         assert.strictEqual( JSON.stringify( arrayProps ), "{\"stringList\":[\"1\",\"2\",\"3\"],\"integerList\":[1,2,3],\"longList\":[4,5,6],\"floatList\":[1.5,1.6,1.9],\"doubleList\":[1.4,1.7,1.9],\"booleanList\":[true,true,false],\"dateList\":[\"2019-01-17\"],\"timeList\":[\"14:15:37\"],\"dateTimeList\":[\"2019-01-17T14:15:37\"],\"tzDateTimeList\":[\"2019-01-17T14:15:37+04:30\"]}" );
     }

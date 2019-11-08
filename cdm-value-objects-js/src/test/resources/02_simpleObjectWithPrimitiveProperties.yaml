@@ -10,3 +10,4 @@ primitiveProps:
   timeProp: time
   dateTimeProp: date-time
   tzDateTimeProp: tz-date-time
+  objectProp: object
