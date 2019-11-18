@@ -131,6 +131,9 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
                 case TZ_DATE_TIME:
                     write.string( "new FlexZonedDateTime(" + currentVariable + ")" );
                     break;
+                case OBJECT:
+                    write.string( NamingUtility.classFullName( "io.flexio.flex_types.ObjectValueBuilder" ) + ".fromObject(" + currentVariable + ").build()" );
+                    break;
                 default:
                     write.string( currentVariable );
                     break;

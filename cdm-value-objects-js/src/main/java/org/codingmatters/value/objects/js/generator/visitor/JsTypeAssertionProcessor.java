@@ -134,7 +134,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
                     break;
                 case OBJECT:
                     write.line( "if (!isNull( " + currentVariable + ")) {" );
-                    write.line( "assertType(isObject(" + currentVariable + "), '" + currentVariable + " should be an object')" );
+                    write.line( "assertType(" + currentVariable + " instanceof " + NamingUtility.classFullName( "io.flexio.flex_types.ObjectValue" ) + ", '" + currentVariable + " should be an ObjectValue')" );
                     write.line( "}" );
                     break;
                 case BYTES:
