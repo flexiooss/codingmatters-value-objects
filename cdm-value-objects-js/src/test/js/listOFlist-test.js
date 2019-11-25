@@ -41,12 +41,12 @@ class ListOListTest extends TestCase {
         strangeThing.doubleList( doubleList );
 
         let yaayDoubleList = strangeThing.build();
-        assert.strictEqual( JSON.stringify( arrayProps ), '{"simpleList":[{"aie":"carramba!"}],"doubleList":[[{"aie":"carramba!"}],[{"aie":"carrambar!"},{"aie":"car en bar!"}]]}' );
+        assert.strictEqual( JSON.stringify( yaayDoubleList ), '{"simpleList":[{"aie":"carramba!"}],"doubleList":[[{"aie":"carramba!"}],[{"aie":"carrambar!"},{"aie":"car en bar!"}]]}' );
     }
 
     testDeserialization(){
         let json = '{"simpleList":[{"aie":"carramba!"}],"doubleList":[[{"aie":"carramba!"}],[{"aie":"carrambar!"},{"aie":"car en bar!"}]]}';
-        let yaayDoubleList = new globalFlexioImport.org.generated.YaayDoubleListBuilder.fromJson( json ).build();
+        let yaayDoubleList = globalFlexioImport.org.generated.YaayDoubleListBuilder.fromJson( json ).build();
         assert.deepEqual( yaayDoubleList.doubleList()[0][0].aie(), "carramba!" );
         assert.deepEqual( yaayDoubleList.doubleList()[1][0].aie(), "carrambar!" );
         assert.deepEqual( yaayDoubleList.doubleList()[1][1].aie(), "car en bar!" );
