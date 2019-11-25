@@ -21,7 +21,7 @@ public class RunJsTest {
     public static void setUp() throws Exception {
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
         System.out.println("DIR == " + dir );
-        Main.main( new String[]{dir, dir, "org.generated", "--no-sub-package"} );
+        Main.main( new String[]{dir + "/09_listOfList.yaml", dir, "org.generated", "--no-sub-package"} );
         processBuilder = new ProcessBuilder();
         processBuilder.directory( new File( dir ) );
         processBuilder.command( "hbshed", "install" );
@@ -51,7 +51,7 @@ public class RunJsTest {
         }
     }
 
-    @Ignore
+//    @Ignore
     @Test
     public void whenName_then() throws Exception {
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";

@@ -65,7 +65,15 @@ public class JsValueListTypeAssertionProcessor implements ParsedYamlProcessor {
 
     @Override
     public void process( ValueObjectTypeList list ) throws ProcessingException {
-        list.type().process( this );
+        if( list.type() instanceof ValueObjectTypeList ){
+            try{
+                write.string( NamingUtility.classFullName( list.packageName() + "." + list.name() + "List" ) );
+            } catch( IOException e ) {
+                throw new ProcessingException( e );
+            }
+        } else {
+            list.type().process( this );
+        }
     }
 
     @Override

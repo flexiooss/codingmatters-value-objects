@@ -88,17 +88,28 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
 
     @Override
     public void process( ValueObjectTypeList list ) throws ProcessingException {
-        try {
-            String var = generateVarName();
+        try{
+            if( list.type() instanceof ValueObjectTypeList ){
+                String var = generateVarName();
+                JsValueListDeserializationProcessor deserializationProcessor = new JsValueListDeserializationProcessor( write, currentVariable, var, this.typesPackage );
+                deserializationProcessor.process( list );
+                currentVariable = deserializationProcessor.currentVar();
+                ((ValueObjectTypeList) list.type()).type().process( this );
+                for( int i = 0; i < deserializationProcessor.opened(); i++ ){
+                    write.string( ")" );
+                }
+                write.string( "))" );
+            } else {
+                String var = generateVarName();
 //            String listClassName = NamingUtility.classFullName( list.packageName() + "." + list.name() );
 //            write.string( "new " + listClassName + "(..." + currentVariable + ".map(" + var + " => " );
 //            new my.list(...currentVar.map( var =>
-            new JsValueListDeserializationProcessor(write, currentVariable, var, this.typesPackage ).process( list );
-            currentVariable = var;
-            currentVariable = var;
-            list.type().process( this );
-            write.string( "))" );
-        } catch( IOException e ){
+                new JsValueListDeserializationProcessor( write, currentVariable, var, this.typesPackage ).process( list );
+                currentVariable = var;
+                list.type().process( this );
+                write.string( "))" );
+            }
+        } catch( IOException e ) {
             throw new ProcessingException( "Error processing type", e );
         }
     }
