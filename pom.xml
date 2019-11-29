@@ -18,7 +18,7 @@
     <name>Value Objects Generator</name>
     <description>Java source code generation of value object classes from a yaml description.</description>
     <url>https://github.com/flexiooss/codingmatters-value-objects</url>
-
+    
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>

@@ -18,8 +18,12 @@ public class JsonPackageGenerator {
             write.line( "{" );
             write.line( "\"name\": \"@" + vendor + "/" + artifactId + "\"," );
             write.line( "\"version\": \"" + version + "\"," );
-            write.line( "\"dependencies\": {" );
+            write.line( "\"devDependencies\": {" );
             write.line( "\"@flexio-corp/js-api-client-parent\": \"0.6.0\"" );
+            write.unindent();
+            write.line( "}," );
+            write.line( "\"peerDependencies\": {" );
+            write.line( "\"@flexio-corp/js-api-client-parent\": \">0.6.0\"" );
             write.unindent();
             write.line( "}," );
             write.line( "\"main\": \"" + rootPackage + "/package.js\"" );
