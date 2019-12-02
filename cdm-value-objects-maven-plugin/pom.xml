@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.value.objects</groupId>
         <artifactId>codingmatters-value-objects</artifactId>
-        <version>1.12.0</version>
+        <version>1.13.0</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -66,6 +66,10 @@
         <dependency>
             <groupId>org.codingmatters.value.objects</groupId>
             <artifactId>cdm-value-objects-php</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codingmatters.value.objects</groupId>
+            <artifactId>cdm-value-objects-js</artifactId>
         </dependency>
 
     </dependencies>

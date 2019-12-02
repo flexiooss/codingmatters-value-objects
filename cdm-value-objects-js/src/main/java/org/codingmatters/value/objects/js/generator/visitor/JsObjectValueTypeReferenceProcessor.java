@@ -101,7 +101,7 @@ public class JsObjectValueTypeReferenceProcessor implements ParsedYamlProcessor 
                     write.string( "FlexZonedDateTime" );
                     break;
                 case OBJECT:
-                    write.string( "object" );
+                    write.string( "ObjectValue" );
                     break;
                 default:
                     throw new ProcessingException( "Type is not defined" );

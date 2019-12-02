@@ -16,15 +16,17 @@ import java.io.IOException;
 public class JsValueListDeserializationProcessor implements ParsedYamlProcessor {
 
     private final JsFileWriter write;
-    private final String currentVariable;
-    private final String varMap;
+    private String currentVariable;
+    private String varMap;
     private final String typesPackage;
+    private int opened;
 
     public JsValueListDeserializationProcessor( JsFileWriter write, String currentVariable, String varMap, String typesPackage ) {
         this.write = write;
         this.currentVariable = currentVariable;
         this.varMap = varMap;
         this.typesPackage = typesPackage;
+        this.opened = 0;
     }
 
     @Override
@@ -71,7 +73,19 @@ public class JsValueListDeserializationProcessor implements ParsedYamlProcessor 
 
     @Override
     public void process( ValueObjectTypeList list ) throws ProcessingException {
-        list.type().process( this );
+        if( list.type() instanceof ValueObjectTypeList ){
+            try{
+                write.string( "new " + NamingUtility.classFullName( list.packageName() + "." + list.name() + "List(..." + currentVariable + ".map(" + varMap + " => " ) );
+                currentVariable = varMap;
+                varMap = varMap + "bis";
+                opened += 2;
+                list.type().process( this );
+            } catch( IOException e ) {
+                throw new ProcessingException( e );
+            }
+        } else {
+            list.type().process( this );
+        }
     }
 
     @Override
@@ -119,5 +133,13 @@ public class JsValueListDeserializationProcessor implements ParsedYamlProcessor 
         } catch( IOException e ) {
             throw new ProcessingException( e );
         }
+    }
+
+    public String currentVar() {
+        return varMap;
+    }
+
+    public int opened() {
+        return opened;
     }
 }

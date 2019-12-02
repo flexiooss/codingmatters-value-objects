@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.js.generator.visitor;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
+import org.codingmatters.value.objects.js.generator.GenerationException;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.generator.packages.PackageFilesBuilder;
 import org.codingmatters.value.objects.js.generator.valueObject.GenerationContext;
@@ -104,12 +105,19 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
         }
     }
 
-    private void generateList( ValueObjectTypeList list ) throws ProcessingException {
-//        try{
-//
-//        } catch( Exception e ) {
-//            throw new ProcessingException( "Error processing list", e );
-//        }
+    private void generateList( ValueObjectTypeList list ) throws ProcessingException  {
+        if( list.type() instanceof ValueObjectTypeList ){
+            File targetDirectory = new File( rootDirectory, list.packageName().replace( '.', '/' ) );
+            String objectName = list.name() + "List";
+            String targetFile = String.join( "/", targetDirectory.getPath(), objectName + ".js" );
+            new JsValueListGenerator( list.packageName(), targetFile ).process( list );
+            try{
+                packageBuilder.addEnum( list.packageName(), objectName, false );
+            } catch( GenerationException e ) {
+                throw new ProcessingException( "Error adding list to package builder", e );
+            }
+            list.type().process( this );
+        }
     }
 
     private void generateInSpecEnum( YamlEnumInSpecEnum inSpecEnum ) throws Exception {

@@ -65,25 +65,32 @@ public class JsValueListGenerator implements ParsedYamlProcessor {
     @Override
     public void process( ObjectTypeInSpecValueObject inSpecValueObject ) throws ProcessingException {
 
-        try( JsClassGenerator write = new JsClassGenerator( filePath, typesPackage ) ){
+//        try( JsClassGenerator write = new JsClassGenerator( filePath, typesPackage ) ){
 //            writeList( write, inSpecValueObject, inSpecValueObject.inSpecValueObjectName() );
-        } catch( Exception e ) {
-            throw new ProcessingException( e );
-        }
+//        } catch( Exception e ) {
+//            throw new ProcessingException( e );
+//        }
     }
 
     @Override
     public void process( ObjectTypeNested nestedValueObject ) throws ProcessingException {
 
-        try( JsClassGenerator write = new JsClassGenerator( filePath, typesPackage ) ){
+//        try( JsClassGenerator write = new JsClassGenerator( filePath, typesPackage ) ){
 //            writeList( write, nestedValueObject, nestedValueObject.nestValueObject().name() );
-        } catch( Exception e ) {
-            throw new ProcessingException( e );
-        }
+//        } catch( Exception e ) {
+//            throw new ProcessingException( e );
+//        }
     }
 
     @Override
     public void process( ValueObjectTypeList list ) throws ProcessingException {
+        if( list.type() instanceof ValueObjectTypeList ){
+            try( JsClassGenerator write = new JsClassGenerator( filePath, typesPackage ) ){
+                writeList( write, list.type(), list.name() );
+            } catch( Exception e ) {
+                throw new ProcessingException( "error generating list", e );
+            }
+        }
         list.type().process( this );
     }
 
@@ -113,10 +120,10 @@ public class JsValueListGenerator implements ParsedYamlProcessor {
 
     @Override
     public void process( ParsedEnum parsedEnum ) throws ProcessingException {
-        try( JsClassGenerator write = new JsClassGenerator( filePath, typesPackage ) ){
+//        try( JsClassGenerator write = new JsClassGenerator( filePath, typesPackage ) ){
 //            writeList( write, parsedEnum, parsedEnum.name() );
-        } catch( Exception e ) {
-            throw new ProcessingException( e );
-        }
+//        } catch( Exception e ) {
+//            throw new ProcessingException( e );
+//        }
     }
 }

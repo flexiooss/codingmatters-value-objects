@@ -1,0 +1,9 @@
+Yaay:
+  aie: string
+
+YaayDoubleList:
+  simpleList:
+    $list: $Yaay
+  doubleList:
+    $list:
+      $list: $Yaay

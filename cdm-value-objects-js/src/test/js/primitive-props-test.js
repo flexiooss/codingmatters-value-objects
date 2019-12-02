@@ -16,7 +16,11 @@ class PrimitivePropsTest extends TestCase {
     builder.floatProp(9.7)
     builder.doubleProp(7.9)
     builder.booleanProp(true)
-    builder.objectProp({jean: 'tenbien'})
+    let ov = globalFlexioImport.io.flexio.flex_types.ObjectValue
+        .builder()
+        .stringValue('jean', 'tenbien')
+        .build();
+    builder.objectProp( ov );
 
     let primitiveProp = builder.build()
 
@@ -27,10 +31,14 @@ class PrimitivePropsTest extends TestCase {
     assert.strictEqual(primitiveProp.floatProp(), 9.7)
     assert.strictEqual(primitiveProp.doubleProp(), 7.9)
     assert.strictEqual(primitiveProp.booleanProp(), true)
-    assert.strictEqual(primitiveProp.objectProp().jean, 'tenbien')
+    assert.strictEqual(primitiveProp.objectProp().stringValue( 'jean' ), 'tenbien')
   }
 
   testEmbededBuilder() {
+   let ov = globalFlexioImport.io.flexio.flex_types.ObjectValue
+          .builder()
+          .stringValue('jean', 'tenbien')
+          .build();
     const primitiveProp = globalFlexioImport.org.generated.PrimitiveProps.builder()
       .stringProp('str')
       .bytesProp('bytes')
@@ -39,7 +47,7 @@ class PrimitivePropsTest extends TestCase {
       .floatProp(9.7)
       .doubleProp(7.9)
       .booleanProp(true)
-      .objectProp({jean: 'tenbien'})
+      .objectProp(ov)
       .build()
 
     assert.strictEqual(primitiveProp.stringProp(), 'str')
@@ -49,7 +57,7 @@ class PrimitivePropsTest extends TestCase {
     assert.strictEqual(primitiveProp.floatProp(), 9.7)
     assert.strictEqual(primitiveProp.doubleProp(), 7.9)
     assert.strictEqual(primitiveProp.booleanProp(), true)
-    assert.strictEqual(primitiveProp.objectProp().jean, 'tenbien')
+    assert.strictEqual(primitiveProp.objectProp().stringValue( 'jean' ), 'tenbien')
   }
 
   testBuilderFrom() {
@@ -121,12 +129,17 @@ class PrimitivePropsTest extends TestCase {
     builder.timeProp(new FlexTime('14:17:32'))
     builder.dateTimeProp(new FlexDateTime('2019-01-09T14:17:32'))
     builder.tzDateTimeProp(new FlexZonedDateTime('2019-01-09T14:17:32-03:00'))
+    let ov = globalFlexioImport.io.flexio.flex_types.ObjectValue
+            .builder()
+            .stringValue('jean', 'tenbien')
+            .build();
+    builder.objectProp( ov );
     let primitiveProp = builder.build()
-    assert.strictEqual(JSON.stringify(primitiveProp), '{"stringProp":"str","bytesProp":"bytes","integerProp":9,"longProp":7,"floatProp":9.7,"doubleProp":7.9,"booleanProp":true,"date-prop":"2019-01-09","timeProp":"14:17:32","dateTimeProp":"2019-01-09T14:17:32","tzDateTimeProp":"2019-01-09T14:17:32-03:00"}')
+    assert.strictEqual(JSON.stringify(primitiveProp), '{"stringProp":"str","bytesProp":"bytes","integerProp":9,"longProp":7,"floatProp":9.7,"doubleProp":7.9,"booleanProp":true,"date-prop":"2019-01-09","timeProp":"14:17:32","dateTimeProp":"2019-01-09T14:17:32","tzDateTimeProp":"2019-01-09T14:17:32-03:00","objectProp":{"jean":"tenbien"}}')
   }
 
   testDeserialization() {
-    let json = '{"stringProp":"str","bytesProp":"bytes","integerProp":9,"longProp":7,"floatProp":9.7,"doubleProp":7.9,"booleanProp":true,"date-prop":"2019-01-09","timeProp":"14:17:32","dateTimeProp":"2019-01-09T14:17:32","tzDateTimeProp":"2019-01-09T14:17:32-03:00"}'
+    let json = '{"stringProp":"str","bytesProp":"bytes","integerProp":9,"longProp":7,"floatProp":9.7,"doubleProp":7.9,"booleanProp":true,"date-prop":"2019-01-09","timeProp":"14:17:32","dateTimeProp":"2019-01-09T14:17:32","tzDateTimeProp":"2019-01-09T14:17:32-03:00","objectProp":{"jean":"tenbien"}}'
     let primitiveProp = globalFlexioImport.org.generated.PrimitivePropsBuilder.fromJson(json).build()
     assert.strictEqual(primitiveProp.stringProp(), 'str')
     assert.strictEqual(primitiveProp.bytesProp(), 'bytes')
@@ -143,6 +156,7 @@ class PrimitivePropsTest extends TestCase {
     assert.strictEqual(typeof (primitiveProp.dateTimeProp()), 'object')
     assert.strictEqual(typeof (primitiveProp.dateProp()), 'object')
     assert.strictEqual(typeof (primitiveProp.timeProp()), 'object')
+    assert.strictEqual( primitiveProp.objectProp().stringValue("jean"), "tenbien")
   }
 
 }
