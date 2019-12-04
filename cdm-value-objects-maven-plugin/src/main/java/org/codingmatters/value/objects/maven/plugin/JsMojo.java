@@ -61,7 +61,7 @@ public class JsMojo extends AbstractGenerationMojo {
                 }
                 PackageFilesGenerator packageFilesGenerator = new PackageFilesGenerator( packageBuilder, getOutputDirectory().getAbsolutePath() );
                 packageFilesGenerator.generateFiles();
-                new JsonPackageGenerator( getOutputDirectory() ).generatePackageJson( vendor, artifactId, version, getDestinationPackage() );
+                new JsonPackageGenerator( getOutputDirectory() ).generatePackageJson( vendor, artifactId, version, getDestinationPackage().split( "\\." )[0] );
             } else {
                 throw new IOException( "Spec file not found" );
             }
