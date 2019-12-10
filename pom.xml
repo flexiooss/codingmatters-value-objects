@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters</groupId>
         <artifactId>codingmatters-parent</artifactId>
-        <version>1.8.0</version>
+        <version>1.9.0</version>
     </parent>
 
     <groupId>org.codingmatters.value.objects</groupId>
@@ -18,7 +18,7 @@
     <name>Value Objects Generator</name>
     <description>Java source code generation of value object classes from a yaml description.</description>
     <url>https://github.com/flexiooss/codingmatters-value-objects</url>
-    
+
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -90,7 +90,7 @@
             <dependency>
                 <groupId>org.codingmatters.tests</groupId>
                 <artifactId>codingmatters-reflect-unit</artifactId>
-                <version>1.10.0</version>
+                <version>1.11.0</version>
             </dependency>
 
             <!--BOM-->
