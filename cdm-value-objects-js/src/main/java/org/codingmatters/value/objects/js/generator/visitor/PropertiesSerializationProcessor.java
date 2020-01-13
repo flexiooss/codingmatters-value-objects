@@ -101,7 +101,7 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     @Override
     public void process( YamlEnumExternalEnum externalEnum ) throws ProcessingException {
         try {
-            writer.string( ".name" );
+            writer.string( ".name()" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing primitive type: " + currentProperty, e );
         }
@@ -110,7 +110,7 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     @Override
     public void process( YamlEnumInSpecEnum inSpecEnum ) throws ProcessingException {
         try {
-            writer.string( ".name" );
+            writer.string( ".name()" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing primitive type: " + currentProperty, e );
         }
@@ -124,7 +124,7 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ParsedEnum parsedEnum ) throws ProcessingException {
         try {
-            writer.string( ".name" );
+            writer.string( ".name()" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing primitive type: " + currentProperty, e );
         }
