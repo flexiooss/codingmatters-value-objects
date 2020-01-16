@@ -75,7 +75,7 @@ public class ObjectValueWriter {
         generator.writeEndObject();
     }
 
-    private void writeMultipleValue(JsonGenerator generator, PropertyValue.Value[] multiple, PropertyValue.Type type) throws IOException {
+    public void writeMultipleValue(JsonGenerator generator, PropertyValue.Value[] multiple, PropertyValue.Type type) throws IOException {
         generator.writeStartArray();
         for (PropertyValue.Value value : multiple) {
             this.writeSingleValue(generator, value, value.type());
