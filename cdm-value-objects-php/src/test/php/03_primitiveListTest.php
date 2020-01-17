@@ -118,9 +118,9 @@ class EmptyObjectTest extends TestCase {
         $date2 = FlexDate::newDateTime( '2017-01-18T20:00:00' );
 
         $arrayProp -> withDateTimeList( new ArraySimplePropsDateTimeListList( array( $date1 ) ) );
-        $this->assertSame( $arrayProp->dateTimeList()[0]->jsonSerialize(), '2018-10-17T15:07:20Z' );
+        $this->assertSame( $arrayProp->dateTimeList()[0]->jsonSerialize(), '2018-10-17T15:07:20' );
         $arrayProp->dateTimeList()[] = $date2;
-        $this->assertSame( $arrayProp->dateTimeList()[1]->jsonSerialize(), '2017-01-18T20:00:00Z' );
+        $this->assertSame( $arrayProp->dateTimeList()[1]->jsonSerialize(), '2017-01-18T20:00:00' );
     }
 
     public function testTzDateTimeArray(){
@@ -198,7 +198,7 @@ class EmptyObjectTest extends TestCase {
         $arrayProp -> withBooleanList( new ArraySimplePropsBooleanListList( array( true, false )));
         $arrayProp -> withTimeList( new ArraySimplePropsTimeListList( array( FlexDate::newTime( '15:07:20' ))));
         $arrayProp -> withDateList( new ArraySimplePropsDateListList( array( FlexDate::newDate( "2018-10-17" ))));
-        $arrayProp -> withDateTimeList( new ArraySimplePropsDateTimeListList( array( FlexDate::newDateTime( '2017-01-18T20:00:00' ))));
+        $arrayProp -> withDateTimeList( new ArraySimplePropsDateTimeListList( array( FlexDate::newDateTime( '2017-01-18T20:00:00Z' ))));
         $arrayProp -> withTzDateTimeList( new ArraySimplePropsTzDateTimeListList( array( FlexDate::newTzDateTime( '2018-10-17T15:07:20+01:00' ))));
 
         $arrayProp -> withStringSet( new ArraySimplePropsStringSetList( array( "foo", "bar" )));
@@ -241,7 +241,7 @@ class EmptyObjectTest extends TestCase {
 
         $this->assertSame( $object->dateList()[0]->jsonSerialize(), '2018-10-17' );
 
-        $this->assertSame( $object->dateTimeList()[0]->jsonSerialize(), '2017-01-18T20:00:00Z' );
+        $this->assertSame( $object->dateTimeList()[0]->jsonSerialize(), '2017-01-18T20:00:00' );
 
         $this->assertSame( $object->tzDateTimeList()[0]->jsonSerialize(), '2018-10-17T15:07:20+01:00' );
 
@@ -267,7 +267,7 @@ class EmptyObjectTest extends TestCase {
 
         $this->assertSame( $object->dateSet()[0]->jsonSerialize(), '2018-10-17' );
 
-        $this->assertSame( $object->dateTimeSet()[0]->jsonSerialize(), '2017-01-18T20:00:00Z' );
+        $this->assertSame( $object->dateTimeSet()[0]->jsonSerialize(), '2017-01-18T20:00:00' );
 
         $this->assertSame( $object->tzDateTimeSet()[0]->jsonSerialize(), '2018-10-17T15:07:20+01:00' );
     }
