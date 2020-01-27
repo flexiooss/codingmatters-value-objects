@@ -1,6 +1,6 @@
 complexType:
   complexProps:
-    stringProp: string
+    string-prop: string
     intList:
       $list: int
   test-is-ok: bool

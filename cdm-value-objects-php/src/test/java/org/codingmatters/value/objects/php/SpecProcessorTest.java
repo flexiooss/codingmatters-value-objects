@@ -137,7 +137,7 @@ public class SpecProcessorTest {
         // ***** ROOT SPEC - PROP 1 ***** \\
         PropertySpec embeddedStringProperty = embeddedSpec.valueSpec().propertySpecs().get( 0 );
         assertThat( embeddedStringProperty.typeSpec().typeKind(), is( TypeKind.JAVA_TYPE ) );
-        assertThat( embeddedStringProperty.name(), is( "stringProp" ) );
+        assertThat( embeddedStringProperty.name(), is( "string-prop" ) );
         assertThat( embeddedStringProperty.typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
         assertThat( embeddedStringProperty.typeSpec().typeRef(), is( "string" ) );
 
