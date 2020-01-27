@@ -46,7 +46,7 @@ class EmbeddedObjectTest extends TestCase {
         $writer = new ComplexTypeWriter();
         $content = $writer->write( $complex );
 
-        $this->assertSame('{"complexProps":{"stringProp":"toto","intList":[7,9,20]},"test-is-ok":true,"foo":74.9}', $content );
+        $this->assertSame('{"complexProps":{"string-prop":"toto","intList":[7,9,20]},"test-is-ok":true,"foo":74.9}', $content );
 
         $reader = new ComplexTypeReader();
         $object = $reader->read( $content );
