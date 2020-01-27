@@ -1,5 +1,6 @@
 package org.codingmatters.value.objects.php.phpmodel;
 
+import org.codingmatters.value.objects.generation.Naming;
 import org.codingmatters.value.objects.generation.preprocessor.PackagedValueSpec;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.PropertyTypeSpec;
@@ -8,9 +9,10 @@ import org.codingmatters.value.objects.spec.TypeKind;
 public class PhpTypedList {
 
     public static PhpPackagedValueSpec createPhpPackagedValueSpec( PackagedValueSpec valueSpec, PropertySpec listProperty ) {
+        Naming naming= new Naming();
         PhpPackagedValueSpec listSpec = new PhpPackagedValueSpec(
                 valueSpec.packagename() + "." + valueSpec.valueSpec().name().toLowerCase(),
-                capitalizedFirst( valueSpec.valueSpec().name() ) + capitalizedFirst( listProperty.name() ) + "List"
+                capitalizedFirst( valueSpec.valueSpec().name() ) + capitalizedFirst( naming.type( listProperty.name() ) ) + "List"
         );
         String type;
         String typeRef = listProperty.typeSpec().typeRef();
