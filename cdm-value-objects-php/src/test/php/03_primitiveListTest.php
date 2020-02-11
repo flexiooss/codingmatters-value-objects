@@ -243,7 +243,7 @@ class EmptyObjectTest extends TestCase {
 
         $this->assertSame( $object->dateTimeList()[0]->jsonSerialize(), '2017-01-18T20:00:00.000' );
 
-        $this->assertSame( $object->tzDateTimeList()[0]->jsonSerialize(), '2018-10-17T15:07:20+01:00.000' );
+        $this->assertSame( $object->tzDateTimeList()[0]->jsonSerialize(), '2018-10-17T15:07:20.000+01:00' );
 
         $this->assertSame( $object->stringSet()[0], 'foo' );
         $this->assertSame( $object->stringSet()[1], 'bar' );
