@@ -9,7 +9,6 @@ import org.codingmatters.value.objects.js.generator.valueObject.JsClassGenerator
 import org.codingmatters.value.objects.js.parser.model.*;
 import org.codingmatters.value.objects.js.parser.model.types.*;
 import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.util.HashSet;
@@ -285,7 +284,7 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
 
     @Override
     public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
