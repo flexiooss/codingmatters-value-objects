@@ -56,7 +56,7 @@ class EmptyObjectTest extends TestCase {
         $writer = new PrimitivePropsWriter();
         $content = $writer->write( $primitiveProps );
 
-        $this->assertSame( '{"stringProp":"str","bytesProp":"bytes","integerProp":9,"longProp":7,"floatProp":9,"doubleProp":7.9,"booleanProp":true,"dateProp":"2011-08-01","timeProp":"15:05:01.000Z","dateTimeProp":"2011-09-01T15:04:01.000","tzDateTimeProp":"2011-09-01T15:04:01.000+01:00"}', $content);
+        $this->assertSame( '{"stringProp":"str","bytesProp":"bytes","integerProp":9,"longProp":7,"floatProp":9,"doubleProp":7.9,"booleanProp":true,"dateProp":"2011-08-01","timeProp":"15:05:01.012Z","dateTimeProp":"2011-09-01T15:04:01.000","tzDateTimeProp":"2011-09-01T15:04:01.000+01:00"}', $content);
 
         $reader = new PrimitivePropsReader();
         $object = $reader->read( $content );
