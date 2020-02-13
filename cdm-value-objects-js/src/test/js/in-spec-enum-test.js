@@ -16,9 +16,9 @@ class InSpecEnumTest extends TestCase {
         );
         let inSpecEnum = builder.build();
 
-        assert.strictEqual( inSpecEnum.single().name, "SA" );
-        assert.strictEqual( inSpecEnum.multiple()[0].name, "MB" );
-        assert.strictEqual( inSpecEnum.multiple()[1].name, "MC" );
+        assert.strictEqual( inSpecEnum.single().name(), "SA" );
+        assert.strictEqual( inSpecEnum.multiple()[0].name(), "MB" );
+        assert.strictEqual( inSpecEnum.multiple()[1].name(), "MC" );
         assert.strictEqual( inSpecEnum.multiple().length, 2 );
     }
 
@@ -67,9 +67,9 @@ class InSpecEnumTest extends TestCase {
     testDeserialization(){
         let json = "{\"single\":\"SA\",\"multiple\":[\"MB\",\"MC\"]}";
         let inSpecEnum = globalFlexioImport.org.generated.InSpecEnumPropertiesBuilder.fromJson( json ).build();
-        assert.strictEqual( inSpecEnum.single().name, "SA" );
-        assert.strictEqual( inSpecEnum.multiple()[0].name, "MB" );
-        assert.strictEqual( inSpecEnum.multiple()[1].name, "MC" );
+        assert.strictEqual( inSpecEnum.single().name(), "SA" );
+        assert.strictEqual( inSpecEnum.multiple()[0].name(), "MB" );
+        assert.strictEqual( inSpecEnum.multiple()[1].name(), "MC" );
         assert.strictEqual( inSpecEnum.multiple().length, 2 );
     }
 }
