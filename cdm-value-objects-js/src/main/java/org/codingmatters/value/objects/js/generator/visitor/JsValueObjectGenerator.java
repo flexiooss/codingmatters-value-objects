@@ -247,7 +247,6 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
                 this.flexioAssertImport.add( "isBoolean" );
                 break;
             case STRING:
-            case BYTES:
                 this.flexioAssertImport.add( "isString" );
                 break;
             case OBJECT:
@@ -260,6 +259,9 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
             case DOUBLE:
             case FLOAT:
                 this.flexioAssertImport.add( "isNumber" );
+                break;
+            case BYTES:
+                this.flexioAssertImport.add( "isBinary" );
                 break;
             default:
                 System.out.println( "Enum constant import not handled: " + primitiveType.type().name() );

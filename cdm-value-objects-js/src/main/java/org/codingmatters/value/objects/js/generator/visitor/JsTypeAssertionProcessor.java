@@ -137,6 +137,10 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
                     write.line( "}" );
                     break;
                 case BYTES:
+                    write.line( "if (!isNull(" + currentVariable + ")) {" );
+                    write.line( "assertType(isBinary(" + currentVariable + "), '" + currentVariable + " should be a blob')" );
+                    write.line( "}" );
+                    break;
                 case STRING:
                     write.line( "if (!isNull(" + currentVariable + ")) {" );
                     write.line( "assertType(isString(" + currentVariable + "), '" + currentVariable + " should be a string')" );

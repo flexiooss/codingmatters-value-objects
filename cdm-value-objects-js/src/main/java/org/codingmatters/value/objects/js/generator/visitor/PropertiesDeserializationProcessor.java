@@ -144,6 +144,9 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
                 case OBJECT:
                     write.string( NamingUtility.classFullName( "io.flexio.flex_types.ObjectValueBuilder" ) + ".fromObject(" + currentVariable + ").build()" );
                     break;
+//                case BYTES:
+//                    write.string( "new Blob(" + currentVariable + ")" );  // ???
+//                    break;
                 default:
                     write.string( currentVariable );
                     break;

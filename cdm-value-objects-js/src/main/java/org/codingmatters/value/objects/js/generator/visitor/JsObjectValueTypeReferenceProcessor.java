@@ -75,8 +75,10 @@ public class JsObjectValueTypeReferenceProcessor implements ParsedYamlProcessor 
         try {
             switch( primitiveType.type() ) {
                 case STRING:
-                case BYTES:
                     write.string( "string" );
+                    break;
+                case BYTES:
+                    write.string( "Blob" );
                     break;
                 case FLOAT:
                 case LONG:
