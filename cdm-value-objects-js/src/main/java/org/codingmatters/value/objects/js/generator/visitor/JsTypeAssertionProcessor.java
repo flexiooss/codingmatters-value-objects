@@ -9,7 +9,6 @@ import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
 import org.codingmatters.value.objects.js.parser.model.types.*;
 import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 
@@ -138,6 +137,10 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
                     write.line( "}" );
                     break;
                 case BYTES:
+                    write.line( "if (!isNull(" + currentVariable + ")) {" );
+                    write.line( "assertType(isBinary(" + currentVariable + "), '" + currentVariable + " should be a blob')" );
+                    write.line( "}" );
+                    break;
                 case STRING:
                     write.line( "if (!isNull(" + currentVariable + ")) {" );
                     write.line( "assertType(isString(" + currentVariable + "), '" + currentVariable + " should be a string')" );
@@ -215,7 +218,7 @@ public class JsTypeAssertionProcessor implements ParsedYamlProcessor {
 
     @Override
     public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -94,8 +94,10 @@ public class JsValueListTypeReferenceProcessor implements ParsedYamlProcessor {
                     write.string( "ObjectArray" );
                     break;
                 case STRING:
-                case BYTES:
                     write.string( "StringArray" );
+                    break;
+                case BYTES:
+                    write.string( "Blob" );
                     break;
                 case TIME:
                     write.string( "TimeArray" );

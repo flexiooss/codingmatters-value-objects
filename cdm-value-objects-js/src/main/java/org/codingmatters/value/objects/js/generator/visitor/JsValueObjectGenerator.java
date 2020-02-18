@@ -9,7 +9,6 @@ import org.codingmatters.value.objects.js.generator.valueObject.JsClassGenerator
 import org.codingmatters.value.objects.js.parser.model.*;
 import org.codingmatters.value.objects.js.parser.model.types.*;
 import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.util.HashSet;
@@ -248,7 +247,6 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
                 this.flexioAssertImport.add( "isBoolean" );
                 break;
             case STRING:
-            case BYTES:
                 this.flexioAssertImport.add( "isString" );
                 break;
             case OBJECT:
@@ -261,6 +259,9 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
             case DOUBLE:
             case FLOAT:
                 this.flexioAssertImport.add( "isNumber" );
+                break;
+            case BYTES:
+                this.flexioAssertImport.add( "isBinary" );
                 break;
             default:
                 System.out.println( "Enum constant import not handled: " + primitiveType.type().name() );
@@ -285,7 +286,7 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
 
     @Override
     public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override

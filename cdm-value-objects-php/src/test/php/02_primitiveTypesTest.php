@@ -34,9 +34,9 @@ class EmptyObjectTest extends TestCase {
         $this -> assertSame( $primitiveProps -> doubleProp(), 7.9 );
         $this -> assertSame( $primitiveProps -> booleanProp(), true );
         $this -> assertSame( $primitiveProps -> dateProp()->jsonSerialize(), '2011-08-01' );
-        $this -> assertSame( $primitiveProps -> timeProp()->jsonSerialize(), '15:05:01Z' );
-        $this -> assertSame( $primitiveProps -> dateTimeProp()->jsonSerialize(), '2011-09-01T15:04:01' );
-        $this -> assertSame( $primitiveProps -> tzDateTimeProp()->jsonSerialize(), '2011-09-01T15:04:01+01:00' );
+        $this -> assertSame( $primitiveProps -> timeProp()->jsonSerialize(), '15:05:01.012Z' );
+        $this -> assertSame( $primitiveProps -> dateTimeProp()->jsonSerialize(), '2011-09-01T15:04:01.000' );
+        $this -> assertSame( $primitiveProps -> tzDateTimeProp()->jsonSerialize(), '2011-09-01T15:04:01.000+01:00' );
     }
 
     public function testReader(){
@@ -56,7 +56,7 @@ class EmptyObjectTest extends TestCase {
         $writer = new PrimitivePropsWriter();
         $content = $writer->write( $primitiveProps );
 
-        $this->assertSame( '{"stringProp":"str","bytesProp":"bytes","integerProp":9,"longProp":7,"floatProp":9,"doubleProp":7.9,"booleanProp":true,"dateProp":"2011-08-01","timeProp":"15:05:01Z","dateTimeProp":"2011-09-01T15:04:01","tzDateTimeProp":"2011-09-01T15:04:01+01:00"}', $content);
+        $this->assertSame( '{"stringProp":"str","bytesProp":"bytes","integerProp":9,"longProp":7,"floatProp":9,"doubleProp":7.9,"booleanProp":true,"dateProp":"2011-08-01","timeProp":"15:05:01.012Z","dateTimeProp":"2011-09-01T15:04:01.000","tzDateTimeProp":"2011-09-01T15:04:01.000+01:00"}', $content);
 
         $reader = new PrimitivePropsReader();
         $object = $reader->read( $content );
@@ -69,9 +69,9 @@ class EmptyObjectTest extends TestCase {
         $this->assertSame( $object->doubleProp(), 7.9 );
         $this->assertSame( $object->booleanProp(), true );
         $this->assertSame( $object->dateProp()->jsonSerialize(), '2011-08-01' );
-        $this->assertSame( $object->timeProp()->jsonSerialize(), '15:05:01Z' );
-        $this->assertSame( $object->dateTimeProp()->jsonSerialize(), "2011-09-01T15:04:01" );
-        $this->assertSame( $object->tzDateTimeProp()->jsonSerialize(), '2011-09-01T15:04:01+01:00' );
+        $this->assertSame( $object->timeProp()->jsonSerialize(), '15:05:01.012Z' );
+        $this->assertSame( $object->dateTimeProp()->jsonSerialize(), "2011-09-01T15:04:01.000" );
+        $this->assertSame( $object->tzDateTimeProp()->jsonSerialize(), '2011-09-01T15:04:01.000+01:00' );
     }
 
 }

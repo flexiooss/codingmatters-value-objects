@@ -10,7 +10,7 @@ class PrimitivePropsTest extends TestCase {
   testBuilder() {
     let builder = new globalFlexioImport.org.generated.PrimitivePropsBuilder()
     builder.stringProp('str')
-    builder.bytesProp('bytes')
+//    builder.bytesProp('bytes')
     builder.integerProp(9)
     builder.longProp(7)
     builder.floatProp(9.7)
@@ -25,7 +25,7 @@ class PrimitivePropsTest extends TestCase {
     let primitiveProp = builder.build()
 
     assert.strictEqual(primitiveProp.stringProp(), 'str')
-    assert.strictEqual(primitiveProp.bytesProp(), 'bytes')
+//    assert.strictEqual(primitiveProp.bytesProp(), 'bytes')
     assert.strictEqual(primitiveProp.integerProp(), 9)
     assert.strictEqual(primitiveProp.longProp(), 7)
     assert.strictEqual(primitiveProp.floatProp(), 9.7)
@@ -41,7 +41,7 @@ class PrimitivePropsTest extends TestCase {
           .build();
     const primitiveProp = globalFlexioImport.org.generated.PrimitiveProps.builder()
       .stringProp('str')
-      .bytesProp('bytes')
+//      .bytesProp('bytes')
       .integerProp(9)
       .longProp(7)
       .floatProp(9.7)
@@ -51,7 +51,7 @@ class PrimitivePropsTest extends TestCase {
       .build()
 
     assert.strictEqual(primitiveProp.stringProp(), 'str')
-    assert.strictEqual(primitiveProp.bytesProp(), 'bytes')
+//    assert.strictEqual(primitiveProp.bytesProp(), 'bytes')
     assert.strictEqual(primitiveProp.integerProp(), 9)
     assert.strictEqual(primitiveProp.longProp(), 7)
     assert.strictEqual(primitiveProp.floatProp(), 9.7)
@@ -63,7 +63,7 @@ class PrimitivePropsTest extends TestCase {
   testBuilderFrom() {
     const primitiveProp = globalFlexioImport.org.generated.PrimitiveProps.builder()
       .stringProp('str')
-      .bytesProp('bytes')
+//      .bytesProp('bytes')
       .build()
 
     const primitiveProp2 = globalFlexioImport.org.generated.PrimitiveProps
@@ -72,15 +72,15 @@ class PrimitivePropsTest extends TestCase {
       .build()
 
     assert.strictEqual(primitiveProp.stringProp(), 'str')
-    assert.strictEqual(primitiveProp.bytesProp(), 'bytes')
+//    assert.strictEqual(primitiveProp.bytesProp(), 'bytes')
     assert.strictEqual(primitiveProp2.stringProp(), 'str2')
-    assert.strictEqual(primitiveProp2.bytesProp(), 'bytes')
+//    assert.strictEqual(primitiveProp2.bytesProp(), 'bytes')
   }
 
   testWithMethod() {
     let builder = new globalFlexioImport.org.generated.PrimitivePropsBuilder()
     builder.stringProp('str')
-    builder.bytesProp('bytes')
+//    builder.bytesProp('bytes')
     builder.integerProp(9)
     builder.longProp(7)
     builder.floatProp(9.7)
@@ -119,7 +119,7 @@ class PrimitivePropsTest extends TestCase {
   testSerialization() {
     let builder = new globalFlexioImport.org.generated.PrimitivePropsBuilder()
     builder.stringProp('str')
-    builder.bytesProp('bytes')
+//    builder.bytesProp('bytes')
     builder.integerProp(9)
     builder.longProp(7)
     builder.floatProp(9.7)
@@ -135,14 +135,14 @@ class PrimitivePropsTest extends TestCase {
             .build();
     builder.objectProp( ov );
     let primitiveProp = builder.build()
-    assert.strictEqual(JSON.stringify(primitiveProp), '{"stringProp":"str","bytesProp":"bytes","integerProp":9,"longProp":7,"floatProp":9.7,"doubleProp":7.9,"booleanProp":true,"date-prop":"2019-01-09","timeProp":"14:17:32","dateTimeProp":"2019-01-09T14:17:32","tzDateTimeProp":"2019-01-09T14:17:32-03:00","objectProp":{"jean":"tenbien"}}')
+    assert.strictEqual(JSON.stringify(primitiveProp), '{"stringProp":"str","integerProp":9,"longProp":7,"floatProp":9.7,"doubleProp":7.9,"booleanProp":true,"date-prop":"2019-01-09","timeProp":"14:17:32","dateTimeProp":"2019-01-09T14:17:32","tzDateTimeProp":"2019-01-09T14:17:32-03:00","objectProp":{"jean":"tenbien"}}')
   }
 
   testDeserialization() {
-    let json = '{"stringProp":"str","bytesProp":"bytes","integerProp":9,"longProp":7,"floatProp":9.7,"doubleProp":7.9,"booleanProp":true,"date-prop":"2019-01-09","timeProp":"14:17:32","dateTimeProp":"2019-01-09T14:17:32","tzDateTimeProp":"2019-01-09T14:17:32-03:00","objectProp":{"jean":"tenbien"}}'
+    let json = '{"stringProp":"str","integerProp":9,"longProp":7,"floatProp":9.7,"doubleProp":7.9,"booleanProp":true,"date-prop":"2019-01-09","timeProp":"14:17:32","dateTimeProp":"2019-01-09T14:17:32","tzDateTimeProp":"2019-01-09T14:17:32-03:00","objectProp":{"jean":"tenbien"}}'
     let primitiveProp = globalFlexioImport.org.generated.PrimitivePropsBuilder.fromJson(json).build()
     assert.strictEqual(primitiveProp.stringProp(), 'str')
-    assert.strictEqual(primitiveProp.bytesProp(), 'bytes')
+//    assert.strictEqual(primitiveProp.bytesProp(), 'bytes')
     assert.strictEqual(primitiveProp.integerProp(), 9)
     assert.strictEqual(primitiveProp.longProp(), 7)
     assert.strictEqual(primitiveProp.floatProp(), 9.7)

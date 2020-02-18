@@ -105,8 +105,10 @@ public class JsValueListTypeAssertionProcessor implements ParsedYamlProcessor {
                 case OBJECT:
                     arrayName = "ObjectArray";
                     break;
-                case STRING:
                 case BYTES:
+                    arrayName = "BlobArray";
+                    break;
+                case STRING:
                     arrayName = "StringArray";
                     break;
                 case TIME:

@@ -17,7 +17,7 @@ public class JsonPackageGenerator {
         try( JsFileWriter write = new JsFileWriter( new File( rootDirectory, "package.json" ).getPath() ) ) {
             write.line( "{" );
             write.line( "\"name\": \"@" + vendor + "/" + artifactId + "\"," );
-            write.line( "\"version\": \"" + version + "\"," );
+            write.line( "\"version\": \"" + version.replace( "SNAPSHOT", "dev" ) + "\"," );
             write.line( "\"devDependencies\": {" );
             write.line( "\"@flexio-corp/js-api-client-parent\": \"0.6.0\"" );
             write.unindent();

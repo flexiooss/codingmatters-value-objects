@@ -114,7 +114,7 @@ public class ListPropertySpecGenerationTest {
         Object value = this.compiled.on(builder).invoke("build");
         Object list = this.compiled.on(value).castedTo("org.generated.Val").invoke("listProp");
 
-        assertThat(this.compiled.on(list).invoke("toArray"), is(new String [] {"a", "b", "c"}));
+        assertThat(this.compiled.on(list).invoke("toArray"), is(new Object [] {"a", "b", "c"}));
     }
 
     @Test
@@ -129,7 +129,7 @@ public class ListPropertySpecGenerationTest {
         Object value2 = this.compiled.on(builder2).invoke("build");
         Object list2 = this.compiled.on(value2).castedTo("org.generated.Val").invoke("listProp");
 
-        assertThat(this.compiled.on(list2).invoke("toArray"), is(new String [] {"a", "b", "c"}));
+        assertThat(this.compiled.on(list2).invoke("toArray"), is(new Object [] {"a", "b", "c"}));
     }
 
     @Test

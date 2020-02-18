@@ -74,7 +74,7 @@ public class ValueListImplementationTest {
         constr.setAccessible(true);
         Object list = constr.newInstance(new Object[]{new Object[]{"a", "b"}});
 
-        assertThat(this.compiled.on(list).invoke("toArray"), is(new String [] {"a", "b"}));
+        assertThat(this.compiled.on(list).invoke("toArray"), is(new Object [] {"a", "b"}));
     }
 
     @Test

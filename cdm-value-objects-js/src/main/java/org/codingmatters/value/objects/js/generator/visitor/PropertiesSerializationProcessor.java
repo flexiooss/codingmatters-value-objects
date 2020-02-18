@@ -9,7 +9,6 @@ import org.codingmatters.value.objects.js.parser.model.ParsedYAMLSpec;
 import org.codingmatters.value.objects.js.parser.model.ValueObjectProperty;
 import org.codingmatters.value.objects.js.parser.model.types.*;
 import org.codingmatters.value.objects.js.parser.processing.ParsedYamlProcessor;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 
@@ -118,7 +117,7 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
 
     @Override
     public void process( ValueObjectTypeExternalType externalType ) throws ProcessingException {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
