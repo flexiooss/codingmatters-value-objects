@@ -1,5 +1,6 @@
 package org.codingmatters.value.objects.values;
 
+import org.codingmatters.value.objects.values.helper.ObjectValueToMap;
 import org.codingmatters.value.objects.values.optional.OptionalObjectValue;
 
 import java.util.HashMap;
@@ -59,5 +60,9 @@ public interface ObjectValue {
     }
     default ObjectValue withProperty(String property, Consumer<PropertyValue.Builder> value) {
         return ObjectValue.from(this).property(property, value).build();
+    }
+
+    default Map<String, Object> toMap() {
+        return ObjectValueToMap.toMap(this);
     }
 }
