@@ -1,11 +1,14 @@
 package org.codingmatters.value.objects.reader;
 
 import org.codingmatters.value.objects.spec.TypeKind;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import static org.codingmatters.value.objects.spec.AnonymousValueSpec.anonymousValueSpec;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
@@ -15,7 +18,7 @@ import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
 import static org.codingmatters.value.objects.utils.Utils.streamFor;
 import static org.codingmatters.value.objects.utils.Utils.string;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by nelt on 9/5/16.
@@ -95,6 +98,55 @@ public class SpecReaderPropertyWithObjectTypeSpecTest {
                                                             .build()
                                                     )
                                             ))
+                                    )
+                                    .build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void hintsOnEmbedded() throws Exception {
+        try(InputStream in = streamFor(string()
+                .line("val:")
+                .line("  p1: string")
+                .line("  p2:")
+                .line("    $hints:")
+                .line("      - yopyop")
+                .line("      - tagada")
+                .line("    p3: string")
+                .line("    p4:")
+                .line("      $hints:")
+                .line("        - yopyop")
+                .line("        - tagada")
+                .line("      p5: string")
+                .build())) {
+            assertThat(
+                    reader.read(in),
+                    is(
+                            spec()
+                                    .addValue(valueSpec().name("val")
+                                            .addProperty(property().name("p1").type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(String.class.getName())))
+                                            .addProperty(property()
+                                                    .name("p2")
+                                                    .hints(new HashSet<>(Arrays.asList("yopyop", "tagada")))
+                                                    .type(type().typeKind(TypeKind.EMBEDDED)
+                                                    .embeddedValueSpec(anonymousValueSpec()
+                                                            .addProperty(property().name("p3").type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(String.class.getName())))
+                                                            .addProperty(property()
+                                                                    .name("p4")
+                                                                    .hints(new HashSet<>(Arrays.asList("yopyop", "tagada")))
+                                                                    .type(type().typeKind(TypeKind.EMBEDDED)
+                                                                            .embeddedValueSpec(anonymousValueSpec()
+                                                                                    .addProperty(property().name("p5").type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(String.class.getName())))
+                                                                                    .build()
+                                                                            )
+                                                                    )
+                                                            )
+                                                            .build()
+                                                    )
+                                                )
+                                            )
                                     )
                                     .build()
                     )

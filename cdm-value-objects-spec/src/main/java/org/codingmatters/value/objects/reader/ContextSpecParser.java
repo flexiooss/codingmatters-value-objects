@@ -50,6 +50,7 @@ public class ContextSpecParser {
             for (String propertyName : properties.keySet()) {
                 if(PROTOCOL_MARK.equals(propertyName)) {
                     value.addConformsTo(this.protocolList(properties.get(propertyName)));
+                } else if(HINTS_MARK.equals(propertyName)) {
                 } else {
                     value.addProperty(this.createPropertySpec(propertyName, properties.get(propertyName)));
                 }
@@ -188,7 +189,9 @@ public class ContextSpecParser {
     private AnonymousValueSpec parseAnonymousValueSpec(Map value) throws SpecSyntaxException {
         AnonymousValueSpec.Builder result = AnonymousValueSpec.anonymousValueSpec();
         for (Object name : value.keySet()) {
-            result.addProperty(this.createPropertySpec((String) name, value.get(name)));
+            if(! name.equals(HINTS_MARK)) {
+                result.addProperty(this.createPropertySpec((String) name, value.get(name)));
+            }
         }
 
         return result.build();

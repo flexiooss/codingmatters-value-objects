@@ -93,6 +93,27 @@
                             </arguments>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>raw-naming</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <includeProjectDependencies>false</includeProjectDependencies>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <executableDependency>
+                                <groupId>org.codingmatters.value.objects</groupId>
+                                <artifactId>cdm-value-objects-generation-main</artifactId>
+                            </executableDependency>
+                            <mainClass>org.codingmatters.value.objects.generation.main.Generate</mainClass>
+                            <arguments>
+                                <argument>${basedir}/src/test/resources/raw-naming.yaml</argument>
+                                <argument>org.generated.raw</argument>
+                                <argument>${basedir}/target/generated-test-sources</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
                 </executions>
                 <dependencies>
                     <dependency>
