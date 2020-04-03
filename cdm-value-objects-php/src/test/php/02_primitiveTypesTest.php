@@ -56,7 +56,26 @@ class EmptyObjectTest extends TestCase {
         $writer = new PrimitivePropsWriter();
         $content = $writer->write( $primitiveProps );
 
-        $this->assertSame( '{"stringProp":"str","bytesProp":"bytes","integerProp":9,"longProp":7,"floatProp":9,"doubleProp":7.9,"booleanProp":true,"dateProp":"2011-08-01","timeProp":"15:05:01.012Z","dateTimeProp":"2011-09-01T15:04:01.000","tzDateTimeProp":"2011-09-01T15:04:01.000+01:00"}', $content);
+        $this->assertSame( '{"string-prop":"str","bytesProp":"bytes","integerProp":9,"longProp":7,"floatProp":9,"doubleProp":7.9,"booleanProp":true,"date-prop":"2011-08-01","timeProp":"15:05:01.012Z","dateTimeProp":"2011-09-01T15:04:01.000","tzDateTimeProp":"2011-09-01T15:04:01.000+01:00"}', $content);
+
+        $reader = new PrimitivePropsReader();
+        $object = $reader->read( $content );
+
+        $this->assertSame( $object->stringProp(), "str" );
+        $this->assertSame( $object->bytesProp(), "bytes" );
+        $this->assertSame( $object->integerProp(), 9 );
+        $this->assertSame( $object->longProp(), 7 );
+        $this->assertSame( $object->floatProp(), 9.0 );
+        $this->assertSame( $object->doubleProp(), 7.9 );
+        $this->assertSame( $object->booleanProp(), true );
+        $this->assertSame( $object->dateProp()->jsonSerialize(), '2011-08-01' );
+        $this->assertSame( $object->timeProp()->jsonSerialize(), '15:05:01.012Z' );
+        $this->assertSame( $object->dateTimeProp()->jsonSerialize(), "2011-09-01T15:04:01.000" );
+        $this->assertSame( $object->tzDateTimeProp()->jsonSerialize(), '2011-09-01T15:04:01.000+01:00' );
+    }
+
+    public function testReaderNormalizedName(){
+        $content = '{"stringProp":"str","bytesProp":"bytes","integerProp":9,"longProp":7,"floatProp":9,"doubleProp":7.9,"booleanProp":true,"dateProp":"2011-08-01","timeProp":"15:05:01.012Z","dateTimeProp":"2011-09-01T15:04:01.000","tzDateTimeProp":"2011-09-01T15:04:01.000+01:00"}';
 
         $reader = new PrimitivePropsReader();
         $object = $reader->read( $content );

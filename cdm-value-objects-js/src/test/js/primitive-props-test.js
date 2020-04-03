@@ -159,6 +159,12 @@ class PrimitivePropsTest extends TestCase {
     assert.strictEqual( primitiveProp.objectProp().stringValue("jean"), "tenbien")
   }
 
+  testDeserializationNormalizedName() {
+      let json = '{"dateProp":"2019-01-09"}'
+      let primitiveProp = globalFlexioImport.org.generated.PrimitivePropsBuilder.fromJson(json).build()
+      assert.strictEqual(primitiveProp.dateProp().toJSON(), '2019-01-09')
+    }
+
 }
 
 runTest(PrimitivePropsTest)

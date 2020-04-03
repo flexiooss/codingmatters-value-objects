@@ -46,14 +46,14 @@ public class SpecProcessorTest {
                 .filter( property->property.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT ).count(), is( 4L ) );
         assertThat( spec.valueSpec().propertySpecs().stream()
                 .anyMatch( property->property.typeSpec().cardinality() != PropertyCardinality.SINGLE ), is( false ) );
-        assertThat( spec.valueSpec().propertySpec( "stringProp" ).typeSpec().typeRef(), is( "string" ) );
+        assertThat( spec.valueSpec().propertySpec( "string-prop" ).typeSpec().typeRef(), is( "string" ) );
         assertThat( spec.valueSpec().propertySpec( "bytesProp" ).typeSpec().typeRef(), is( "string" ) );
         assertThat( spec.valueSpec().propertySpec( "integerProp" ).typeSpec().typeRef(), is( "int" ) );
         assertThat( spec.valueSpec().propertySpec( "longProp" ).typeSpec().typeRef(), is( "int" ) );
         assertThat( spec.valueSpec().propertySpec( "floatProp" ).typeSpec().typeRef(), is( "float" ) );
         assertThat( spec.valueSpec().propertySpec( "doubleProp" ).typeSpec().typeRef(), is( "float" ) );
         assertThat( spec.valueSpec().propertySpec( "booleanProp" ).typeSpec().typeRef(), is( "bool" ) );
-        assertThat( spec.valueSpec().propertySpec( "dateProp" ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
+        assertThat( spec.valueSpec().propertySpec( "date-prop" ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
         assertThat( spec.valueSpec().propertySpec( "timeProp" ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
         assertThat( spec.valueSpec().propertySpec( "dateTimeProp" ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
         assertThat( spec.valueSpec().propertySpec( "tzDateTimeProp" ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
@@ -72,13 +72,13 @@ public class SpecProcessorTest {
         assertThat( spec.valueSpec().propertySpecs().stream()
                 .filter( property->property.typeSpec().cardinality() == PropertyCardinality.LIST ).count(), is( 20L ) );
 
-        assertThat( spec.valueSpec().propertySpec( "stringList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "string" ) );
+        assertThat( spec.valueSpec().propertySpec( "string-list" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "string" ) );
         assertThat( spec.valueSpec().propertySpec( "integerList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "int" ) );
         assertThat( spec.valueSpec().propertySpec( "longList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "int" ) );
         assertThat( spec.valueSpec().propertySpec( "floatList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "float" ) );
         assertThat( spec.valueSpec().propertySpec( "doubleList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "float" ) );
         assertThat( spec.valueSpec().propertySpec( "booleanList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "bool" ) );
-        assertThat( spec.valueSpec().propertySpec( "dateList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
+        assertThat( spec.valueSpec().propertySpec( "date-list" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
         assertThat( spec.valueSpec().propertySpec( "timeList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
         assertThat( spec.valueSpec().propertySpec( "dateTimeList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );
         assertThat( spec.valueSpec().propertySpec( "tzDateTimeList" ).typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef(), is( "io.flexio.utils.FlexDate" ) );

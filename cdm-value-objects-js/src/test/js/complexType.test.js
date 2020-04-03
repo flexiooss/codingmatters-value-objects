@@ -100,6 +100,22 @@ class ComplexType extends TestCase {
         assert.deepEqual( complexType.complexProps().intList(), [4, 7, 5] );
     }
 
+    testDeserializationWithNormalized() {
+        let json = "{\"complexProps\":{\"string-prop\":\"toto\",\"intList\":[4,7,5],\"sub-complex-prop\":{\"string-prop\":\"morsay\"}},\"test-is-ok\":true,\"foo\":1}" ;
+        let complexType = globalFlexioImport.org.generated.ComplexTypeBuilder.fromJson( json ).build();
+        assert.strictEqual( complexType.complexProps().stringProp(), "toto" );
+        assert.deepEqual( complexType.complexProps().intList(), [4, 7, 5] );
+        assert.strictEqual( complexType.testIsOk(), true );
+        assert.strictEqual( complexType.complexProps().subComplexProp().stringProp(), "morsay" );
+
+        json = "{\"complexProps\":{\"stringProp\":\"toto\",\"intList\":[4,7,5],\"subComplexProp\":{\"stringProp\":\"morsay\"}},\"testIsOk\":true,\"foo\":1}" ;
+        complexType = globalFlexioImport.org.generated.ComplexTypeBuilder.fromJson( json ).build();
+        assert.strictEqual( complexType.complexProps().stringProp(), "toto" );
+        assert.deepEqual( complexType.complexProps().intList(), [4, 7, 5] );
+        assert.strictEqual( complexType.testIsOk(), true );
+        assert.strictEqual( complexType.complexProps().subComplexProp().stringProp(), "morsay" );
+    }
+
 }
 
 runTest( ComplexType );

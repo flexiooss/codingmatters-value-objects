@@ -331,6 +331,22 @@ public class PhpTypeClassWriter {
         newLine( 1 );
         writer.write( "}" );
         twoLine( 1 );
+        writer.write( "public function getJsonProperty( $jsonObject, $propertyName, $normalizedPropertyName ){" );
+        newLine( 2 );
+        writer.write( "if( isset( $jsonObject[$propertyName] )){" );
+        newLine( 3 );
+        writer.write( "return $jsonObject[$propertyName];" );
+        newLine( 2 );
+        writer.write( "} else if( isset( $jsonObject[$normalizedPropertyName] )){" );
+        newLine( 3 );
+        writer.write( "return $jsonObject[$normalizedPropertyName];" );
+        newLine( 2 );
+        writer.write( "}" );
+        newLine( 2 );
+        writer.write( "return null;" );
+        newLine( 1 );
+        writer.write( "}" );
+        twoLine( 1 );
         writer.write( "public function readArray( array $decode ) : " + objectToRead + " {" );
         newLine( 2 );
         String resultVar = "$" + firstLetterLowerCase( objectToRead );
@@ -355,12 +371,14 @@ public class PhpTypeClassWriter {
     }
 
     private void readFieldList( PhpPackagedValueSpec spec, String resultVar, PhpPropertySpec property ) throws IOException {
-        writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
+        writer.write( "$jsonProperty = $this->getJsonProperty( $decode, \"" + property.realName() + "\", \"" + property.name() + "\");" );
+        newLine( 2 );
+        writer.write( "if( isset( $jsonProperty )){" );
         newLine( 3 );
         String listType = "\\" + property.typeSpec().typeRef().replace( ".", "\\" );
         writer.write( "$list = new " + listType + "();" );
         newLine( 3 );
-        writer.write( "foreach( $decode['" + property.realName() + "'] as $item ){" );
+        writer.write( "foreach( $jsonProperty as $item ){" );
         newLine( 4 );
         if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
             writer.write( "$list[] = \\" + property.typeSpec().typeRef().substring( 0, property.typeSpec().typeRef().length() - 4 ).replace( ".", "\\" ) + "::valueOf( $item );" );
@@ -388,46 +406,47 @@ public class PhpTypeClassWriter {
 
 
     private void readSingleField( String resultVar, PhpPropertySpec property ) throws IOException {
+        writer.write( "$jsonProperty = $this->getJsonProperty( $decode, \"" + property.realName() + "\", \"" + property.name() + "\");" );
+        newLine( 2 );
         if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
-            writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
+            writer.write( "if( isset( $jsonProperty )){" );
             newLine( 3 );
             writer.write( resultVar +
                     "->with" +
                     firstLetterUpperCase( property.name() ) +
                     "( \\" + property.typeSpec().typeRef().replace( ".", "\\" ) +
-                    "::valueOf( $decode['" + property.realName() +
-                    "'] ));"
+                    "::valueOf( $jsonProperty ));"
             );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );
         } else if( "io.flexio.utils.FlexDate".equals( property.typeSpec().typeRef() ) ) {
-            writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
+            writer.write( "if( isset( $jsonProperty )){" );
             newLine( 3 );
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( \\io\\flexio\\utils\\FlexDate::parse( $decode['" + property.realName() + "'] ));" );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( \\io\\flexio\\utils\\FlexDate::parse( $jsonProperty ));" );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );
         } else if( property.typeSpec().typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT || property.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT ) {
-            writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
+            writer.write( "if( isset( $jsonProperty )){" );
             newLine( 3 );
             writer.write( "$reader = new \\" + getReaderFromReference( property.typeSpec().typeRef() ) + "();" );
             newLine( 3 );
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $reader->readArray( $decode['" + property.realName() + "'] ));" );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $reader->readArray( $jsonProperty ));" );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );
         } else if( property.typeSpec().typeRef().equals( "\\ArrayObject" ) ) {
-            writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
+            writer.write( "if( isset( $jsonProperty )){" );
             newLine( 3 );
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( new \\ArrayObject( $decode['" + property.realName() + "'] ));" );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( new \\ArrayObject( $jsonProperty ));" );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );
         } else {
-            writer.write( "if( isset( $decode['" + property.realName() + "'] )){" );
+            writer.write( "if( isset( $jsonProperty )){" );
             newLine( 3 );
-            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $decode['" + property.realName() + "'] );" );
+            writer.write( resultVar + "->with" + firstLetterUpperCase( property.name() ) + "( $jsonProperty );" );
             newLine( 2 );
             writer.write( "}" );
             newLine( 2 );

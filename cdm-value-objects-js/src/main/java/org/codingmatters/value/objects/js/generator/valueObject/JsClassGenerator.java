@@ -253,6 +253,18 @@ public class JsClassGenerator extends JsFileWriter {
     }
 
     public void builderFromObjectMethod(String builderName, List<ValueObjectProperty> properties) throws IOException, ProcessingException {
+        line( "static getPropertyFromObject( jsonObject, propertyName, normalizedPropertyName ){" );
+        line( "if( jsonObject[propertyName] !== undefined && !isNull( jsonObject[propertyName] )){" );
+        line( "return jsonObject[propertyName];" );
+        line( "}" );
+        line( "else if( jsonObject[normalizedPropertyName] !== undefined && !isNull( jsonObject[normalizedPropertyName] )){" );
+        line( "return jsonObject[normalizedPropertyName];" );
+        line( "}" );
+        line( "else {" );
+        line( "return null;" );
+        line( "}" );
+        line( "}" );
+
         line("/**");
         line(" * @param {Object} jsonObject");
         line(" * @returns {" + builderName + "}");
@@ -260,9 +272,12 @@ public class JsClassGenerator extends JsFileWriter {
         line("static fromObject(jsonObject) {");
         line("assertType(isObject(jsonObject), 'input should be an object')");
         line("let builder = new " + builderName + "()");
+        line( "let jsonProperty;" );
         PropertiesDeserializationProcessor propertiesDeserializationProcessor = new PropertiesDeserializationProcessor(this, typesPackage);
         for (ValueObjectProperty property : properties) {
-            line("if (jsonObject['" + property.name() + "'] !== undefined && !isNull(jsonObject['" + property.name() + "'])) {");
+            line( "jsonProperty = " + builderName + ".getPropertyFromObject( jsonObject, '" + property.name() + "', '" + NamingUtility.propertyName( property.name() ) + "' );" );
+            line( "if( jsonProperty !== undefined && !isNull( jsonProperty )){" );
+            propertiesDeserializationProcessor.currentVariable( "jsonProperty" );
             propertiesDeserializationProcessor.process(property);
             line("}");
         }
