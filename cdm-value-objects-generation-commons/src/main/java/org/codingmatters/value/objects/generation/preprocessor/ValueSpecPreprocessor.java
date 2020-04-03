@@ -4,6 +4,8 @@ import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.PropertyTypeSpec;
 import org.codingmatters.value.objects.spec.ValueSpec;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -54,6 +56,7 @@ public class ValueSpecPreprocessor {
                         .typeRef(embeddedPackage + "." + capitalizedFirst(propertySpec.name()))
                         .cardinality(propertySpec.typeSpec().cardinality())
                 )
+                .hints(propertySpec.hints() != null ? new HashSet<>(Arrays.asList(propertySpec.hints())) : new HashSet<>())
                 .build();
     }
 

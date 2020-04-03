@@ -13,6 +13,10 @@ import org.codingmatters.value.objects.spec.Spec;
 import org.generated.*;
 import org.generated.examplevalue.Complex;
 import org.generated.examplevalue.ComplexList;
+import org.generated.raw.RootType;
+import org.generated.raw.roottype.NestedOne;
+import org.generated.raw.roottype.nestedone.NestedTwo;
+import org.generated.raw.roottype.nestedone.nestedtwo.NestedThree;
 import org.generated.ref.ExtReferenced;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,7 +31,7 @@ import java.util.Base64;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by nelt on 3/30/17.
@@ -36,7 +40,7 @@ public class JsonWriterGenerationTest {
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
 
-    private Spec spec;
+//    private Spec spec;
 
     private final JsonFactory factory = new JsonFactory();
 
@@ -53,14 +57,19 @@ public class JsonWriterGenerationTest {
 
     @Before
     public void setUp() throws Exception {
-        Spec refSpec = loadSpec("ref.yaml");
-        new SpecCodeGenerator(refSpec, "org.generated.ref", dir.getRoot()).generate();
-        new JsonFrameworkGenerator(refSpec, "org.generated.ref", dir.getRoot()).generate();
+        Spec spec;
 
-        this.spec = loadSpec("spec.yaml");
+        spec = loadSpec("ref.yaml");
+        new SpecCodeGenerator(spec, "org.generated.ref", dir.getRoot()).generate();
+        new JsonFrameworkGenerator(spec, "org.generated.ref", dir.getRoot()).generate();
 
-        new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
-        new JsonFrameworkGenerator(this.spec, "org.generated", dir.getRoot()).generate();
+        spec = loadSpec("spec.yaml");
+        new SpecCodeGenerator(spec, "org.generated", dir.getRoot()).generate();
+        new JsonFrameworkGenerator(spec, "org.generated", dir.getRoot()).generate();
+
+        spec = loadSpec("raw-naming.yaml");
+        new SpecCodeGenerator(spec, "org.generated.raw", dir.getRoot()).generate();
+        new JsonFrameworkGenerator(spec, "org.generated.raw", dir.getRoot()).generate();
 
         this.compiled = new CompiledCode.Builder()
                 .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))
@@ -538,6 +547,47 @@ public class JsonWriterGenerationTest {
                     out.toString(),
                     is("{" +
                             "\"Raw Property Name\":\"value\"" +
+                            "}"
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void nestedRawHints() throws Exception {
+        RootType value = RootType.builder()
+                .rootProp("root")
+                .nestedOne(NestedOne.builder()
+                        .nestedOneProp("nested one")
+                        .nestedTwo(NestedTwo.builder()
+                                .nestedTwoProp("nested two")
+                                .nestedThree(NestedThree.builder()
+                                        .nestedThreeProp("nested three")
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        ObjectHelper writer = this.classes.get("org.generated.raw.json.RootTypeWriter").newInstance();
+        try(OutputStream out = new ByteArrayOutputStream()) {
+            JsonGenerator generator = this.factory.createGenerator(out);
+            writer.call("write", JsonGenerator.class, RootType.class).with(generator, value);
+            generator.close();
+
+            System.out.println(out.toString());
+
+            assertThat(
+                    out.toString(),
+                    is("{" +
+                            "\"root-prop\":\"root\"," +
+                            "\"nested-one\":{" +
+                                "\"nested-one-prop\":\"nested one\"," +
+                                "\"nested-two\":{" +
+                                    "\"nested-two-prop\":\"nested two\"," +
+                                    "\"nested-three\":{" +
+                                        "\"nested-three-prop\":\"nested three\"" +
+                                    "}" +
+                                "}" +
+                            "}" +
                             "}"
                     )
             );

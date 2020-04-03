@@ -1,0 +1,26 @@
+rootType:
+  rootProp:
+    $type: string
+    $hints:
+      - property:raw(root-prop)
+  nestedOne:
+    $hints:
+      - property:raw(nested-one)
+    nestedOneProp:
+      $type: string
+      $hints:
+        - property:raw(nested-one-prop)
+    nestedTwo:
+      $hints:
+        - property:raw(nested-two)
+      nestedTwoProp:
+        $type: string
+        $hints:
+          - property:raw(nested-two-prop)
+      nestedThree:
+        $hints:
+          - property:raw(nested-three)
+        nestedThreeProp:
+          $type: string
+          $hints:
+            - property:raw(nested-three-prop)

@@ -272,5 +272,16 @@ class EmptyObjectTest extends TestCase {
         $this->assertSame( $object->tzDateTimeSet()[0]->jsonSerialize(), '2018-10-17T15:07:20.000+01:00' );
     }
 
+    public function testReaderNormalizedPropertyName(){
+        $content = '{"string-list":["foo","bar"],"date-list":["2018-10-17"]}';
+
+        $reader = new ArraySimplePropsReader();
+        $object = $reader->read( $content );
+
+        $this->assertNotNull( $object );
+        $this->assertSame( $object->stringList()[0], 'foo' );
+        $this->assertSame( $object->stringList()[1], 'bar' );
+        $this->assertSame( $object->dateList()[0]->jsonSerialize(), '2018-10-17' );
+    }
 
 }

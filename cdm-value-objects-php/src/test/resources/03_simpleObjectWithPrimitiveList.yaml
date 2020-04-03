@@ -1,5 +1,5 @@
 arraySimpleProps:
-  stringList:
+  string-list:
     $list: string
   integerList:
     $list: int
@@ -11,7 +11,7 @@ arraySimpleProps:
     $list: double
   booleanList:
     $list: bool
-  dateList:
+  date-list:
     $list: date
   timeList:
     $list: time

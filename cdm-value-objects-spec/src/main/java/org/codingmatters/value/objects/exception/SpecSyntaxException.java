@@ -8,7 +8,18 @@ import java.util.stream.Collectors;
  */
 public class SpecSyntaxException extends Exception {
     public SpecSyntaxException(String msg, Stack<String> context) {
-        super(msg.replaceAll("\\{context\\}", '"' + contextString(context) + '"'));
+        super(replaceContext(msg, context));
+    }
+
+    static private String replaceContext(String msg, Stack<String> context) {
+        String stackString = "\"" + contextString(context) + "\"";
+        int contextIndex = msg.indexOf("{context}");
+        while(contextIndex != -1) {
+            String before = msg.substring(0, contextIndex);
+            msg = before + stackString + msg.substring(contextIndex + "{context}".length());
+            contextIndex = msg.indexOf("{context}");
+        }
+        return msg;
     }
 
     static private String contextString(Stack<String> context) {

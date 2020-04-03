@@ -15,7 +15,6 @@ import java.io.IOException;
 public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
 
     private final JsFileWriter write;
-    private String propertyName;
     private String currentVariable;
     private char currentIndex = 'a';
     private final String typesPackage;
@@ -42,10 +41,8 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ValueObjectProperty property ) throws ProcessingException {
         try {
-            this.propertyName = property.name();
             write.indent();
             write.string( "builder." + NamingUtility.propertyName( property.name() ) + "(" );
-            currentVariable = "jsonObject['" + propertyName + "']";
             property.type().process( this );
             write.string( ")" );
             write.newLine();

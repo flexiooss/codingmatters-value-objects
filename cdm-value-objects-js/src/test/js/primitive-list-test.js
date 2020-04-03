@@ -71,11 +71,11 @@ class PrimitiveListTest extends TestCase {
         builder.longList( new globalFlexioImport.io.flexio.flex_types.arrays.LongArray( 4, 5, 6 ) );
         builder.stringList( new globalFlexioImport.io.flexio.flex_types.arrays.StringArray( "1", "2", "3" ) );
         let arrayProps = builder.build();
-        assert.strictEqual( JSON.stringify( arrayProps ), "{\"stringList\":[\"1\",\"2\",\"3\"],\"integerList\":[1,2,3],\"longList\":[4,5,6],\"floatList\":[1.5,1.6,1.9],\"doubleList\":[1.4,1.7,1.9],\"booleanList\":[true,true,false],\"dateList\":[\"2019-01-17\"],\"timeList\":[\"14:15:37\"],\"dateTimeList\":[\"2019-01-17T14:15:37\"],\"tzDateTimeList\":[\"2019-01-17T14:15:37+04:30\"]}" );
+        assert.strictEqual( JSON.stringify( arrayProps ), "{\"stringList\":[\"1\",\"2\",\"3\"],\"integerList\":[1,2,3],\"longList\":[4,5,6],\"floatList\":[1.5,1.6,1.9],\"doubleList\":[1.4,1.7,1.9],\"booleanList\":[true,true,false],\"date-list\":[\"2019-01-17\"],\"timeList\":[\"14:15:37\"],\"dateTimeList\":[\"2019-01-17T14:15:37\"],\"tzDateTimeList\":[\"2019-01-17T14:15:37+04:30\"]}" );
     }
 
     testDeserialization(){
-        let json = "{\"stringList\":[\"1\",\"2\",\"3\"],\"integerList\":[1,2,3],\"longList\":[4,5,6],\"floatList\":[1.5,1.6,1.9],\"doubleList\":[1.4,1.7,1.9],\"booleanList\":[true,true,false],\"dateList\":[\"2019-01-17\"],\"timeList\":[\"14:15:37\"],\"dateTimeList\":[\"2019-01-17T14:15:37\"],\"tzDateTimeList\":[\"2019-01-17T14:15:37+04:30\"]}"
+        let json = "{\"stringList\":[\"1\",\"2\",\"3\"],\"integerList\":[1,2,3],\"longList\":[4,5,6],\"floatList\":[1.5,1.6,1.9],\"doubleList\":[1.4,1.7,1.9],\"booleanList\":[true,true,false],\"date-list\":[\"2019-01-17\"],\"timeList\":[\"14:15:37\"],\"dateTimeList\":[\"2019-01-17T14:15:37\"],\"tzDateTimeList\":[\"2019-01-17T14:15:37+04:30\"]}"
 
         let arrayProps = globalFlexioImport.org.generated.ArraySimplePropsBuilder.fromJson( json ).build();
         assert.deepEqual( arrayProps.booleanList(), [true, true, false] );
@@ -88,6 +88,12 @@ class PrimitiveListTest extends TestCase {
         assert.deepEqual( arrayProps.integerList(), [1, 2, 3] );
         assert.deepEqual( arrayProps.longList(), [4, 5, 6] );
         assert.deepEqual( arrayProps.stringList(), ["1", "2", "3"] );
+    }
+
+    testDeserializationWithNormalizedName(){
+        let json = "{\"dateList\":[\"2019-01-17\"]}"
+        let arrayProps = globalFlexioImport.org.generated.ArraySimplePropsBuilder.fromJson( json ).build();
+        assert.strictEqual( arrayProps.dateList()[0].toJSON(), "2019-01-17" );
     }
 
 }
