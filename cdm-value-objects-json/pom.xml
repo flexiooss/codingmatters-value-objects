@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.value.objects</groupId>
         <artifactId>codingmatters-value-objects</artifactId>
-        <version>1.23.0</version>
+        <version>1.24.0</version>
         <relativePath>../</relativePath>
     </parent>
 
