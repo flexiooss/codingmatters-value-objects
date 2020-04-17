@@ -29,8 +29,8 @@ public class PackageFilesGenerator {
     private void generatePackageFile( PackageConfiguration rootPackage ) throws GenerationException {
         String targetFile = targetDirectory + "/" + rootPackage.fullName().replace( ".", "/" ) + "/package.js";
         try( JsFileWriter fileWriter = new JsFileWriter( targetFile ) ){
-            fileWriter.line( "import { globalFlexioImport } from '@flexio-oss/global-import-registry'" );
-            fileWriter.line( "import { deepKeyAssigner } from '@flexio-oss/js-generator-helpers'" );
+            fileWriter.line( "import { globalFlexioImport } from '@flexio-oss/js-commons-bundle/global-import-registry'" );
+            fileWriter.line( "import { deepKeyAssigner } from '@flexio-oss/js-commons-bundle/js-generator-helpers'" );
 
             for( PackageConfiguration.ObjectValueConfiguration objectValueConfig : rootPackage.classes() ){
                 String builder = objectValueConfig.name() + "Builder";
