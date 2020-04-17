@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class JsValueObjectGenerator implements ParsedYamlProcessor {
 
-    public static final String FLEXIO_GLOBAL_IMPORT_REGISTRY_LINE = "import { globalFlexioImport } from '@flexio-oss/global-import-registry'";
+    public static final String FLEXIO_GLOBAL_IMPORT_REGISTRY_LINE = "import { globalFlexioImport } from '@flexio-oss/js-commons-bundle/global-import-registry'";
     private final File rootDirectory;
     private final String currentPackage;
     private final boolean generateList;
@@ -155,7 +155,7 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
         packageBuilder.addEnum( targetPackage, objectName, generateList );
         targetFile = new File( targetDirectory, fileName );
         try( JsClassGenerator write = new JsClassGenerator( targetFile.getPath(), generationContext.typesPackage() ) ){
-            write.line( "import { FlexEnum } from '@flexio-oss/flex-types'" );
+            write.line( "import { FlexEnum } from '@flexio-oss/js-commons-bundle/flex-types'" );
             write.line( "/**" );
             write.line( "* @readonly" );
             write.line( "* @enum {" + objectName + "}" );
@@ -180,15 +180,15 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
             write.line( inport );
         }
         if( !this.flexioAssertImport.isEmpty() ){
-            String line = "import { " + String.join( ", ", this.flexioAssertImport ) + " } from '@flexio-oss/assert'";
+            String line = "import { " + String.join( ", ", this.flexioAssertImport ) + " } from '@flexio-oss/js-commons-bundle/assert'";
             write.line( line );
         }
         if( !this.flexioGeneratorHelperImport.isEmpty() ){
-            String line = "import { " + String.join( ", ", this.flexioGeneratorHelperImport ) + " } from '@flexio-oss/js-generator-helpers'";
+            String line = "import { " + String.join( ", ", this.flexioGeneratorHelperImport ) + " } from '@flexio-oss/js-commons-bundle/js-generator-helpers'";
             write.line( line );
         }
         if( !this.flexioTypesImport.isEmpty() ){
-            String line = "import { " + String.join( ", ", this.flexioTypesImport ) + " } from '@flexio-oss/flex-types'";
+            String line = "import { " + String.join( ", ", this.flexioTypesImport ) + " } from '@flexio-oss/js-commons-bundle/flex-types'";
             write.line( line );
         }
     }
