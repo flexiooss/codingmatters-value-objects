@@ -16,11 +16,16 @@ public class JsonPackageGenerator {
     public void generatePackageJson(String vendor, String artifactId, String version, String rootPackage) throws ProcessingException {
         try (JsFileWriter write = new JsFileWriter(new File(rootDirectory, "package.json").getPath())) {
             write.line("{");
+            write.line( "\"name\": \"@" + vendor + "/" + artifactId + "\"," );
+            write.line( "\"version\": \"" + version.replace( "SNAPSHOT", "dev" ) + "\"," );
             write.line("\"hotballoon-shed\": {");
             write.line("\"module\": {");
             write.line("\"parent\": {");
             write.line("\"name\": \"@flexio-oss/js-commons-bundle\",");
             write.line("\"external\": true");
+            write.line("}");
+            write.line("}");
+            write.line("}");
             write.line("}");
             write.flush();
         } catch (Exception e) {
