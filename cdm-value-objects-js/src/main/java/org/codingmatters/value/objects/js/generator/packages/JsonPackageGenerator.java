@@ -18,6 +18,7 @@ public class JsonPackageGenerator {
             write.line("{");
             write.line( "\"name\": \"@" + vendor + "/" + artifactId + "\"," );
             write.line( "\"version\": \"" + version.replace( "SNAPSHOT", "dev" ) + "\"," );
+            write.line( "\"main\": \"" + rootPackage + "/package.js\"" );
             write.line("\"hotballoon-shed\": {");
             write.line("\"module\": {");
             write.line("\"parent\": {");
