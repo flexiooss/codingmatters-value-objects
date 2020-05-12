@@ -12,7 +12,7 @@ import java.time.temporal.ChronoField;
 import java.util.Locale;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Created by nelt on 11/26/16.
  */
@@ -97,6 +97,10 @@ public class BookTest {
                         "}]" +
                         "}"
         ));
+
+        System.out.println(cleanCode.toMap());
+
+        assertThat(Book.fromMap(cleanCode.toMap()).build(), is(cleanCode));
     }
 
     @Test

@@ -6,6 +6,7 @@ import javax.lang.model.element.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.stream.Stream;
 
 /**
  * Created by nelt on 11/19/16.
@@ -41,6 +42,11 @@ public class ValueSetImplementation {
                                 .build())
                         .addParameter(ParameterizedTypeName.get(ClassName.get(Collection.class), TypeVariableName.get("E")), "elements")
                         .addStatement("super($N)", "elements")
+                        .build())
+                .addMethod(MethodSpec.methodBuilder("stream")
+                        .addModifiers(Modifier.PUBLIC)
+                        .returns(ParameterizedTypeName.get(ClassName.get(Stream.class), TypeVariableName.get("E")))
+                        .addStatement("return super.stream()")
                         .build())
                 .build();
     }

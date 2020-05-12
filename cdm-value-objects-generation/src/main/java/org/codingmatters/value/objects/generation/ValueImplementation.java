@@ -7,10 +7,7 @@ import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.TypeKind;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static javax.lang.model.element.Modifier.*;
@@ -31,6 +28,7 @@ public class ValueImplementation {
     private final MethodSpec hashCodeMethod;
     private final MethodSpec toStringMethod;
     private final MethodSpec changedMethod;
+    private final MethodSpec toMapMethod;
 
     public ValueImplementation(ValueConfiguration types, List<PropertySpec> propertySpecs) {
         this.types = types;
@@ -44,6 +42,7 @@ public class ValueImplementation {
         this.hashCodeMethod = this.createHashCode();
         this.toStringMethod = this.createToString();
         this.changedMethod = this.createChangedMethod();
+        this.toMapMethod = this.createToMapMethod();
     }
 
     public TypeSpec type() {
@@ -58,6 +57,7 @@ public class ValueImplementation {
                 .addMethod(this.hashCodeMethod)
                 .addMethod(this.toStringMethod)
                 .addMethod(this.optMethod())
+                .addMethod(this.toMapMethod)
                 .build();
     }
 
@@ -213,6 +213,14 @@ public class ValueImplementation {
                 .addParameter(this.types.valueChangerType(), "changer")
                 .returns(this.types.valueType())
                 .addStatement("return changer.configure($T.from(this)).build()", this.types.valueType())
+                .build();
+    }
+
+    private MethodSpec createToMapMethod() {
+        return MethodSpec.methodBuilder("toMap")
+                .addModifiers(PUBLIC)
+                .returns(Map.class)
+                .addCode(new ToMapMethod(this.types).block())
                 .build();
     }
 

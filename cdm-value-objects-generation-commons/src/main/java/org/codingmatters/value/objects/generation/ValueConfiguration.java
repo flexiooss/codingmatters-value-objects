@@ -11,6 +11,7 @@ import org.codingmatters.value.objects.spec.ValueSpec;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Optional;
+import java.util.regex.Matcher;
 
 import static org.codingmatters.value.objects.spec.TypeKind.ENUM;
 import static org.codingmatters.value.objects.spec.TypeKind.IN_SPEC_VALUE_OBJECT;
@@ -143,6 +144,15 @@ public class ValueConfiguration {
             return this.collectionConfiguration.rawValueSet();
         } else {
             return null;
+        }
+    }
+
+    public String fieldName(PropertySpec propertySpec) {
+        Optional<Matcher> hint = propertySpec.matchingHint("property:raw\\(([^)]*)\\)");
+        if(hint.isPresent()) {
+            return hint.get().group(1);
+        } else {
+            return propertySpec.name();
         }
     }
 
