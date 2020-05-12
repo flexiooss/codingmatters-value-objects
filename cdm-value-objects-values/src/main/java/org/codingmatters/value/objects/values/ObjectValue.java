@@ -3,6 +3,7 @@ package org.codingmatters.value.objects.values;
 import org.codingmatters.value.objects.values.helper.ObjectValueToMap;
 import org.codingmatters.value.objects.values.optional.OptionalObjectValue;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -17,6 +18,23 @@ public interface ObjectValue {
         Builder result = builder();
         for (String name : value.propertyNames()) {
             result.property(name, value.property(name));
+        }
+
+        return result;
+    }
+
+    static Builder fromMap(Map value) {
+        if(value == null) {
+            return null;
+        }
+
+        Builder result = builder();
+        for (Object name : value.keySet()) {
+            try {
+                result.property(name.toString(), PropertyValue.fromObject(value.get(name)));
+            } catch (PropertyValue.Type.UnsupportedTypeException e) {
+                e.printStackTrace();
+            }
         }
 
         return result;

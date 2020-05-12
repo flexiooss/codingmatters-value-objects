@@ -7,6 +7,11 @@ import org.junit.Test;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public class PropertyValueFromObjectTest {
 
@@ -15,7 +20,7 @@ public class PropertyValueFromObjectTest {
         PropertyValue actualPropertyValue = PropertyValue.fromObject((Object) "value");
         PropertyValue expectedPropertyValue = PropertyValue.builder().stringValue("value").build();
 
-        MatcherAssert.assertThat(actualPropertyValue, Matchers.is(expectedPropertyValue));
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
     }
 
     @Test
@@ -23,7 +28,7 @@ public class PropertyValueFromObjectTest {
         PropertyValue actualPropertyValue = PropertyValue.fromObject((Object) 42);
         PropertyValue expectedPropertyValue = PropertyValue.builder().longValue(42L).build();
 
-        MatcherAssert.assertThat(actualPropertyValue, Matchers.is(expectedPropertyValue));
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
     }
 
     @Test
@@ -31,7 +36,7 @@ public class PropertyValueFromObjectTest {
         PropertyValue actualPropertyValue = PropertyValue.fromObject((Object) 42L);
         PropertyValue expectedPropertyValue = PropertyValue.builder().longValue(42L).build();
 
-        MatcherAssert.assertThat(actualPropertyValue, Matchers.is(expectedPropertyValue));
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
     }
 
     @Test
@@ -39,7 +44,7 @@ public class PropertyValueFromObjectTest {
         PropertyValue actualPropertyValue = PropertyValue.fromObject((Object) true);
         PropertyValue expectedPropertyValue = PropertyValue.builder().booleanValue(true).build();
 
-        MatcherAssert.assertThat(actualPropertyValue, Matchers.is(expectedPropertyValue));
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
     }
 
     @Test
@@ -47,7 +52,7 @@ public class PropertyValueFromObjectTest {
         PropertyValue actualPropertyValue = PropertyValue.fromObject((Object) 1.123456789);
         PropertyValue expectedPropertyValue = PropertyValue.builder().doubleValue(1.123456789).build();
 
-        MatcherAssert.assertThat(actualPropertyValue, Matchers.is(expectedPropertyValue));
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
     }
 
     @Test
@@ -55,7 +60,7 @@ public class PropertyValueFromObjectTest {
         PropertyValue actualPropertyValue = PropertyValue.fromObject((Object) 1.75f);
         PropertyValue expectedPropertyValue = PropertyValue.builder().doubleValue(1.75).build();
 
-        MatcherAssert.assertThat(actualPropertyValue, Matchers.is(expectedPropertyValue));
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
     }
 
     @Test
@@ -64,7 +69,7 @@ public class PropertyValueFromObjectTest {
         PropertyValue actualPropertyValue = PropertyValue.fromObject((Object) now);
         PropertyValue expectedPropertyValue = PropertyValue.builder().datetimeValue(now).build();
 
-        MatcherAssert.assertThat(actualPropertyValue, Matchers.is(expectedPropertyValue));
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
     }
 
     @Test
@@ -73,7 +78,7 @@ public class PropertyValueFromObjectTest {
         PropertyValue actualPropertyValue = PropertyValue.fromObject((Object) today);
         PropertyValue expectedPropertyValue = PropertyValue.builder().dateValue(today).build();
 
-        MatcherAssert.assertThat(actualPropertyValue, Matchers.is(expectedPropertyValue));
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
     }
 
     @Test
@@ -82,7 +87,7 @@ public class PropertyValueFromObjectTest {
         PropertyValue actualPropertyValue = PropertyValue.fromObject((Object) now);
         PropertyValue expectedPropertyValue = PropertyValue.builder().timeValue(now).build();
 
-        MatcherAssert.assertThat(actualPropertyValue, Matchers.is(expectedPropertyValue));
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
     }
 
     @Test
@@ -91,7 +96,7 @@ public class PropertyValueFromObjectTest {
         PropertyValue actualPropertyValue = PropertyValue.fromObject((Object) objectValue);
         PropertyValue expectedPropertyValue = PropertyValue.builder().objectValue(objectValue).build();
 
-        MatcherAssert.assertThat(actualPropertyValue, Matchers.is(expectedPropertyValue));
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
     }
 
     @Test
@@ -100,6 +105,30 @@ public class PropertyValueFromObjectTest {
         PropertyValue actualPropertyValue = PropertyValue.fromObject((Object) bytes);
         PropertyValue expectedPropertyValue = PropertyValue.builder().bytesValue(bytes).build();
 
-        MatcherAssert.assertThat(actualPropertyValue, Matchers.is(expectedPropertyValue));
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
+    }
+
+    @Test
+    public void stringList() throws Exception {
+        List<String> value = Arrays.asList("one", "two");
+        PropertyValue actualPropertyValue = PropertyValue.fromObject(value);
+        PropertyValue expectedPropertyValue = PropertyValue.multiple(
+                PropertyValue.Type.STRING,
+                PropertyValue.builder().stringValue("one"), PropertyValue.builder().stringValue("two")
+        );
+
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
+    }
+
+    @Test
+    public void stringArray() throws Exception {
+        String[] value = {"one", "two"};
+        PropertyValue actualPropertyValue = PropertyValue.fromObject(value);
+        PropertyValue expectedPropertyValue = PropertyValue.multiple(
+                PropertyValue.Type.STRING,
+                PropertyValue.builder().stringValue("one"), PropertyValue.builder().stringValue("two")
+        );
+
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
     }
 }
