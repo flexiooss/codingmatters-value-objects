@@ -16,21 +16,21 @@ class InSpecEnumerationTest extends TestCase {
     public function testInSpecEnum(){
         $object = new InSpecEnumProperties();
 
-        $object -> withSingle( InSpecEnumPropertiesSingle::SA() )
+        $object -> withSingle( InSpecEnumPropertiesSingle::__SA() )
             -> withMultiple( new InSpecEnumPropertiesMultipleList(
-                array( InSpecEnumPropertiesMultiple::MA(), InSpecEnumPropertiesMultiple::MC() )
+                array( InSpecEnumPropertiesMultiple::__MA(), InSpecEnumPropertiesMultiple::__MC() )
          ));
 
-        $this -> assertSame( $object->single()->value(), InSpecEnumPropertiesSingle::SA()->value() );
+        $this -> assertSame( $object->single()->value(), InSpecEnumPropertiesSingle::__SA()->value() );
         $this -> assertSame( $object->single()->value(), 'SA' );
-        $this -> assertSame( $object->multiple()[0]->value(), InSpecEnumPropertiesMultiple::MA()->value() );
-        $this -> assertSame( $object->multiple()[1]->value(), InSpecEnumPropertiesMultiple::MC()->value() );
+        $this -> assertSame( $object->multiple()[0]->value(), InSpecEnumPropertiesMultiple::__MA()->value() );
+        $this -> assertSame( $object->multiple()[1]->value(), InSpecEnumPropertiesMultiple::__MC()->value() );
     }
 
     public function testReader() {
         $inSpec = new InSpecEnumProperties();
-        $inSpec -> withSingle( InSpecEnumPropertiesSingle::SA() )
-                -> withMultiple( new InSpecEnumPropertiesMultipleList( array( InSpecEnumPropertiesMultiple::MA(), InSpecEnumPropertiesMultiple::MC() )
+        $inSpec -> withSingle( InSpecEnumPropertiesSingle::__SA() )
+                -> withMultiple( new InSpecEnumPropertiesMultipleList( array( InSpecEnumPropertiesMultiple::__MA(), InSpecEnumPropertiesMultiple::__MC() )
         ));
         $writer = new InSpecEnumPropertiesWriter();
         $content = $writer->write( $inSpec );

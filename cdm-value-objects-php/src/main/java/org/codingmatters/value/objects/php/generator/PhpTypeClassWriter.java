@@ -70,7 +70,7 @@ public class PhpTypeClassWriter {
 
         for( String value : enumValue.enumValues() ) {
             newLine( 1 );
-            writer.write( "public static function " + value + "(): " + enumValue.name() + " { " );
+            writer.write( "public static function __" + value + "(): " + enumValue.name() + " { " );
             writer.newLine();
             indent( 2 );
             writer.write( "return new " + enumValue.name() + "( '" + value + "' );" );

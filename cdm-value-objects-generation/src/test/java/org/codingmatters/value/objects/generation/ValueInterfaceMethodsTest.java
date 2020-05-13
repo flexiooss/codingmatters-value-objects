@@ -8,6 +8,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import java.util.Map;
+
 import static org.codingmatters.tests.reflect.ReflectMatchers.aMethod;
 import static org.codingmatters.tests.reflect.ReflectMatchers.anInterface;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
@@ -15,7 +17,7 @@ import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
 import static org.codingmatters.value.objects.spec.Spec.spec;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by nelt on 10/5/16.
@@ -48,8 +50,8 @@ public class ValueInterfaceMethodsTest {
                         .with(aMethod().named("hashCode").withoutParameters().returning(int.class))
                         .with(aMethod().named("changed")
                                 .withParameters(compiled.getClass("org.generated.Val$Changer"))
-                                .returning(compiled.getClass("org.generated.Val"))
-                )
+                                .returning(compiled.getClass("org.generated.Val")))
+                        .with(aMethod().named("toMap").returning(Map.class))
         ));
     }
 
@@ -66,7 +68,7 @@ public class ValueInterfaceMethodsTest {
                                 .withParameters(compiled.getClass("org.generated.ComplexVal$Changer"))
                                 .returning(compiled.getClass("org.generated.ComplexVal"))
                         )
+                        .with(aMethod().named("toMap").returning(Map.class))
         ));
     }
-
 }

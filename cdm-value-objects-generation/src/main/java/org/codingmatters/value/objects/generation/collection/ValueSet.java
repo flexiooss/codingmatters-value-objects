@@ -4,6 +4,7 @@ import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
 import java.util.Collection;
+import java.util.stream.Stream;
 
 /**
  * Created by nelt on 11/19/16.
@@ -49,6 +50,10 @@ public class ValueSet {
                 .addMethod(MethodSpec.methodBuilder("toArray")
                         .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
                         .returns(Object[].class)
+                        .build())
+                .addMethod(MethodSpec.methodBuilder("stream")
+                        .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
+                        .returns(ParameterizedTypeName.get(ClassName.get(Stream.class), TypeVariableName.get("E")))
                         .build())
                 .addType(new CollectionBuilder(
                                 ClassName.get(this.packageName, "ValueSet"),

@@ -1,8 +1,13 @@
 package org.codingmatters.value.objects.values;
 
+import org.codingmatters.value.objects.values.vals.Val;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public interface PropertyValue {
@@ -20,7 +25,7 @@ public interface PropertyValue {
 
         return new PropertyValueImpl(type, Cardinality.MULTIPLE, values);
     }
-
+    
     static PropertyValue multiple(Type type, Builder ... builders) {
         Value[] values = null;
         if(builders != null) {
@@ -241,4 +246,56 @@ public interface PropertyValue {
 
     Value single();
     Value[] multiple();
+    
+    static PropertyValue fromObject(Object object) throws Type.UnsupportedTypeException {
+        if(object == null) return null;
+
+        if(object instanceof Object[]) {
+            object = Arrays.asList((Object[]) object);
+        }
+        if(object instanceof Iterable) {
+            List<Value> vals = new LinkedList<>();
+            for (Object o : ((Iterable) object)) {
+                vals.add(fromObject(o).single());
+            }
+            return PropertyValue.multiple(
+                    vals.isEmpty() ? Type.OBJECT : vals.get(0).type(),
+                    vals.toArray(new Value[0]));
+        } else {
+            if (object instanceof String) {
+                return PropertyValue.builder().stringValue((String) object).build();
+            }
+            if (object instanceof Long) {
+                return PropertyValue.builder().longValue((long) object).build();
+            }
+            if (object instanceof Integer) {
+                return PropertyValue.builder().longValue((long) (Integer) object).build();
+            }
+            if (object instanceof Double) {
+                return PropertyValue.builder().doubleValue((Double) object).build();
+            }
+            if (object instanceof Float) {
+                return PropertyValue.builder().doubleValue((double) (Float) object).build();
+            }
+            if (object instanceof Boolean) {
+                return PropertyValue.builder().booleanValue((Boolean) object).build();
+            }
+            if (object instanceof ObjectValue) {
+                return PropertyValue.builder().objectValue((ObjectValue) object).build();
+            }
+            if (object instanceof LocalDateTime) {
+                return PropertyValue.builder().datetimeValue((LocalDateTime) object).build();
+            }
+            if (object instanceof LocalDate) {
+                return PropertyValue.builder().dateValue((LocalDate) object).build();
+            }
+            if (object instanceof LocalTime) {
+                return PropertyValue.builder().timeValue((LocalTime) object).build();
+            }
+            if (object instanceof byte[]) {
+                return PropertyValue.builder().bytesValue((byte[]) object).build();
+            }
+        }
+        throw new Type.UnsupportedTypeException("unsupported type : " + object.getClass());
+    }
 }

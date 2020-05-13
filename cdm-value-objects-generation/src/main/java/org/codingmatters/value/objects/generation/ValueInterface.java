@@ -8,6 +8,7 @@ import org.codingmatters.value.objects.spec.TypeKind;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static javax.lang.model.element.Modifier.*;
 
@@ -23,6 +24,7 @@ public class ValueInterface {
     private final ValueBuilder valueBuilder;
     private final ValueChanger valueChanger;
     private final MethodSpec changedMethod;
+    private final MethodSpec toMapMethod;
     private final MethodSpec hashCode;
     private final List<TypeSpec> enums;
     private List<ClassName> protocols;
@@ -34,6 +36,7 @@ public class ValueInterface {
         this.getters = this.createGetters();
         this.withers = this.createWithers();
         this.changedMethod = this.createChangedMethod();
+        this.toMapMethod = this.createToMapMethod();
         this.valueBuilder = new ValueBuilder(types, propertySpecs);
         this.valueChanger = new ValueChanger(types);
         this.hashCode = MethodSpec.methodBuilder("hashCode")
@@ -49,12 +52,14 @@ public class ValueInterface {
         return TypeSpec.interfaceBuilder(this.types.valueType())
                 .addMethod(this.createBuilderMethod())
                 .addMethod(this.createBuilderFromValueMethod())
+                .addMethod(this.createBuilderFromMapMethod())
                 .addModifiers(PUBLIC)
                 .addTypes(this.enums)
                 .addMethods(this.getters)
                 .addMethods(this.withers)
                 .addMethod(this.hashCode)
                 .addMethod(this.changedMethod)
+                .addMethod(this.toMapMethod)
                 .addMethod(this.optMethod())
                 .addType(this.valueBuilder.type())
                 .addType(this.valueChanger.type())
@@ -91,6 +96,30 @@ public class ValueInterface {
                 .beginControlFlow("else")
                 .addStatement("return null")
                 .endControlFlow()
+                .build();
+    }
+
+
+    private MethodSpec createBuilderFromMapMethod() {
+        List<Object> bindings = new LinkedList<>();
+
+//        String statement = "return new $T()\n";
+//        bindings.add(this.types.valueBuilderType());
+//
+//        for (PropertySpec propertySpec : this.propertySpecs) {
+//            statement += "." + propertySpec.name() + "(value." + propertySpec.name() + "())\n";
+//        }
+
+        return MethodSpec.methodBuilder("fromMap")
+                .addModifiers(STATIC, PUBLIC)
+                .addParameter(Map.class, "value")
+                .returns(this.types.valueBuilderType())
+                .addCode(new FromMapBuilderMethod(this.types).block())
+//                .addStatement("return null")
+//                .endControlFlow()
+//                .beginControlFlow("else")
+//                .addStatement("return null")
+//                .endControlFlow()
                 .build();
     }
 
@@ -132,6 +161,13 @@ public class ValueInterface {
                 .addModifiers(PUBLIC, ABSTRACT)
                 .addParameter(this.types.valueChangerType(), "changer")
                 .returns(this.types.valueType())
+                .build();
+    }
+
+    private MethodSpec createToMapMethod() {
+        return MethodSpec.methodBuilder("toMap")
+                .addModifiers(PUBLIC, ABSTRACT)
+                .returns(Map.class)
                 .build();
     }
 
