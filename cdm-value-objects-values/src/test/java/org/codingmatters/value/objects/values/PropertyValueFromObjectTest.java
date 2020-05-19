@@ -7,8 +7,7 @@ import org.junit.Test;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -129,6 +128,61 @@ public class PropertyValueFromObjectTest {
                 PropertyValue.builder().stringValue("one"), PropertyValue.builder().stringValue("two")
         );
 
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
+    }
+
+    @Test
+    public void map() throws Exception {
+        Map value = new HashMap();
+        value.put("p1", "v1");
+        value.put("p2", "v2");
+
+        PropertyValue actualPropertyValue = PropertyValue.fromObject(value);
+        PropertyValue expectedPropertyValue = PropertyValue.builder()
+                .objectValue(ObjectValue.builder()
+                        .property("p1", PropertyValue.builder().stringValue("v1").build())
+                        .property("p2", PropertyValue.builder().stringValue("v2").build())
+                        .build())
+                .build();
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
+    }
+
+    @Test
+    public void mapList() throws Exception {
+        Map value = new HashMap();
+        value.put("p1", "v1");
+        value.put("p2", "v2");
+
+        List list = new LinkedList();
+        list.add(value);
+
+        PropertyValue actualPropertyValue = PropertyValue.fromObject(list);
+        PropertyValue expectedPropertyValue = PropertyValue.multiple(
+                PropertyValue.Type.OBJECT,
+                PropertyValue.builder().objectValue(ObjectValue.builder()
+                        .property("p1", PropertyValue.builder().stringValue("v1").build())
+                        .property("p2", PropertyValue.builder().stringValue("v2").build())
+                        .build()
+                )
+        );
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
+    }
+
+    @Test
+    public void mapArray() throws Exception {
+        Map value = new HashMap();
+        value.put("p1", "v1");
+        value.put("p2", "v2");
+
+        PropertyValue actualPropertyValue = PropertyValue.fromObject(new Object[] {value});
+        PropertyValue expectedPropertyValue = PropertyValue.multiple(
+                PropertyValue.Type.OBJECT,
+                PropertyValue.builder().objectValue(ObjectValue.builder()
+                        .property("p1", PropertyValue.builder().stringValue("v1").build())
+                        .property("p2", PropertyValue.builder().stringValue("v2").build())
+                        .build()
+                )
+        );
         assertThat(actualPropertyValue, is(expectedPropertyValue));
     }
 }
