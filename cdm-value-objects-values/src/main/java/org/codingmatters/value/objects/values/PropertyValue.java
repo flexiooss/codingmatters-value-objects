@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public interface PropertyValue {
@@ -294,6 +295,9 @@ public interface PropertyValue {
             }
             if (object instanceof byte[]) {
                 return PropertyValue.builder().bytesValue((byte[]) object).build();
+            }
+            if(object instanceof Map) {
+                return PropertyValue.builder().objectValue(ObjectValue.fromMap((Map) object).build()).build();
             }
         }
         throw new Type.UnsupportedTypeException("unsupported type : " + object.getClass());
