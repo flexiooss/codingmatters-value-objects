@@ -6,11 +6,14 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
+import org.codingmatters.value.objects.spec.TypeToken;
 import org.codingmatters.value.objects.spec.ValueSpec;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 import static org.codingmatters.value.objects.spec.TypeKind.ENUM;
@@ -203,5 +206,16 @@ public class ValueConfiguration {
 
     private static String capitalizedFirst(String str) {
         return str.substring(0,1).toUpperCase() + str.substring(1);
+    }
+
+    static public Set<String> localDateTypeRefs = new HashSet<>();
+    static {
+        localDateTypeRefs.add(TypeToken.DATE.getImplementationType());
+        localDateTypeRefs.add(TypeToken.DATE_TIME.getImplementationType());
+        localDateTypeRefs.add(TypeToken.TIME.getImplementationType());
+    }
+
+    public boolean isDateOrTimeType(String typeRef) {
+        return localDateTypeRefs.contains(typeRef);
     }
 }
