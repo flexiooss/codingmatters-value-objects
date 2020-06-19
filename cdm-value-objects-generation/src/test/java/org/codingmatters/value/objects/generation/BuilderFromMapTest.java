@@ -82,6 +82,9 @@ public class BuilderFromMapTest {
                     .addProperty(property().name("str").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
                     .addProperty(property().name("strs").type(type().cardinality(PropertyCardinality.LIST).typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
             )
+            .addValue(valueSpec().name("withPropertyValue")
+                    .addProperty(property().name("propertyValue").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
+            )
             .build();
 
 
