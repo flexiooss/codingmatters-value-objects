@@ -1,12 +1,12 @@
 package org.codingmatters.value.objects.generation;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.TypeKind;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,6 +29,8 @@ public class ValueImplementation {
     private final MethodSpec toStringMethod;
     private final MethodSpec changedMethod;
     private final MethodSpec toMapMethod;
+    private final FieldSpec localDateTemporalFormatterField;
+    private final FieldSpec localTimeTemporalFormatterField;
 
     public ValueImplementation(ValueConfiguration types, List<PropertySpec> propertySpecs) {
         this.types = types;
@@ -43,6 +45,9 @@ public class ValueImplementation {
         this.toStringMethod = this.createToString();
         this.changedMethod = this.createChangedMethod();
         this.toMapMethod = this.createToMapMethod();
+        this.localDateTemporalFormatterField = this.createLocalDateTemporalFormatterField();
+        this.localTimeTemporalFormatterField = this.createLocalTimeTemporalFormatterField();
+
     }
 
     public TypeSpec type() {
@@ -58,6 +63,8 @@ public class ValueImplementation {
                 .addMethod(this.toStringMethod)
                 .addMethod(this.optMethod())
                 .addMethod(this.toMapMethod)
+                .addField(this.localDateTemporalFormatterField)
+                .addField(this.localTimeTemporalFormatterField)
                 .build();
     }
 
@@ -229,6 +236,40 @@ public class ValueImplementation {
                 .addModifiers(PUBLIC)
                 .returns(this.types.optionalValueType())
                 .addStatement("return $T.of(this)", this.types.optionalValueType())
+                .build();
+    }
+
+
+    private FieldSpec createLocalDateTemporalFormatterField() {
+        return FieldSpec.builder(DateTimeFormatter.class, "LOCAL_DATE_TEMPORAL_FORMATTER", STATIC, PUBLIC, FINAL)
+                .initializer(CodeBlock.builder()
+                        .addStatement("new $T().appendPattern($S)" +
+                                ".parseDefaulting($T.MONTH_OF_YEAR, 1)" +
+                                ".parseDefaulting(ChronoField.DAY_OF_MONTH, 1)\n" +
+                                ".parseDefaulting(ChronoField.HOUR_OF_DAY, 0)\n" +
+                                ".parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)\n" +
+                                ".parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)\n" +
+                                ".toFormatter()",
+                                DateTimeFormatterBuilder.class,
+                                "yyyy[-MM[-dd['T'HH[:mm[:ss[.SSSSSS][.SSS]]]]]]",
+                                ChronoField.class
+                        )
+                        .build())
+                .build();
+    }
+
+    private FieldSpec createLocalTimeTemporalFormatterField() {
+        return FieldSpec.builder(DateTimeFormatter.class, "LOCAL_TIME_TEMPORAL_FORMATTER", STATIC, PUBLIC, FINAL)
+                .initializer(CodeBlock.builder()
+                        .addStatement("new $T().appendPattern($S)" +
+                                ".parseDefaulting($T.MINUTE_OF_HOUR, 0)\n" +
+                                ".parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)\n" +
+                                ".toFormatter()",
+                                DateTimeFormatterBuilder.class,
+                                "HH[:mm[:ss[.SSSSSS][.SSS]]]",
+                                ChronoField.class
+                        )
+                        .build())
                 .build();
     }
 }
