@@ -251,7 +251,7 @@ public class ValueImplementation {
                                 ".parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)\n" +
                                 ".toFormatter()",
                                 DateTimeFormatterBuilder.class,
-                                "yyyy[-MM[-dd['T'HH[:mm[:ss[.SSSSSS][.SSS]]]]]]",
+                                "yyyy[-MM[-dd['T'HH[:mm[:ss[.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S]]]]]]",
                                 ChronoField.class
                         )
                         .build())
