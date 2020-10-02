@@ -7,10 +7,11 @@ import org.junit.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import static org.codingmatters.value.objects.demo.books.BookTest.ENGLISH_DATE_FORMATTER;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 public class OptionalBookTest {
     private Book book = Book.builder()
@@ -92,5 +93,21 @@ public class OptionalBookTest {
         assertThat(this.book.opt().kind().get(), is(Book.Kind.TEXTBOOK));
 
         assertThat(this.book.opt().tags().isPresent(), is(true));
+    }
+
+    @Test
+    public void optionalSafeValueList() throws Exception {
+        Book b = Book.builder().build();
+
+        assertThat(b.reviews(), is(nullValue()));
+        assertThat(b.opt().reviews().isPresent(), is(false));
+        assertThat(b.opt().reviews().safe(), is(notNullValue()));
+        assertThat(b.opt().reviews().safe().isEmpty(), is(true));
+
+        b = b.withReviews(Arrays.asList(Review.builder().reviewBody("great").build()));
+        assertThat(b.reviews(), is(notNullValue()));
+        assertThat(b.opt().reviews().isPresent(), is(true));
+        assertThat(b.opt().reviews().safe(), is(notNullValue()));
+        assertThat(b.opt().reviews().safe(), is(b.reviews()));
     }
 }
