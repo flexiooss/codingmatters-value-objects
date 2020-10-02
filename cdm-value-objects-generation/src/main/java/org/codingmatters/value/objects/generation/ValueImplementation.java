@@ -283,7 +283,7 @@ public class ValueImplementation {
                                 ".parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)\n" +
                                 ".toFormatter()",
                                 DateTimeFormatterBuilder.class,
-                                "HH[:mm[:ss[.SSSSSS][.SSS]]]",
+                                "HH[:mm[:ss[.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S]]]",
                                 ChronoField.class
                         )
                         .build())
