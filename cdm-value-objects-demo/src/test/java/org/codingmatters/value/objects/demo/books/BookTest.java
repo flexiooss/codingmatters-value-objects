@@ -174,4 +174,9 @@ public class BookTest {
         assertThat(book.reviews().get(1).reviewBody(), is("very good"));
         assertThat(book.reviews().get(2).reviewBody(), is("quite nice"));
     }
+
+    @Test
+    public void formattedStringSetter() throws Exception {
+        assertThat(Person.builder().name("%s %s", "Arthur", "Miller").build().name(), is("Arthur Miller"));
+    }
 }
