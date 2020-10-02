@@ -3,6 +3,7 @@ package org.codingmatters.value.objects.generation.collection;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import org.codingmatters.tests.compile.CompiledCode;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -70,6 +71,14 @@ public class ValueSetTest {
         assertThat(compiled.getClass("org.generated.ValueSet"), is(anInterface()
                 //Object[] toArray()
                 .with(aMethod().named("toArray").withoutParameters().returning(Object[].class))
+        ));
+
+
+        MatcherAssert.assertThat(compiled.getClass("org.generated.ValueSet"), is(anInterface()
+                .with(aStatic().method().named("builder")
+                        .withoutParameters()
+                        .returning(genericType().baseClass(compiled.getClass("org.generated.ValueSet$Builder")).withParameters(typeParameter().named("E"))
+                        ))
         ));
     }
 

@@ -90,5 +90,12 @@ public class ValueListTest {
                         ))
         ));
 
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
+                .with(aStatic().method().named("builder")
+                        .withoutParameters()
+                        .returning(genericType().baseClass(compiled.getClass("org.generated.ValueList$Builder")).withParameters(typeParameter().named("E"))
+                        ))
+        ));
+
     }
 }
