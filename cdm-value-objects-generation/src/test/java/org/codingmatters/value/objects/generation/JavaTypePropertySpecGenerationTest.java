@@ -1,14 +1,18 @@
 package org.codingmatters.value.objects.generation;
 
 import org.codingmatters.tests.compile.CompiledCode;
+import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.tests.compile.helpers.ClassLoaderHelper;
 import org.codingmatters.tests.compile.helpers.helpers.ObjectHelper;
+import org.codingmatters.tests.reflect.matchers.TypeMatcher;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import java.util.Locale;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
@@ -17,7 +21,7 @@ import static org.codingmatters.value.objects.spec.Spec.spec;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by nelt on 9/14/16.
@@ -26,6 +30,8 @@ public class JavaTypePropertySpecGenerationTest {
 
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
+
+    private FileHelper fileHelper = new FileHelper();
 
     private final Spec spec  = spec()
             .addValue(
@@ -71,13 +77,30 @@ public class JavaTypePropertySpecGenerationTest {
 
     @Test
     public void propertyBuilderSetterSignature() throws Exception {
+        this.fileHelper.printFile(this.dir.getRoot(), "Val.java");
         assertThat(classes.get("org.generated.Val$Builder").get(),
                 is(aStatic().class_()
                         .with(aPublic().method().named("prop")
                                 .withParameters(String.class).returning(classes.get("org.generated.Val$Builder").get())
                         )
+                        .with(aPublic().method().named("prop")
+                                .withParameters(classType(String.class), typeArray(classType(Object.class)))
+                                .returning(classes.get("org.generated.Val$Builder").get())
+                        )
+                        .with(aPublic().method().named("prop")
+                                .withParameters(classType(Locale.class), classType(String.class), typeArray(classType(Object.class)))
+                                .returning(classes.get("org.generated.Val$Builder").get())
+                        )
                         .with(aPublic().method().named("prop2")
                                 .withParameters(String.class).returning(classes.get("org.generated.Val$Builder").get())
+                        )
+                        .with(aPublic().method().named("prop2")
+                                .withParameters(classType(String.class), typeArray(classType(Object.class)))
+                                .returning(classes.get("org.generated.Val$Builder").get())
+                        )
+                        .with(aPublic().method().named("prop2")
+                                .withParameters(classType(Locale.class), classType(String.class), typeArray(classType(Object.class)))
+                                .returning(classes.get("org.generated.Val$Builder").get())
                         )
                         .with(aPublic().method().named("binary")
                                 .withParameters(byte[].class).returning(classes.get("org.generated.Val$Builder").get())

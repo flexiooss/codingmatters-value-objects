@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.generation;
 
 import com.squareup.javapoet.*;
+import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.TypeKind;
 
@@ -210,6 +211,22 @@ public class ValueImplementation {
                             .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.valueType())
                             .build()
             );
+            if(propertySpec.typeSpec().cardinality().isCollection()) {
+                result.add(
+                        MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
+                                .returns(this.types.valueType())
+                                .addModifiers(PUBLIC)
+                                .addParameter(ParameterizedTypeName.get(ClassName.get(Iterable.class), this.types.propertySingleType(propertySpec)), "values")
+                                .addStatement(
+                                        "return $T.from(this).$L(values != null ? $L.builder().with(values).build() : $L.builder().with(values).build()).build()",
+                                        this.types.valueType(),
+                                        propertySpec.name(),
+                                        propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST) ? "ValueList" : "ValueSet",
+                                        propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST) ? "ValueList" : "ValueSet"
+                                )
+                                .build()
+                );
+            }
         }
         return result;
     }
@@ -266,7 +283,7 @@ public class ValueImplementation {
                                 ".parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)\n" +
                                 ".toFormatter()",
                                 DateTimeFormatterBuilder.class,
-                                "HH[:mm[:ss[.SSSSSS][.SSS]]]",
+                                "HH[:mm[:ss[.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S]]]",
                                 ChronoField.class
                         )
                         .build())

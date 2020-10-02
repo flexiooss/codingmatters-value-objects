@@ -3,10 +3,12 @@ package org.codingmatters.value.objects.generation;
 import com.squareup.javapoet.*;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
+import org.codingmatters.value.objects.spec.TypeKind;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 import static javax.lang.model.element.Modifier.*;
@@ -89,7 +91,34 @@ public class ValueBuilder {
                             .build()
             );
         }
+        if(propertySpec.typeSpec().typeKind().equals(TypeKind.JAVA_TYPE) && propertySpec.typeSpec().typeRef().equals(String.class.getName())) {
+            this.addFormattedStringSetters(propertySpec, result);
+        }
         return result;
+    }
+
+    private void addFormattedStringSetters(PropertySpec propertySpec, LinkedList<MethodSpec> result) {
+        result.add(
+                MethodSpec.methodBuilder(propertySpec.name())
+                        .addParameter(this.types.propertyType(propertySpec), "format")
+                        .varargs().addParameter(Object[].class, "args")
+                        .returns(this.types.valueBuilderType())
+                        .addModifiers(PUBLIC)
+                        .addStatement("this.$N = $T.format(format, args)", propertySpec.name(), String.class)
+                        .addStatement("return this")
+                        .build()
+        );
+        result.add(
+                MethodSpec.methodBuilder(propertySpec.name())
+                        .addParameter(Locale.class, "locale")
+                        .addParameter(this.types.propertyType(propertySpec), "format")
+                        .varargs().addParameter(Object[].class, "args")
+                        .returns(this.types.valueBuilderType())
+                        .addModifiers(PUBLIC)
+                        .addStatement("this.$N = $T.format(locale, format, args)", propertySpec.name(), String.class)
+                        .addStatement("return this")
+                        .build()
+        );
     }
 
     private List<MethodSpec> createMultipleSetters(PropertySpec propertySpec) {

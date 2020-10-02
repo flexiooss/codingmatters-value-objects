@@ -2,10 +2,13 @@ package org.codingmatters.value.objects.generation;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
+import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.TypeKind;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -132,15 +135,6 @@ public class ValueInterface {
         return result;
     }
 
-    private List<MethodSpec> createWithers() {
-        List<MethodSpec> result = new LinkedList<>();
-
-        for (PropertySpec propertySpec : propertySpecs) {
-            result.add(this.createWhither(propertySpec));
-        }
-        return result;
-    }
-
     private MethodSpec createGetter(PropertySpec propertySpec) {
         return MethodSpec.methodBuilder(propertySpec.name())
                 .returns(this.types.propertyType(propertySpec))
@@ -148,11 +142,31 @@ public class ValueInterface {
                 .build();
     }
 
+    private List<MethodSpec> createWithers() {
+        List<MethodSpec> result = new LinkedList<>();
+
+        for (PropertySpec propertySpec : propertySpecs) {
+            result.add(this.createWhither(propertySpec));
+            if(propertySpec.typeSpec().cardinality().isCollection()) {
+                result.add(this.createCollectionWither(propertySpec));
+            }
+        }
+        return result;
+    }
+
     private MethodSpec createWhither(PropertySpec propertySpec) {
         return MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
                 .returns(this.types.valueType())
                 .addModifiers(PUBLIC, ABSTRACT)
                 .addParameter(this.types.propertyType(propertySpec), "value")
+                .build();
+    }
+
+    private MethodSpec createCollectionWither(PropertySpec propertySpec) {
+        return MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
+                .returns(this.types.valueType())
+                .addModifiers(PUBLIC, ABSTRACT)
+                .addParameter(ParameterizedTypeName.get(ClassName.get(Iterable.class), this.types.propertySingleType(propertySpec)), "values")
                 .build();
     }
 

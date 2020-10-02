@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by nelt on 10/11/16.
@@ -87,6 +87,13 @@ public class ValueListTest {
                 .with(aMethod().named("stream")
                         .withoutParameters()
                         .returning(genericType().baseClass(Stream.class).withParameters(typeParameter().named("E"))
+                        ))
+        ));
+
+        assertThat(compiled.getClass("org.generated.ValueList"), is(anInterface()
+                .with(aStatic().method().named("builder")
+                        .withoutParameters()
+                        .returning(genericType().baseClass(compiled.getClass("org.generated.ValueList$Builder")).withParameters(typeParameter().named("E"))
                         ))
         ));
 

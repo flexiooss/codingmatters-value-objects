@@ -167,7 +167,6 @@ public class BuilderFromMapTest {
         assertThat(valueFromRawMap.get(), is(value.get()));
     }
 
-
     @Test
     public void givenTypeWithRawProperties__whenToMapAndBack__thenToMapUsesRawPropertyyNames_andFromMapAcceptsBoth() throws Exception {
         LocalDateTime now = LocalDateTime.now();

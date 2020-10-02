@@ -43,9 +43,9 @@ public class CollectionBuilder {
                         .build())
                 .addMethod(MethodSpec.methodBuilder("with")
                         .addModifiers(Modifier.PUBLIC)
-                        .addParameter(ParameterizedTypeName.get(ClassName.get(Collection.class), TypeVariableName.get("E")), "elements")
+                        .addParameter(ParameterizedTypeName.get(ClassName.get(Iterable.class), TypeVariableName.get("E")), "elements")
                         .returns(this.valueCollectionInterface.nestedClass("Builder"))
-                        .addStatement("if(elements != null) {this.delegate.addAll(elements);}")
+                        .addStatement("if(elements != null) {elements.forEach(e -> this.delegate.add(e));}")
                         .addStatement("return this")
                         .build())
                 .build();
