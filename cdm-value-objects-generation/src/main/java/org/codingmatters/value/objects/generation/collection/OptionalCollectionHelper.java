@@ -38,7 +38,7 @@ public class OptionalCollectionHelper {
                 .addMethods(this.optionalHelper.optionalMethods(ParameterizedTypeName.get(this.valueCollection, TypeVariableName.get("E"))))
                 .addMethod(MethodSpec.methodBuilder("safe")
                         .addModifiers(Modifier.PUBLIC)
-                        .returns(this.valueCollection)
+                        .returns(ParameterizedTypeName.get(this.valueCollection, TypeVariableName.get("E")))
                         .addStatement("return this.optional.orElseGet(() -> new $T.Builder<E>().build())", this.valueCollection)
                         .build())
                 ;

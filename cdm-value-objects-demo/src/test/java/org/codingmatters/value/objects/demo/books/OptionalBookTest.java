@@ -109,5 +109,6 @@ public class OptionalBookTest {
         assertThat(b.opt().reviews().isPresent(), is(true));
         assertThat(b.opt().reviews().safe(), is(notNullValue()));
         assertThat(b.opt().reviews().safe(), is(b.reviews()));
+        Review e = b.opt().reviews().safe().get(0);
     }
 }

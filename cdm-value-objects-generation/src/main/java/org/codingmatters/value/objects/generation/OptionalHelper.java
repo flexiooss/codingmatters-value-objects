@@ -26,6 +26,11 @@ public class OptionalHelper {
                 .returns(boolean.class)
                 .addStatement("return this.optional.isPresent()")
                 .build());
+        results.add(MethodSpec.methodBuilder("isEmpty")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(boolean.class)
+                .addStatement("return this.optional.isEmpty()")
+                .build());
         results.add(MethodSpec.methodBuilder("ifPresent")
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(ParameterizedTypeName.get(ClassName.get(Consumer.class), valueType), "consumer")
