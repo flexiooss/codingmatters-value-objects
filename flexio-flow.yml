@@ -1,4 +1,6 @@
-level: dev
-schemes: [maven]
-topics: [16]
+level: stable
+schemes:
+- maven
+topics:
+- 16
 version: 1.33.0
