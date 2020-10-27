@@ -64,6 +64,13 @@ public class ValueSpecPreprocessor {
         ValueSpec.Builder embeddedValueSpecBuilder = ValueSpec.valueSpec()
                 .name(propertySpec.name())
                 ;
+
+        if(propertySpec.typeSpec().embeddedValueSpec().protocols() != null) {
+            embeddedValueSpecBuilder.addConformsTo(
+                        propertySpec.typeSpec().embeddedValueSpec().protocols().toArray(new String[0])
+                );
+        }
+
         for (PropertySpec embeddedPropSpec : propertySpec.typeSpec().embeddedValueSpec().propertySpecs()) {
             embeddedValueSpecBuilder.addProperty(embeddedPropSpec);
         }

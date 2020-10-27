@@ -103,6 +103,6 @@ public class ObjectValueReader {
             }
             return listValue.toArray(new ObjectValue[listValue.size()]);
         }
-        throw new IOException(String.format("failed reading org.codingmatters.value.objects.demo.books.Book array, current token was %s", parser.currentToken()));
+        throw new IOException(String.format("failed reading org.codingmatters.value.objects.values.ObjectValue array, current token was %s", parser.currentToken()));
     }
 }
