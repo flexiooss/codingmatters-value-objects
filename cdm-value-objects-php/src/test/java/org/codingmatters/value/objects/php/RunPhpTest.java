@@ -14,6 +14,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class RunPhpTest {
 
+    public static final int COMPOSER_INSTALL_TIMEOUT_IN_MINUTES = 6;
+    public static final int PHP_UNIT_TEST_TIMEOUT_IN_SECONDS = 20;
+    
     private static ProcessBuilder processBuilder;
 
     @BeforeClass
@@ -23,7 +26,7 @@ public class RunPhpTest {
         processBuilder.directory( new File( dir ) );
         processBuilder.command( "composer", "install" );
         Process process = processBuilder.start();
-        process.waitFor( 3, TimeUnit.MINUTES );
+        process.waitFor( COMPOSER_INSTALL_TIMEOUT_IN_MINUTES, TimeUnit.MINUTES );
         if( process.exitValue() != 0 ) {
             printError( process );
         }
@@ -51,7 +54,7 @@ public class RunPhpTest {
     public void test_01_emptyObject() throws IOException, InterruptedException {
         processBuilder.command( "./vendor/bin/phpunit", "test/01_emptyObject.php" );
         Process process = processBuilder.start();
-        process.waitFor( 20, TimeUnit.SECONDS );
+        process.waitFor( PHP_UNIT_TEST_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS );
         if( process.exitValue() != 0 ) {
             printError( process );
         }
@@ -62,7 +65,7 @@ public class RunPhpTest {
     public void test_02_primitiveProps() throws InterruptedException, IOException {
         processBuilder.command( "./vendor/bin/phpunit", "test/02_primitiveTypesTest.php" );
         Process process = processBuilder.start();
-        process.waitFor( 20, TimeUnit.SECONDS );
+        process.waitFor( PHP_UNIT_TEST_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS );
         if( process.exitValue() != 0 ) {
             printError( process );
         }
@@ -73,7 +76,7 @@ public class RunPhpTest {
     public void test_03_primitiveLists() throws IOException, InterruptedException {
         processBuilder.command( "./vendor/bin/phpunit", "test/03_primitiveListTest.php" );
         Process process = processBuilder.start();
-        process.waitFor( 20, TimeUnit.SECONDS );
+        process.waitFor( PHP_UNIT_TEST_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS );
         if( process.exitValue() != 0 ) {
             printError( process );
         }
@@ -84,7 +87,7 @@ public class RunPhpTest {
     public void test_04_embeddedValueSpec() throws IOException, InterruptedException {
         processBuilder.command( "./vendor/bin/phpunit", "test/04_embeddedValueSpecTest.php" );
         Process process = processBuilder.start();
-        process.waitFor( 20, TimeUnit.SECONDS );
+        process.waitFor( PHP_UNIT_TEST_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS );
         if( process.exitValue() != 0 ) {
             printError( process );
         }
@@ -95,7 +98,7 @@ public class RunPhpTest {
     public void test_05_enums() throws InterruptedException, IOException {
         processBuilder.command( "./vendor/bin/phpunit", "test/05_inSpecEnumTest.php" );
         Process process = processBuilder.start();
-        process.waitFor( 20, TimeUnit.SECONDS );
+        process.waitFor( PHP_UNIT_TEST_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS );
         if( process.exitValue() != 0 ) {
             printError( process );
         }
@@ -106,7 +109,7 @@ public class RunPhpTest {
     public void test_07_externalValues() throws IOException, InterruptedException {
         processBuilder.command( "./vendor/bin/phpunit", "test/07_externalValueObject.php" );
         Process process = processBuilder.start();
-        process.waitFor( 20, TimeUnit.SECONDS );
+        process.waitFor( PHP_UNIT_TEST_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS );
         if( process.exitValue() != 0 ) {
             printError( process );
         }
