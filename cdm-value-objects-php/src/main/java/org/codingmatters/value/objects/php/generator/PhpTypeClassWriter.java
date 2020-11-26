@@ -80,7 +80,7 @@ public class PhpTypeClassWriter {
             newLine( 0 );
         }
         newLine( 1 );
-        writer.write( "public static function valueOf( string $value ): " + enumValue.name() + " {" );
+        writer.write( "public static function valueOf( string $value ) {" );
         newLine( 2 );
         writer.write( "if( in_array($value, " + enumValue.name() + "::values())){" );
         newLine( 3 );
@@ -88,7 +88,7 @@ public class PhpTypeClassWriter {
         newLine( 2 );
         writer.write( "} else {" );
         newLine( 3 );
-        writer.write( "throw new Exception( 'No enum constant '.$value );" );
+        writer.write( "return null;" );
         newLine( 2 );
         writer.write( "}" );
         newLine( 1 );
@@ -153,6 +153,7 @@ public class PhpTypeClassWriter {
             writer.write( "public function " );
             writer.write( phpMethod.name() );
             writer.write( "(" );
+            // TODO if enum no type
             writer.write( String.join( ", ", phpMethod.parameters().stream().map( param->param.type() + " $" + param.name() ).collect( Collectors.toList() ) ) );
             writer.write( ")" );
             String returnType = phpMethod.type();
@@ -283,9 +284,14 @@ public class PhpTypeClassWriter {
         writer.write( "$list = array();" );
         newLine( 3 );
         writer.write( "foreach( $var as $item ){" );
-
+        newLine( 4 );
+        writer.write( "if( $item === null ){" );
+        newLine( 5 );
+        writer.write( "$list[] = null;" );
+        newLine( 4 );
+        writer.write( "} else {" );
         if( property.typeSpec().typeKind() == TypeKind.ENUM ) {
-            newLine( 4 );
+            newLine( 5 );
             writer.write( "$list[] = $item->jsonSerialize();" );
         } else if( (property.typeSpec().typeKind() == TypeKind.EXTERNAL_VALUE_OBJECT && property.typeSpec().embeddedValueSpec() != null) || property.typeSpec().typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT ) {
             if( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeKind() == TypeKind.JAVA_TYPE ) {
@@ -294,16 +300,18 @@ public class PhpTypeClassWriter {
                 writer.write( "$list[] = $item->jsonSerialize();" );
             } else {
                 writer.write( "$writer = new \\" + getWriterFromReference( property.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).typeSpec().typeRef() ) + "();" );
-                newLine( 4 );
+                newLine( 5 );
                 writer.write( "$list[] = $writer->getArray( $item );" );
             }
         } else {
-            newLine( 3 );
+            newLine( 4 );
             writer.write( "$list[] = $item;" );
         }
+        newLine( 4 );
+        writer.write( "}" );
         newLine( 3 );
         writer.write( "}" );
-        newLine( 2 );
+        newLine( 3 );
         writer.write( "$array['" + property.realName() + "'] = $list;" );
         newLine( 2 );
         writer.write( "}" );

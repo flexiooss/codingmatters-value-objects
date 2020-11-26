@@ -43,4 +43,27 @@ class InSpecEnumerationTest extends TestCase {
         $this -> assertSame( 'MC', $object->multiple()[1]->value() );
     }
 
+    public function testInvalidEnum(){
+        $content = '{"single":"TOTO","multiple":["MA","MC", "TOTO"]}';
+        $reader = new InSpecEnumPropertiesReader();
+        $object = $reader->read( $content );
+        $this -> assertNull( $object->single() );
+        $this -> assertSame( 'MA', $object->multiple()[0]->value() );
+        $this -> assertSame( 'MC', $object->multiple()[1]->value() );
+        $this -> assertNull( $object->multiple()[2] );
+
+        $writer = new InSpecEnumPropertiesWriter();
+        $content = $writer->write( $object );
+        $this->assertSame( '{"multiple":["MA","MC",null]}', $content );
+    }
+
+    public function testListCreationWithBadInput(){
+        $inSpec = new InSpecEnumProperties();
+        $list = new InSpecEnumPropertiesMultipleList( array( InSpecEnumPropertiesMultiple::valueOf("TOTO") ) );
+        $inSpec -> withMultiple( $list );
+        $writer = new InSpecEnumPropertiesWriter();
+        $content = $writer->write( $inSpec );
+        $this->assertSame( '{"multiple":[null]}', $content );
+    }
+
 }

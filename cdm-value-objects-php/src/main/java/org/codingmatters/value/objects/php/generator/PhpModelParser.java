@@ -40,7 +40,9 @@ public class PhpModelParser {
         String propertyName = naming.property( propertySpec.name() );
         PhpMethod phpMethod = new PhpMethod( "with" + firstLetterUpperCase( propertyName ) );
         String type;
-        if( propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE ) {
+        if( TypeKind.ENUM.equals( propertySpec.typeSpec().typeKind() )){
+            type = "";
+        }else if( propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE ) {
             type = propertySpec.typeSpec().typeRef();
         } else if( propertySpec.typeSpec().typeRef() != null ) {
             type = "\\" + propertySpec.typeSpec().typeRef().replace( ".", "\\" );
