@@ -1,6 +1,8 @@
 inSpecEnumProperties:
   single:
-    $enum: SA, SB, SC
+    $enum: SA, SB, SCi
+  secondSingle:
+    $enum: BA, BOU
   multiple:
     $list:
       $enum: MA, MB, MC

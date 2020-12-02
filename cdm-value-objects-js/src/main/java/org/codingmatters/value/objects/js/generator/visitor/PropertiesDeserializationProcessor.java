@@ -41,11 +41,23 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ValueObjectProperty property ) throws ProcessingException {
         try {
-            write.indent();
-            write.string( "builder." + NamingUtility.propertyName( property.name() ) + "(" );
-            property.type().process( this );
-            write.string( ")" );
-            write.newLine();
+            if( property.type() instanceof YamlEnumInSpecEnum ){
+                write.line( "try {" );
+                write.indent();
+                write.string( "let deserializedEnum = " );
+                property.type().process( this );
+                write.newLine();
+
+                write.line( "builder." + NamingUtility.propertyName( property.name() ) + "( deserializedEnum )" );
+                write.unindent();
+                write.line( "} catch (e){}" );
+            } else {
+                write.indent();
+                write.string( "builder." + NamingUtility.propertyName( property.name() ) + "(" );
+                property.type().process( this );
+                write.string( ")" );
+                write.newLine();
+            }
         } catch( IOException e ){
             throw new ProcessingException( "Error processing property " + property.name(), e );
         }
@@ -96,14 +108,21 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
                 }
                 write.string( "))" );
             } else {
-                String var = generateVarName();
-//            String listClassName = NamingUtility.classFullName( list.packageName() + "." + list.name() );
-//            write.string( "new " + listClassName + "(..." + currentVariable + ".map(" + var + " => " );
-//            new my.list(...currentVar.map( var =>
-                new JsValueListDeserializationProcessor( write, currentVariable, var, this.typesPackage ).process( list );
-                currentVariable = var;
-                list.type().process( this );
-                write.string( "))" );
+                if( list.type() instanceof YamlEnum ){
+                    String var = generateVarName();
+                    new JsValueListDeserializationProcessor( write, currentVariable, var, this.typesPackage ).process( list );
+                    currentVariable = var;
+                    write.string( "{ try{ return " );
+                    list.type().process( this );
+                    write.string( " } catch( e ){ return null }}" );
+                    write.string( "))" );
+                }else{
+                    String var = generateVarName();
+                    new JsValueListDeserializationProcessor( write, currentVariable, var, this.typesPackage ).process( list );
+                    currentVariable = var;
+                    list.type().process( this );
+                    write.string( "))" );
+                }
             }
         } catch( IOException e ) {
             throw new ProcessingException( "Error processing type", e );

@@ -16,8 +16,10 @@ public class PhpTypedList {
         );
         String type;
         String typeRef = listProperty.typeSpec().typeRef();
+        boolean useTypeHint = true;
         if( listProperty.typeSpec().typeKind() != TypeKind.JAVA_TYPE ) {
             if( listProperty.typeSpec().typeKind() == TypeKind.ENUM ) {
+                useTypeHint = false;
                 typeRef = replaceLast( listProperty.typeSpec().typeRef(), "List", "" );
                 listSpec.addImport( typeRef );
             } else if( listProperty.typeSpec().typeKind() == TypeKind.IN_SPEC_VALUE_OBJECT ) {
@@ -36,8 +38,11 @@ public class PhpTypedList {
                 }
             }
         }
-        type = getTypeFromReference( typeRef );
-
+        if( useTypeHint ){
+            type = getTypeFromReference( typeRef );
+        } else {
+            type = "";
+        }
         listSpec.addImport( "io.flexio.utils.TypedArray" );
         listSpec.extend( PropertyTypeSpec.type().typeKind( TypeKind.EXTERNAL_VALUE_OBJECT ).typeRef( "TypedArray" ).build() );
 

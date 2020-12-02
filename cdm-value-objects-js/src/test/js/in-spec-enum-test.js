@@ -65,12 +65,25 @@ class InSpecEnumTest extends TestCase {
   }
 
   testDeserialization() {
-    let json = '{"single":"SA","multiple":["MB","MC"]}'
+    let json = '{"single":"SA", "secondSingle":"BA", "multiple":["MB","MC"]}'
     let inSpecEnum = globalFlexioImport.org.generated.InSpecEnumPropertiesBuilder.fromJson(json).build()
     assert.strictEqual(inSpecEnum.single().name(), 'SA')
+    assert.strictEqual(inSpecEnum.secondSingle().name(), 'BA')
     assert.strictEqual(inSpecEnum.multiple()[0].name(), 'MB')
     assert.strictEqual(inSpecEnum.multiple()[1].name(), 'MC')
     assert.strictEqual(inSpecEnum.multiple().length, 2)
+  }
+
+  testDeserializationWithBadEnumValues(){
+    let json = '{"single":"TOTO", "secondSingle":"BA", "multiple":["MB", "TOTO"]}'
+    let inSpecEnum = globalFlexioImport.org.generated.InSpecEnumPropertiesBuilder.fromJson(json).build()
+    assert.strictEqual(inSpecEnum.single(), null)
+    assert.strictEqual(inSpecEnum.secondSingle().name(), 'BA')
+    assert.strictEqual(inSpecEnum.multiple().length, 2)
+    assert.strictEqual(inSpecEnum.multiple()[0].name(), 'MB')
+    assert.strictEqual(inSpecEnum.multiple()[1], null)
+
+    assert.strictEqual(JSON.stringify(inSpecEnum), '{"secondSingle":"BA","multiple":["MB",null]}')
   }
 }
 

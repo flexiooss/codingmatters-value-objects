@@ -83,10 +83,15 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ValueObjectTypeList list ) throws ProcessingException {
         try {
-
-            writer.string( ".mapToArray(x => x" );
-            list.type().process( this );
-            writer.string( ")" );
+            if( list.type() instanceof YamlEnum ){
+                writer.string( ".mapToArray(x => x == null ? null : x" );
+                list.type().process( this );
+                writer.string( ")" );
+            }else{
+                writer.string( ".mapToArray(x => x" );
+                list.type().process( this );
+                writer.string( ")" );
+            }
         } catch( IOException e ){
             throw new ProcessingException( "Error processing primitive type: " + currentProperty, e );
         }

@@ -30,7 +30,7 @@ import java.util.Set;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by nelt on 4/6/17.
@@ -435,6 +435,29 @@ public class JsonReaderGenerationTest {
         }
     }
 
+    @Test
+    public void readOutsideSpecEnumValue_whenValueDoesntExists_thenValueNullified() throws Exception {
+        String json = "{" +
+                "\"single\":\"NOTADAY\"," +
+                "\"multiple\":[\"MONDAY\", \"NOTADAY\",\"TUESDAY\"]" +
+//                "\"multiple\":[\"MONDAY\",\"TUESDAY\"]" +
+                "}";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            ObjectHelper reader = this.classes.get("org.generated.json.EnumPropertiesReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
+
+            assertThat(
+                    value.get(),
+                    is(new EnumProperties.Builder()
+                            .single(null)
+                            .multiple(DayOfWeek.MONDAY, null, DayOfWeek.TUESDAY)
+//                            .multiple(DayOfWeek.MONDAY, DayOfWeek.TUESDAY)
+                            .build()
+                    )
+            );
+        }
+    }
+
 
     @Test
     public void readInSpecEnumValue() throws Exception {
@@ -451,6 +474,30 @@ public class JsonReaderGenerationTest {
                     is(new InSpecEnumProperties.Builder()
                             .single(InSpecEnumProperties.Single.A)
                             .multiple(InSpecEnumProperties.Multiple.A, InSpecEnumProperties.Multiple.B)
+                            .build()
+                    )
+            );
+        }
+    }
+
+
+    @Test
+    public void readInSpecEnumValue_whenValueDoesntExists_thenValueNullified() throws Exception {
+        String json = "{" +
+                "\"single\":\"NOT_FOUND\"," +
+                "\"multiple\":[\"A\", \"NOT_FOUND\",\"B\"]" +
+//                "\"multiple\":[\"A\", \"B\"]" +
+                "}";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            ObjectHelper reader = this.classes.get("org.generated.json.InSpecEnumPropertiesReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
+
+            assertThat(
+                    value.get(),
+                    is(new InSpecEnumProperties.Builder()
+                            .single(null)
+                            .multiple(InSpecEnumProperties.Multiple.A, null, InSpecEnumProperties.Multiple.B)
+//                            .multiple(InSpecEnumProperties.Multiple.A, InSpecEnumProperties.Multiple.B)
                             .build()
                     )
             );

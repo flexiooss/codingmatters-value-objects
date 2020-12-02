@@ -216,6 +216,7 @@ class EmptyObjectTest extends TestCase {
         $content = $writer->write( $arrayProp );
 
         $reader = new ArraySimplePropsReader();
+        $this->assertSame( $content, '{"string-list":["foo","bar"],"integerList":[7,9],"longList":[7,9],"floatList":[7.5,9],"doubleList":[7.5,9],"booleanList":[true,false],"date-list":["2018-10-17"],"timeList":["15:07:20.000Z"],"dateTimeList":["2017-01-18T20:00:00.000"],"tzDateTimeList":["2018-10-17T15:07:20.000+01:00"],"stringSet":["foo","bar"],"integerSet":[7,9],"longSet":[7,9],"floatSet":[7.5,9],"doubleSet":[7.5,9],"booleanSet":[true,false],"dateSet":["2018-10-17"],"timeSet":["15:07:20.000Z"],"dateTimeSet":["2017-01-18T20:00:00.000"],"tzDateTimeSet":["2018-10-17T15:07:20.000+01:00"]}' );
         $object = $reader->read( $content );
 
         $this->assertNotNull( $object );
