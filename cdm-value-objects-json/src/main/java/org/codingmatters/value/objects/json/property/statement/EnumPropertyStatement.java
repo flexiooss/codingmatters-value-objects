@@ -18,34 +18,28 @@ public class EnumPropertyStatement implements PropertyStatement {
     @Override
     public void addSingleStatement(MethodSpec.Builder method, PropertySpec propertySpec, SimplePropertyReaderProducer propertyReaderProducer) {
         method
-                .beginControlFlow("try")
-                .addStatement("builder.$L(this.readValue(parser, jsonParser -> $T.valueOf(jsonParser.$L()), $S, expectedTokens))",
+                .addStatement(
+                        "builder.$L(this.readValue(parser, jsonParser -> { try { return $T.valueOf(jsonParser.$L()); } catch($T e) {return null;} }, $S, expectedTokens))",
                         propertySpec.name(),
                         this.types.propertyClass(propertySpec),
                         propertyReaderProducer.parserMethod(),
+                        IllegalArgumentException.class,
                         propertySpec.name()
                 )
-                .nextControlFlow("catch($T e)", IllegalArgumentException.class)
-                .addStatement("" +
-                                "throw new IOException(\"error reading enum property $L, value is not one of the enum constants.\", e)",
-                        propertySpec.name())
-                .endControlFlow();
+        ;
     }
 
     @Override
     public void addMultipleStatement(MethodSpec.Builder method, PropertySpec propertySpec, SimplePropertyReaderProducer propertyReaderProducer) {
         method
-                .beginControlFlow("try")
-                .addStatement("builder.$L(this.readListValue(parser, jsonParser -> $T.valueOf(jsonParser.$L()), $S))",
+                .addStatement(
+                        "builder.$L(this.readListValue(parser, jsonParser -> { try { return $T.valueOf(jsonParser.$L()); } catch($T e) { return null; } }, $S))",
                         propertySpec.name(),
                         this.types.propertyClass(propertySpec),
                         propertyReaderProducer.parserMethod(),
+                        IllegalArgumentException.class,
                         propertySpec.name()
                 )
-                .nextControlFlow("catch($T e)", IllegalArgumentException.class)
-                .addStatement("" +
-                                "throw new IOException(\"error reading enum property $L, value is not one of the enum constants.\", e)",
-                        propertySpec.name())
-                .endControlFlow();
+                ;
     }
 }
