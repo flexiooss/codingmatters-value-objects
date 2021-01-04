@@ -377,6 +377,50 @@ public class JsonReaderGenerationTest {
     }
 
     @Test
+    public void readSmallFloatWithExponentialNotation() throws Exception {
+        String json = "{" +
+                "\"floatProp\":1e-18," +
+                "\"doubleProp\":1e-18" +
+                "}";
+
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            ObjectHelper reader = this.classes.get("org.generated.json.SimplePropsReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
+
+            assertThat(
+                    value.get(),
+                    is(new SimpleProps.Builder()
+                            .floatProp(1e-18f)
+                            .doubleProp(1e-18d)
+                            .build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void readBigFloatWithExponentialNotation() throws Exception {
+        String json = "{" +
+                "\"floatProp\":1e+35," +
+                "\"doubleProp\":1e+35" +
+                "}";
+
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            ObjectHelper reader = this.classes.get("org.generated.json.SimplePropsReader").newInstance();
+            ObjectHelper value = reader.call("read", JsonParser.class).with(parser);
+
+            assertThat(
+                    value.get(),
+                    is(new SimpleProps.Builder()
+                            .floatProp(1e+35f)
+                            .doubleProp(1e+35d)
+                            .build()
+                    )
+            );
+        }
+    }
+
+    @Test
     public void readBooleanTrue() throws Exception {
         String json = "{" +
                 "\"booleanProp\":true" +
