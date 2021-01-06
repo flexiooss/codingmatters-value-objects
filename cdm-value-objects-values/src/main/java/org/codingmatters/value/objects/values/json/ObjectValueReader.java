@@ -6,6 +6,9 @@ import org.codingmatters.value.objects.values.ObjectValue;
 import org.codingmatters.value.objects.values.PropertyValue;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -66,13 +69,22 @@ public class ObjectValueReader {
                 return PropertyValue.builder()
                         .booleanValue(Boolean.parseBoolean(parser.getText()));
             } else if (parser.currentToken().isNumeric()) {
-                if (parser.getText().contains(".")) {
-                    return PropertyValue.builder()
+                return PropertyValue.builder()
                             .doubleValue(Double.parseDouble(parser.getText()));
-                } else {
-                    return PropertyValue.builder()
-                            .longValue(Long.parseLong(parser.getText()));
-                }
+//                try {
+//                    Number number = NumberFormat.getNumberInstance().parse(parser.getText());
+//                    return PropertyValue.builder()
+//                            .doubleValue(number.doubleValue());
+//                } catch (ParseException e) {
+//                    throw new IOException("failed parsing number", e);
+//                }
+//                if (parser.getText().contains(".")) {
+//                    return PropertyValue.builder()
+//                            .doubleValue(Double.parseDouble(parser.getText()));
+//                } else {
+//                    return PropertyValue.builder()
+//                            .longValue(Long.parseLong(parser.getText()));
+//                }
             } else {
                 return PropertyValue.builder()
                         .stringValue(parser.getText());

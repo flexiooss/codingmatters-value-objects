@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ObjectValueReaderTest {
 
@@ -53,7 +53,7 @@ public class ObjectValueReaderTest {
     public void singleLong() throws Exception {
         assertThat(
                 new ObjectValueReader().read(jsonFactory.createParser("{\"prop\": 12}")),
-                is(ObjectValue.builder().property("prop", builder -> builder.longValue(12L)).build())
+                is(ObjectValue.builder().property("prop", builder -> builder.doubleValue(12d)).build())
         );
     }
 
@@ -69,6 +69,14 @@ public class ObjectValueReaderTest {
         assertThat(
                 new ObjectValueReader().read(jsonFactory.createParser("{\"prop\": 12.0}")),
                 is(ObjectValue.builder().property("prop", builder -> builder.doubleValue(12.0)).build())
+        );
+    }
+
+    @Test
+    public void singleDoubleWithExponentialLiteral() throws Exception {
+        assertThat(
+                new ObjectValueReader().read(jsonFactory.createParser("{\"prop\": 8e+22}")),
+                is(ObjectValue.builder().property("prop", builder -> builder.doubleValue(8e+22d)).build())
         );
     }
 
