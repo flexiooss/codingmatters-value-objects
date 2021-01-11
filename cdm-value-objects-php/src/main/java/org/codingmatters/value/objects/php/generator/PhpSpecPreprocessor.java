@@ -141,7 +141,8 @@ public class PhpSpecPreprocessor {
                     .type( new PropertyTypeSpec.Builder()
                             .cardinality( propertySpec.typeSpec().cardinality() )
                             .typeKind( listType.typeSpec().typeKind() )
-                            .typeRef( packageName + "." + valueSpecName.toLowerCase() + "." + listTypeName )
+                            .typeRef( propertySpec.typeSpec().typeRef() )
+//                          .typeRef( packageName + "." + valueSpecName.toLowerCase() + "." + listTypeName )
                             .embeddedValueSpec( listElementType )
                     ).build()
             );
