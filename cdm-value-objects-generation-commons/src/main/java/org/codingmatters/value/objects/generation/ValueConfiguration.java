@@ -218,4 +218,17 @@ public class ValueConfiguration {
     public boolean isDateOrTimeType(String typeRef) {
         return localDateTypeRefs.contains(typeRef);
     }
+
+    static public Set<String> numberTypes = new HashSet<>();
+    static {
+        numberTypes.add(TypeToken.INT.getImplementationType());
+        numberTypes.add(TypeToken.LONG.getImplementationType());
+        numberTypes.add(TypeToken.FLOAT.getImplementationType());
+        numberTypes.add(TypeToken.DOUBLE.getImplementationType());
+    }
+
+
+    public boolean isNumber(String typeRef) {
+        return numberTypes.contains(typeRef);
+    }
 }

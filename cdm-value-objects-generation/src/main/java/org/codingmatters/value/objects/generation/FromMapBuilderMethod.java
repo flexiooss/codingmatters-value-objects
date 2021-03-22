@@ -75,6 +75,15 @@ public class FromMapBuilderMethod {
                         propertySpec.name(),
                         String.class);
                 this.dateAndTimeType(block, propertySpec);
+            } else if(this.types.isNumber(propertySpec.typeSpec().typeRef())) {
+                block.beginControlFlow("if($LPropertyValue instanceof $T)", propertySpec.name(), Number.class);
+                block.addStatement("$T $LValue = (($T) $LPropertyValue).$L()",
+                        this.types.propertyType(propertySpec),
+                        propertySpec.name(),
+                        Number.class,
+                        propertySpec.name(),
+                        this.numberMethodFor(propertySpec.typeSpec().typeRef())
+                        );
             } else {
                 block.beginControlFlow("if($LPropertyValue instanceof $T)", propertySpec.name(), this.types.propertyType(propertySpec));
                 block.addStatement("$T $LValue = ($T) $LPropertyValue",
@@ -90,6 +99,22 @@ public class FromMapBuilderMethod {
             );
             block.endControlFlow();
         }
+    }
+
+    private String numberMethodFor(String typeRef) {
+        if(TypeToken.INT.getImplementationType().equals(typeRef)) {
+            return "intValue";
+        }
+        if(TypeToken.LONG.getImplementationType().equals(typeRef)) {
+            return "longValue";
+        }
+        if(TypeToken.FLOAT.getImplementationType().equals(typeRef)) {
+            return "floatValue";
+        }
+        if(TypeToken.DOUBLE.getImplementationType().equals(typeRef)) {
+            return "doubleValue";
+        }
+        return null;
     }
 
     private void multipleProperty(CodeBlock.Builder block, PropertySpec propertySpec) {
