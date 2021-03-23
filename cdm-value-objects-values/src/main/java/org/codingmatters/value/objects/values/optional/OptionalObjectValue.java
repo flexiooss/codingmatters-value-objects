@@ -31,7 +31,7 @@ public class OptionalObjectValue {
 
     public Optional<PropertyValue> property(String property) {
         if(this.has(property)) {
-            return Optional.of(this.value.get().property(property));
+            return Optional.ofNullable(this.value.get().property(property));
         } else {
             return Optional.empty();
         }
