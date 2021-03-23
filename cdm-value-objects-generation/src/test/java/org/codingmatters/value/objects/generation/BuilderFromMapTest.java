@@ -85,9 +85,15 @@ public class BuilderFromMapTest {
             .addValue(valueSpec().name("withPropertyValue")
                     .addProperty(property().name("propertyValue").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
             )
+
+            .addValue(valueSpec().name("valueWithNumbers")
+                    .addProperty(property().name("anInteger").type(type().typeRef(TypeToken.INT.getImplementationType()).typeKind(TypeKind.JAVA_TYPE)))
+                    .addProperty(property().name("aLong").type(type().typeRef(TypeToken.LONG.getImplementationType()).typeKind(TypeKind.JAVA_TYPE)))
+                    .addProperty(property().name("aFloat").type(type().typeRef(TypeToken.FLOAT.getImplementationType()).typeKind(TypeKind.JAVA_TYPE)))
+                    .addProperty(property().name("aDouble").type(type().typeRef(TypeToken.DOUBLE.getImplementationType()).typeKind(TypeKind.JAVA_TYPE)))
+            )
+
             .build();
-
-
 
 
     private Set<String> stringSet(String... strings) {
@@ -104,7 +110,7 @@ public class BuilderFromMapTest {
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
         this.compiled = CompiledCode.builder().source(this.dir.getRoot()).compile();
 //        this.fileHelper.printJavaContent("", this.dir.getRoot());
-        this.fileHelper.printFile(this.dir.getRoot(), "Strings.java");
+        this.fileHelper.printFile(this.dir.getRoot(), "ValueWithNumbers.java");
     }
 
 
@@ -165,6 +171,94 @@ public class BuilderFromMapTest {
                 .call("fromMap", Map.class).with(rawMap)
                 .call("build");
         assertThat(valueFromRawMap.get(), is(value.get()));
+    }
+
+    @Test
+    public void givenNumbers__whenBuildingFromNull__thenNull() throws Exception {
+        Map map = new HashMap<>();
+        map.put("anInteger", null);
+        map.put("aLong", null);
+        map.put("aFloat", null);
+        map.put("aDouble", null);
+
+        ObjectHelper valueFromRawMap = compiled.classLoader().get("org.generated.ValueWithNumbers")
+                .call("fromMap", Map.class).with(map)
+                .call("build").as("org.generated.ValueWithNumbers");
+
+        assertThat(
+                valueFromRawMap.call("anInteger").get(), is(nullValue()))
+        ;
+        assertThat(
+                valueFromRawMap.call("aLong").get(), is(nullValue())
+        );
+        assertThat(
+                valueFromRawMap.call("aFloat").get(), is(nullValue())
+        );
+        assertThat(
+                valueFromRawMap.call("aDouble").get(), is(nullValue())
+        );
+    }
+
+    @Test
+    public void givenNumbers__whenBuildingFromStrings__thenNull() throws Exception {
+        Map map = new HashMap<>();
+        map.put("anInteger", "12");
+        map.put("aLong", "12");
+        map.put("aFloat", "42.12");
+        map.put("aDouble", "42.12");
+
+        ObjectHelper valueFromRawMap = compiled.classLoader().get("org.generated.ValueWithNumbers")
+                .call("fromMap", Map.class).with(map)
+                .call("build").as("org.generated.ValueWithNumbers");
+
+        assertThat(
+                valueFromRawMap.call("anInteger").get(), is(nullValue()))
+        ;
+        assertThat(
+                valueFromRawMap.call("aLong").get(), is(nullValue())
+        );
+        assertThat(
+                valueFromRawMap.call("aFloat").get(), is(nullValue())
+        );
+        assertThat(
+                valueFromRawMap.call("aDouble").get(), is(nullValue())
+        );
+    }
+    @Test
+    public void givenNumbers__whenBuildingFromOtherNumber__thenAlwaysCastedToCorrectType() throws Exception {
+        /*
+        .addProperty(property().name("anInteger").type(type().typeRef(TypeToken.INT.getImplementationType()).typeKind(TypeKind.JAVA_TYPE)))
+        .addProperty(property().name("aLong").type(type().typeRef(TypeToken.LONG.getImplementationType()).typeKind(TypeKind.JAVA_TYPE)))
+        .addProperty(property().name("aFloat").type(type().typeRef(TypeToken.FLOAT.getImplementationType()).typeKind(TypeKind.JAVA_TYPE)))
+        .addProperty(property().name("aDouble").type(type().typeRef(TypeToken.DOUBLE.getImplementationType()).typeKind(TypeKind.JAVA_TYPE)))
+         */
+        Map map = new HashMap<>();
+
+        for (Number number : Arrays.asList(
+                Integer.valueOf(12), Long.valueOf(42L), Float.valueOf(42.12f), Double.valueOf(42.12)
+        )) {
+            map.put("anInteger", number);
+            map.put("aLong", number);
+            map.put("aFloat", number);
+            map.put("aDouble", number);
+
+            ObjectHelper valueFromRawMap = compiled.classLoader().get("org.generated.ValueWithNumbers")
+                    .call("fromMap", Map.class).with(map)
+                    .call("build").as("org.generated.ValueWithNumbers");
+
+            assertThat("integer for " + number.getClass().getSimpleName() + " " + number,
+                    valueFromRawMap.call("anInteger").get(), is(number.intValue()))
+            ;
+            assertThat("long for " + number.getClass().getSimpleName() + " " + number,
+                    valueFromRawMap.call("aLong").get(), is(number.longValue())
+            );
+            assertThat("float for " + number.getClass().getSimpleName() + " " + number,
+                    valueFromRawMap.call("aFloat").get(), is(number.floatValue())
+            );
+            assertThat("double for " + number.getClass().getSimpleName() + " " + number,
+                    valueFromRawMap.call("aDouble").get(), is(number.doubleValue())
+            );
+        }
     }
 
     @Test

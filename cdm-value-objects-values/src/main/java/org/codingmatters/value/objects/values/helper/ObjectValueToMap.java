@@ -18,7 +18,7 @@ public class ObjectValueToMap {
     }
 
     private static Object toMap(PropertyValue property) {
-        if(property.isNullValue()) {
+        if(property == null || property.isNullValue()) {
             return null;
         }
         if(property.cardinality().equals(PropertyValue.Cardinality.MULTIPLE)) {
