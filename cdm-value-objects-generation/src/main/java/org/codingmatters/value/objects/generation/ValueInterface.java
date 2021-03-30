@@ -4,11 +4,10 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
-import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.TypeKind;
 
-import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -146,28 +145,50 @@ public class ValueInterface {
         List<MethodSpec> result = new LinkedList<>();
 
         for (PropertySpec propertySpec : propertySpecs) {
-            result.add(this.createWhither(propertySpec));
+            result.addAll(this.createDefaultWhithers(propertySpec));
+            if(propertySpec.typeSpec().typeKind().isValueObject()) {
+                result.addAll(this.createChangedWithers(propertySpec));
+            }
             if(propertySpec.typeSpec().cardinality().isCollection()) {
-                result.add(this.createCollectionWither(propertySpec));
+                result.addAll(this.createIterableWithers(propertySpec));
             }
         }
         return result;
     }
 
-    private MethodSpec createWhither(PropertySpec propertySpec) {
-        return MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
+    private List<MethodSpec> createDefaultWhithers(PropertySpec propertySpec) {
+        List<MethodSpec> results = new LinkedList<>();
+        results.add(MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
                 .returns(this.types.valueType())
                 .addModifiers(PUBLIC, ABSTRACT)
                 .addParameter(this.types.propertyType(propertySpec), "value")
-                .build();
+                .build()
+        );
+        return results;
     }
 
-    private MethodSpec createCollectionWither(PropertySpec propertySpec) {
-        return MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
+    private List<MethodSpec> createIterableWithers(PropertySpec propertySpec) {
+        List<MethodSpec> results = new LinkedList<>();
+        results.add(MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
                 .returns(this.types.valueType())
                 .addModifiers(PUBLIC, ABSTRACT)
                 .addParameter(ParameterizedTypeName.get(ClassName.get(Iterable.class), this.types.propertySingleType(propertySpec)), "values")
-                .build();
+                .build()
+        );
+        return results;
+    }
+
+    private List<MethodSpec> createChangedWithers(PropertySpec propertySpec) {
+        List<MethodSpec> results = new LinkedList<>();
+        if (!propertySpec.typeSpec().cardinality().isCollection()) {
+            results.add(MethodSpec.methodBuilder(this.types.changedWitherMethodName(propertySpec))
+                    .returns(this.types.valueType())
+                    .addModifiers(PUBLIC, ABSTRACT)
+                    .addParameter(this.types.valueObjectSingleType(propertySpec).nestedClass("Changer"), "changer")
+                    .build()
+            );
+        }
+        return results;
     }
 
     private MethodSpec createChangedMethod() {

@@ -211,6 +211,9 @@ public class ValueImplementation {
                             .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.valueType())
                             .build()
             );
+            if(propertySpec.typeSpec().typeKind().isValueObject()) {
+                this.createChangedWithers(result, propertySpec);
+            }
             if(propertySpec.typeSpec().cardinality().isCollection()) {
                 result.add(
                         MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
@@ -229,6 +232,27 @@ public class ValueImplementation {
             }
         }
         return result;
+    }
+
+    private void createChangedWithers(List<MethodSpec> result, PropertySpec propertySpec) {
+        if(! propertySpec.typeSpec().cardinality().isCollection()) {
+            result.add(
+                    MethodSpec.methodBuilder(this.types.changedWitherMethodName(propertySpec))
+                            .returns(this.types.valueType())
+                            .addModifiers(PUBLIC)
+                            .addParameter(this.types.valueObjectSingleType(propertySpec).nestedClass("Changer"), "changer")
+                            .addStatement("$T builder = $T.from(this)", this.types.valueType().nestedClass("Builder"), this.types.valueType())
+                            .addStatement("$T valueBuilder = $T.from(this.$L())",
+                                    this.types.valueObjectSingleType(propertySpec).nestedClass("Builder"),
+                                    this.types.valueObjectSingleType(propertySpec),
+                                    propertySpec.name()
+                            )
+                            .addStatement("changer.configure(valueBuilder)")
+                            .addStatement("builder.$L(valueBuilder.build())", propertySpec.name())
+                            .addStatement("return builder.build()")
+                            .build()
+            );
+        }
     }
 
     private MethodSpec createChangedMethod() {
