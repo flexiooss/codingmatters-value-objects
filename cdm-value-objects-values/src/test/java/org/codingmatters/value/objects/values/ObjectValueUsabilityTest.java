@@ -3,7 +3,7 @@ package org.codingmatters.value.objects.values;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ObjectValueUsabilityTest {
 
@@ -41,5 +41,17 @@ public class ObjectValueUsabilityTest {
                 .build();
 
         assertThat(value.toString(), is("{prop={deep={str=str (STRING)} (OBJECT)} (OBJECT)}"));
+    }
+
+    @Test
+    public void changer() throws Exception {
+        ObjectValue value = ObjectValue.builder()
+                .property("nested", v -> v.objectValue(o -> o
+                        .property("prop", pv -> pv.stringValue("unchanged"))))
+                .build();
+
+        ObjectValue changed = value.withChangedProperty("nested", v -> v.objectValue(o -> o.property("prop", pv -> pv.stringValue("changed"))));
+
+        assertThat(changed.toString(), is("{nested={prop=changed (STRING)} (OBJECT)}"));
     }
 }
