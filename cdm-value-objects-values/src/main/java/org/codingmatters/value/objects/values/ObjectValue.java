@@ -79,6 +79,16 @@ public interface ObjectValue {
     default ObjectValue withProperty(String property, Consumer<PropertyValue.Builder> value) {
         return ObjectValue.from(this).property(property, value).build();
     }
+    default ObjectValue withChangedProperty(String property, PropertyValue.Changer changer) {
+        PropertyValue.Builder builder = PropertyValue.Builder.from(this.property(property));
+        builder = changer.configure(builder);
+        return this.withProperty(property, builder.build());
+    }
+
+
+    interface Changer {
+        ObjectValue.Builder configure(ObjectValue.Builder builder);
+    }
 
     default Map<String, Object> toMap() {
         return ObjectValueToMap.toMap(this);

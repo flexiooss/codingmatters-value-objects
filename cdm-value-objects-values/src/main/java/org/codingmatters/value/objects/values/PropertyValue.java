@@ -55,6 +55,15 @@ public interface PropertyValue {
         private Type type = Type.OBJECT;
         private Object raw = null;
 
+        public static Builder from(PropertyValue value) {
+            if(value == null || value.isNullValue()) return new Builder();
+
+            Builder result = new Builder();
+            result.type = value.type();
+            result.raw = value.rawValue();
+            return result;
+        }
+
         public Builder stringValue(String value) {
             this.raw = value;
             this.type = Type.STRING;
@@ -247,6 +256,10 @@ public interface PropertyValue {
 
     Value single();
     Value[] multiple();
+
+    interface Changer {
+        PropertyValue.Builder configure(PropertyValue.Builder builder);
+    }
     
     static PropertyValue fromObject(Object object) throws Type.UnsupportedTypeException {
         if(object == null) return null;
