@@ -211,6 +211,9 @@ public class ValueImplementation {
                             .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.valueType())
                             .build()
             );
+            if(propertySpec.typeSpec().typeKind().isValueObject()) {
+                this.createChangedWithers(result, propertySpec);
+            }
             if(propertySpec.typeSpec().cardinality().isCollection()) {
                 result.add(
                         MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
@@ -218,17 +221,63 @@ public class ValueImplementation {
                                 .addModifiers(PUBLIC)
                                 .addParameter(ParameterizedTypeName.get(ClassName.get(Iterable.class), this.types.propertySingleType(propertySpec)), "values")
                                 .addStatement(
-                                        "return $T.from(this).$L(values != null ? $L.builder().with(values).build() : $L.builder().with(values).build()).build()",
+                                        "return $T.from(this).$L(values != null ? $L.<$T>builder().with(values).build() : $L.<$T>builder().build()).build()",
                                         this.types.valueType(),
                                         propertySpec.name(),
                                         propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST) ? "ValueList" : "ValueSet",
-                                        propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST) ? "ValueList" : "ValueSet"
+                                        this.types.propertySingleType(propertySpec),
+                                        propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST) ? "ValueList" : "ValueSet",
+                                        this.types.propertySingleType(propertySpec)
                                 )
                                 .build()
                 );
             }
         }
         return result;
+    }
+
+    private void createChangedWithers(List<MethodSpec> result, PropertySpec propertySpec) {
+        if(! propertySpec.typeSpec().cardinality().isCollection()) {
+            result.add(
+                    MethodSpec.methodBuilder(this.types.changedWitherMethodName(propertySpec))
+                            .returns(this.types.valueType())
+                            .addModifiers(PUBLIC)
+                            .addParameter(this.types.valueObjectSingleType(propertySpec).nestedClass("Changer"), "changer")
+                            .addStatement("$T builder = $T.from(this)", this.types.valueType().nestedClass("Builder"), this.types.valueType())
+                            .addStatement("$T valueBuilder = $T.from(this.$L())",
+                                    this.types.valueObjectSingleType(propertySpec).nestedClass("Builder"),
+                                    this.types.valueObjectSingleType(propertySpec),
+                                    propertySpec.name()
+                            )
+                            .addStatement("changer.configure(valueBuilder)")
+                            .addStatement("builder.$L(valueBuilder.build())", propertySpec.name())
+                            .addStatement("return builder.build()")
+                            .build()
+            );
+        } else {
+            TypeName type = this.types.propertySingleType(propertySpec);
+            TypeName collectionType = this.types.collectionRawType(propertySpec);
+            ParameterizedTypeName changerType =
+                    propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST) ?
+                            this.types.collectionConfiguration().valueListOfTypeChanger(type) :
+                            this.types.collectionConfiguration().valueSetOfTypeChanger(type);
+
+            result.add(MethodSpec.methodBuilder(this.types.changedWitherMethodName(propertySpec))
+                    .returns(this.types.valueType())
+                    .addModifiers(PUBLIC)
+                    .addParameter(changerType, "changer")
+                    /*
+                      ValueList.Builder<Review> builder = ValueList.builder();
+                      builder.with(this.reviews);
+                      return this.withReviews(changer.configure(builder).build());
+                     */
+                    .addStatement("$T.Builder<$T> builder = $T.builder()",
+                            collectionType, type, collectionType)
+                    .addStatement("builder.with(this.$L)", propertySpec.name())
+                    .addStatement("return this.$L(changer.configure(builder).build())", this.types.witherMethodName(propertySpec))
+                    .build()
+            );
+        }
     }
 
     private MethodSpec createChangedMethod() {

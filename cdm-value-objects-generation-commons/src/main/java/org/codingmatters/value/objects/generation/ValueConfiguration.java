@@ -198,6 +198,9 @@ public class ValueConfiguration {
     public String witherMethodName(PropertySpec propertySpec) {
         return "with" + capitalizedFirst(propertySpec.name());
     }
+    public String changedWitherMethodName(PropertySpec propertySpec) {
+        return "withChanged" + capitalizedFirst(propertySpec.name());
+    }
 
     public String enumTypeName(String name) {
         return this.capitalizedFirst(name);

@@ -6,6 +6,8 @@ import javax.lang.model.element.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by nelt on 4/3/17.
@@ -47,6 +49,12 @@ public class CollectionBuilder {
                         .returns(this.valueCollectionInterface.nestedClass("Builder"))
                         .addStatement("if(elements != null) {elements.forEach(e -> this.delegate.add(e));}")
                         .addStatement("return this")
+                        .build())
+                .addMethod(MethodSpec.methodBuilder("filtered")
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(ParameterizedTypeName.get(ClassName.get(Predicate.class), TypeVariableName.get("E")), "predicate")
+                        .returns(this.valueCollectionInterface.nestedClass("Builder"))
+                        .addStatement("return builder().with(this.delegate.stream().filter(predicate).collect($T.toList()))", Collectors.class)
                         .build())
                 .build();
     }

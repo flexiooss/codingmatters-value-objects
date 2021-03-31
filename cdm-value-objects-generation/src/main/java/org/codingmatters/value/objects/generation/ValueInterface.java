@@ -1,14 +1,11 @@
 package org.codingmatters.value.objects.generation;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.TypeKind;
 
-import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -104,25 +101,11 @@ public class ValueInterface {
 
 
     private MethodSpec createBuilderFromMapMethod() {
-        List<Object> bindings = new LinkedList<>();
-
-//        String statement = "return new $T()\n";
-//        bindings.add(this.types.valueBuilderType());
-//
-//        for (PropertySpec propertySpec : this.propertySpecs) {
-//            statement += "." + propertySpec.name() + "(value." + propertySpec.name() + "())\n";
-//        }
-
         return MethodSpec.methodBuilder("fromMap")
                 .addModifiers(STATIC, PUBLIC)
                 .addParameter(Map.class, "value")
                 .returns(this.types.valueBuilderType())
                 .addCode(new FromMapBuilderMethod(this.types).block())
-//                .addStatement("return null")
-//                .endControlFlow()
-//                .beginControlFlow("else")
-//                .addStatement("return null")
-//                .endControlFlow()
                 .build();
     }
 
@@ -146,28 +129,63 @@ public class ValueInterface {
         List<MethodSpec> result = new LinkedList<>();
 
         for (PropertySpec propertySpec : propertySpecs) {
-            result.add(this.createWhither(propertySpec));
+            result.addAll(this.createDefaultWhithers(propertySpec));
+            if(propertySpec.typeSpec().typeKind().isValueObject()) {
+                result.addAll(this.createChangedWithers(propertySpec));
+            }
             if(propertySpec.typeSpec().cardinality().isCollection()) {
-                result.add(this.createCollectionWither(propertySpec));
+                result.addAll(this.createIterableWithers(propertySpec));
             }
         }
         return result;
     }
 
-    private MethodSpec createWhither(PropertySpec propertySpec) {
-        return MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
+    private List<MethodSpec> createDefaultWhithers(PropertySpec propertySpec) {
+        List<MethodSpec> results = new LinkedList<>();
+        results.add(MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
                 .returns(this.types.valueType())
                 .addModifiers(PUBLIC, ABSTRACT)
                 .addParameter(this.types.propertyType(propertySpec), "value")
-                .build();
+                .build()
+        );
+        return results;
     }
 
-    private MethodSpec createCollectionWither(PropertySpec propertySpec) {
-        return MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
+    private List<MethodSpec> createIterableWithers(PropertySpec propertySpec) {
+        List<MethodSpec> results = new LinkedList<>();
+        results.add(MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
                 .returns(this.types.valueType())
                 .addModifiers(PUBLIC, ABSTRACT)
                 .addParameter(ParameterizedTypeName.get(ClassName.get(Iterable.class), this.types.propertySingleType(propertySpec)), "values")
-                .build();
+                .build()
+        );
+        return results;
+    }
+
+    private List<MethodSpec> createChangedWithers(PropertySpec propertySpec) {
+        List<MethodSpec> results = new LinkedList<>();
+        if (!propertySpec.typeSpec().cardinality().isCollection()) {
+            results.add(MethodSpec.methodBuilder(this.types.changedWitherMethodName(propertySpec))
+                    .returns(this.types.valueType())
+                    .addModifiers(PUBLIC, ABSTRACT)
+                    .addParameter(this.types.valueObjectSingleType(propertySpec).nestedClass("Changer"), "changer")
+                    .build()
+            );
+        } else {
+            TypeName type = this.types.propertySingleType(propertySpec);
+            ParameterizedTypeName changerType =
+                    propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST) ?
+                        this.types.collectionConfiguration().valueListOfTypeChanger(type) :
+                            this.types.collectionConfiguration().valueSetOfTypeChanger(type);
+
+            results.add(MethodSpec.methodBuilder(this.types.changedWitherMethodName(propertySpec))
+                    .returns(this.types.valueType())
+                    .addModifiers(PUBLIC, ABSTRACT)
+                    .addParameter(changerType, "changer")
+                    .build()
+            );
+        }
+        return results;
     }
 
     private MethodSpec createChangedMethod() {
