@@ -1,9 +1,7 @@
 package org.codingmatters.value.objects.generation;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
+import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.TypeKind;
 
@@ -103,25 +101,11 @@ public class ValueInterface {
 
 
     private MethodSpec createBuilderFromMapMethod() {
-        List<Object> bindings = new LinkedList<>();
-
-//        String statement = "return new $T()\n";
-//        bindings.add(this.types.valueBuilderType());
-//
-//        for (PropertySpec propertySpec : this.propertySpecs) {
-//            statement += "." + propertySpec.name() + "(value." + propertySpec.name() + "())\n";
-//        }
-
         return MethodSpec.methodBuilder("fromMap")
                 .addModifiers(STATIC, PUBLIC)
                 .addParameter(Map.class, "value")
                 .returns(this.types.valueBuilderType())
                 .addCode(new FromMapBuilderMethod(this.types).block())
-//                .addStatement("return null")
-//                .endControlFlow()
-//                .beginControlFlow("else")
-//                .addStatement("return null")
-//                .endControlFlow()
                 .build();
     }
 
@@ -185,6 +169,19 @@ public class ValueInterface {
                     .returns(this.types.valueType())
                     .addModifiers(PUBLIC, ABSTRACT)
                     .addParameter(this.types.valueObjectSingleType(propertySpec).nestedClass("Changer"), "changer")
+                    .build()
+            );
+        } else {
+            TypeName type = this.types.propertySingleType(propertySpec);
+            ParameterizedTypeName changerType =
+                    propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST) ?
+                        this.types.collectionConfiguration().valueListOfTypeChanger(type) :
+                            this.types.collectionConfiguration().valueSetOfTypeChanger(type);
+
+            results.add(MethodSpec.methodBuilder(this.types.changedWitherMethodName(propertySpec))
+                    .returns(this.types.valueType())
+                    .addModifiers(PUBLIC, ABSTRACT)
+                    .addParameter(changerType, "changer")
                     .build()
             );
         }

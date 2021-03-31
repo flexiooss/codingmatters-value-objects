@@ -12,21 +12,25 @@ public class ValueCollectionConfiguration {
     private final ClassName optionalValueListType;
     private final ClassName valueListImplementationType;
     private final ClassName valueListBuilderType;
+    private final ClassName valueListChangerType;
     private final ClassName valueSetType;
     private final ClassName optionalValueSetType;
     private final ClassName valueSetImplementationType;
     private final ClassName valueSetBuilderType;
+    private final ClassName valueSetChangerType;
 
     public ValueCollectionConfiguration(String packageName) {
         this.valueListType = ClassName.get(packageName, "ValueList");
         this.optionalValueListType = ClassName.get(packageName + ".optional", "OptionalValueList");
         this.valueListImplementationType = ClassName.get(packageName, "ValueListImpl");
         this.valueListBuilderType = this.valueListType.nestedClass("Builder");
+        this.valueListChangerType = this.valueListType.nestedClass("Changer");
 
         this.valueSetType = ClassName.get(packageName, "ValueSet");
         this.optionalValueSetType = ClassName.get(packageName + ".optional", "OptionalValueSet");
         this.valueSetImplementationType = ClassName.get(packageName, "ValueSetImpl");
         this.valueSetBuilderType = this.valueSetType.nestedClass("Builder");
+        this.valueSetChangerType = this.valueSetType.nestedClass("Changer");
     }
 
     public ClassName valueListType() {
@@ -49,6 +53,10 @@ public class ValueCollectionConfiguration {
         return valueListBuilderType;
     }
 
+    public ParameterizedTypeName valueListOfTypeChanger(TypeName type) {
+        return ParameterizedTypeName.get(this.valueListChangerType, type);
+    }
+
     public ClassName valueSetType() {
         return valueSetType;
     }
@@ -67,6 +75,10 @@ public class ValueCollectionConfiguration {
 
     public ClassName valueSetBuilderType() {
         return valueSetBuilderType;
+    }
+
+    public ParameterizedTypeName valueSetOfTypeChanger(TypeName type) {
+        return ParameterizedTypeName.get(this.valueSetChangerType, type);
     }
 
     public TypeName rawValueList() {

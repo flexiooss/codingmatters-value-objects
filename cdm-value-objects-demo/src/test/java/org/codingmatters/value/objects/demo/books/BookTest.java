@@ -179,4 +179,45 @@ public class BookTest {
     public void formattedStringSetter() throws Exception {
         assertThat(Person.builder().name("%s %s", "Arthur", "Miller").build().name(), is("Arthur Miller"));
     }
+
+    @Test
+    public void changedNestedProperty() throws Exception {
+        Book book = Book.builder()
+                .author(author -> author.name("Arthur Miller"))
+                .build();
+
+        Book changed = book.withChangedAuthor(author -> author.email("arthur@miller.com"));
+
+        assertThat(changed.author(), is(Person.builder().name("Arthur Miller").email("arthur@miller.com").build()));
+    }
+
+    @Test
+    public void changeNestedCollectionProperty() throws Exception {
+        Book book = Book.builder()
+                .reviews(
+                        reviews -> reviews.reviewBody("bad"),
+                        reviews -> reviews.reviewBody("very good"),
+                        reviews -> reviews.reviewBody("awful")
+                )
+                .build();
+
+        Book changed = book.withChangedReviews(reviews -> reviews.filtered(review -> review.reviewBody().contains("good")));
+
+        assertThat(changed.reviews(), contains(Review.builder().reviewBody("very good").build()));
+    }
+
+    @Test
+    public void filterAValueList() throws Exception {
+        Book book = Book.builder()
+                .reviews(
+                        reviews -> reviews.reviewBody("bad"),
+                        reviews -> reviews.reviewBody("very good"),
+                        reviews -> reviews.reviewBody("awful")
+                )
+                .build();
+
+        Book changed = book.withReviews(ValueList.from(book.reviews()).filtered(review -> review.reviewBody().contains("good")).build());
+
+        assertThat(changed.reviews(), contains(Review.builder().reviewBody("very good").build()));
+    }
 }
