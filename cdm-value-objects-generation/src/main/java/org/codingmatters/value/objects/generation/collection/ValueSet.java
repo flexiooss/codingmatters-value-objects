@@ -68,6 +68,11 @@ public class ValueSet {
                         .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
                         .returns(ParameterizedTypeName.get(ClassName.get(Stream.class), TypeVariableName.get("E")))
                         .build())
+                .addMethod(MethodSpec.methodBuilder("toBuilder")
+                        .addModifiers(Modifier.DEFAULT, Modifier.PUBLIC)
+                        .returns(ParameterizedTypeName.get(ClassName.bestGuess("Builder"), TypeVariableName.get("E")))
+                        .addStatement("return from(this)")
+                        .build())
                 .addType(new CollectionBuilder(
                                 ClassName.get(this.packageName, "ValueSet"),
                                 ClassName.get(this.packageName, "ValueSetImpl")

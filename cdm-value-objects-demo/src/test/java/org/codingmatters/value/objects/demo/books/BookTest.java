@@ -192,6 +192,32 @@ public class BookTest {
     }
 
     @Test
+    public void withNestedPropertyLambda() throws Exception {
+        Book book = Book.builder()
+                .author(author -> author
+                        .name("Arthur Miller")
+                        .address(Address.builder()
+                                .addressCountry("United States")
+                                .build())
+                )
+                .build();
+
+        Book changed = book.withAuthor(person -> person
+                .withEmail("arthur@miller.com")
+                .withAddress(address -> address
+                        .withAddressCountry("France")
+                ));
+
+        assertThat(changed.author(), is(Person.builder()
+                .name("Arthur Miller")
+                .email("arthur@miller.com")
+                .address(Address.builder()
+                        .addressCountry("France")
+                        .build())
+                .build()));
+    }
+
+    @Test
     public void changeNestedCollectionProperty() throws Exception {
         Book book = Book.builder()
                 .reviews(
@@ -219,5 +245,36 @@ public class BookTest {
         Book changed = book.withReviews(ValueList.from(book.reviews()).filtered(review -> review.reviewBody().contains("good")).build());
 
         assertThat(changed.reviews(), contains(Review.builder().reviewBody("very good").build()));
+    }
+
+    @Test
+    public void toBuilder() throws Exception {
+        Person john = Person.builder()
+                .name("John")
+                .address(Address.builder()
+                        .postalCode("25000")
+                        .build())
+                .build();
+
+        Person jack = john.toBuilder().name("Jack").build();
+
+        assertThat(jack, is(Person.builder()
+                .name("Jack")
+                .address(Address.builder()
+                        .postalCode("25000")
+                        .build())
+                .build()));
+    }
+
+    @Test
+    public void toCollectionBuilder() throws Exception {
+        ValueList<Book> books = ValueList.<Book>builder().with(
+                Book.builder().name("good book").build(),
+                Book.builder().name("bad book").build()
+        ).build();
+
+        ValueList<Book> filteredBooks = books.toBuilder().filtered(book -> !book.name().contains("bad")).build();
+
+        assertThat(filteredBooks, contains(Book.builder().name("good book").build()));
     }
 }
