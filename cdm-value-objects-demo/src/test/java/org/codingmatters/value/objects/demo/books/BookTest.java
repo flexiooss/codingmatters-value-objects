@@ -206,6 +206,7 @@ public class BookTest {
 
         assertThat(changed.author(), is(Person.builder()
                 .name("Arthur Miller")
+                .email("arthur@miller.com")
                 .address(Address.builder()
                         .addressCountry("France")
                         .build())
