@@ -261,7 +261,7 @@ public interface PropertyValue {
         PropertyValue.Builder configure(PropertyValue.Builder builder);
     }
 
-    default Builder to() {
+    default Builder toBuilder() {
         return Builder.from(this);
     }
     

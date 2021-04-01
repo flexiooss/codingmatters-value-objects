@@ -90,7 +90,7 @@ public interface ObjectValue {
         ObjectValue.Builder configure(ObjectValue.Builder builder);
     }
 
-    default Builder to() {
+    default Builder toBuilder() {
         return from(this);
     }
     default Map<String, Object> toMap() {

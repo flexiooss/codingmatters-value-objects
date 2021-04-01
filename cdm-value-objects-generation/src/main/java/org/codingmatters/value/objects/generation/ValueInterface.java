@@ -233,7 +233,7 @@ public class ValueInterface {
     }
 
     private MethodSpec createToMethod() {
-        return MethodSpec.methodBuilder("to")
+        return MethodSpec.methodBuilder("toBuilder")
                 .addModifiers(PUBLIC, DEFAULT)
                 .returns(this.types.valueBuilderType())
                 .addStatement("return $T.from(this)", this.types.valueType())

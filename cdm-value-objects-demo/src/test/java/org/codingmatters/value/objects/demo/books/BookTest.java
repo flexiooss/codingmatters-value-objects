@@ -202,7 +202,11 @@ public class BookTest {
                 )
                 .build();
 
-        Book changed = book.withAuthor(person -> person.withEmail("arthur@miller.com").withAddress(address -> address.withAddressCountry("France")));
+        Book changed = book.withAuthor(person -> person
+                .withEmail("arthur@miller.com")
+                .withAddress(address -> address
+                        .withAddressCountry("France")
+                ));
 
         assertThat(changed.author(), is(Person.builder()
                 .name("Arthur Miller")
@@ -252,7 +256,7 @@ public class BookTest {
                         .build())
                 .build();
 
-        Person jack = john.to().name("Jack").build();
+        Person jack = john.toBuilder().name("Jack").build();
 
         assertThat(jack, is(Person.builder()
                 .name("Jack")
@@ -269,7 +273,7 @@ public class BookTest {
                 Book.builder().name("bad book").build()
         ).build();
 
-        ValueList<Book> filteredBooks = books.to().filtered(book -> !book.name().contains("bad")).build();
+        ValueList<Book> filteredBooks = books.toBuilder().filtered(book -> !book.name().contains("bad")).build();
 
         assertThat(filteredBooks, contains(Book.builder().name("good book").build()));
     }
