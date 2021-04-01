@@ -53,6 +53,10 @@ public class ValueCollectionConfiguration {
         return valueListBuilderType;
     }
 
+    public ParameterizedTypeName valueListOfTypeBuilderType(TypeName type) {
+        return ParameterizedTypeName.get(valueListBuilderType, type);
+    }
+
     public ParameterizedTypeName valueListOfTypeChanger(TypeName type) {
         return ParameterizedTypeName.get(this.valueListChangerType, type);
     }
@@ -69,13 +73,10 @@ public class ValueCollectionConfiguration {
         return ParameterizedTypeName.get(this.optionalValueSetType, type);
     }
 
-    public ParameterizedTypeName valueSetImplOfType(TypeName type) {
-        return ParameterizedTypeName.get(this.valueSetImplementationType, type);
-    }
-
     public ClassName valueSetBuilderType() {
         return valueSetBuilderType;
     }
+
 
     public ParameterizedTypeName valueSetOfTypeChanger(TypeName type) {
         return ParameterizedTypeName.get(this.valueSetChangerType, type);

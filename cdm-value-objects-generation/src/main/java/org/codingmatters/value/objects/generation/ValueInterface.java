@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import static javax.lang.model.element.Modifier.*;
 
@@ -25,6 +26,7 @@ public class ValueInterface {
     private final ValueChanger valueChanger;
     private final MethodSpec changedMethod;
     private final MethodSpec toMapMethod;
+    private final MethodSpec toMethod;
     private final MethodSpec hashCode;
     private final List<TypeSpec> enums;
     private List<ClassName> protocols;
@@ -37,6 +39,7 @@ public class ValueInterface {
         this.withers = this.createWithers();
         this.changedMethod = this.createChangedMethod();
         this.toMapMethod = this.createToMapMethod();
+        this.toMethod = this.createToMethod();
         this.valueBuilder = new ValueBuilder(types, propertySpecs);
         this.valueChanger = new ValueChanger(types);
         this.hashCode = MethodSpec.methodBuilder("hashCode")
@@ -59,6 +62,7 @@ public class ValueInterface {
                 .addMethods(this.withers)
                 .addMethod(this.hashCode)
                 .addMethod(this.changedMethod)
+                .addMethod(this.toMethod)
                 .addMethod(this.toMapMethod)
                 .addMethod(this.optMethod())
                 .addType(this.valueBuilder.type())
@@ -171,6 +175,18 @@ public class ValueInterface {
                     .addParameter(this.types.valueObjectSingleType(propertySpec).nestedClass("Changer"), "changer")
                     .build()
             );
+            results.add(MethodSpec.methodBuilder(this.types.fromWitherMethodName(propertySpec))
+                    .returns(this.types.valueType())
+                    .addModifiers(PUBLIC, ABSTRACT)
+                    .addParameter(ParameterizedTypeName.get(
+                            ClassName.get(Function.class),
+                            this.types.propertySingleType(propertySpec),
+                            this.types.propertySingleType(propertySpec)
+                            ),
+                            "current"
+                    )
+                    .build()
+            );
         } else {
             TypeName type = this.types.propertySingleType(propertySpec);
             ParameterizedTypeName changerType =
@@ -182,6 +198,19 @@ public class ValueInterface {
                     .returns(this.types.valueType())
                     .addModifiers(PUBLIC, ABSTRACT)
                     .addParameter(changerType, "changer")
+                    .build()
+            );
+            results.add(MethodSpec.methodBuilder(this.types.fromWitherMethodName(propertySpec))
+                    .returns(this.types.valueType())
+                    .addModifiers(PUBLIC, ABSTRACT)
+                    .addParameter(
+                            ParameterizedTypeName.get(
+                                    ClassName.get(Function.class),
+                                    this.types.propertyType(propertySpec),
+                                    this.types.propertyType(propertySpec)
+                            ),
+                            "current"
+                    )
                     .build()
             );
         }
@@ -200,6 +229,14 @@ public class ValueInterface {
         return MethodSpec.methodBuilder("toMap")
                 .addModifiers(PUBLIC, ABSTRACT)
                 .returns(Map.class)
+                .build();
+    }
+
+    private MethodSpec createToMethod() {
+        return MethodSpec.methodBuilder("to")
+                .addModifiers(PUBLIC, DEFAULT)
+                .returns(this.types.valueBuilderType())
+                .addStatement("return $T.from(this)", this.types.valueType())
                 .build();
     }
 

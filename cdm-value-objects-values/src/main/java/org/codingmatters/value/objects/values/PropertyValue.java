@@ -260,6 +260,10 @@ public interface PropertyValue {
     interface Changer {
         PropertyValue.Builder configure(PropertyValue.Builder builder);
     }
+
+    default Builder to() {
+        return Builder.from(this);
+    }
     
     static PropertyValue fromObject(Object object) throws Type.UnsupportedTypeException {
         if(object == null) return null;

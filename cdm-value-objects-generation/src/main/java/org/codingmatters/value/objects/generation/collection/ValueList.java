@@ -18,10 +18,6 @@ public class ValueList {
     }
 
     public TypeSpec type() {
-
-        ClassName valueCollectionInterface = ClassName.get(this.packageName, "ValueList");
-        ClassName valueCollectionImpl = ClassName.get(this.packageName, "ValueListImpl");
-
         return TypeSpec.interfaceBuilder("ValueList")
                 .addSuperinterface(ParameterizedTypeName.get(ClassName.get(Iterable.class), TypeVariableName.get("E")))
                 .addModifiers(Modifier.PUBLIC)
@@ -81,6 +77,11 @@ public class ValueList {
                 .addMethod(MethodSpec.methodBuilder("stream")
                         .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
                         .returns(ParameterizedTypeName.get(ClassName.get(Stream.class), TypeVariableName.get("E")))
+                        .build())
+                .addMethod(MethodSpec.methodBuilder("to")
+                        .addModifiers(Modifier.DEFAULT, Modifier.PUBLIC)
+                        .returns(ParameterizedTypeName.get(ClassName.bestGuess("Builder"), TypeVariableName.get("E")))
+                        .addStatement("return from(this)")
                         .build())
 
                 .addType(new CollectionBuilder(

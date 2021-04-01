@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static javax.lang.model.element.Modifier.*;
@@ -254,6 +255,19 @@ public class ValueImplementation {
                             .addStatement("return builder.build()")
                             .build()
             );
+            result.add(MethodSpec.methodBuilder(this.types.fromWitherMethodName(propertySpec))
+                    .returns(this.types.valueType())
+                    .addModifiers(PUBLIC)
+                    .addParameter(ParameterizedTypeName.get(
+                            ClassName.get(Function.class),
+                            this.types.propertySingleType(propertySpec),
+                            this.types.propertySingleType(propertySpec)
+                            ),
+                            "current"
+                    )
+                    .addStatement("return this.$L(current.apply(this.$L()))", this.types.witherMethodName(propertySpec), propertySpec.name())
+                    .build()
+            );
         } else {
             TypeName type = this.types.propertySingleType(propertySpec);
             TypeName collectionType = this.types.collectionRawType(propertySpec);
@@ -275,6 +289,20 @@ public class ValueImplementation {
                             collectionType, type, collectionType)
                     .addStatement("builder.with(this.$L)", propertySpec.name())
                     .addStatement("return this.$L(changer.configure(builder).build())", this.types.witherMethodName(propertySpec))
+                    .build()
+            );
+            result.add(MethodSpec.methodBuilder(this.types.fromWitherMethodName(propertySpec))
+                    .returns(this.types.valueType())
+                    .addModifiers(PUBLIC)
+                    .addParameter(
+                            ParameterizedTypeName.get(
+                                    ClassName.get(Function.class),
+                                    this.types.propertyType(propertySpec),
+                                    this.types.propertyType(propertySpec)
+                            ),
+                            "current"
+                    )
+                    .addStatement("return this.$L(current.apply(this.$L()))", this.types.witherMethodName(propertySpec), propertySpec.name())
                     .build()
             );
         }
