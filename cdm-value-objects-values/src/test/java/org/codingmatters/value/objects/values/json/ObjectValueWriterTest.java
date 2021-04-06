@@ -17,9 +17,17 @@ public class ObjectValueWriterTest {
     private JsonFactory jsonFactory = new JsonFactory();
 
     @Test
-    public void singleNull() throws Exception {
+    public void onlyNull() throws Exception {
         assertThat(
                 this.write(ObjectValue.builder().property("prop", builder -> builder.stringValue(null))),
+                is("{\"prop\":null}")
+        );
+    }
+
+    @Test
+    public void singleNull() throws Exception {
+        assertThat(
+                this.write(ObjectValue.builder().property("prop", (PropertyValue) null)),
                 is("{\"prop\":null}")
         );
     }
@@ -69,7 +77,6 @@ public class ObjectValueWriterTest {
     }
 
 
-
     @Test
     public void multipleString() throws Exception {
         assertThat(
@@ -97,15 +104,13 @@ public class ObjectValueWriterTest {
     }
 
 
-
-
-
     private String write(ObjectValue.Builder builder) throws IOException {
         return this.write(builder.build());
     }
+
     private String write(ObjectValue value) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try(JsonGenerator generator = this.jsonFactory.createGenerator(out)) {
+        try (JsonGenerator generator = this.jsonFactory.createGenerator(out)) {
             new ObjectValueWriter().write(generator,
                     value
             );
