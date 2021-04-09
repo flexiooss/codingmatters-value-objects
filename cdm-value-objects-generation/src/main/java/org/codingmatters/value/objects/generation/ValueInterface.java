@@ -83,8 +83,7 @@ public class ValueInterface {
     private MethodSpec createBuilderFromValueMethod() {
         List<Object> bindings = new LinkedList<>();
 
-        String statement = "return new $T()\n";
-        bindings.add(this.types.valueBuilderType());
+        String statement = "return builder()\n";
 
         for (PropertySpec propertySpec : this.propertySpecs) {
             statement += "." + propertySpec.name() + "(value." + propertySpec.name() + "())\n";
@@ -98,7 +97,7 @@ public class ValueInterface {
                 .addStatement(statement, bindings.toArray())
                 .endControlFlow()
                 .beginControlFlow("else")
-                .addStatement("return null")
+                .addStatement("return builder()")
                 .endControlFlow()
                 .build();
     }
