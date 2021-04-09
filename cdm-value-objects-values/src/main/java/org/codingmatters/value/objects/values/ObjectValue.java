@@ -25,7 +25,7 @@ public interface ObjectValue {
 
     static Builder fromMap(Map value) {
         if(value == null) {
-            return null;
+            return builder();
         }
 
         Builder result = builder();

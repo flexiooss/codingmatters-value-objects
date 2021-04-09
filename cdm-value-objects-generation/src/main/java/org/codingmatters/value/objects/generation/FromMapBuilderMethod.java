@@ -23,7 +23,7 @@ public class FromMapBuilderMethod {
         CodeBlock.Builder block = CodeBlock.builder();
         block
                 .beginControlFlow("if(value == null)")
-                .addStatement("return null")
+                .addStatement("return $T.builder()", this.types.valueType())
                 .nextControlFlow("else")
                 .addStatement("$T builder = $T.builder()", this.types.valueBuilderType(), this.types.valueType());
 
