@@ -13,11 +13,11 @@ public class ObjectValueWriter {
     }
 
     public void writeArray(JsonGenerator generator, ObjectValue[] values) throws IOException {
-        if(values == null) {
+        if (values == null) {
             generator.writeNull();
         } else {
             generator.writeStartArray();
-            for(ObjectValue value : values) {
+            for (ObjectValue value : values) {
                 this.write(generator, value);
             }
             generator.writeEndArray();
@@ -25,11 +25,11 @@ public class ObjectValueWriter {
     }
 
     private void writeValue(JsonGenerator generator, PropertyValue property) throws IOException {
-        if(property.isNullValue()) {
+        if (property == null || property.isNullValue()) {
             generator.writeNull();
-        } else if(PropertyValue.Cardinality.SINGLE.equals(property.cardinality())) {
+        } else if (PropertyValue.Cardinality.SINGLE.equals(property.cardinality())) {
             this.writeSingleValue(generator, property.single(), property.type());
-        } else if(PropertyValue.Cardinality.MULTIPLE.equals(property.cardinality())) {
+        } else if (PropertyValue.Cardinality.MULTIPLE.equals(property.cardinality())) {
             this.writeMultipleValue(generator, property.multiple(), property.type());
         }
     }
