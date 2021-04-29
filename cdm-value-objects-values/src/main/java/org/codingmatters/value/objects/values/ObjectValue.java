@@ -6,6 +6,7 @@ import org.codingmatters.value.objects.values.optional.OptionalObjectValue;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public interface ObjectValue {
@@ -69,6 +70,25 @@ public interface ObjectValue {
     boolean has(String property);
     PropertyValue property(String property);
     String [] propertyNames();
+
+    default Optional<PropertyValue> nonNullProperty(String property, PropertyValue.Type type, PropertyValue.Cardinality cardinality) {
+        if(this.has(property)
+                && ! this.property(property).isNullValue()
+                && type.equals(this.property(property).type())
+                && cardinality.equals(this.property(property).cardinality())) {
+            return Optional.of(this.property(property));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    default Optional<PropertyValue> singleNonNullProperty(String property, PropertyValue.Type type) {
+        return this.nonNullProperty(property, type, PropertyValue.Cardinality.SINGLE);
+    }
+
+    default Optional<PropertyValue> multipleNonNullProperty(String property, PropertyValue.Type type) {
+        return this.nonNullProperty(property, type, PropertyValue.Cardinality.SINGLE);
+    }
 
     default ObjectValue withProperty(String property, PropertyValue value) {
         return ObjectValue.from(this).property(property, value).build();

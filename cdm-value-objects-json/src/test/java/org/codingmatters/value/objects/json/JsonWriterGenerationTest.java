@@ -11,6 +11,8 @@ import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.reader.SpecReader;
 import org.codingmatters.value.objects.spec.Spec;
 import org.generated.*;
+import org.generated.embedded.Multiple;
+import org.generated.embedded.Single;
 import org.generated.examplevalue.Complex;
 import org.generated.examplevalue.ComplexList;
 import org.generated.raw.RootType;
@@ -481,6 +483,29 @@ public class JsonWriterGenerationTest {
                     out.toString(),
                     is("{\"prop\":{\"prop\":\"val\"}}"
                     )
+            );
+        }
+    }
+
+    @Test
+    public void writeEmbeddedValue() throws Exception {
+        Embedded value = Embedded.builder()
+                .single(Single.builder().prop("val").build())
+                .multiple(
+                        Multiple.builder().prop("v1").build(),
+                        Multiple.builder().prop("v2").build()
+                )
+                .build();
+
+        Object writer = this.compiled.getClass("org.generated.json.EmbeddedWriter").newInstance();
+        try(OutputStream out = new ByteArrayOutputStream()) {
+            JsonGenerator generator = this.factory.createGenerator(out);
+            this.compiled.on(writer).invoke("write", JsonGenerator.class, Embedded.class).with(generator, value);
+            generator.close();
+
+            assertThat(
+                    out.toString(),
+                    is("{\"single\":{\"prop\":\"val\"},\"multiple\":[{\"prop\":\"v1\"},{\"prop\":\"v2\"}]}")
             );
         }
     }
