@@ -1,4 +1,6 @@
 level: stable
-schemes: [maven]
-topics: [16]
-version: 1.59.0
+schemes:
+- maven
+topics:
+- 16
+version: 1.60.0
