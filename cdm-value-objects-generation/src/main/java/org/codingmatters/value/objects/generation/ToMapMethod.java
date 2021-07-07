@@ -2,6 +2,7 @@ package org.codingmatters.value.objects.generation;
 
 import com.squareup.javapoet.CodeBlock;
 import org.codingmatters.value.objects.spec.PropertySpec;
+import org.codingmatters.value.objects.spec.TypeKind;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ public class ToMapMethod {
         for (PropertySpec propertySpec : this.types.valueSpec().propertySpecs()) {
             block.beginControlFlow("if(this.$L() != null)", propertySpec.name());
             if(propertySpec.typeSpec().cardinality().isCollection()) {
-                if(propertySpec.typeSpec().isInSpecEnum()) {
+                if(propertySpec.typeSpec().typeKind().equals(TypeKind.ENUM)) {
                     block.addStatement("result.put($S, this.$L().stream().map(v -> v.name()).collect($T.toList()))",
                             this.types.fieldName(propertySpec),
                             propertySpec.name(),
@@ -42,7 +43,7 @@ public class ToMapMethod {
                     );
                 }
             } else {
-                if(propertySpec.typeSpec().isInSpecEnum()) {
+                if(propertySpec.typeSpec().typeKind().equals(TypeKind.ENUM)) {
                     block.addStatement("result.put($S, this.$L().name())", this.types.fieldName(propertySpec), propertySpec.name());
                 } else if (propertySpec.typeSpec().typeKind().isValueObject()) {
                     block.addStatement("result.put($S, this.$L().toMap())", this.types.fieldName(propertySpec), propertySpec.name());
