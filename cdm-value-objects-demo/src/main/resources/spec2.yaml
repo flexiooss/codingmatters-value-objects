@@ -14,3 +14,10 @@ complexValue:
 
 valueWithBinary:
   binary: bytes
+
+valueWithEnums:
+  inlineEnum:
+    $enum: A, B, C
+  elswhereEnum:
+    $enum:
+      $type: java.time.DayOfWeek

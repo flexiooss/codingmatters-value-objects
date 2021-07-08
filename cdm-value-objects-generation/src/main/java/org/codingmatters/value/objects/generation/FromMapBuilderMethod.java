@@ -45,7 +45,7 @@ public class FromMapBuilderMethod {
     }
 
     private void singleProperty(CodeBlock.Builder block, PropertySpec propertySpec) {
-        if(propertySpec.typeSpec().isInSpecEnum()) {
+        if(propertySpec.typeSpec().typeKind().equals(TypeKind.ENUM)) {
             block.beginControlFlow("if($LPropertyValue instanceof $T)", propertySpec.name(), String.class);
             block
                     .beginControlFlow("try")
@@ -119,7 +119,7 @@ public class FromMapBuilderMethod {
 
     private void multipleProperty(CodeBlock.Builder block, PropertySpec propertySpec) {
         block.beginControlFlow("if($LPropertyValue instanceof $T)", propertySpec.name(), Collection.class);
-        if(propertySpec.typeSpec().isInSpecEnum()) {
+        if(propertySpec.typeSpec().typeKind().equals(TypeKind.ENUM)) {
             block.addStatement("builder.$L(($T) (($T)$LPropertyValue).stream().map(v -> { try { return $T.valueOf(($T) v); } catch($T e) { return null;} }).collect($T.toList()))",
                     propertySpec.name(),
                     Collection.class,

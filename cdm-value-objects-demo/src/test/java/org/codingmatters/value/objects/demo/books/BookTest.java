@@ -4,6 +4,7 @@ import org.codingmatters.value.objects.demo.books.person.Address;
 import org.codingmatters.value.objects.demo.books.review.ReviewRating;
 import org.junit.Test;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
