@@ -3,7 +3,6 @@ package org.codingmatters.value.objects.values;
 import org.codingmatters.value.objects.values.helper.ObjectValueToMap;
 import org.codingmatters.value.objects.values.optional.OptionalObjectValue;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -25,7 +24,7 @@ public interface ObjectValue {
     }
 
     static Builder fromMap(Map value) {
-        if(value == null) {
+        if (value == null) {
             return builder();
         }
 
@@ -42,7 +41,7 @@ public interface ObjectValue {
     }
 
     class Builder {
-        private Map<String, PropertyValue> properties = new HashMap<>();
+        private final Map<String, PropertyValue> properties = new HashMap<>();
 
         public Builder property(String property, PropertyValue value) {
             this.properties.put(property, value);
@@ -53,7 +52,7 @@ public interface ObjectValue {
         }
         public Builder property(String property, Consumer<PropertyValue.Builder> value) {
             PropertyValue.Builder builder = PropertyValue.builder();
-            if(value != null) {
+            if (value != null) {
                 value.accept(builder);
             }
             return this.property(property, builder.build());
@@ -72,7 +71,7 @@ public interface ObjectValue {
     String [] propertyNames();
 
     default Optional<PropertyValue> nonNullProperty(String property, PropertyValue.Type type, PropertyValue.Cardinality cardinality) {
-        if(this.has(property)
+        if (this.has(property)
                 && ! this.property(property).isNullValue()
                 && type.equals(this.property(property).type())
                 && cardinality.equals(this.property(property).cardinality())) {
@@ -87,7 +86,7 @@ public interface ObjectValue {
     }
 
     default Optional<PropertyValue> multipleNonNullProperty(String property, PropertyValue.Type type) {
-        return this.nonNullProperty(property, type, PropertyValue.Cardinality.SINGLE);
+        return this.nonNullProperty(property, type, PropertyValue.Cardinality.MULTIPLE);
     }
 
     default ObjectValue withProperty(String property, PropertyValue value) {

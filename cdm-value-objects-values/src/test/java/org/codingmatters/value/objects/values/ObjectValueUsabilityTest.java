@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 
 public class ObjectValueUsabilityTest {
 
@@ -17,6 +18,64 @@ public class ObjectValueUsabilityTest {
         assertThat(value.toString(), is("{listProp=[str (STRING)], prop=str (STRING)}"));
 
         assertThat(value.property("prop").single().stringValue(), is("str"));
+    }
+
+    @Test
+    public void singleNonNullProperty() {
+        final ObjectValue singlePropertyObjectValue = ObjectValue.builder()
+                .property("prop", v->v.stringValue("value"))
+                .property("nullProp", PropertyValue.builder().build())
+                .build();
+
+        assertFalse(singlePropertyObjectValue.singleNonNullProperty("anotherOne", PropertyValue.Type.STRING).isPresent());
+        assertFalse(singlePropertyObjectValue.singleNonNullProperty("prop", PropertyValue.Type.OBJECT).isPresent());
+        assertFalse(singlePropertyObjectValue.singleNonNullProperty("nullProp", PropertyValue.Type.STRING).isPresent());
+        assertThat(singlePropertyObjectValue.singleNonNullProperty("prop", PropertyValue.Type.STRING).get(),
+                is(PropertyValue.builder().stringValue("value").build())
+        );
+
+        final ObjectValue multipleStringPropertyObjectValue = ObjectValue.builder()
+                .property("prop", PropertyValue.multiple(PropertyValue.Type.STRING,
+                        v->v.stringValue("value1"),
+                        v->v.stringValue("value2")
+                ))
+                .build();
+
+        assertFalse(multipleStringPropertyObjectValue.singleNonNullProperty("prop", PropertyValue.Type.STRING).isPresent());
+
+        final ObjectValue multipleNumberPropertyObjectValue = ObjectValue.builder()
+                .property("prop", PropertyValue.multiple(PropertyValue.Type.DOUBLE,
+                        v->v.doubleValue(0d),
+                        v->v.doubleValue(1d)
+                ))
+                .build();
+
+        assertFalse(multipleNumberPropertyObjectValue.singleNonNullProperty("prop", PropertyValue.Type.STRING).isPresent());
+    }
+
+    @Test
+    public void multipleNonNullProperty() {
+        final ObjectValue multiplePropertyObjectValue = ObjectValue.builder()
+                .property("prop", PropertyValue.multiple(PropertyValue.Type.STRING,
+                        v->v.stringValue("value1"),
+                        v->v.stringValue("value2")
+                ))
+                .build();
+
+        assertFalse(multiplePropertyObjectValue.multipleNonNullProperty("anotherOne", PropertyValue.Type.STRING).isPresent());
+        assertFalse(multiplePropertyObjectValue.multipleNonNullProperty("prop", PropertyValue.Type.OBJECT).isPresent());
+        assertThat(multiplePropertyObjectValue.multipleNonNullProperty("prop", PropertyValue.Type.STRING).get(),
+                is(PropertyValue.multiple(PropertyValue.Type.STRING,
+                        v->v.stringValue("value1"),
+                        v->v.stringValue("value2")
+                ))
+        );
+
+        final ObjectValue singlePropertyObjectValue = ObjectValue.builder()
+                .property("prop", v->v.objectValue(ObjectValue.builder().build()))
+                .build();
+
+        assertFalse(singlePropertyObjectValue.multipleNonNullProperty("prop", PropertyValue.Type.STRING).isPresent());
     }
 
     @Test
