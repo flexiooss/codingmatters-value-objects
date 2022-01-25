@@ -45,12 +45,12 @@ class ObjectValueImpl implements ObjectValue {
 
         ObjectValueImpl that = (ObjectValueImpl) o;
 
-        return properties != null ? properties.equals(that.properties) : that.properties == null;
+        return properties.equals(that.properties);
     }
 
     @Override
     public int hashCode() {
-        return properties != null ? properties.hashCode() : 0;
+        return properties.hashCode();
     }
 
     @Override
