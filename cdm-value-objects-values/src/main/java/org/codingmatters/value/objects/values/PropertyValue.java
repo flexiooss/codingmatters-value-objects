@@ -1,7 +1,5 @@
 package org.codingmatters.value.objects.values;
 
-import org.codingmatters.value.objects.values.vals.Val;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -20,7 +18,9 @@ public interface PropertyValue {
     static PropertyValue multiple(Type type, Value ... values) {
         if(values != null) {
             for (Value value : values) {
-                assert value.isa(type);
+                if (value.rawValue() != null) {
+                    assert value.isa(type);
+                }
             }
         }
 
