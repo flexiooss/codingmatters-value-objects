@@ -104,7 +104,9 @@ class PropertyValueImpl implements PropertyValue {
             if (o == null || getClass() != o.getClass()) return false;
 
             ValueImpl value1 = (ValueImpl) o;
-
+            if (value1.rawValue() == null) {
+                return this.rawValue() == null;
+            }
             if (type != value1.type) return false;
             return value != null ? value.equals(value1.value) : value1.value == null;
         }

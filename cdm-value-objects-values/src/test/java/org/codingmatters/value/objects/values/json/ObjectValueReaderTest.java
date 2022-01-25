@@ -5,9 +5,11 @@ import org.codingmatters.value.objects.values.ObjectValue;
 import org.codingmatters.value.objects.values.PropertyValue;
 import org.junit.Test;
 
+import java.io.IOException;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ObjectValueReaderTest {
 
@@ -132,4 +134,20 @@ public class ObjectValueReaderTest {
                 is(arrayContaining(ObjectValue.builder().property("prop", builder -> builder.stringValue("str")).build()))
         );
     }
+
+    @Test
+    public void readArrayWithNullElement() throws IOException {
+        String json = "{\"objectList\":[{\"prop\": \"str\"}, null]}";
+        ObjectValue value = new ObjectValueReader().read(jsonFactory.createParser(json));
+        assertThat(
+                value,
+                is(ObjectValue.builder()
+                        .property("objectList", PropertyValue.multiple(PropertyValue.Type.OBJECT,
+                                val -> val.objectValue(ObjectValue.builder().property("prop", prop->prop.stringValue("str")).build()),
+                                val -> val.objectValue((ObjectValue) null)
+                        )).build()
+                )
+        );
+    }
+
 }
