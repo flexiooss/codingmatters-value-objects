@@ -15,7 +15,7 @@ public class HasPropertyMatcher extends TypeSafeMatcher<ObjectValue> {
 
     @Override
     protected boolean matchesSafely(ObjectValue value) {
-        return value.has(property) && ! value.property(property).isNullValue();
+        return value.has(property);
     }
 
     @Override

@@ -19,7 +19,7 @@ public class HasPropertyMatcherTest {
                 .build();
 
         final Matcher<ObjectValue> hasPropertyMatcher = HasPropertyMatcher.hasProperty(PROPERTY_NAME);
-        assertThat(hasPropertyMatcher.matches(value), is(false));
+        assertThat(hasPropertyMatcher.matches(value), is(true));
     }
 
     @Test
@@ -31,7 +31,7 @@ public class HasPropertyMatcherTest {
                 .build();
 
         final Matcher<ObjectValue> hasPropertyMatcher = HasPropertyMatcher.hasProperty(PROPERTY_NAME);
-        assertThat(hasPropertyMatcher.matches(value), is(false));
+        assertThat(hasPropertyMatcher.matches(value), is(true));
     }
 
     @Test
