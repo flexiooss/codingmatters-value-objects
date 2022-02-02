@@ -3,20 +3,20 @@ package org.codingmatters.value.objects.values.matchers.property.value;
 import org.codingmatters.value.objects.values.PropertyValue;
 import org.hamcrest.CustomTypeSafeMatcher;
 
-public final class WithDoubleValueMatcher extends CustomTypeSafeMatcher<PropertyValue.Value> {
-    private final Double value;
+public final class LongValueMatcher extends CustomTypeSafeMatcher<PropertyValue.Value> {
+    private final Long value;
 
-    public WithDoubleValueMatcher(Double value) {
+    public LongValueMatcher(Long value) {
         super(String.valueOf(value));
         this.value = value;
     }
 
     @Override
     protected boolean matchesSafely(PropertyValue.Value item) {
-        return item.doubleValue().equals(value);
+        return item.longValue().equals(value);
     }
 
-    public static WithDoubleValueMatcher doubleValue(Double value) {
-        return new WithDoubleValueMatcher(value);
+    public static LongValueMatcher longValue(Long value) {
+        return new LongValueMatcher(value);
     }
 }

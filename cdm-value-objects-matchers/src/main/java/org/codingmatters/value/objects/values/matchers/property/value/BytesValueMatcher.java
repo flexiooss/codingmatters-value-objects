@@ -5,10 +5,10 @@ import org.hamcrest.CustomTypeSafeMatcher;
 
 import java.util.Arrays;
 
-public final class WithBytesValueMatcher extends CustomTypeSafeMatcher<PropertyValue.Value> {
+public final class BytesValueMatcher extends CustomTypeSafeMatcher<PropertyValue.Value> {
     private final byte[] value;
 
-    public WithBytesValueMatcher(byte[] value) {
+    public BytesValueMatcher(byte[] value) {
         super(String.valueOf(value));
         this.value = value;
     }
@@ -18,7 +18,7 @@ public final class WithBytesValueMatcher extends CustomTypeSafeMatcher<PropertyV
         return Arrays.equals(item.bytesValue(), value);
     }
 
-    public static WithBytesValueMatcher bytesValue(byte[] value) {
-        return new WithBytesValueMatcher(value);
+    public static BytesValueMatcher bytesValue(byte[] value) {
+        return new BytesValueMatcher(value);
     }
 }

@@ -5,10 +5,10 @@ import org.hamcrest.CustomTypeSafeMatcher;
 
 import java.time.LocalDate;
 
-public final class WithDateValueMatcher extends CustomTypeSafeMatcher<PropertyValue.Value> {
+public final class DateValueMatcher extends CustomTypeSafeMatcher<PropertyValue.Value> {
     private final LocalDate value;
 
-    public WithDateValueMatcher(LocalDate value) {
+    public DateValueMatcher(LocalDate value) {
         super(String.valueOf(value));
         this.value = value;
     }
@@ -18,7 +18,7 @@ public final class WithDateValueMatcher extends CustomTypeSafeMatcher<PropertyVa
         return item.dateValue().equals(this.value);
     }
 
-    public static WithDateValueMatcher dateValue(LocalDate value) {
-        return new WithDateValueMatcher(value);
+    public static DateValueMatcher dateValue(LocalDate value) {
+        return new DateValueMatcher(value);
     }
 }

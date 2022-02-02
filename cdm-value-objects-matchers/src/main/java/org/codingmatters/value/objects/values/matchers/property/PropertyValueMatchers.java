@@ -9,20 +9,25 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static org.codingmatters.value.objects.values.matchers.property.WithSingleValueMatcher.withSingle;
-import static org.codingmatters.value.objects.values.matchers.property.value.WithBooleanValueMatcher.booleanValue;
-import static org.codingmatters.value.objects.values.matchers.property.value.WithBytesValueMatcher.bytesValue;
-import static org.codingmatters.value.objects.values.matchers.property.value.WithDateTimeValueMatcher.dateTimeValue;
-import static org.codingmatters.value.objects.values.matchers.property.value.WithDateValueMatcher.dateValue;
-import static org.codingmatters.value.objects.values.matchers.property.value.WithDoubleValueMatcher.doubleValue;
-import static org.codingmatters.value.objects.values.matchers.property.value.WithLongValueMatcher.longValue;
-import static org.codingmatters.value.objects.values.matchers.property.value.WithObjectValueMatchingMatcher.objectValueMatching;
-import static org.codingmatters.value.objects.values.matchers.property.value.WithObjectValueValueMatcher.objectValue;
-import static org.codingmatters.value.objects.values.matchers.property.value.WithStringValueMatcher.stringValue;
-import static org.codingmatters.value.objects.values.matchers.property.value.WithTimeValueMatcher.timeValue;
+import static org.codingmatters.value.objects.values.matchers.property.value.BooleanValueMatcher.booleanValue;
+import static org.codingmatters.value.objects.values.matchers.property.value.BytesValueMatcher.bytesValue;
+import static org.codingmatters.value.objects.values.matchers.property.value.DateTimeValueMatcher.dateTimeValue;
+import static org.codingmatters.value.objects.values.matchers.property.value.DateValueMatcher.dateValue;
+import static org.codingmatters.value.objects.values.matchers.property.value.DoubleValueMatcher.doubleValue;
+import static org.codingmatters.value.objects.values.matchers.property.value.LongValueMatcher.longValue;
+import static org.codingmatters.value.objects.values.matchers.property.value.ObjectValueMatcher.objectValueMatching;
+import static org.codingmatters.value.objects.values.matchers.property.value.ObjectValueMatcher.objectValue;
+import static org.codingmatters.value.objects.values.matchers.property.value.StringValueMatcher.stringValue;
+import static org.codingmatters.value.objects.values.matchers.property.value.StringValueMatcher.stringValueMatching;
+import static org.codingmatters.value.objects.values.matchers.property.value.TimeValueMatcher.timeValue;
 
 public class PropertyValueMatchers {
     public static Matcher<PropertyValue> withValue(String str) {
         return withSingle(stringValue(str));
+    }
+
+    public static Matcher<PropertyValue> withValueMatching(Matcher<String> matcher) {
+        return withSingle(stringValueMatching(matcher));
     }
 
     public static Matcher<PropertyValue> withValue(Boolean bool) {
