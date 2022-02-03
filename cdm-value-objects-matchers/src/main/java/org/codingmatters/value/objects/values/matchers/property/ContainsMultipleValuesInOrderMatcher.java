@@ -14,11 +14,11 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 
-public class MultipleValuesInOrderMatcher extends TypeSafeDiagnosingMatcher<PropertyValue> {
+public class ContainsMultipleValuesInOrderMatcher extends TypeSafeDiagnosingMatcher<PropertyValue> {
     private final IsIterableContainingInOrder<PropertyValue.Value> iterableMatcher;
     private final List<Matcher<? super PropertyValue.Value>> matchers;
 
-    public MultipleValuesInOrderMatcher(List<Matcher<? super PropertyValue.Value>> matchers) {
+    public ContainsMultipleValuesInOrderMatcher(List<Matcher<? super PropertyValue.Value>> matchers) {
         this.iterableMatcher = new IsIterableContainingInOrder<>(matchers);
         this.matchers = matchers;
     }
@@ -37,18 +37,18 @@ public class MultipleValuesInOrderMatcher extends TypeSafeDiagnosingMatcher<Prop
     }
 
     @Factory
-    public static MultipleValuesInOrderMatcher multipleInOrder(List<Matcher<? super PropertyValue.Value>> itemMatchers) {
-        return new MultipleValuesInOrderMatcher(itemMatchers);
+    public static ContainsMultipleValuesInOrderMatcher multipleInOrder(List<Matcher<? super PropertyValue.Value>> itemMatchers) {
+        return new ContainsMultipleValuesInOrderMatcher(itemMatchers);
     }
 
     @Factory
     @SafeVarargs
-    public static MultipleValuesInOrderMatcher multipleInOrder(Matcher<? super PropertyValue.Value>... itemMatchers) {
+    public static ContainsMultipleValuesInOrderMatcher multipleInOrder(Matcher<? super PropertyValue.Value>... itemMatchers) {
         return multipleInOrder(Arrays.asList(itemMatchers));
     }
 
     @Factory
-    public static MultipleValuesInOrderMatcher multipleInOrder(PropertyValue.Value... items) {
+    public static ContainsMultipleValuesInOrderMatcher multipleInOrder(PropertyValue.Value... items) {
         final List<Matcher<? super PropertyValue.Value>> itemMatchers = new ArrayList<>();
         if (items != null) {
             for (PropertyValue.Value value : items) {

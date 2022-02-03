@@ -14,11 +14,11 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 
-public class MultipleValuesInAnyOrderMatcher extends TypeSafeDiagnosingMatcher<PropertyValue> {
+public class ContainsMultipleValuesInAnyOrderMatcher extends TypeSafeDiagnosingMatcher<PropertyValue> {
     private final IsIterableContainingInAnyOrder<PropertyValue.Value> iterableMatcher;
     private final Collection<Matcher<? super PropertyValue.Value>> matchers;
 
-    public MultipleValuesInAnyOrderMatcher(Collection<Matcher<? super PropertyValue.Value>> matchers) {
+    public ContainsMultipleValuesInAnyOrderMatcher(Collection<Matcher<? super PropertyValue.Value>> matchers) {
         this.iterableMatcher = new IsIterableContainingInAnyOrder<>(matchers);
         this.matchers = matchers;
     }
@@ -36,18 +36,18 @@ public class MultipleValuesInAnyOrderMatcher extends TypeSafeDiagnosingMatcher<P
     }
 
     @Factory
-    public static MultipleValuesInAnyOrderMatcher multiple(Collection<Matcher<? super PropertyValue.Value>> itemMatchers) {
-        return new MultipleValuesInAnyOrderMatcher(itemMatchers);
+    public static ContainsMultipleValuesInAnyOrderMatcher multiple(Collection<Matcher<? super PropertyValue.Value>> itemMatchers) {
+        return new ContainsMultipleValuesInAnyOrderMatcher(itemMatchers);
     }
 
     @Factory
     @SafeVarargs
-    public static MultipleValuesInAnyOrderMatcher multiple(Matcher<? super PropertyValue.Value>... itemMatchers) {
+    public static ContainsMultipleValuesInAnyOrderMatcher multiple(Matcher<? super PropertyValue.Value>... itemMatchers) {
         return multiple(Arrays.asList(itemMatchers));
     }
 
     @Factory
-    public static MultipleValuesInAnyOrderMatcher multiple(PropertyValue.Value... items) {
+    public static ContainsMultipleValuesInAnyOrderMatcher multiple(PropertyValue.Value... items) {
         final List<Matcher<? super PropertyValue.Value>> itemMatchers = new ArrayList<>();
         if (items != null) {
             for (PropertyValue.Value value : items) {

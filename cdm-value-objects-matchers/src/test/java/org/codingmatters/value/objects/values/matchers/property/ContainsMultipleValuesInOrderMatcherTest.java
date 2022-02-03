@@ -3,12 +3,12 @@ package org.codingmatters.value.objects.values.matchers.property;
 import org.codingmatters.value.objects.values.PropertyValue;
 import org.junit.Test;
 
-import static org.codingmatters.value.objects.values.matchers.property.MultipleValuesInAnyOrderMatcher.multiple;
+import static org.codingmatters.value.objects.values.matchers.property.ContainsMultipleValuesInOrderMatcher.multipleInOrder;
 import static org.codingmatters.value.objects.values.matchers.property.value.StringValueMatcher.stringValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class MultipleValuesInAnyOrderMatcherTest {
+public class ContainsMultipleValuesInOrderMatcherTest {
     private static final PropertyValue.Value[] values = {
             PropertyValue.builder().stringValue("value1").buildValue(),
             PropertyValue.builder().stringValue("value2").buildValue(),
@@ -18,19 +18,19 @@ public class MultipleValuesInAnyOrderMatcherTest {
     @Test
     public void singleProperty__DoNotMatch() {
         final PropertyValue property = PropertyValue.builder().stringValue("whatever").build();
-        assertThat(multiple(values).matches(property), is(false));
+        assertThat(multipleInOrder(values).matches(property), is(false));
     }
 
     @Test
     public void nullProperty__DoNotMatch() {
         final PropertyValue property = null;
-        assertThat(multiple(values).matches(property), is(false));
+        assertThat(multipleInOrder(values).matches(property), is(false));
     }
 
     @Test
     public void noProperty__DoNotMatch() {
         final PropertyValue property = PropertyValue.builder().build();
-        assertThat(multiple(values).matches(property), is(false));
+        assertThat(multipleInOrder(values).matches(property), is(false));
     }
 
     @Test
@@ -40,7 +40,7 @@ public class MultipleValuesInAnyOrderMatcherTest {
                 v -> v.stringValue("value2"),
                 v -> v.stringValue("value3")
         );
-        assertThat(multiple(values).matches(property), is(true));
+        assertThat(multipleInOrder(values).matches(property), is(true));
     }
 
     @Test
@@ -50,7 +50,7 @@ public class MultipleValuesInAnyOrderMatcherTest {
                 v -> v.stringValue("value2"),
                 v -> v.stringValue("value1")
         );
-        assertThat(multiple(values).matches(property), is(true));
+        assertThat(multipleInOrder(values).matches(property), is(false));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class MultipleValuesInAnyOrderMatcherTest {
                 v -> v.doubleValue(5d),
                 v -> v.doubleValue(8d)
         );
-        assertThat(multiple(values).matches(property), is(false));
+        assertThat(multipleInOrder(values).matches(property), is(false));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class MultipleValuesInAnyOrderMatcherTest {
                 v -> v.stringValue("value3")
         );
         assertThat(
-                multiple(
+                multipleInOrder(
                         stringValue("value1"),
                         stringValue("value2"),
                         stringValue("value3")

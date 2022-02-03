@@ -7,12 +7,13 @@ import org.junit.Test;
 import java.time.LocalDate;
 import java.time.Month;
 
+import static org.codingmatters.value.objects.values.matchers.ContainsPropertiesMatcher.containsProperties;
+import static org.codingmatters.value.objects.values.matchers.HasNonNullPropertyWithValueMatcher.hasProperty;
 import static org.codingmatters.value.objects.values.matchers.property.PropertyValueMatchers.withValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
-public class HasNonNullPropertyWithValueMatcherTest {
+public class UsageObjectValueMatchersTest {
     private static final ObjectValue MARCO_SANCHEZ = ObjectValue.builder()
             .property("name", v -> v.stringValue("Marco Sanchez"))
             .property("birthday", v -> v.dateValue(LocalDate.of(1984, Month.JUNE, 25)))
@@ -36,6 +37,16 @@ public class HasNonNullPropertyWithValueMatcherTest {
                     )
             ))
             .build();
+
+    @Test
+    public void objectContainsProperties() {
+        assertThat(MARCO_SANCHEZ, containsProperties("name", "birthday", "bankAccounts", "homeowner", "children", "assets", "hash", "dogs"));
+    }
+
+    @Test
+    public void objectDoesNotHavePropertyVerbotenProperties() {
+        assertThat(MARCO_SANCHEZ, not(HasPropertyMatcher.hasProperty("VERBOTEN")));
+    }
 
     @Test
     public void testName() {

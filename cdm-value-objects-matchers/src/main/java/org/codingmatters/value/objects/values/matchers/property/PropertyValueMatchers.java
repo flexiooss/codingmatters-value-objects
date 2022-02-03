@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Function;
 
-import static org.codingmatters.value.objects.values.matchers.property.MultipleValuesInAnyOrderMatcher.multiple;
+import static org.codingmatters.value.objects.values.matchers.property.ContainsMultipleValuesInAnyOrderMatcher.multiple;
 import static org.codingmatters.value.objects.values.matchers.property.SingleValueMatcher.single;
 import static org.codingmatters.value.objects.values.matchers.property.value.BooleanValueMatcher.booleanValue;
 import static org.codingmatters.value.objects.values.matchers.property.value.BytesValueMatcher.bytesValue;
