@@ -15,7 +15,7 @@ public final class TimeValueMatcher extends CustomTypeSafeMatcher<PropertyValue.
 
     @Override
     protected boolean matchesSafely(PropertyValue.Value item) {
-        return item.timeValue().equals(this.value);
+        return item.isa(PropertyValue.Type.TIME) && ! item.isNull() && item.timeValue().equals(this.value);
     }
 
     public static TimeValueMatcher timeValue(LocalTime value) {

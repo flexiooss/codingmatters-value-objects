@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import static org.codingmatters.value.objects.values.matchers.property.WithSingleValueMatcher.withSingle;
+import static org.codingmatters.value.objects.values.matchers.property.SingleValueMatcher.single;
 import static org.codingmatters.value.objects.values.matchers.property.value.BooleanValueMatcher.booleanValue;
 import static org.codingmatters.value.objects.values.matchers.property.value.BytesValueMatcher.bytesValue;
 import static org.codingmatters.value.objects.values.matchers.property.value.DateTimeValueMatcher.dateTimeValue;
@@ -21,48 +21,48 @@ import static org.codingmatters.value.objects.values.matchers.property.value.Str
 import static org.codingmatters.value.objects.values.matchers.property.value.StringValueMatcher.stringValueMatching;
 import static org.codingmatters.value.objects.values.matchers.property.value.TimeValueMatcher.timeValue;
 
-public class PropertyValueMatchers {
+public final class PropertyValueMatchers {
     public static Matcher<PropertyValue> withValue(String str) {
-        return withSingle(stringValue(str));
+        return single(stringValue(str));
     }
 
     public static Matcher<PropertyValue> withValueMatching(Matcher<String> matcher) {
-        return withSingle(stringValueMatching(matcher));
+        return single(stringValueMatching(matcher));
     }
 
     public static Matcher<PropertyValue> withValue(Boolean bool) {
-        return withSingle(booleanValue(bool));
+        return single(booleanValue(bool));
     }
 
     public static Matcher<PropertyValue> withValue(Double d) {
-        return withSingle(doubleValue(d));
+        return single(doubleValue(d));
     }
 
     public static Matcher<PropertyValue> withValue(Long l) {
-        return withSingle(longValue(l));
+        return single(longValue(l));
     }
 
     public static Matcher<PropertyValue> withValue(LocalDateTime dateTime) {
-        return withSingle(dateTimeValue(dateTime));
+        return single(dateTimeValue(dateTime));
     }
 
     public static Matcher<PropertyValue> withValue(LocalDate date) {
-        return withSingle(dateValue(date));
+        return single(dateValue(date));
     }
 
     public static Matcher<PropertyValue> withValue(LocalTime time) {
-        return withSingle(timeValue(time));
+        return single(timeValue(time));
     }
 
     public static Matcher<PropertyValue> withValue(byte[] bytes) {
-        return withSingle(bytesValue(bytes));
+        return single(bytesValue(bytes));
     }
 
     public static Matcher<PropertyValue> withValue(ObjectValue value) {
-        return withSingle(objectValue(value));
+        return single(objectValue(value));
     }
 
     public static Matcher<PropertyValue> withObjectMatching(Matcher<ObjectValue> matcher) {
-        return withSingle(objectValueMatching(matcher));
+        return single(objectValueMatching(matcher));
     }
 }

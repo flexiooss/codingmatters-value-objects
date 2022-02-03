@@ -9,26 +9,44 @@ import static org.hamcrest.Matchers.is;
 
 public class BooleanValueMatcherTest {
     @Test
-    public void trueValue__andCheckTrue() {
+    public void trueValue__CheckTrue__Match() {
         final PropertyValue.Value value = PropertyValue.builder().booleanValue(true).buildValue();
-        assertThat(value, is(trueValue()));
-    }
-
-    @Test(expected = AssertionError.class)
-    public void falseValue__andCheckTrue() {
-        final PropertyValue.Value value = PropertyValue.builder().booleanValue(false).buildValue();
-        assertThat(value, is(booleanValue(true)));
+        assertThat(trueValue().matches(value), is(true));
     }
 
     @Test
-    public void falseValue__andCheckFalse() {
+    public void falseValue__CheckTrue__DoNotMatch() {
         final PropertyValue.Value value = PropertyValue.builder().booleanValue(false).buildValue();
-        assertThat(value, is(booleanValue(false)));
+        assertThat(booleanValue(true).matches(value), is(false));
     }
 
-    @Test(expected = AssertionError.class)
-    public void trueValue__andCheckFalse() {
+    @Test
+    public void falseValue__CheckFalse__Match() {
+        final PropertyValue.Value value = PropertyValue.builder().booleanValue(false).buildValue();
+        assertThat(booleanValue(false).matches(value), is(true));
+    }
+
+    @Test
+    public void trueValue__CheckFalse__DoNotMatch() {
         final PropertyValue.Value value = PropertyValue.builder().booleanValue(true).buildValue();
-        assertThat(value, is(falseValue()));
+        assertThat(falseValue().matches(value), is(false));
+    }
+
+    @Test
+    public void noValue__CheckTrue__DoNotMatch() {
+        final PropertyValue.Value value = PropertyValue.builder().buildValue();
+        assertThat(trueValue().matches(value), is(false));
+    }
+
+    @Test
+    public void nullValue__CheckTrue__DoNotMatch() {
+        final PropertyValue.Value value = null;
+        assertThat(trueValue().matches(value), is(false));
+    }
+
+    @Test
+    public void stringValue__CheckTrue__DoNotMatch() {
+        final PropertyValue.Value value = PropertyValue.builder().stringValue("whatever").buildValue();
+        assertThat(trueValue().matches(value), is(false));
     }
 }

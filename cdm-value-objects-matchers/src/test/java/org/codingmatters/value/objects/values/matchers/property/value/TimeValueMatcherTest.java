@@ -14,12 +14,30 @@ public class TimeValueMatcherTest {
     public void noon_Match_Noon() {
         final LocalTime noon = LocalTime.NOON;
         final PropertyValue.Value value = PropertyValue.builder().timeValue(noon).buildValue();
-        assertThat(value, is(timeValue(noon)));
+        assertThat(timeValue(noon).matches(value), is(true));
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void noon_DoesNotMatch_Midnight() {
         final PropertyValue.Value value = PropertyValue.builder().timeValue(LocalTime.NOON).buildValue();
-        assertThat(value, is(timeValue(LocalTime.MIDNIGHT)));
+        assertThat(timeValue(LocalTime.MIDNIGHT).matches(value), is(false));
+    }
+
+    @Test
+    public void noValue__DoNotMatch() {
+        final PropertyValue.Value value = PropertyValue.builder().buildValue();
+        assertThat(timeValue(LocalTime.MIDNIGHT).matches(value), is(false));
+    }
+
+    @Test
+    public void nullValue__DoNotMatch() {
+        final PropertyValue.Value value = null;
+        assertThat(timeValue(LocalTime.MIDNIGHT).matches(value), is(false));
+    }
+
+    @Test
+    public void stringValue__DoNotMatch() {
+        final PropertyValue.Value value = PropertyValue.builder().stringValue("whatever").buildValue();
+        assertThat(timeValue(LocalTime.MIDNIGHT).matches(value), is(false));
     }
 }

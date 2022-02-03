@@ -12,13 +12,31 @@ public class BytesValueMatcherTest {
     public void matchingByteArrays() {
         final byte[] bytes = {0x1, 0x2, 0x3};
         final PropertyValue.Value value = PropertyValue.builder().bytesValue(bytes).buildValue();
-        assertThat(value, is(bytesValue(bytes)));
+        assertThat(bytesValue(bytes).matches(value), is(true));
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void matching_DoesNotMatch_ByteArrays() {
         final byte[] bytes = {0x1, 0x2, 0x3};
         final PropertyValue.Value value = PropertyValue.builder().bytesValue(bytes).buildValue();
-        assertThat(value, is(bytesValue(new byte[] {0x4, 0x5, 0x6})));
+        assertThat(bytesValue(new byte[] {0x4, 0x5, 0x6}).matches(value), is(false));
+    }
+
+    @Test
+    public void noValue__DoesNotMatch() {
+        final PropertyValue.Value value = PropertyValue.builder().buildValue();
+        assertThat(bytesValue(new byte[] {0x4, 0x5, 0x6}).matches(value), is(false));
+    }
+
+    @Test
+    public void nullValue__DoesNotMatch() {
+        final PropertyValue.Value value = null;
+        assertThat(bytesValue(new byte[] {0x4, 0x5, 0x6}).matches(value), is(false));
+    }
+
+    @Test
+    public void stringValue__DoesNotMatch() {
+        final PropertyValue.Value value = PropertyValue.builder().stringValue("whatever").buildValue();
+        assertThat(bytesValue(new byte[] {0x4, 0x5, 0x6}).matches(value), is(false));
     }
 }

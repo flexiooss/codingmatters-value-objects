@@ -9,13 +9,13 @@ public final class BytesValueMatcher extends CustomTypeSafeMatcher<PropertyValue
     private final byte[] value;
 
     public BytesValueMatcher(byte[] value) {
-        super(String.valueOf(value));
+        super(Arrays.toString(value));
         this.value = value;
     }
 
     @Override
     protected boolean matchesSafely(PropertyValue.Value item) {
-        return Arrays.equals(item.bytesValue(), value);
+        return item.isa(PropertyValue.Type.BYTES) && !item.isNull() && Arrays.equals(item.bytesValue(), value);
     }
 
     public static BytesValueMatcher bytesValue(byte[] value) {

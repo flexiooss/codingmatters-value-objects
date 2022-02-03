@@ -13,7 +13,7 @@ public final class BooleanValueMatcher extends CustomTypeSafeMatcher<PropertyVal
 
     @Override
     protected boolean matchesSafely(PropertyValue.Value item) {
-        return item.booleanValue().equals(value);
+        return item.isa(PropertyValue.Type.BOOLEAN) && ! item.isNull() && item.booleanValue().equals(value);
     }
 
     public static BooleanValueMatcher booleanValue(Boolean value) {

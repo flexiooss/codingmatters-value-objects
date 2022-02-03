@@ -20,7 +20,7 @@ public final class StringValueMatcher extends TypeSafeMatcher<PropertyValue.Valu
 
     @Override
     protected boolean matchesSafely(PropertyValue.Value item) {
-        return valueMatcher.matches(item.stringValue());
+        return item.isa(PropertyValue.Type.STRING) && ! item.isNull() && valueMatcher.matches(item.stringValue());
     }
 
     @Override

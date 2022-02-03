@@ -38,6 +38,7 @@ public interface PropertyValue {
         return multiple(type, values);
     }
 
+    @SafeVarargs
     static PropertyValue multiple(Type type, Consumer<Builder> ... consumers) {
         Builder[] builders = null;
         if(consumers != null) {

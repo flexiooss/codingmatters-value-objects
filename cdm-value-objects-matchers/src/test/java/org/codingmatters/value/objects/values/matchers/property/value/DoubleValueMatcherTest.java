@@ -11,18 +11,36 @@ public class DoubleValueMatcherTest {
     @Test
     public void sameDouble_Match() {
         final PropertyValue.Value value = PropertyValue.builder().doubleValue(Math.PI).buildValue();
-        assertThat(value, is(doubleValue(Math.PI)));
+        assertThat(doubleValue(Math.PI).matches(value), is(true));
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void differentDouble_Match() {
         final PropertyValue.Value value = PropertyValue.builder().doubleValue(42d).buildValue();
-        assertThat(value, is(doubleValue(69d)));
+        assertThat(doubleValue(69d).matches(value), is(false));
     }
 
     @Test
     public void NAN_Match() {
         final PropertyValue.Value value = PropertyValue.builder().doubleValue(Double.NaN).buildValue();
-        assertThat(value, is(doubleValue(Double.NaN)));
+        assertThat(doubleValue(Double.NaN).matches(value), is(true));
+    }
+
+    @Test
+    public void noValue_DoNotMatch() {
+        final PropertyValue.Value value = PropertyValue.builder().buildValue();
+        assertThat(doubleValue(Math.E).matches(value), is(false));
+    }
+
+    @Test
+    public void nullValue_DoNotMatch() {
+        final PropertyValue.Value value = null;
+        assertThat(doubleValue(Math.E).matches(value), is(false));
+    }
+
+    @Test
+    public void stringValue_DoNotMatch() {
+        final PropertyValue.Value value = PropertyValue.builder().stringValue("whatever").buildValue();
+        assertThat(doubleValue(Math.E).matches(value), is(false));
     }
 }

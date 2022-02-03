@@ -13,7 +13,7 @@ public final class LongValueMatcher extends CustomTypeSafeMatcher<PropertyValue.
 
     @Override
     protected boolean matchesSafely(PropertyValue.Value item) {
-        return item.longValue().equals(value);
+        return item.isa(PropertyValue.Type.LONG) && ! item.isNull() && item.longValue().equals(value);
     }
 
     public static LongValueMatcher longValue(Long value) {

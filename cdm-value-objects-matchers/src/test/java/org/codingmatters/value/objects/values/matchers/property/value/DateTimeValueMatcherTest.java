@@ -17,14 +17,35 @@ public class DateTimeValueMatcherTest {
     public void epoch_Match_Epoch() {
         final LocalDateTime epoch = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
         final PropertyValue.Value value = PropertyValue.builder().datetimeValue(epoch).buildValue();
-        assertThat(value, is(dateTimeValue(epoch)));
+        assertThat(dateTimeValue(epoch).matches(value), is(true));
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void epoch_DoesNotMatch_1January2022atNoon() {
         final LocalDateTime januaryThe1st = LocalDateTime.of(LocalDate.ofYearDay(2022, 1), LocalTime.NOON);
         final LocalDateTime epoch = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
         final PropertyValue.Value value = PropertyValue.builder().datetimeValue(epoch).buildValue();
-        assertThat(value, is(dateTimeValue(januaryThe1st)));
+        assertThat(dateTimeValue(januaryThe1st).matches(value), is(false));
+    }
+
+    @Test
+    public void noValue__DoesNotMatch() {
+        final LocalDateTime epoch = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
+        final PropertyValue.Value value = PropertyValue.builder().buildValue();
+        assertThat(dateTimeValue(epoch).matches(value), is(false));
+    }
+
+    @Test
+    public void nullValue__DoesNotMatch() {
+        final LocalDateTime epoch = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
+        final PropertyValue.Value value = null;
+        assertThat(dateTimeValue(epoch).matches(value), is(false));
+    }
+
+    @Test
+    public void stringValue__DoesNotMatch() {
+        final LocalDateTime epoch = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
+        final PropertyValue.Value value = PropertyValue.builder().stringValue("whatever").buildValue();
+        assertThat(dateTimeValue(epoch).matches(value), is(false));
     }
 }

@@ -13,24 +13,42 @@ public class StringValueMatcherTest {
     @Test
     public void stringMatch() {
         final PropertyValue.Value value = PropertyValue.builder().stringValue("value").buildValue();
-        assertThat(value, is(stringValue("value")));
-    }
-
-    @Test(expected = AssertionError.class)
-    public void stringDoesNotMatch() {
-        final PropertyValue.Value value = PropertyValue.builder().stringValue("value").buildValue();
-        assertThat(value, is(stringValue("AnotherValue")));
+        assertThat(stringValue("value").matches(value), is(true));
     }
 
     @Test
-    public void matchingCaseInsensitive() {
+    public void stringDoesNotMatch() {
         final PropertyValue.Value value = PropertyValue.builder().stringValue("value").buildValue();
-        assertThat(value, stringValueMatching(equalToIgnoringCase("VaLuE")));
+        assertThat(stringValue("AnotherValue").matches(value), is(false));
     }
 
-    @Test(expected = AssertionError.class)
-    public void matchingIgnoringWhiteSpaces() {
+    @Test
+    public void matchingCaseInsensitive__Match() {
         final PropertyValue.Value value = PropertyValue.builder().stringValue("value").buildValue();
-        assertThat(value, stringValueMatching(equalToIgnoringWhiteSpace("c'est non")));
+        assertThat(stringValueMatching(equalToIgnoringCase("VaLuE")).matches(value), is(true));
+    }
+
+    @Test
+    public void matchingIgnoringWhiteSpaces__DoNotMatch() {
+        final PropertyValue.Value value = PropertyValue.builder().stringValue("value").buildValue();
+        assertThat(stringValueMatching(equalToIgnoringWhiteSpace("c'est non")).matches(value), is(false));
+    }
+
+    @Test
+    public void noValue__DoesNotMatch() {
+        final PropertyValue.Value value = PropertyValue.builder().buildValue();
+        assertThat(stringValue("c'est non").matches(value), is(false));
+    }
+
+    @Test
+    public void nullValue__DoesNotMatch() {
+        final PropertyValue.Value value = null;
+        assertThat(stringValue("c'est non").matches(value), is(false));
+    }
+
+    @Test
+    public void anotherValue__DoesNotMatch() {
+        final PropertyValue.Value value = PropertyValue.builder().booleanValue(false).buildValue();
+        assertThat(stringValue("c'est non").matches(value), is(false));
     }
 }

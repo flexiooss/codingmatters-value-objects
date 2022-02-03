@@ -15,7 +15,7 @@ public final class DateValueMatcher extends CustomTypeSafeMatcher<PropertyValue.
 
     @Override
     protected boolean matchesSafely(PropertyValue.Value item) {
-        return item.dateValue().equals(this.value);
+        return item.isa(PropertyValue.Type.DATE) && ! item.isNull() && item.dateValue().equals(this.value);
     }
 
     public static DateValueMatcher dateValue(LocalDate value) {

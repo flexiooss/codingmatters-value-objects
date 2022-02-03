@@ -11,18 +11,36 @@ public class LongValueMatcherTest {
     @Test
     public void sameValue_Match() {
         final PropertyValue.Value value = PropertyValue.builder().longValue(420L).buildValue();
-        assertThat(value, is(longValue(420L)));
-    }
-
-    @Test(expected = AssertionError.class)
-    public void differentValue_DoesNotMatch() {
-        final PropertyValue.Value value = PropertyValue.builder().longValue(420L).buildValue();
-        assertThat(value, is(longValue(42L)));
+        assertThat(longValue(420L).matches(value), is(true));
     }
 
     @Test
-    public void maxValue() {
+    public void differentValue__DoNotMatch() {
+        final PropertyValue.Value value = PropertyValue.builder().longValue(420L).buildValue();
+        assertThat(longValue(42L).matches(value), is(false));
+    }
+
+    @Test
+    public void maxValue_Match_MaxValue() {
         final PropertyValue.Value value = PropertyValue.builder().longValue(Long.MAX_VALUE).buildValue();
-        assertThat(value, is(longValue(Long.MAX_VALUE)));
+        assertThat(longValue(Long.MAX_VALUE).matches(value), is(true));
+    }
+
+    @Test
+    public void noValue__DoNotMatch() {
+        final PropertyValue.Value value = PropertyValue.builder().buildValue();
+        assertThat(longValue(42L).matches(value), is(false));
+    }
+
+    @Test
+    public void nullValue__DoNotMatch() {
+        final PropertyValue.Value value = null;
+        assertThat(longValue(42L).matches(value), is(false));
+    }
+
+    @Test
+    public void stringValue__DoNotMatch() {
+        final PropertyValue.Value value = PropertyValue.builder().stringValue("whatever").buildValue();
+        assertThat(longValue(42L).matches(value), is(false));
     }
 }

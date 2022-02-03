@@ -15,7 +15,7 @@ public final class DateTimeValueMatcher extends CustomTypeSafeMatcher<PropertyVa
 
     @Override
     protected boolean matchesSafely(PropertyValue.Value item) {
-        return item.datetimeValue().equals(value);
+        return item.isa(PropertyValue.Type.DATETIME) && ! item.isNull() && item.datetimeValue().equals(value);
     }
 
     public static DateTimeValueMatcher dateTimeValue(LocalDateTime value) {

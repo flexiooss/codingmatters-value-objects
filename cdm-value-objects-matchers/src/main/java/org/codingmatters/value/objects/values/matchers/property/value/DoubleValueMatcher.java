@@ -13,7 +13,7 @@ public final class DoubleValueMatcher extends CustomTypeSafeMatcher<PropertyValu
 
     @Override
     protected boolean matchesSafely(PropertyValue.Value item) {
-        return item.doubleValue().equals(value);
+        return item.isa(PropertyValue.Type.DOUBLE) && ! item.isNull() && item.doubleValue().equals(value);
     }
 
     public static DoubleValueMatcher doubleValue(Double value) {
