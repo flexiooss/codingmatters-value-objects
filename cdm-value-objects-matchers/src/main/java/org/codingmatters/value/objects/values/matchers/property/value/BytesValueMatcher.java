@@ -2,6 +2,7 @@ package org.codingmatters.value.objects.values.matchers.property.value;
 
 import org.codingmatters.value.objects.values.PropertyValue;
 import org.hamcrest.CustomTypeSafeMatcher;
+import org.hamcrest.Factory;
 
 import java.util.Arrays;
 
@@ -18,6 +19,7 @@ public final class BytesValueMatcher extends CustomTypeSafeMatcher<PropertyValue
         return item.isa(PropertyValue.Type.BYTES) && !item.isNull() && Arrays.equals(item.bytesValue(), value);
     }
 
+    @Factory
     public static BytesValueMatcher bytesValue(byte[] value) {
         return new BytesValueMatcher(value);
     }

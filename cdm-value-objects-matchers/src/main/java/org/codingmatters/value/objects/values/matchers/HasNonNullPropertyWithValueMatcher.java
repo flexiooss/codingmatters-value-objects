@@ -2,10 +2,7 @@ package org.codingmatters.value.objects.values.matchers;
 
 import org.codingmatters.value.objects.values.ObjectValue;
 import org.codingmatters.value.objects.values.PropertyValue;
-import org.hamcrest.Condition;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeDiagnosingMatcher;
+import org.hamcrest.*;
 
 public class HasNonNullPropertyWithValueMatcher extends TypeSafeDiagnosingMatcher<ObjectValue> {
     private final String propertyName;
@@ -16,7 +13,6 @@ public class HasNonNullPropertyWithValueMatcher extends TypeSafeDiagnosingMatche
         this.propertyValueMatcher = propertyValueMatcher;
     }
 
-
     @Override
     protected boolean matchesSafely(ObjectValue item, Description mismatch) {
         return correspondingProperty(item, mismatch).matching(propertyValueMatcher);
@@ -26,7 +22,7 @@ public class HasNonNullPropertyWithValueMatcher extends TypeSafeDiagnosingMatche
         final PropertyValue property = item.property(this.propertyName);
 
         if (property == null) {
-            mismatch.appendText(String.format("No property \"%s\" in ObjectValue", propertyName));
+            mismatch.appendText(String.format("lacking property \"%s\"", propertyName));
             return Condition.notMatched();
         }
 
@@ -35,8 +31,12 @@ public class HasNonNullPropertyWithValueMatcher extends TypeSafeDiagnosingMatche
 
     @Override
     public void describeTo(Description description) {
-        description.appendText("hasProperty ").appendValue(propertyName)
+        description.appendText("must have Property ").appendValue(propertyName)
                 .appendText(" matching ").appendDescriptionOf(propertyValueMatcher);
     }
 
+    @Factory
+    public static HasNonNullPropertyWithValueMatcher hasProperty(String propertyName, Matcher<PropertyValue> withMatcher) {
+        return new HasNonNullPropertyWithValueMatcher(propertyName, withMatcher);
+    }
 }

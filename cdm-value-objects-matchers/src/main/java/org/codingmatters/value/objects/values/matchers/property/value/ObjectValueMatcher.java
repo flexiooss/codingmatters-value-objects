@@ -3,6 +3,7 @@ package org.codingmatters.value.objects.values.matchers.property.value;
 import org.codingmatters.value.objects.values.ObjectValue;
 import org.codingmatters.value.objects.values.PropertyValue;
 import org.hamcrest.Description;
+import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
@@ -29,10 +30,12 @@ public final class ObjectValueMatcher extends TypeSafeMatcher<PropertyValue.Valu
         description.appendDescriptionOf(this.valueMatcher);
     }
 
+    @Factory
     public static ObjectValueMatcher objectValue(ObjectValue value) {
         return new ObjectValueMatcher(value);
     }
 
+    @Factory
     public static ObjectValueMatcher objectValueMatching(Matcher<ObjectValue> matcher) {
         return new ObjectValueMatcher(matcher);
     }

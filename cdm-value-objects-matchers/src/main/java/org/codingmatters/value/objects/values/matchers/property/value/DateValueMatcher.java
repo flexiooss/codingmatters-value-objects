@@ -2,6 +2,7 @@ package org.codingmatters.value.objects.values.matchers.property.value;
 
 import org.codingmatters.value.objects.values.PropertyValue;
 import org.hamcrest.CustomTypeSafeMatcher;
+import org.hamcrest.Factory;
 
 import java.time.LocalDate;
 
@@ -18,6 +19,7 @@ public final class DateValueMatcher extends CustomTypeSafeMatcher<PropertyValue.
         return item.isa(PropertyValue.Type.DATE) && ! item.isNull() && item.dateValue().equals(this.value);
     }
 
+    @Factory
     public static DateValueMatcher dateValue(LocalDate value) {
         return new DateValueMatcher(value);
     }

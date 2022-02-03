@@ -2,6 +2,7 @@ package org.codingmatters.value.objects.values.matchers.property;
 
 import org.codingmatters.value.objects.values.PropertyValue;
 import org.hamcrest.Description;
+import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
@@ -22,6 +23,7 @@ public class SingleValueMatcher extends TypeSafeMatcher<PropertyValue> {
         description.appendDescriptionOf(valueMatcher);
     }
 
+    @Factory
     public static SingleValueMatcher single(Matcher<PropertyValue.Value> valueMatcher) {
         return new SingleValueMatcher(valueMatcher);
     }
