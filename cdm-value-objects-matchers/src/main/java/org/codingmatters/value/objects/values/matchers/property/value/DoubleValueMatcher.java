@@ -1,24 +1,27 @@
 package org.codingmatters.value.objects.values.matchers.property.value;
 
 import org.codingmatters.value.objects.values.PropertyValue;
-import org.hamcrest.CustomTypeSafeMatcher;
-import org.hamcrest.Factory;
+import org.hamcrest.*;
 
-public final class DoubleValueMatcher extends CustomTypeSafeMatcher<PropertyValue.Value> {
-    private final Double value;
+import static org.hamcrest.core.IsEqual.equalTo;
 
-    public DoubleValueMatcher(Double value) {
-        super(String.valueOf(value));
-        this.value = value;
+public final class DoubleValueMatcher extends ValueMatcher<Double> {
+    public DoubleValueMatcher(Matcher<Double> matcher) {
+        super(PropertyValue.Type.DOUBLE, matcher);
     }
 
     @Override
-    protected boolean matchesSafely(PropertyValue.Value item) {
-        return item.isa(PropertyValue.Type.DOUBLE) && ! item.isNull() && item.doubleValue().equals(value);
+    protected Double internalValue(PropertyValue.Value value) {
+        return value.doubleValue();
     }
 
     @Factory
     public static DoubleValueMatcher doubleValue(Double value) {
+        return new DoubleValueMatcher(equalTo(value));
+    }
+
+    @Factory
+    public static DoubleValueMatcher doubleValue(Matcher<Double> value) {
         return new DoubleValueMatcher(value);
     }
 }

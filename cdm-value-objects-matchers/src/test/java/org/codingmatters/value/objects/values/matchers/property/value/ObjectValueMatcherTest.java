@@ -7,7 +7,7 @@ import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import static org.codingmatters.value.objects.values.matchers.property.value.ObjectValueMatcher.objectValue;
-import static org.codingmatters.value.objects.values.matchers.property.value.ObjectValueMatcher.objectValueMatching;
+import static org.codingmatters.value.objects.values.matchers.property.value.ObjectValueMatcher.objectValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -42,7 +42,7 @@ public class ObjectValueMatcherTest {
             }
         };
 
-        assertThat(objectValueMatching(anotherPropertyPresence).matches(value), is(true));
+        assertThat(ObjectValueMatcher.objectValue(anotherPropertyPresence).matches(value), is(true));
     }
 
     @Test

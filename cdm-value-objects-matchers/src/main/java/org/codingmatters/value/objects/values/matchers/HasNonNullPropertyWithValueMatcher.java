@@ -22,7 +22,7 @@ public class HasNonNullPropertyWithValueMatcher extends TypeSafeDiagnosingMatche
         final PropertyValue property = item.property(this.propertyName);
 
         if (property == null) {
-            mismatch.appendText(String.format("lacking property \"%s\"", propertyName));
+            mismatch.appendText(String.format("ObjectValue lacks property \"%s\"", propertyName));
             return Condition.notMatched();
         }
 

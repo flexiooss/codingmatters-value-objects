@@ -1,26 +1,30 @@
 package org.codingmatters.value.objects.values.matchers.property.value;
 
 import org.codingmatters.value.objects.values.PropertyValue;
-import org.hamcrest.CustomTypeSafeMatcher;
 import org.hamcrest.Factory;
+import org.hamcrest.Matcher;
 
 import java.time.LocalDate;
 
-public final class DateValueMatcher extends CustomTypeSafeMatcher<PropertyValue.Value> {
-    private final LocalDate value;
+import static org.hamcrest.core.IsEqual.equalTo;
 
-    public DateValueMatcher(LocalDate value) {
-        super(String.valueOf(value));
-        this.value = value;
+public final class DateValueMatcher extends ValueMatcher<LocalDate> {
+    public DateValueMatcher(Matcher<LocalDate> matcher) {
+        super(PropertyValue.Type.DATE, matcher);
     }
 
     @Override
-    protected boolean matchesSafely(PropertyValue.Value item) {
-        return item.isa(PropertyValue.Type.DATE) && ! item.isNull() && item.dateValue().equals(this.value);
+    protected LocalDate internalValue(PropertyValue.Value value) {
+        return value.dateValue();
+    }
+
+    @Factory
+    public static DateValueMatcher dateValue(Matcher<LocalDate> value) {
+        return new DateValueMatcher(value);
     }
 
     @Factory
     public static DateValueMatcher dateValue(LocalDate value) {
-        return new DateValueMatcher(value);
+        return new DateValueMatcher(equalTo(value));
     }
 }

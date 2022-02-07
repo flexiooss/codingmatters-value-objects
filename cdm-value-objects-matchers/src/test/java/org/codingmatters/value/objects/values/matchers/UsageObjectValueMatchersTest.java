@@ -10,8 +10,9 @@ import java.time.Month;
 import static org.codingmatters.value.objects.values.matchers.ObjectValueMatchers.*;
 import static org.codingmatters.value.objects.values.matchers.property.PropertyValueMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.core.StringStartsWith.startsWith;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.number.OrderingComparison.greaterThan;
 
 public class UsageObjectValueMatchersTest {
     private static final ObjectValue MARCO_SANCHEZ = ObjectValue.builder()
@@ -50,7 +51,7 @@ public class UsageObjectValueMatchersTest {
 
     @Test
     public void MarcoSanchez_hasAName() {
-        assertThat(MARCO_SANCHEZ, hasProperty("name", withStringValueMatching(startsWith("Marco"))));
+        assertThat(MARCO_SANCHEZ, hasProperty("name", withStringValue(startsWith("Marco"))));
     }
 
     @Test
@@ -83,5 +84,10 @@ public class UsageObjectValueMatchersTest {
                 hasProperty("name", withValue("Jessy")),
                 hasProperty("name", withValue("Joy"))
         )));
+    }
+
+    @Test
+    public void MarcoSanchez_isMillionaire() {
+        assertThat(MARCO_SANCHEZ, hasProperty("assets", withDoubleValue(greaterThan(1_000_000d))));
     }
 }

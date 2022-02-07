@@ -1,34 +1,33 @@
 package org.codingmatters.value.objects.values.matchers.property.value;
 
 import org.codingmatters.value.objects.values.PropertyValue;
-import org.hamcrest.CustomTypeSafeMatcher;
 import org.hamcrest.Factory;
+import org.hamcrest.Matcher;
 
-public final class BooleanValueMatcher extends CustomTypeSafeMatcher<PropertyValue.Value> {
-    private final Boolean value;
+import static org.hamcrest.core.IsEqual.equalTo;
 
-    public BooleanValueMatcher(Boolean value) {
-        super(String.format("<%s (BOOLEAN)>", value));
-        this.value = value;
+public final class BooleanValueMatcher extends ValueMatcher<Boolean> {
+    public BooleanValueMatcher(Matcher<Boolean> matcher) {
+        super(PropertyValue.Type.BOOLEAN, matcher);
     }
 
     @Override
-    protected boolean matchesSafely(PropertyValue.Value item) {
-        return item.isa(PropertyValue.Type.BOOLEAN) && ! item.isNull() && item.booleanValue().equals(value);
+    protected Boolean internalValue(PropertyValue.Value value) {
+        return value.booleanValue();
     }
 
     @Factory
     public static BooleanValueMatcher booleanValue(Boolean value) {
-        return new BooleanValueMatcher(value);
+        return new BooleanValueMatcher(equalTo(value));
     }
 
     @Factory
     public static BooleanValueMatcher trueValue() {
-        return new BooleanValueMatcher(true);
+        return new BooleanValueMatcher(equalTo(true));
     }
 
     @Factory
     public static BooleanValueMatcher falseValue() {
-        return new BooleanValueMatcher(false);
+        return new BooleanValueMatcher(equalTo(false));
     }
 }

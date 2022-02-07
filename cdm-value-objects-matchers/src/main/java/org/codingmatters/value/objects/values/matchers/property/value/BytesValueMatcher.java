@@ -1,26 +1,28 @@
 package org.codingmatters.value.objects.values.matchers.property.value;
 
 import org.codingmatters.value.objects.values.PropertyValue;
-import org.hamcrest.CustomTypeSafeMatcher;
 import org.hamcrest.Factory;
+import org.hamcrest.Matcher;
 
-import java.util.Arrays;
+import static org.hamcrest.core.IsEqual.equalTo;
 
-public final class BytesValueMatcher extends CustomTypeSafeMatcher<PropertyValue.Value> {
-    private final byte[] value;
-
-    public BytesValueMatcher(byte[] value) {
-        super(Arrays.toString(value));
-        this.value = value;
+public final class BytesValueMatcher extends ValueMatcher<byte[]> {
+    public BytesValueMatcher(Matcher<byte[]> matcher) {
+        super(PropertyValue.Type.BYTES, matcher);
     }
 
     @Override
-    protected boolean matchesSafely(PropertyValue.Value item) {
-        return item.isa(PropertyValue.Type.BYTES) && !item.isNull() && Arrays.equals(item.bytesValue(), value);
+    protected byte[] internalValue(PropertyValue.Value value) {
+        return value.bytesValue();
+    }
+
+    @Factory
+    public static BytesValueMatcher bytesValue(Matcher<byte[]> value) {
+        return new BytesValueMatcher(value);
     }
 
     @Factory
     public static BytesValueMatcher bytesValue(byte[] value) {
-        return new BytesValueMatcher(value);
+        return new BytesValueMatcher(equalTo(value));
     }
 }

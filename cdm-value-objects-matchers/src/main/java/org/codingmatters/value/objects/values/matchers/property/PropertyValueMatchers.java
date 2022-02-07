@@ -49,7 +49,7 @@ public final class PropertyValueMatchers {
         return withSingle(stringValue(str));
     }
 
-    public static Matcher<PropertyValue> withStringValueMatching(Matcher<? super String> matcher) {
+    public static Matcher<PropertyValue> withStringValue(Matcher<String> matcher) {
         return withSingle(stringValue(matcher));
     }
 
@@ -61,7 +61,15 @@ public final class PropertyValueMatchers {
         return withSingle(doubleValue(d));
     }
 
+    public static Matcher<PropertyValue> withDoubleValue(Matcher<Double> d) {
+        return withSingle(doubleValue(d));
+    }
+
     public static Matcher<PropertyValue> withValue(Long l) {
+        return withSingle(longValue(l));
+    }
+
+    public static Matcher<PropertyValue> withLongValue(Matcher<Long> l) {
         return withSingle(longValue(l));
     }
 
@@ -72,8 +80,15 @@ public final class PropertyValueMatchers {
     public static Matcher<PropertyValue> withValue(LocalDate date) {
         return withSingle(dateValue(date));
     }
+    public static Matcher<PropertyValue> withDateValue(Matcher<LocalDate> date) {
+        return withSingle(dateValue(date));
+    }
 
     public static Matcher<PropertyValue> withValue(LocalTime time) {
+        return withSingle(timeValue(time));
+    }
+
+    public static Matcher<PropertyValue> withTimeValue(Matcher<LocalTime> time) {
         return withSingle(timeValue(time));
     }
 
@@ -81,11 +96,15 @@ public final class PropertyValueMatchers {
         return withSingle(bytesValue(bytes));
     }
 
+    public static Matcher<PropertyValue> withBytesValue(Matcher<byte[]> bytes) {
+        return withSingle(bytesValue(bytes));
+    }
+
     public static Matcher<PropertyValue> withValue(ObjectValue value) {
         return withSingle(objectValue(value));
     }
 
-    public static Matcher<PropertyValue> withObjectValueMatching(Matcher<? super ObjectValue> matcher) {
+    public static Matcher<PropertyValue> withObjectValue(Matcher<ObjectValue> matcher) {
         return withSingle(objectValue(matcher));
     }
 
