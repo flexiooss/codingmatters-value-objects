@@ -11,6 +11,7 @@ import static org.codingmatters.value.objects.values.matchers.ObjectValueMatcher
 import static org.codingmatters.value.objects.values.matchers.property.PropertyValueMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.startsWith;
 
 public class UsageObjectValueMatchersTest {
     private static final ObjectValue MARCO_SANCHEZ = ObjectValue.builder()
@@ -25,7 +26,7 @@ public class UsageObjectValueMatchersTest {
             .property("children" , v -> v.longValue(3L))
             .property("assets", v -> v.doubleValue(354_877_032.16))
             .property("hash", v -> v.bytesValue("81eab250cc6fdfb971eaf0309ff3fae27890344deac751376e".getBytes()))
-            .property("dogs", v -> PropertyValue.multiple(PropertyValue.Type.OBJECT,
+            .property("dogs", PropertyValue.multiple(PropertyValue.Type.OBJECT,
                     dog -> dog.objectValue(o -> o
                             .property("name", n -> n.stringValue("Jessy"))
                             .property("age", a -> a.longValue(7L))
@@ -38,17 +39,49 @@ public class UsageObjectValueMatchersTest {
             .build();
 
     @Test
-    public void objectContainsProperties() {
+    public void MarcoSanchez_IsAnObjectWithProperties() {
         assertThat(MARCO_SANCHEZ, containsProperties("name", "birthday", "bankAccounts", "homeowner", "children", "assets", "hash", "dogs"));
     }
 
     @Test
-    public void objectDoesNotHavePropertyVerbotenProperties() {
+    public void MarcoSanchez_DoNotHAve_VerbotenProperty() {
         assertThat(MARCO_SANCHEZ, not(hasProperty("VERBOTEN")));
     }
 
     @Test
-    public void testName() {
-        assertThat(MARCO_SANCHEZ, hasProperty("name", withValue("Marco Sanchez")));
+    public void MarcoSanchez_hasAName() {
+        assertThat(MARCO_SANCHEZ, hasProperty("name", withStringValueMatching(startsWith("Marco"))));
+    }
+
+    @Test
+    public void MarcoSanchez_IsBorn_25_June_1984() {
+        assertThat(MARCO_SANCHEZ, hasProperty("birthday", withValue(LocalDate.of(1984, Month.JUNE, 25))));
+    }
+
+    @Test
+    public void MarcoSanchez_Is_HomeOwner() {
+        assertThat(MARCO_SANCHEZ, hasProperty("homeowner", withValue(true)));
+    }
+
+    @Test
+    public void MarcoSanchez_HasMultipleBankAccounts() {
+        assertThat(MARCO_SANCHEZ, hasProperty("bankAccounts", withValues(
+                "43ce36f6-2d2b-4e25-9743-29974c042b94", "bb4b431d-bb10-4d94-b042-26ef8ce047b9", "8ed7dd78-9d69-46b4-8a92-f58b9bce680c")
+        ));
+    }
+
+    @Test
+    public void MarcoSanchez_HasMultipleBankAccounts_statedInOrder() {
+        assertThat(MARCO_SANCHEZ, hasProperty("bankAccounts", withValuesInOrder(
+                "8ed7dd78-9d69-46b4-8a92-f58b9bce680c", "43ce36f6-2d2b-4e25-9743-29974c042b94", "bb4b431d-bb10-4d94-b042-26ef8ce047b9")
+        ));
+    }
+
+    @Test
+    public void MarcoSanchez_hasDogsMatchingNames() {
+        assertThat(MARCO_SANCHEZ, hasProperty("dogs", withValuesInOrder(
+                hasProperty("name", withValue("Jessy")),
+                hasProperty("name", withValue("Joy"))
+        )));
     }
 }

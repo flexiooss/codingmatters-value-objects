@@ -1,12 +1,9 @@
 package org.codingmatters.value.objects.values.matchers.property;
 
 import org.codingmatters.value.objects.values.PropertyValue;
-import org.hamcrest.Description;
-import org.hamcrest.Factory;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.*;
 
-public class SingleValueMatcher extends TypeSafeMatcher<PropertyValue> {
+public class SingleValueMatcher extends TypeSafeDiagnosingMatcher<PropertyValue> {
     private final Matcher<PropertyValue.Value> valueMatcher;
 
     public SingleValueMatcher(Matcher<PropertyValue.Value> valueMatcher) {
@@ -14,8 +11,25 @@ public class SingleValueMatcher extends TypeSafeMatcher<PropertyValue> {
     }
 
     @Override
-    protected boolean matchesSafely(PropertyValue item) {
-        return PropertyValue.Cardinality.SINGLE.equals(item.cardinality()) && ! item.isNullValue() && valueMatcher.matches(item.single());
+    protected boolean matchesSafely(PropertyValue item, Description mismatch) {
+        return isSingle(item, mismatch).and(this::itemIsNotNull).matching(valueMatcher);
+    }
+
+    private static Condition<PropertyValue> isSingle(PropertyValue item, Description mismatch) {
+        if (PropertyValue.Cardinality.SINGLE.equals(item.cardinality())) {
+            return Condition.matched(item, mismatch);
+        }
+        mismatch.appendText("is not single");
+        return Condition.notMatched();
+    }
+
+    private Condition<PropertyValue.Value> itemIsNotNull(PropertyValue item, Description mismatch) {
+        if (item.isNullValue()) {
+            mismatch.appendText("is null");
+            return Condition.notMatched();
+        }
+
+        return Condition.matched(item.single(), mismatch);
     }
 
     @Override

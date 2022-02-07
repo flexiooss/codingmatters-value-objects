@@ -15,7 +15,7 @@ public class HasNonNullPropertyWithValueMatcher extends TypeSafeDiagnosingMatche
 
     @Override
     protected boolean matchesSafely(ObjectValue item, Description mismatch) {
-        return correspondingProperty(item, mismatch).matching(propertyValueMatcher);
+        return correspondingProperty(item, mismatch).matching(propertyValueMatcher, String.format("property \"%s\" ", this.propertyName));
     }
 
     private Condition<PropertyValue> correspondingProperty(ObjectValue item, Description mismatch) {
@@ -31,7 +31,7 @@ public class HasNonNullPropertyWithValueMatcher extends TypeSafeDiagnosingMatche
 
     @Override
     public void describeTo(Description description) {
-        description.appendText("must have Property ").appendValue(propertyName)
+        description.appendText("having property ").appendValue(propertyName)
                 .appendText(" matching ").appendDescriptionOf(propertyValueMatcher);
     }
 

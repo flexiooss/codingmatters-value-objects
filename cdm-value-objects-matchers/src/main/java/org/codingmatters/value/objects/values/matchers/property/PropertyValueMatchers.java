@@ -2,105 +2,190 @@ package org.codingmatters.value.objects.values.matchers.property;
 
 import org.codingmatters.value.objects.values.ObjectValue;
 import org.codingmatters.value.objects.values.PropertyValue;
+import org.codingmatters.value.objects.values.matchers.property.value.ValueMatchers;
 import org.hamcrest.Matcher;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 
 import static org.codingmatters.value.objects.values.matchers.property.value.ValueMatchers.*;
-import static org.codingmatters.value.objects.values.matchers.property.ContainsMultipleValuesInAnyOrderMatcher.multiple;
-import static org.codingmatters.value.objects.values.matchers.property.SingleValueMatcher.single;
 
 public final class PropertyValueMatchers {
+    public static Matcher<PropertyValue> withSingle(Matcher<PropertyValue.Value> value) {
+        return org.codingmatters.value.objects.values.matchers.property.SingleValueMatcher.single(value);
+    }
+
+    public static Matcher<PropertyValue> withMultiple(Matcher<PropertyValue.Value>... values) {
+        return org.codingmatters.value.objects.values.matchers.property.ContainsMultipleValuesInAnyOrderMatcher.multiple(values);
+    }
+
+    public static Matcher<PropertyValue> withMultiple(PropertyValue.Value... values) {
+        return org.codingmatters.value.objects.values.matchers.property.ContainsMultipleValuesInAnyOrderMatcher.multiple(values);
+    }
+
+    public static Matcher<PropertyValue> withMultiple(Collection<Matcher<? super PropertyValue.Value>> values) {
+        return org.codingmatters.value.objects.values.matchers.property.ContainsMultipleValuesInAnyOrderMatcher.multiple(values);
+    }
+
+    public static Matcher<PropertyValue> withMultipleOrdered(Matcher<PropertyValue.Value>... values) {
+        return org.codingmatters.value.objects.values.matchers.property.ContainsMultipleValuesInOrderMatcher.multipleInOrder(values);
+    }
+
+    public static Matcher<PropertyValue> withMultipleOrdered(PropertyValue.Value... values) {
+        return org.codingmatters.value.objects.values.matchers.property.ContainsMultipleValuesInOrderMatcher.multipleInOrder(values);
+    }
+
+    public static Matcher<PropertyValue> withMultipleOrdered(List<Matcher<? super PropertyValue.Value>> values) {
+        return org.codingmatters.value.objects.values.matchers.property.ContainsMultipleValuesInOrderMatcher.multipleInOrder(values);
+    }
+
     public static Matcher<PropertyValue> withValue(String str) {
-        return single(stringValue(str));
+        return withSingle(stringValue(str));
     }
 
     public static Matcher<PropertyValue> withStringValueMatching(Matcher<? super String> matcher) {
-        return single(stringValueMatching(matcher));
+        return withSingle(stringValue(matcher));
     }
 
     public static Matcher<PropertyValue> withValue(Boolean bool) {
-        return single(booleanValue(bool));
+        return withSingle(booleanValue(bool));
     }
 
     public static Matcher<PropertyValue> withValue(Double d) {
-        return single(doubleValue(d));
+        return withSingle(doubleValue(d));
     }
 
     public static Matcher<PropertyValue> withValue(Long l) {
-        return single(longValue(l));
+        return withSingle(longValue(l));
     }
 
     public static Matcher<PropertyValue> withValue(LocalDateTime dateTime) {
-        return single(dateTimeValue(dateTime));
+        return withSingle(dateTimeValue(dateTime));
     }
 
     public static Matcher<PropertyValue> withValue(LocalDate date) {
-        return single(dateValue(date));
+        return withSingle(dateValue(date));
     }
 
     public static Matcher<PropertyValue> withValue(LocalTime time) {
-        return single(timeValue(time));
+        return withSingle(timeValue(time));
     }
 
     public static Matcher<PropertyValue> withValue(byte[] bytes) {
-        return single(bytesValue(bytes));
+        return withSingle(bytesValue(bytes));
     }
 
     public static Matcher<PropertyValue> withValue(ObjectValue value) {
-        return single(objectValue(value));
+        return withSingle(objectValue(value));
     }
 
-    public static Matcher<PropertyValue> withObjectMatching(Matcher<? super ObjectValue> matcher) {
-        return single(objectValueMatching(matcher));
+    public static Matcher<PropertyValue> withObjectValueMatching(Matcher<? super ObjectValue> matcher) {
+        return withSingle(objectValue(matcher));
     }
 
 
-    private static <E> Matcher<PropertyValue> withValues(Collection<E> values, Function<E, PropertyValue.Builder> toBuilder) {
-        final PropertyValue.Value[] valuesArray = values.stream()
+    private static <E> PropertyValue.Value[] buildValues(Collection<E> values, Function<E, PropertyValue.Builder> toBuilder) {
+        return values.stream()
                 .map(toBuilder).map(PropertyValue.Builder::buildValue)
                 .toArray(PropertyValue.Value[]::new);
-        return multiple(valuesArray);
+    }
+
+    private static <E> Matcher<PropertyValue> withValuesInAnyOrder(Collection<E> values, Function<E, PropertyValue.Builder> toBuilder) {
+        final PropertyValue.Value[] valuesArray = buildValues(values, toBuilder);
+        return withMultiple(valuesArray);
     }
 
     public static Matcher<PropertyValue> withValues(String... values) {
-        return withValues(Arrays.asList(values), PropertyValue.builder()::stringValue);
+        return withValuesInAnyOrder(Arrays.asList(values), PropertyValue.builder()::stringValue);
     }
 
     public static Matcher<PropertyValue> withValues(Boolean... values) {
-        return withValues(Arrays.asList(values), PropertyValue.builder()::booleanValue);
+        return withValuesInAnyOrder(Arrays.asList(values), PropertyValue.builder()::booleanValue);
     }
 
     public static Matcher<PropertyValue> withValues(byte[]... values) {
-        return withValues(Arrays.asList(values), PropertyValue.builder()::bytesValue);
+        return withValuesInAnyOrder(Arrays.asList(values), PropertyValue.builder()::bytesValue);
     }
 
     public static Matcher<PropertyValue> withValues(LocalDateTime... values) {
-        return withValues(Arrays.asList(values), PropertyValue.builder()::datetimeValue);
+        return withValuesInAnyOrder(Arrays.asList(values), PropertyValue.builder()::datetimeValue);
     }
 
     public static Matcher<PropertyValue> withValues(LocalDate... values) {
-        return withValues(Arrays.asList(values), PropertyValue.builder()::dateValue);
+        return withValuesInAnyOrder(Arrays.asList(values), PropertyValue.builder()::dateValue);
     }
 
     public static Matcher<PropertyValue> withValues(LocalTime... values) {
-        return withValues(Arrays.asList(values), PropertyValue.builder()::timeValue);
+        return withValuesInAnyOrder(Arrays.asList(values), PropertyValue.builder()::timeValue);
     }
 
     public static Matcher<PropertyValue> withValues(Double... values) {
-        return withValues(Arrays.asList(values), PropertyValue.builder()::doubleValue);
+        return withValuesInAnyOrder(Arrays.asList(values), PropertyValue.builder()::doubleValue);
     }
 
     public static Matcher<PropertyValue> withValues(Long... values) {
-        return withValues(Arrays.asList(values), PropertyValue.builder()::longValue);
+        return withValuesInAnyOrder(Arrays.asList(values), PropertyValue.builder()::longValue);
     }
 
     public static Matcher<PropertyValue> withValues(ObjectValue... values) {
-        return withValues(Arrays.asList(values), PropertyValue.builder()::objectValue);
+        return withValuesInAnyOrder(Arrays.asList(values), PropertyValue.builder()::objectValue);
+    }
+
+    private static <E> Matcher<PropertyValue> withValuesInOrder(Collection<E> values, Function<E, PropertyValue.Builder> toBuilder) {
+        final PropertyValue.Value[] valuesArray = buildValues(values, toBuilder);
+        return withMultipleOrdered(valuesArray);
+    }
+
+    public static Matcher<PropertyValue> withValuesInOrder(String... values) {
+        return withValuesInOrder(Arrays.asList(values), PropertyValue.builder()::stringValue);
+    }
+
+    public static Matcher<PropertyValue> withValuesInOrder(Boolean... values) {
+        return withValuesInOrder(Arrays.asList(values), PropertyValue.builder()::booleanValue);
+    }
+
+    public static Matcher<PropertyValue> withValuesInOrder(byte[]... values) {
+        return withValuesInOrder(Arrays.asList(values), PropertyValue.builder()::bytesValue);
+    }
+
+    public static Matcher<PropertyValue> withValuesInOrder(LocalDateTime... values) {
+        return withValuesInOrder(Arrays.asList(values), PropertyValue.builder()::datetimeValue);
+    }
+
+    public static Matcher<PropertyValue> withValuesInOrder(LocalDate... values) {
+        return withValuesInOrder(Arrays.asList(values), PropertyValue.builder()::dateValue);
+    }
+
+    public static Matcher<PropertyValue> withValuesInOrder(LocalTime... values) {
+        return withValuesInOrder(Arrays.asList(values), PropertyValue.builder()::timeValue);
+    }
+
+    public static Matcher<PropertyValue> withValuesInOrder(Double... values) {
+        return withValuesInOrder(Arrays.asList(values), PropertyValue.builder()::doubleValue);
+    }
+
+    public static Matcher<PropertyValue> withValuesInOrder(Long... values) {
+        return withValuesInOrder(Arrays.asList(values), PropertyValue.builder()::longValue);
+    }
+
+    public static Matcher<PropertyValue> withValuesInOrder(ObjectValue... values) {
+        return withValuesInOrder(Arrays.asList(values), PropertyValue.builder()::objectValue);
+    }
+
+    @SafeVarargs
+    public static Matcher<PropertyValue> withValuesInOrder(Matcher<ObjectValue>... values) {
+        List<Matcher<? super PropertyValue.Value>> valuesMatchers = new ArrayList<>();
+        for (Matcher<ObjectValue> matcher : values) {
+            if (matcher != null) {
+                valuesMatchers.add(ValueMatchers.objectValue(matcher));
+            }
+        }
+        return withMultipleOrdered(valuesMatchers);
     }
 }

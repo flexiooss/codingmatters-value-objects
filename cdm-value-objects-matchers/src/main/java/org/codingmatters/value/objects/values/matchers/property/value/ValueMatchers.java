@@ -45,7 +45,7 @@ public class ValueMatchers {
         return org.codingmatters.value.objects.values.matchers.property.value.ObjectValueMatcher.objectValue(value);
     }
 
-    public static Matcher<PropertyValue.Value> objectValueMatching(Matcher<? super ObjectValue> value) {
+    public static Matcher<PropertyValue.Value> objectValue(Matcher<? super ObjectValue> value) {
         return org.codingmatters.value.objects.values.matchers.property.value.ObjectValueMatcher.objectValueMatching(value);
     }
 
@@ -53,7 +53,7 @@ public class ValueMatchers {
         return org.codingmatters.value.objects.values.matchers.property.value.StringValueMatcher.stringValue(value);
     }
 
-    public static Matcher<PropertyValue.Value> stringValueMatching(Matcher<? super String> value) {
+    public static Matcher<PropertyValue.Value> stringValue(Matcher<? super String> value) {
         return org.codingmatters.value.objects.values.matchers.property.value.StringValueMatcher.stringValueMatching(value);
     }
 

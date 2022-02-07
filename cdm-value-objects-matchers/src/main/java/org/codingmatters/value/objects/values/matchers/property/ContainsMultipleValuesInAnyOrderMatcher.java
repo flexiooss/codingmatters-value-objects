@@ -1,10 +1,7 @@
 package org.codingmatters.value.objects.values.matchers.property;
 
 import org.codingmatters.value.objects.values.PropertyValue;
-import org.hamcrest.Description;
-import org.hamcrest.Factory;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeDiagnosingMatcher;
+import org.hamcrest.*;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 
 import java.util.ArrayList;
@@ -24,10 +21,26 @@ public class ContainsMultipleValuesInAnyOrderMatcher extends TypeSafeDiagnosingM
     }
 
     @Override
-    protected boolean matchesSafely(PropertyValue item, Description mismatchDescription) {
-        return PropertyValue.Cardinality.MULTIPLE.equals(item.cardinality())
-                && ! item.isNullValue()
-                && iterableMatcher.matches(Arrays.asList(item.multiple()));
+    protected boolean matchesSafely(PropertyValue item, Description mismatch) {
+        return isMultiple(item, mismatch).and(this::itemIsNotNull).matching(iterableMatcher);
+    }
+
+    private static Condition<PropertyValue> isMultiple(PropertyValue item, Description mismatch) {
+        if (PropertyValue.Cardinality.MULTIPLE.equals(item.cardinality())) {
+            return Condition.matched(item, mismatch);
+        }
+
+        mismatch.appendText("is not multiple");
+        return Condition.notMatched();
+    }
+
+    private Condition<Iterable<? extends PropertyValue.Value>> itemIsNotNull(PropertyValue item, Description mismatch) {
+        if (item.isNullValue()) {
+            mismatch.appendText("is null");
+            return Condition.notMatched();
+        }
+
+        return Condition.matched(Arrays.asList(item.multiple()), mismatch);
     }
 
     @Override
