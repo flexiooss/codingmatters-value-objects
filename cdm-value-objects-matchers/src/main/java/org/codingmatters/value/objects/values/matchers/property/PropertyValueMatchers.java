@@ -11,26 +11,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Function;
 
+import static org.codingmatters.value.objects.values.matchers.property.value.ValueMatchers.*;
 import static org.codingmatters.value.objects.values.matchers.property.ContainsMultipleValuesInAnyOrderMatcher.multiple;
 import static org.codingmatters.value.objects.values.matchers.property.SingleValueMatcher.single;
-import static org.codingmatters.value.objects.values.matchers.property.value.BooleanValueMatcher.booleanValue;
-import static org.codingmatters.value.objects.values.matchers.property.value.BytesValueMatcher.bytesValue;
-import static org.codingmatters.value.objects.values.matchers.property.value.DateTimeValueMatcher.dateTimeValue;
-import static org.codingmatters.value.objects.values.matchers.property.value.DateValueMatcher.dateValue;
-import static org.codingmatters.value.objects.values.matchers.property.value.DoubleValueMatcher.doubleValue;
-import static org.codingmatters.value.objects.values.matchers.property.value.LongValueMatcher.longValue;
-import static org.codingmatters.value.objects.values.matchers.property.value.ObjectValueMatcher.objectValue;
-import static org.codingmatters.value.objects.values.matchers.property.value.ObjectValueMatcher.objectValueMatching;
-import static org.codingmatters.value.objects.values.matchers.property.value.StringValueMatcher.stringValue;
-import static org.codingmatters.value.objects.values.matchers.property.value.StringValueMatcher.stringValueMatching;
-import static org.codingmatters.value.objects.values.matchers.property.value.TimeValueMatcher.timeValue;
 
 public final class PropertyValueMatchers {
     public static Matcher<PropertyValue> withValue(String str) {
         return single(stringValue(str));
     }
 
-    public static Matcher<PropertyValue> withStringValueMatching(Matcher<String> matcher) {
+    public static Matcher<PropertyValue> withStringValueMatching(Matcher<? super String> matcher) {
         return single(stringValueMatching(matcher));
     }
 
@@ -66,7 +56,7 @@ public final class PropertyValueMatchers {
         return single(objectValue(value));
     }
 
-    public static Matcher<PropertyValue> withObjectMatching(Matcher<ObjectValue> matcher) {
+    public static Matcher<PropertyValue> withObjectMatching(Matcher<? super ObjectValue> matcher) {
         return single(objectValueMatching(matcher));
     }
 

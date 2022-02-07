@@ -9,9 +9,9 @@ import org.hamcrest.TypeSafeMatcher;
 import static org.hamcrest.Matchers.equalTo;
 
 public final class StringValueMatcher extends TypeSafeMatcher<PropertyValue.Value> {
-    private final Matcher<String> valueMatcher;
+    private final Matcher<? super String> valueMatcher;
 
-    public StringValueMatcher(Matcher<String> valueMatcher) {
+    public StringValueMatcher(Matcher<? super String> valueMatcher) {
         this.valueMatcher = valueMatcher;
     }
 
@@ -35,7 +35,7 @@ public final class StringValueMatcher extends TypeSafeMatcher<PropertyValue.Valu
     }
 
     @Factory
-    public static StringValueMatcher stringValueMatching(Matcher<String> matcher) {
+    public static StringValueMatcher stringValueMatching(Matcher<? super String> matcher) {
         return new StringValueMatcher(matcher);
     }
 }

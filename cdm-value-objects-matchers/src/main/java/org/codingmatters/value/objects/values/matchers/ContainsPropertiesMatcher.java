@@ -22,11 +22,11 @@ public class ContainsPropertiesMatcher extends TypeSafeMatcher<ObjectValue> {
 
     @Override
     public void describeTo(Description description) {
-        description.appendText("object with properties ").appendDescriptionOf(this.propertiesArrayMatcher);
+        description.appendText("object with all properties ").appendDescriptionOf(this.propertiesArrayMatcher);
     }
 
     @Factory
-    public static Matcher<ObjectValue> containsProperties(String... properties) {
+    public static ContainsPropertiesMatcher containsProperties(String... properties) {
         return new ContainsPropertiesMatcher(properties);
     }
 }

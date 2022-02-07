@@ -5,6 +5,7 @@ import org.codingmatters.value.objects.values.PropertyValue;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
+import static org.codingmatters.value.objects.values.matchers.HasPropertiesMatcher.hasProperty;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -18,7 +19,7 @@ public class HasPropertyMatcherTest {
                 .property("anotherOne", v -> v.stringValue("bite the dust"))
                 .build();
 
-        final Matcher<ObjectValue> hasPropertyMatcher = HasPropertyMatcher.hasProperty(PROPERTY_NAME);
+        final Matcher<ObjectValue> hasPropertyMatcher = hasProperty(PROPERTY_NAME);
         assertThat(hasPropertyMatcher.matches(value), is(true));
     }
 
@@ -30,7 +31,7 @@ public class HasPropertyMatcherTest {
                 .property("anotherOne", v -> v.stringValue("bite the dust"))
                 .build();
 
-        final Matcher<ObjectValue> hasPropertyMatcher = HasPropertyMatcher.hasProperty(PROPERTY_NAME);
+        final Matcher<ObjectValue> hasPropertyMatcher = hasProperty(PROPERTY_NAME);
         assertThat(hasPropertyMatcher.matches(value), is(true));
     }
 
@@ -41,7 +42,7 @@ public class HasPropertyMatcherTest {
                 .property("anotherOne", v -> v.stringValue("bite the dust"))
                 .build();
 
-        final Matcher<ObjectValue> hasPropertyMatcher = HasPropertyMatcher.hasProperty(PROPERTY_NAME);
+        final Matcher<ObjectValue> hasPropertyMatcher = hasProperty(PROPERTY_NAME);
         assertThat(hasPropertyMatcher.matches(value), is(true));
     }
 
@@ -53,7 +54,7 @@ public class HasPropertyMatcherTest {
                 .property("anotherOne", v -> v.stringValue("bite the dust"))
                 .build();
 
-        final Matcher<ObjectValue> hasPropertyMatcher = HasPropertyMatcher.hasProperty(PROPERTY_NAME);
+        final Matcher<ObjectValue> hasPropertyMatcher = hasProperty(PROPERTY_NAME);
         assertThat(hasPropertyMatcher.matches(value), is(true));
     }
 }

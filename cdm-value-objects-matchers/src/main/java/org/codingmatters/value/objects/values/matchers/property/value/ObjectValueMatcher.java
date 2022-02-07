@@ -10,13 +10,13 @@ import org.hamcrest.TypeSafeMatcher;
 import static org.hamcrest.Matchers.equalTo;
 
 public final class ObjectValueMatcher extends TypeSafeMatcher<PropertyValue.Value> {
-    private final Matcher<ObjectValue> valueMatcher;
+    private final Matcher<? super ObjectValue> valueMatcher;
 
     public ObjectValueMatcher(ObjectValue value) {
         this(equalTo(value));
     }
 
-    public ObjectValueMatcher(Matcher<ObjectValue> valueMatcher) {
+    public ObjectValueMatcher(Matcher<? super ObjectValue> valueMatcher) {
         this.valueMatcher = valueMatcher;
     }
 
@@ -36,7 +36,7 @@ public final class ObjectValueMatcher extends TypeSafeMatcher<PropertyValue.Valu
     }
 
     @Factory
-    public static ObjectValueMatcher objectValueMatching(Matcher<ObjectValue> matcher) {
+    public static ObjectValueMatcher objectValueMatching(Matcher<? super ObjectValue> matcher) {
         return new ObjectValueMatcher(matcher);
     }
 }

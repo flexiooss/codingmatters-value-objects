@@ -7,9 +7,8 @@ import org.junit.Test;
 import java.time.LocalDate;
 import java.time.Month;
 
-import static org.codingmatters.value.objects.values.matchers.ContainsPropertiesMatcher.containsProperties;
-import static org.codingmatters.value.objects.values.matchers.HasNonNullPropertyWithValueMatcher.hasProperty;
-import static org.codingmatters.value.objects.values.matchers.property.PropertyValueMatchers.withValue;
+import static org.codingmatters.value.objects.values.matchers.ObjectValueMatchers.*;
+import static org.codingmatters.value.objects.values.matchers.property.PropertyValueMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 
@@ -45,7 +44,7 @@ public class UsageObjectValueMatchersTest {
 
     @Test
     public void objectDoesNotHavePropertyVerbotenProperties() {
-        assertThat(MARCO_SANCHEZ, not(HasPropertyMatcher.hasProperty("VERBOTEN")));
+        assertThat(MARCO_SANCHEZ, not(hasProperty("VERBOTEN")));
     }
 
     @Test
