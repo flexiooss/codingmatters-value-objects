@@ -17,6 +17,10 @@ import java.util.function.Function;
 import static org.codingmatters.value.objects.values.matchers.property.value.ValueMatchers.*;
 
 public final class PropertyValueMatchers {
+    public static Matcher<PropertyValue> withValue(PropertyValue value) {
+        return org.hamcrest.core.IsEqual.equalTo(value);
+    }
+
     public static Matcher<PropertyValue> withSingle(Matcher<PropertyValue.Value> value) {
         return org.codingmatters.value.objects.values.matchers.property.SingleValueMatcher.single(value);
     }
