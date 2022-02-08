@@ -7,11 +7,12 @@ import org.junit.Test;
 import java.time.LocalDate;
 import java.time.Month;
 
-import static org.codingmatters.value.objects.values.matchers.ObjectValueMatchers.*;
+import static org.codingmatters.value.objects.values.matchers.ObjectValueMatchers.containsProperties;
+import static org.codingmatters.value.objects.values.matchers.ObjectValueMatchers.hasProperty;
 import static org.codingmatters.value.objects.values.matchers.property.PropertyValueMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 
 public class UsageObjectValueMatchersTest {
@@ -37,11 +38,12 @@ public class UsageObjectValueMatchersTest {
                             .property("age", a -> a.longValue(3L))
                     )
             ))
+            .property("nullProperty", PropertyValue.builder().build())
             .build();
 
     @Test
     public void MarcoSanchez_IsAnObjectWithProperties() {
-        assertThat(MARCO_SANCHEZ, containsProperties("name", "birthday", "bankAccounts", "homeowner", "children", "assets", "hash", "dogs"));
+        assertThat(MARCO_SANCHEZ, containsProperties("name", "birthday", "bankAccounts", "homeowner", "children", "assets", "hash", "dogs", "nullProperty"));
     }
 
     @Test
@@ -66,21 +68,21 @@ public class UsageObjectValueMatchersTest {
 
     @Test
     public void MarcoSanchez_HasMultipleBankAccounts() {
-        assertThat(MARCO_SANCHEZ, hasProperty("bankAccounts", withValues(
+        assertThat(MARCO_SANCHEZ, hasProperty("bankAccounts", withValuesInAnyOrder(
                 "43ce36f6-2d2b-4e25-9743-29974c042b94", "bb4b431d-bb10-4d94-b042-26ef8ce047b9", "8ed7dd78-9d69-46b4-8a92-f58b9bce680c")
         ));
     }
 
     @Test
     public void MarcoSanchez_HasMultipleBankAccounts_statedInOrder() {
-        assertThat(MARCO_SANCHEZ, hasProperty("bankAccounts", withValuesInOrder(
+        assertThat(MARCO_SANCHEZ, hasProperty("bankAccounts", withValues(
                 "8ed7dd78-9d69-46b4-8a92-f58b9bce680c", "43ce36f6-2d2b-4e25-9743-29974c042b94", "bb4b431d-bb10-4d94-b042-26ef8ce047b9")
         ));
     }
 
     @Test
     public void MarcoSanchez_hasDogsMatchingNames() {
-        assertThat(MARCO_SANCHEZ, hasProperty("dogs", withValuesInOrder(
+        assertThat(MARCO_SANCHEZ, hasProperty("dogs", withValues(
                 hasProperty("name", withValue("Jessy")),
                 hasProperty("name", withValue("Joy"))
         )));
