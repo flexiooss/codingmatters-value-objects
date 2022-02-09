@@ -1,5 +1,6 @@
 package org.codingmatters.value.objects.values.matchers;
 
+import org.codingmatters.value.objects.generated.Dad;
 import org.codingmatters.value.objects.values.ObjectValue;
 import org.codingmatters.value.objects.values.PropertyValue;
 import org.junit.Test;
@@ -7,6 +8,7 @@ import org.junit.Test;
 import java.time.LocalDate;
 import java.time.Month;
 
+import static org.codingmatters.value.objects.values.matchers.ContainsValueObjectMatcher.containsValueObject;
 import static org.codingmatters.value.objects.values.matchers.ObjectValueMatchers.containsProperties;
 import static org.codingmatters.value.objects.values.matchers.ObjectValueMatchers.hasProperty;
 import static org.codingmatters.value.objects.values.matchers.property.PropertyValueMatchers.*;
@@ -91,5 +93,16 @@ public class UsageObjectValueMatchersTest {
     @Test
     public void MarcoSanchez_isMillionaire() {
         assertThat(MARCO_SANCHEZ, hasProperty("assets", withDoubleValue(greaterThan(1_000_000d))));
+    }
+
+    @Test
+    public void MarcoSanchez_isDaddy() {
+        final Dad daddy = Dad.builder()
+                .name("Marco Sanchez")
+                .birthday(LocalDate.of(1984, Month.JUNE, 25))
+                .children(3L)
+                .build();
+
+        assertThat(MARCO_SANCHEZ, containsValueObject(daddy));
     }
 }

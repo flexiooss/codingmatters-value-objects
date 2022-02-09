@@ -13,47 +13,41 @@ import static org.codingmatters.value.objects.values.matchers.HasNonNullProperty
 import static org.codingmatters.value.objects.values.matchers.property.PropertyValueMatchers.withValue;
 import static org.hamcrest.core.AllOf.allOf;
 
-public class ContainsValueObjectMatcher<T> extends TypeSafeDiagnosingMatcher<ObjectValue> {
-    private final T expectedValueObject;
+public class ContainsValueObjectMatcher<E, A> extends TypeSafeDiagnosingMatcher<A> {
+    private final Matcher<ObjectValue> allPropertiesOfExpectedValueObject;
 
-    public ContainsValueObjectMatcher(T expectedValueObject) {
-        this.expectedValueObject = expectedValueObject;
+    public ContainsValueObjectMatcher(E expectedValueObject) throws AssertionError {
+        this.allPropertiesOfExpectedValueObject = allPropertiesOf(convertExpectedValueObject(expectedValueObject));
     }
 
     @Override
-    protected boolean matchesSafely(ObjectValue item, Description mismatch) {
-        return convertExpectedValue(mismatch).matching(allPropertiesOf(item), "object ");
+    protected boolean matchesSafely(A item, Description mismatch) {
+        return convertActualValue(item, mismatch).matching(allPropertiesOfExpectedValueObject, "was an object ");
     }
 
     @Override
     public void describeTo(Description description) {
-        description.appendText("ObjectValue must contain ").appendValue(expectedValueObject);
+        description.appendText("an object ").appendDescriptionOf(allPropertiesOfExpectedValueObject);
     }
 
-    private Matcher<ObjectValue> allPropertiesOf(ObjectValue actual) {
+    private static Matcher<ObjectValue> allPropertiesOf(ObjectValue expectedValueObject) {
         final List<Matcher<? super ObjectValue>> properties = new ArrayList<>();
-        for (String propertyName : actual.propertyNames()) {
-            properties.add(hasProperty(propertyName, withValue(actual.property(propertyName))));
+        for (String propertyName : expectedValueObject.propertyNames()) {
+            properties.add(hasProperty(propertyName, withValue(expectedValueObject.property(propertyName))));
         }
 
         return allOf(properties);
     }
 
-    private <T> Condition<ObjectValue> convertExpectedValue(Description mismatch) {
-        if (ObjectValue.class.isAssignableFrom(expectedValueObject.getClass())) {
-            return Condition.matched((ObjectValue) expectedValueObject, mismatch);
-        }
-
-        final ObjectValue objectValue;
+    private Condition<ObjectValue> convertActualValue(A item, Description mismatch) {
         try {
-            final Method toMapMethod = expectedValueObject.getClass().getMethod("toMap");;
-            final Map convertMap = (Map) toMapMethod.invoke(expectedValueObject);
-            objectValue = ObjectValue.fromMap(convertMap).build();
+            final ObjectValue objectValue = convertValue(item);
+            return Condition.matched(objectValue, mismatch);
         } catch (NoSuchMethodException e) {
             mismatch.appendText("was not a Valid ValueObject (No toMap Method found)");
             return Condition.notMatched();
         } catch (InvocationTargetException e) {
-            mismatch.appendText("impossible to map ValidObject to ObjectValue");
+            mismatch.appendText("impossible to convert the expected ValidObject");
             return Condition.notMatched();
         } catch (IllegalAccessException e) {
             mismatch.appendText("unable to access toMap method");
@@ -62,12 +56,44 @@ public class ContainsValueObjectMatcher<T> extends TypeSafeDiagnosingMatcher<Obj
             mismatch.appendText("valueObject doesnt provide a valid convert Map");
             return Condition.notMatched();
         }
+    }
 
-        return Condition.matched(objectValue, mismatch);
+    private static <T> ObjectValue convertValue(T item) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        if (ObjectValue.class.isAssignableFrom(item.getClass())) {
+            return (ObjectValue) item;
+        }
+
+        final Method toMapMethod = item.getClass().getMethod("toMap");
+        toMapMethod.setAccessible(true);
+        final Map convertMap = (Map) toMapMethod.invoke(item);
+        return ObjectValue.fromMap(convertMap).build();
+    }
+
+    private static <A> ObjectValue convertExpectedValueObject(A actualValue) throws AssertionError {
+        try {
+            return convertValue(actualValue);
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new AssertionError("Unable to convert actual value. It may not have an accessible toMap method", e);
+        }
     }
 
     @Factory
-    public static <T> Matcher<ObjectValue> containsObject(T object) {
-        return new ContainsValueObjectMatcher<T>(object);
+    public static <T> Matcher<T> containsObjectValue(ObjectValue object) {
+        return new ContainsValueObjectMatcher<ObjectValue, T>(object);
+    }
+
+    @Factory
+    public static <T> Matcher<ObjectValue> containsValueObject(T valueObject) {
+        return new ContainsValueObjectMatcher<T, ObjectValue>(valueObject);
+    }
+
+    @Factory
+    public static Matcher<ObjectValue> containsAnotherObjectValue(ObjectValue objectValue) {
+        return new ContainsValueObjectMatcher<ObjectValue, ObjectValue>(objectValue);
+    }
+
+    @Factory
+    public static <A, E> Matcher<A> containsAnotherValueObject(E valueObject) {
+        return new ContainsValueObjectMatcher<E, A>(valueObject);
     }
 }

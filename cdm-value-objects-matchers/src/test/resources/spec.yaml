@@ -1,0 +1,31 @@
+ValueObject:
+  smoothness: long
+  mathematicians:
+    $list: string
+  complex:
+    real: double
+    imaginary: double
+  referencesList:
+    $list:
+      doi: string
+      isbn: string
+      ean: string
+
+ValueObjectWrapper:
+  wrapperAnnotation: string
+  smoothness: long
+  mathematicians:
+    $list: string
+  complex:
+    real: double
+    imaginary: double
+  referencesList:
+    $list:
+      doi: string
+      isbn: string
+      ean: string
+
+Dad:
+  name: string
+  birthday: date
+  children: long
