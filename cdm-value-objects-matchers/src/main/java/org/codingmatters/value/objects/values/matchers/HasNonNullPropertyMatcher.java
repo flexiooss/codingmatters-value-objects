@@ -3,7 +3,6 @@ package org.codingmatters.value.objects.values.matchers;
 import org.codingmatters.value.objects.values.ObjectValue;
 import org.codingmatters.value.objects.values.PropertyValue;
 import org.hamcrest.Description;
-import org.hamcrest.Factory;
 import org.hamcrest.TypeSafeMatcher;
 
 public class HasNonNullPropertyMatcher extends TypeSafeMatcher<ObjectValue> {
@@ -29,7 +28,6 @@ public class HasNonNullPropertyMatcher extends TypeSafeMatcher<ObjectValue> {
                 .appendText(" (").appendValue(type).appendText(")");
     }
 
-    @Factory
     public static HasNonNullPropertyMatcher hasNonNullProperty(String propertyName, PropertyValue.Type type, PropertyValue.Cardinality cardinality) {
         return new HasNonNullPropertyMatcher(propertyName, type, cardinality);
     }

@@ -77,22 +77,18 @@ public class ContainsValueObjectMatcher<E, A> extends TypeSafeDiagnosingMatcher<
         }
     }
 
-    @Factory
     public static <T> Matcher<T> containsObjectValue(ObjectValue object) {
         return new ContainsValueObjectMatcher<ObjectValue, T>(object);
     }
 
-    @Factory
     public static <T> Matcher<ObjectValue> containsValueObject(T valueObject) {
         return new ContainsValueObjectMatcher<T, ObjectValue>(valueObject);
     }
 
-    @Factory
     public static Matcher<ObjectValue> containsAnotherObjectValue(ObjectValue objectValue) {
         return new ContainsValueObjectMatcher<ObjectValue, ObjectValue>(objectValue);
     }
 
-    @Factory
     public static <A, E> Matcher<A> containsAnotherValueObject(E valueObject) {
         return new ContainsValueObjectMatcher<E, A>(valueObject);
     }

@@ -48,18 +48,15 @@ public class ContainsMultipleValuesInAnyOrderMatcher extends TypeSafeDiagnosingM
         description.appendList("[", ", ", "]", matchers).appendText(" in any order");
     }
 
-    @Factory
     public static ContainsMultipleValuesInAnyOrderMatcher multiple(Collection<Matcher<? super PropertyValue.Value>> itemMatchers) {
         return new ContainsMultipleValuesInAnyOrderMatcher(itemMatchers);
     }
 
-    @Factory
     @SafeVarargs
     public static ContainsMultipleValuesInAnyOrderMatcher multiple(Matcher<? super PropertyValue.Value>... itemMatchers) {
         return multiple(Arrays.asList(itemMatchers));
     }
 
-    @Factory
     public static ContainsMultipleValuesInAnyOrderMatcher multiple(PropertyValue.Value... items) {
         final List<Matcher<? super PropertyValue.Value>> itemMatchers = new ArrayList<>();
         if (items != null) {

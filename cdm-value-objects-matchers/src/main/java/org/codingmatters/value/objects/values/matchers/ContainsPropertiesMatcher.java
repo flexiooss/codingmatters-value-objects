@@ -2,7 +2,6 @@ package org.codingmatters.value.objects.values.matchers;
 
 import org.codingmatters.value.objects.values.ObjectValue;
 import org.hamcrest.Description;
-import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
@@ -25,7 +24,6 @@ public class ContainsPropertiesMatcher extends TypeSafeMatcher<ObjectValue> {
         description.appendText("object with all properties ").appendDescriptionOf(this.propertiesArrayMatcher);
     }
 
-    @Factory
     public static ContainsPropertiesMatcher containsProperties(String... properties) {
         return new ContainsPropertiesMatcher(properties);
     }

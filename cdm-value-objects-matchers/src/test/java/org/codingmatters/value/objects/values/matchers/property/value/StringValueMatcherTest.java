@@ -7,7 +7,6 @@ import static org.codingmatters.value.objects.values.matchers.property.value.Str
 import static org.codingmatters.value.objects.values.matchers.property.value.StringValueMatcher.stringValueMatching;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.text.IsEqualIgnoringWhiteSpace.equalToIgnoringWhiteSpace;
 
 public class StringValueMatcherTest {
     @Test
@@ -31,7 +30,7 @@ public class StringValueMatcherTest {
     @Test
     public void matchingIgnoringWhiteSpaces__DoNotMatch() {
         final PropertyValue.Value value = PropertyValue.builder().stringValue("value").buildValue();
-        assertThat(stringValueMatching(equalToIgnoringWhiteSpace("c'est non")).matches(value), is(false));
+        assertThat(stringValueMatching(equalToCompressingWhiteSpace("c'est non")).matches(value), is(false));
     }
 
     @Test

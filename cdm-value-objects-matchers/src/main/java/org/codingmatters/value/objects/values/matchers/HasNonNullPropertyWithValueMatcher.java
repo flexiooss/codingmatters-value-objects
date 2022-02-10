@@ -35,7 +35,6 @@ public class HasNonNullPropertyWithValueMatcher extends TypeSafeDiagnosingMatche
                 .appendText(" matching ").appendDescriptionOf(propertyValueMatcher);
     }
 
-    @Factory
     public static HasNonNullPropertyWithValueMatcher hasProperty(String propertyName, Matcher<PropertyValue> withMatcher) {
         return new HasNonNullPropertyWithValueMatcher(propertyName, withMatcher);
     }

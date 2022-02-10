@@ -48,18 +48,15 @@ public class ContainsMultipleValuesInOrderMatcher extends TypeSafeDiagnosingMatc
         description.appendList("[", ", ", "]", matchers);
     }
 
-    @Factory
     public static ContainsMultipleValuesInOrderMatcher multipleInOrder(List<Matcher<? super PropertyValue.Value>> itemMatchers) {
         return new ContainsMultipleValuesInOrderMatcher(itemMatchers);
     }
 
-    @Factory
     @SafeVarargs
     public static ContainsMultipleValuesInOrderMatcher multipleInOrder(Matcher<? super PropertyValue.Value>... itemMatchers) {
         return multipleInOrder(Arrays.asList(itemMatchers));
     }
 
-    @Factory
     public static ContainsMultipleValuesInOrderMatcher multipleInOrder(PropertyValue.Value... items) {
         final List<Matcher<? super PropertyValue.Value>> itemMatchers = new ArrayList<>();
         if (items != null) {

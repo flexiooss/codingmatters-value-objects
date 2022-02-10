@@ -37,7 +37,6 @@ public class SingleValueMatcher extends TypeSafeDiagnosingMatcher<PropertyValue>
         description.appendDescriptionOf(valueMatcher);
     }
 
-    @Factory
     public static SingleValueMatcher single(Matcher<PropertyValue.Value> valueMatcher) {
         return new SingleValueMatcher(valueMatcher);
     }

@@ -15,12 +15,10 @@ public final class DoubleValueMatcher extends ValueMatcher<Double> {
         return value.doubleValue();
     }
 
-    @Factory
     public static DoubleValueMatcher doubleValue(Double value) {
         return new DoubleValueMatcher(equalTo(value));
     }
 
-    @Factory
     public static DoubleValueMatcher doubleValue(Matcher<Double> value) {
         return new DoubleValueMatcher(value);
     }

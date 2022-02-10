@@ -2,7 +2,6 @@ package org.codingmatters.value.objects.values.matchers;
 
 import org.codingmatters.value.objects.values.ObjectValue;
 import org.hamcrest.Description;
-import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
@@ -41,7 +40,6 @@ public class HasPropertiesMatcher extends TypeSafeDiagnosingMatcher<ObjectValue>
     }
 
     @SafeVarargs
-    @Factory
     public static Matcher<ObjectValue> hasProperties(Matcher<? super String>... properties) {
         List<Matcher<? super ObjectValue>> all = new ArrayList<>(properties.length);
 
@@ -52,7 +50,6 @@ public class HasPropertiesMatcher extends TypeSafeDiagnosingMatcher<ObjectValue>
         return allOf(all);
     }
 
-    @Factory
     public static Matcher<ObjectValue> hasProperties(String... properties) {
         List<Matcher<? super ObjectValue>> all = new ArrayList<>(properties.length);
         for (String property : properties) {
@@ -62,7 +59,6 @@ public class HasPropertiesMatcher extends TypeSafeDiagnosingMatcher<ObjectValue>
         return allOf(all);
     }
 
-    @Factory
     public static HasPropertiesMatcher hasProperty(String property) {
         return new HasPropertiesMatcher(equalTo(property));
     }
