@@ -26,7 +26,7 @@ public interface PropertyValue {
 
         return new PropertyValueImpl(type, Cardinality.MULTIPLE, values);
     }
-    
+
     static PropertyValue multiple(Type type, Builder ... builders) {
         Value[] values = null;
         if(builders != null) {
@@ -265,7 +265,7 @@ public interface PropertyValue {
     default Builder toBuilder() {
         return Builder.from(this);
     }
-    
+
     static PropertyValue fromObject(Object object) throws Type.UnsupportedTypeException {
         if(object == null) return null;
 
@@ -275,10 +275,10 @@ public interface PropertyValue {
         if(object instanceof Iterable) {
             List<Value> vals = new LinkedList<>();
             for (Object o : ((Iterable) object)) {
-                vals.add(fromObject(o).single());
+                vals.add(o == null ? PropertyValue.builder().buildValue() : fromObject(o).single());
             }
             return PropertyValue.multiple(
-                    vals.isEmpty() ? Type.OBJECT : vals.get(0).type(),
+                    vals.stream().filter(value -> value != null && !value.isNull()).map(Value::type).findFirst().orElse(Type.OBJECT),
                     vals.toArray(new Value[0]));
         } else {
             if (object instanceof String) {
