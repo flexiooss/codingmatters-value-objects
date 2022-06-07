@@ -132,6 +132,48 @@ public class PropertyValueFromObjectTest {
     }
 
     @Test
+    public void stringArrayNullValue() throws Exception {
+        String[] value = {"one", null,"three"};
+        PropertyValue actualPropertyValue = PropertyValue.fromObject(value);
+        PropertyValue expectedPropertyValue = PropertyValue.multiple(
+                PropertyValue.Type.STRING,
+                PropertyValue.builder().stringValue("one"),
+                PropertyValue.builder(),
+                PropertyValue.builder().stringValue("three")
+        );
+
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
+    }
+
+    @Test
+    public void stringArrayNullFirstValue() throws Exception {
+        String[] value = {null, "two","three"};
+        PropertyValue actualPropertyValue = PropertyValue.fromObject(value);
+        PropertyValue expectedPropertyValue = PropertyValue.multiple(
+                PropertyValue.Type.STRING,
+                PropertyValue.builder(),
+                PropertyValue.builder().stringValue("two"),
+                PropertyValue.builder().stringValue("three")
+        );
+
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
+    }
+
+    @Test
+    public void stringArrayAllNullValue() throws Exception {
+        String[] value = {null, null, null};
+        PropertyValue actualPropertyValue = PropertyValue.fromObject(value);
+        PropertyValue expectedPropertyValue = PropertyValue.multiple(
+                PropertyValue.Type.OBJECT,
+                PropertyValue.builder(),
+                PropertyValue.builder(),
+                PropertyValue.builder()
+        );
+
+        assertThat(actualPropertyValue, is(expectedPropertyValue));
+    }
+
+    @Test
     public void map() throws Exception {
         Map value = new HashMap();
         value.put("p1", "v1");
