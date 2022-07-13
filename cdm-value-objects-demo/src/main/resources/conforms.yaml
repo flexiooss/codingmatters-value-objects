@@ -1,0 +1,4 @@
+conformingValue:
+  $conforms-to: org.codingmatters.value.objects.demo.ConformingValueExtension
+  $builder-conforms-to: org.codingmatters.value.objects.demo.ConformingValueBuilderExtension
+  stringProperty: string

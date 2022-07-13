@@ -30,7 +30,8 @@ public class ValueSpecPreprocessor {
 
         ValueSpec.Builder valueSpecBuilder = ValueSpec.valueSpec()
                 .name(valueSpec.name())
-                .addConformsTo(valueSpec.protocols().toArray(new String[valueSpec.protocols().size()]));
+                .addConformsTo(valueSpec.protocols().toArray(new String[valueSpec.protocols().size()]))
+                .addBuilderConformsTo(valueSpec.builderProtocols().toArray(new String[valueSpec.builderProtocols().size()]));
         for (PropertySpec propertySpec : valueSpec.propertySpecs()) {
             if(EMBEDDED.equals(propertySpec.typeSpec().typeKind())) {
                 String embeddedPackage = this.packageName + "." + valueSpec.name().toLowerCase();
@@ -68,6 +69,11 @@ public class ValueSpecPreprocessor {
         if(propertySpec.typeSpec().embeddedValueSpec().protocols() != null) {
             embeddedValueSpecBuilder.addConformsTo(
                         propertySpec.typeSpec().embeddedValueSpec().protocols().toArray(new String[0])
+                );
+        }
+        if(propertySpec.typeSpec().embeddedValueSpec().builderProtocols() != null) {
+            embeddedValueSpecBuilder.addBuilderConformsTo(
+                        propertySpec.typeSpec().embeddedValueSpec().builderProtocols().toArray(new String[0])
                 );
         }
 

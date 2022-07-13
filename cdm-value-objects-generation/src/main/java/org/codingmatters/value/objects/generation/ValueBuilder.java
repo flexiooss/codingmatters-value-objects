@@ -23,10 +23,12 @@ public class ValueBuilder {
     private final List<FieldSpec> fields;
     private final List<MethodSpec> setters;
     private final MethodSpec buildMethod;
+    private final List<ClassName> protocols;
 
     public ValueBuilder(ValueConfiguration types, List<PropertySpec> propertySpecs) {
         this.types = types;
         this.propertySpecs = propertySpecs;
+        this.protocols = this.createProtocols();
 
         this.fields = this.createFields();
         this.setters = this.createSetters();
@@ -39,6 +41,7 @@ public class ValueBuilder {
                 .addMethod(this.buildMethod)
                 .addFields(this.fields)
                 .addMethods(this.setters)
+                .addSuperinterfaces(this.protocols)
                 .build();
     }
 
@@ -236,6 +239,16 @@ public class ValueBuilder {
                         "return new $T(" + constructorParametersFormat + ")",
                         concat(this.types.valueImplType(), constructorParametersNames.toArray()))
                 .build();
+    }
+
+    private List<ClassName> createProtocols() {
+        List<ClassName> result = new LinkedList<>();
+
+        for (String protocol : this.types.valueSpec().builderProtocols()) {
+            result.add(ClassName.bestGuess(protocol));
+        }
+
+        return result;
     }
 
     static private Object [] concat(Object first, Object ... others) {

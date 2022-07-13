@@ -15,6 +15,7 @@ public class ValueSpec implements PropertyHolderSpec {
         private String name;
         private List<PropertySpec> propertySpecs = new LinkedList<>();
         private HashSet<String> protocols = new HashSet<>();
+        private HashSet<String> builderProtocols = new HashSet<>();
 
         public Builder name(String name) {
             this.name = name;
@@ -33,12 +34,19 @@ public class ValueSpec implements PropertyHolderSpec {
             return this;
         }
 
+        public Builder addBuilderConformsTo(String ... protocols) {
+            if(protocols != null && protocols.length != 0) {
+                this.builderProtocols.addAll(Arrays.asList(protocols));
+            }
+            return this;
+        }
+
         public Builder addProperty(PropertySpec.Builder spec) {
             return this.addProperty(spec.build());
         }
 
         public ValueSpec build() {
-            return new ValueSpec(this.name, new ArrayList<>(this.propertySpecs), new ArrayList<>(this.protocols));
+            return new ValueSpec(this.name, new ArrayList<>(this.propertySpecs), new ArrayList<>(this.protocols), new ArrayList<>(this.builderProtocols));
         }
 
     }
@@ -46,11 +54,13 @@ public class ValueSpec implements PropertyHolderSpec {
     private final String name;
     private final List<PropertySpec> propertySpecs;
     private final List<String> protocols;
+    private final List<String> builderProtocols;
 
-    private ValueSpec(String name, List<PropertySpec> propertySpecs, List<String> protocols) {
+    private ValueSpec(String name, List<PropertySpec> propertySpecs, List<String> protocols, List<String> builderProtocols) {
         this.name = name;
         this.propertySpecs = propertySpecs;
         this.protocols = protocols;
+        this.builderProtocols = builderProtocols;
     }
 
     public String name() {
@@ -69,6 +79,9 @@ public class ValueSpec implements PropertyHolderSpec {
 
     public List<String> protocols() {
         return protocols;
+    }
+    public List<String> builderProtocols() {
+        return builderProtocols;
     }
 
     @Override

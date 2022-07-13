@@ -70,6 +70,18 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>conforms</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                            <goal>json</goal>
+                        </goals>
+                        <configuration>
+                            <destination-package>org.codingmatters.value.objects.demo</destination-package>
+                            <input-spec>src/main/resources/conforms.yaml</input-spec>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>books</id>
                         <phase>generate-sources</phase>
                         <goals>
