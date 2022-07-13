@@ -11,7 +11,7 @@ import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
 import static org.codingmatters.value.objects.utils.Utils.streamFor;
 import static org.codingmatters.value.objects.utils.Utils.string;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SpecReaderConformsToTest {
 
@@ -71,6 +71,71 @@ public class SpecReaderConformsToTest {
                             spec()
                                     .addValue(valueSpec().name("val")
                                             .addConformsTo(
+                                                    "org.package.Protocol1",
+                                                    "org.package.Protocol2",
+                                                    "org.package.Protocol3"
+                                            )
+                                    )
+                                    .build()
+                    )
+            );
+        }
+    }
+
+
+
+
+    @Test
+    public void emptyBuilderConformsTo() throws Exception {
+        try(InputStream in = streamFor(string()
+                .line("val:")
+                .line("  $builder-conforms-to: ")
+                .build())) {
+            assertThat(
+                    reader.read(in),
+                    is(
+                            spec()
+                                    .addValue(valueSpec().name("val"))
+                                    .build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void singleBuilderConformsTo() throws Exception {
+        try(InputStream in = streamFor(string()
+                .line("val:")
+                .line("  $builder-conforms-to: org.package.Protocol")
+                .build())) {
+            assertThat(
+                    reader.read(in),
+                    is(
+                            spec()
+                                    .addValue(valueSpec().name("val")
+                                            .addBuilderConformsTo("org.package.Protocol")
+                                    )
+                                    .build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void multipleBuilderConformsTo() throws Exception {
+        try(InputStream in = streamFor(string()
+                .line("val:")
+                .line("  $builder-conforms-to:")
+                .line("    - org.package.Protocol1")
+                .line("    - org.package.Protocol2")
+                .line("    - org.package.Protocol3")
+                .build())) {
+            assertThat(
+                    reader.read(in),
+                    is(
+                            spec()
+                                    .addValue(valueSpec().name("val")
+                                            .addBuilderConformsTo(
                                                     "org.package.Protocol1",
                                                     "org.package.Protocol2",
                                                     "org.package.Protocol3"

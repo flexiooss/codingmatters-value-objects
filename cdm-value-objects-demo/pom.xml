@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.value.objects</groupId>
         <artifactId>codingmatters-value-objects</artifactId>
-        <version>1.70.0</version>
+        <version>1.71.0</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -67,6 +67,18 @@
                         <configuration>
                             <destination-package>org.codingmatters.value.objects.demo</destination-package>
                             <input-spec>src/main/resources/spec2.yaml</input-spec>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>conforms</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                            <goal>json</goal>
+                        </goals>
+                        <configuration>
+                            <destination-package>org.codingmatters.value.objects.demo</destination-package>
+                            <input-spec>src/main/resources/conforms.yaml</input-spec>
                         </configuration>
                     </execution>
                     <execution>
