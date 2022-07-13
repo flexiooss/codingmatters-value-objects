@@ -76,18 +76,20 @@ public class AnonymousValueSpec implements PropertyHolderSpec {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AnonymousValueSpec that = (AnonymousValueSpec) o;
-        return Objects.equals(propertySpecs, that.propertySpecs);
+        return Objects.equals(propertySpecs, that.propertySpecs) && Objects.equals(protocols, that.protocols) && Objects.equals(builderProtocols, that.builderProtocols);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(propertySpecs);
+        return Objects.hash(propertySpecs, protocols, builderProtocols);
     }
 
     @Override
     public String toString() {
         return "AnonymousValueSpec{" +
                 "propertySpecs=" + propertySpecs +
+                ", protocols=" + protocols +
+                ", builderProtocols=" + builderProtocols +
                 '}';
     }
 }

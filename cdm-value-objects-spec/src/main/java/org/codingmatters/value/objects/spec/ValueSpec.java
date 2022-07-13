@@ -90,6 +90,7 @@ public class ValueSpec implements PropertyHolderSpec {
                 "name='" + name + '\'' +
                 ", propertySpecs=" + propertySpecs +
                 ", protocols=" + protocols +
+                ", builderProtocols=" + builderProtocols +
                 '}';
     }
 
@@ -97,20 +98,12 @@ public class ValueSpec implements PropertyHolderSpec {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         ValueSpec valueSpec = (ValueSpec) o;
-
-        if (name != null ? !name.equals(valueSpec.name) : valueSpec.name != null) return false;
-        if (propertySpecs != null ? !propertySpecs.equals(valueSpec.propertySpecs) : valueSpec.propertySpecs != null)
-            return false;
-        return protocols != null ? protocols.equals(valueSpec.protocols) : valueSpec.protocols == null;
+        return Objects.equals(name, valueSpec.name) && Objects.equals(propertySpecs, valueSpec.propertySpecs) && Objects.equals(protocols, valueSpec.protocols) && Objects.equals(builderProtocols, valueSpec.builderProtocols);
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (propertySpecs != null ? propertySpecs.hashCode() : 0);
-        result = 31 * result + (protocols != null ? protocols.hashCode() : 0);
-        return result;
+        return Objects.hash(name, propertySpecs, protocols, builderProtocols);
     }
 }
