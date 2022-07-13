@@ -29,12 +29,8 @@ public class OptionalObjectValue {
         return this.value.isPresent() ? this.value.get().propertyNames() : new String[0];
     }
 
-    public Optional<PropertyValue> property(String property) {
-        if(this.has(property)) {
-            return Optional.ofNullable(this.value.get().property(property));
-        } else {
-            return Optional.empty();
-        }
+    public OptionalPropertyValue property(String property) {
+        return new OptionalPropertyValue(this.get().property(property));
     }
 
 
