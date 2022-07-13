@@ -56,6 +56,7 @@ public class ValueInterface {
                 .addMethod(this.createBuilderMethod())
                 .addMethod(this.createBuilderFromValueMethod())
                 .addMethod(this.createBuilderFromMapMethod())
+                .addMethod(this.createNamesStaticMethod())
                 .addModifiers(PUBLIC)
                 .addTypes(this.enums)
                 .addMethods(this.getters)
@@ -268,8 +269,6 @@ public class ValueInterface {
                 .build();
     }
 
-
-
     private List<ClassName> createProtocols() {
         List<ClassName> result = new LinkedList<>();
 
@@ -278,6 +277,14 @@ public class ValueInterface {
         }
 
         return result;
+    }
+
+    private MethodSpec createNamesStaticMethod() {
+        return MethodSpec.methodBuilder("names")
+                .addModifiers(STATIC, PUBLIC)
+                .returns(this.types.namesType())
+                .addStatement("return $T.INSTANCE", this.types.namesType())
+                .build();
     }
 
 }

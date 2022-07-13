@@ -63,6 +63,9 @@ public class OptionalValueTest {
     public void setUp() throws Exception {
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
 
+//        this.fileHelper.printJavaContent("", this.dir.getRoot());
+//        this.fileHelper.printFile(this.dir.getRoot(), "ContainerNames.java");
+
         this.classes = CompiledCode.builder()
                 .source(this.dir.getRoot())
                 .compile()

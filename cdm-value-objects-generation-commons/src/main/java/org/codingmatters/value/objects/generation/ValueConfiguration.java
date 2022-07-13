@@ -29,6 +29,7 @@ public class ValueConfiguration {
     private final ClassName builderType;
     private final ClassName changerType;
     private final ClassName optionalValueType;
+    private final ClassName namesType;
     private final String rootPackage;
     private final ValueCollectionConfiguration collectionConfiguration;
 
@@ -42,6 +43,7 @@ public class ValueConfiguration {
         this.changerType = ClassName.get(packageName, interfaceName + ".Changer");
         this.optionalValueType = ClassName.get(packageName + ".optional", "Optional" + interfaceName);
         this.collectionConfiguration = new ValueCollectionConfiguration(rootPackage);
+        this.namesType = ClassName.get(packageName + ".names", interfaceName + "Names");
     }
 
     public TypeName propertyType(PropertySpec propertySpec) {
@@ -97,6 +99,11 @@ public class ValueConfiguration {
         } else {
             return ClassName.bestGuess(propertySpec.typeSpec().typeRef());
         }
+    }
+
+    public ClassName valueObjectNamesType(PropertySpec propertySpec) {
+        ClassName singleType = this.valueObjectSingleType(propertySpec);
+        return ClassName.get(singleType.packageName() + ".names", singleType.simpleName() + "Names");
     }
 
     public TypeName propertySingleOptionalType(PropertySpec propertySpec) {
@@ -193,6 +200,10 @@ public class ValueConfiguration {
     }
 
 
+
+    public ClassName namesType() {
+        return namesType;
+    }
 
 
     public String witherMethodName(PropertySpec propertySpec) {
