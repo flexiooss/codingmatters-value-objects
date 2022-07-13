@@ -84,8 +84,11 @@ public class SpecCodeGenerator {
 
         ValueConfiguration types = new ValueConfiguration(this.rootPackage, packagedValueSpec.packagename(), packagedValueSpec.valueSpec());
 
+        writeJavaFile(packageDestination, packagedValueSpec.packagename() + ".names", new NamesInterface(types, packagedValueSpec.valueSpec().propertySpecs()).type());
+
         TypeSpec valueInterface = new ValueInterface(types, packagedValueSpec.valueSpec().propertySpecs()).type();
         writeJavaFile(packageDestination, packagedValueSpec.packagename(), valueInterface);
+
 
         TypeSpec valueImpl = new ValueImplementation(types, packagedValueSpec.valueSpec().propertySpecs()).type();
         writeJavaFile(packageDestination, packagedValueSpec.packagename(), valueImpl);
