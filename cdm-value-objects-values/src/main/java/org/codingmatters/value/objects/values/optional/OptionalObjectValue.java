@@ -30,7 +30,7 @@ public class OptionalObjectValue {
     }
 
     public OptionalPropertyValue property(String property) {
-        return new OptionalPropertyValue(this.get().property(property));
+        return new OptionalPropertyValue(this.value.isPresent() ? this.get().property(property) : null);
     }
 
 
@@ -43,7 +43,7 @@ public class OptionalObjectValue {
     }
 
     public boolean isEmpty() {
-        return ! value.isPresent();
+        return value.isEmpty();
     }
 
     public void ifPresent(Consumer<? super ObjectValue> consumer) {
