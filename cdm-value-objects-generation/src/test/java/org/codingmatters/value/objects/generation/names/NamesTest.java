@@ -42,6 +42,9 @@ public class NamesTest {
                     .addProperty(property().name("single").type(type().typeRef("val").typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)))
                     .addProperty(property().name("multiple").type(type().cardinality(PropertyCardinality.LIST).typeRef("val").typeKind(TypeKind.IN_SPEC_VALUE_OBJECT)))
             )
+            .addValue(valueSpec().name("nameClash")
+                    .addProperty(property().name("names").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
+            )
             .build();
     private ClassLoaderHelper classes;
 
@@ -117,7 +120,7 @@ public class NamesTest {
         assertThat(classes.get("org.generated.Val").get(),
                 is(aPublic().interface_()
                         .with(aStatic().public_().method()
-                                .named("names")
+                                .named("names_")
                                 .withoutParameters()
                                 .returning(classes.get("org.generated.names.ValNames").get())
                         )
@@ -128,7 +131,7 @@ public class NamesTest {
     @Test
     public void givenCallingNameMethod__whenPropertyHasIdentifierName__thenNameReturned() throws Exception {
         assertThat(
-                classes.get("org.generated.Val").call("names").call("prop1").get(),
+                classes.get("org.generated.Val").call("names_").call("prop1").get(),
                 is("prop1")
         );
     }
@@ -136,7 +139,7 @@ public class NamesTest {
     @Test
     public void givenCallingNameMethod__whenPropertyHasRawHint__thenRawNameReturned() throws Exception {
         assertThat(
-                classes.get("org.generated.Val").call("names").call("prop2").get(),
+                classes.get("org.generated.Val").call("names_").call("prop2").get(),
                 is("a-long-name")
         );
     }
@@ -144,7 +147,7 @@ public class NamesTest {
     @Test
     public void givenComplexField__whenCallingNameMethod__thenFieldName() throws Exception {
         assertThat(
-                classes.get("org.generated.ReferencingVal").call("names").call("single").get(),
+                classes.get("org.generated.ReferencingVal").call("names_").call("single").get(),
                 is("single")
         );
     }
@@ -152,7 +155,7 @@ public class NamesTest {
     @Test
     public void givenComplexField__whenCallingNamesMethod__thenReferencedNamesAreAccessible() throws Exception {
         assertThat(
-                classes.get("org.generated.ReferencingVal").call("names").call("singleNames").call("prop2").get(),
+                classes.get("org.generated.ReferencingVal").call("names_").call("singleNames").call("prop2").get(),
                 is("a-long-name")
         );
     }

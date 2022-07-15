@@ -11,10 +11,10 @@ public class BookNamesTest {
 
     @Test
     public void names() throws Exception {
-        assertThat(Book.names().name(), is("name"));
-        assertThat(Book.names().author(), is("author"));
-        assertThat(Book.names().authorNames().email(), is("email"));
-        assertThat(Book.names().reviews(), is("reviews"));
-        assertThat(Book.names().reviewsNames().authorNames().addressNames().postalCode(), is("postalCode"));
+        assertThat(Book.names_().name(), is("name"));
+        assertThat(Book.names_().author(), is("author"));
+        assertThat(Book.names_().authorNames().email(), is("email"));
+        assertThat(Book.names_().reviews(), is("reviews"));
+        assertThat(Book.names_().reviewsNames().authorNames().addressNames().postalCode(), is("postalCode"));
     }
 }
