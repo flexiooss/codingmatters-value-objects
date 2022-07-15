@@ -83,7 +83,7 @@ public class OptionalValue {
     }
 
     public boolean isEmpty() {
-        return ! value.isEmpty();
+        return value.isEmpty();
     }
 
     public void ifPresent(Consumer<? super PropertyValue.Value> consumer) {

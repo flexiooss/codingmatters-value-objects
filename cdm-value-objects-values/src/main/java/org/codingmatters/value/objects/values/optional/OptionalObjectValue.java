@@ -43,7 +43,7 @@ public class OptionalObjectValue {
     }
 
     public boolean isEmpty() {
-        return ! value.isPresent();
+        return value.isEmpty();
     }
 
     public void ifPresent(Consumer<? super ObjectValue> consumer) {
