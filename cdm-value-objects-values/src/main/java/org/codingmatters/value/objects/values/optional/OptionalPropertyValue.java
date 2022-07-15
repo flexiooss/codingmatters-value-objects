@@ -17,31 +17,31 @@ public class OptionalPropertyValue {
     }
 
     public Optional<PropertyValue.Type> type() {
-        if(this.value.isPresent()) return Optional.empty();
-        return Optional.of(this.value.get().type());
+        if(this.value.isEmpty()) return Optional.empty();
+        return Optional.ofNullable(this.value.get().type());
     }
 
     public Optional<PropertyValue.Cardinality> cardinality() {
-        if(this.value.isPresent()) return Optional.empty();
-        return Optional.of(this.value.get().cardinality());
+        if(this.value.isEmpty()) return Optional.empty();
+        return Optional.ofNullable(this.value.get().cardinality());
 
     }
 
-    public Optional<PropertyValue.Value> single() {
-        if(this.value.isPresent()) return Optional.empty();
-        if(! this.value.get().cardinality().equals(PropertyValue.Cardinality.SINGLE)) {
-            return Optional.empty();
+    public OptionalValue single() {
+        if(this.value.isEmpty()) return new OptionalValue(null);
+        if(! PropertyValue.Cardinality.SINGLE.equals(this.value.get().cardinality())) {
+            return new OptionalValue(null);
         } else {
-            return Optional.of(this.value.get().single());
+            return new OptionalValue(this.value.get().single());
         }
     }
 
-    public Optional<PropertyValue.Value[]> multiple() {
-        if(this.value.isPresent()) return Optional.empty();
-        if(! this.value.get().cardinality().equals(PropertyValue.Cardinality.MULTIPLE)) {
-            return Optional.empty();
+    public OptionalMultipleValue multiple() {
+        if(this.value.isEmpty()) return new OptionalMultipleValue(null);
+        if(! PropertyValue.Cardinality.MULTIPLE.equals(this.value.get().cardinality())) {
+            return new OptionalMultipleValue(null);
         } else {
-            return Optional.of(this.value.get().multiple());
+            return new OptionalMultipleValue(this.value.get().multiple());
         }
     }
 
@@ -55,7 +55,7 @@ public class OptionalPropertyValue {
     }
 
     public boolean isEmpty() {
-        return ! value.isPresent();
+        return value.isEmpty();
     }
 
     public void ifPresent(Consumer<? super PropertyValue> consumer) {
