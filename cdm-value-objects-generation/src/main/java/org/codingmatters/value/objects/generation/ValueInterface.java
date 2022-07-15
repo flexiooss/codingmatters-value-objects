@@ -280,7 +280,7 @@ public class ValueInterface {
     }
 
     private MethodSpec createNamesStaticMethod() {
-        return MethodSpec.methodBuilder("names")
+        return MethodSpec.methodBuilder("names_")
                 .addModifiers(STATIC, PUBLIC)
                 .returns(this.types.namesType())
                 .addStatement("return $T.INSTANCE", this.types.namesType())
