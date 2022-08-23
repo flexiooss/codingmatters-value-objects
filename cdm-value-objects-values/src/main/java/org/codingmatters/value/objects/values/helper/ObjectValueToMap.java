@@ -10,6 +10,10 @@ import java.util.Map;
 
 public class ObjectValueToMap {
     static public Map<String, Object> toMap(ObjectValue value) {
+        if (value == null) {
+            return null;
+        }
+
         HashMap<String, Object> result = new HashMap<>();
         for (String key : value.propertyNames()) {
             result.put(key, toMap(value.property(key)));
