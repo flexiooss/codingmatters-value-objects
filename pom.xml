@@ -7,12 +7,12 @@
     <parent>
         <groupId>org.codingmatters</groupId>
         <artifactId>codingmatters-parent</artifactId>
-        <version>1.32.0</version>
+        <version>1.33.0</version>
     </parent>
 
     <groupId>org.codingmatters.value.objects</groupId>
     <artifactId>codingmatters-value-objects</artifactId>
-    <version>1.77.0</version>
+    <version>1.78.0</version>
     <packaging>pom</packaging>
 
     <name>Value Objects Generator</name>
@@ -43,13 +43,13 @@
     <repositories>
         <repository>
             <id>codingmatters-snapshots</id>
-            <url>http://maven.ci.flexio.io:8080/repository/codingmatters-snapshots/</url>
+            <url>https://mvn.ci.flexio.io/codingmatters-snapshots/</url>
             <releases><enabled>false</enabled></releases>
             <snapshots><enabled>true</enabled></snapshots>
         </repository>
         <repository>
             <id>codingmatters-releases</id>
-            <url>http://maven.ci.flexio.io:8080/repository/codingmatters-releases/</url>
+            <url>https://mvn.ci.flexio.io/codingmatters-releases/</url>
             <releases><enabled>true</enabled></releases>
             <snapshots><enabled>false</enabled></snapshots>
         </repository>
@@ -58,13 +58,13 @@
     <pluginRepositories>
         <pluginRepository>
             <id>codingmatters-snapshots</id>
-            <url>http://maven.ci.flexio.io:8080/repository/codingmatters-snapshots/</url>
+            <url>https://mvn.ci.flexio.io/codingmatters-snapshots/</url>
             <releases><enabled>false</enabled></releases>
             <snapshots><enabled>true</enabled></snapshots>
         </pluginRepository>
         <pluginRepository>
             <id>codingmatters-releases</id>
-            <url>http://maven.ci.flexio.io:8080/repository/codingmatters-releases/</url>
+            <url>https://mvn.ci.flexio.io/codingmatters-releases/</url>
             <releases><enabled>true</enabled></releases>
             <snapshots><enabled>false</enabled></snapshots>
         </pluginRepository>
@@ -91,74 +91,74 @@
             <dependency>
                 <groupId>org.codingmatters.tests</groupId>
                 <artifactId>codingmatters-reflect-unit</artifactId>
-                <version>1.38.0</version>
+                <version>1.39.0</version>
             </dependency>
 
             <!--BOM-->
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-spec</artifactId>
-                <version>1.77.0</version>
+                <version>1.78.0</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-generation-commons</artifactId>
-                <version>1.77.0</version>
+                <version>1.78.0</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-generation</artifactId>
-                <version>1.77.0</version>
+                <version>1.78.0</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-generation-main</artifactId>
-                <version>1.77.0</version>
+                <version>1.78.0</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-json</artifactId>
-                <version>1.77.0</version>
+                <version>1.78.0</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-maven-plugin</artifactId>
-                <version>1.77.0</version>
+                <version>1.78.0</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-demo</artifactId>
-                <version>1.77.0</version>
+                <version>1.78.0</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-values</artifactId>
-                <version>1.77.0</version>
+                <version>1.78.0</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-matchers</artifactId>
-                <version>1.77.0</version>
+                <version>1.78.0</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-doc</artifactId>
-                <version>1.77.0</version>
+                <version>1.78.0</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-php</artifactId>
-                <version>1.77.0</version>
+                <version>1.78.0</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-yaml-parser</artifactId>
-                <version>1.77.0</version>
+                <version>1.78.0</version>
             </dependency>
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-js</artifactId>
-                <version>1.77.0</version>
+                <version>1.78.0</version>
             </dependency>
             <!--//BOM-->
         </dependencies>
@@ -170,7 +170,7 @@
                 <plugin>
                     <groupId>org.codingmatters.value.objects</groupId>
                     <artifactId>cdm-value-objects-maven-plugin</artifactId>
-                    <version>1.77.0</version>
+                    <version>1.78.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
