@@ -15,6 +15,10 @@ public interface PropertyValue {
         return new Builder();
     }
 
+    static PropertyValue single(Value value) {
+        return new PropertyValueImpl(value.type(), Cardinality.SINGLE, new Value[]{value});
+    }
+
     static PropertyValue multiple(Type type, Value ... values) {
         if(values != null) {
             for (Value value : values) {
