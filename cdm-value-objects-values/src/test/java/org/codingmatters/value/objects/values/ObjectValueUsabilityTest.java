@@ -113,4 +113,25 @@ public class ObjectValueUsabilityTest {
 
         assertThat(changed.toString(), is("{nested={prop=changed (STRING)} (OBJECT)}"));
     }
+
+    @Test
+    public void givenMultiplePropertyValue__whenGettingValueFromIndex_andBuildingPropertyValueFromValue__thenPropertyValueProperlyBuilt() throws Exception {
+        ObjectValue o = ObjectValue.builder()
+                .property("toto", PropertyValue.multiple(PropertyValue.Type.STRING, va -> va.stringValue("tutu"), va -> va.stringValue("tata")))
+                .build();
+        int index = 1;
+
+        PropertyValue.Value val;
+        if(o.property("toto").cardinality().equals(PropertyValue.Cardinality.MULTIPLE)) {
+            val = o.property("toto").multiple()[index];
+        } else {
+            val = o.property("toto").single();
+        }
+
+        PropertyValue value = PropertyValue.single(val);
+
+        assertThat(value.type(), is(PropertyValue.Type.STRING));
+        assertThat(value.cardinality(), is(PropertyValue.Cardinality.SINGLE));
+        assertThat(value.single().stringValue(), is("tata"));
+    }
 }
