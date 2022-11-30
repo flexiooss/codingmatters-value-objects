@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 public class ObjectValueWriter {
+
     public void write(JsonGenerator generator, ObjectValue value) throws IOException {
         this.writeObject(generator, value);
     }
@@ -67,12 +68,16 @@ public class ObjectValueWriter {
     }
 
     private void writeObject(JsonGenerator generator, ObjectValue objectValue) throws IOException {
-        generator.writeStartObject();
-        for (String property : objectValue.propertyNames()) {
-            generator.writeFieldName(property);
-            this.writeValue(generator, objectValue.property(property));
+        if (objectValue == null) {
+            generator.writeNull();
+        } else {
+            generator.writeStartObject();
+            for (String property : objectValue.propertyNames()) {
+                generator.writeFieldName(property);
+                this.writeValue(generator, objectValue.property(property));
+            }
+            generator.writeEndObject();
         }
-        generator.writeEndObject();
     }
 
     public void writeMultipleValue(JsonGenerator generator, PropertyValue.Value[] multiple, PropertyValue.Type type) throws IOException {

@@ -9,8 +9,8 @@ import org.junit.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 public class ObjectValueWriterTest {
 
@@ -103,6 +103,29 @@ public class ObjectValueWriterTest {
         );
     }
 
+    @Test
+    public void nullObject() throws Exception {
+        assertThat(this.write((ObjectValue) null), is("null"));
+    }
+
+    @Test
+    public void nullObjectInList() throws Exception {
+        assertThat(this.write(
+                        ObjectValue.builder()
+                                .property("list", PropertyValue.multiple(PropertyValue.Type.OBJECT, val -> val.objectValue((ObjectValue) null)))
+                                .build()),
+                is("{\"list\":[null]}")
+        );
+
+        assertThat(this.write(
+                        ObjectValue.builder()
+                                .property("list", PropertyValue.multiple(PropertyValue.Type.OBJECT,
+                                        val -> val.objectValue((ObjectValue) null),
+                                        val -> val.objectValue(ObjectValue.builder().property("a", a -> a.longValue(12L)))
+                                )).build()),
+                is("{\"list\":[null,{\"a\":12}]}")
+        );
+    }
 
     private String write(ObjectValue.Builder builder) throws IOException {
         return this.write(builder.build());
