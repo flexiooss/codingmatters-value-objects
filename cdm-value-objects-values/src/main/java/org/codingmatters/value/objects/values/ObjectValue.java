@@ -47,9 +47,11 @@ public interface ObjectValue {
             this.properties.put(property, value);
             return this;
         }
+
         public Builder property(String property, PropertyValue.Builder value) {
             return this.property(property, value != null ? value.build() : null);
         }
+
         public Builder property(String property, Consumer<PropertyValue.Builder> value) {
             PropertyValue.Builder builder = PropertyValue.builder();
             if (value != null) {
@@ -67,12 +69,15 @@ public interface ObjectValue {
     OptionalObjectValue opt();
 
     boolean has(String property);
+
     PropertyValue property(String property);
-    String [] propertyNames();
+
+    String[] propertyNames();
 
     default Optional<PropertyValue> nonNullProperty(String property, PropertyValue.Type type, PropertyValue.Cardinality cardinality) {
         if (this.has(property)
-                && ! this.property(property).isNullValue()
+                && this.property(property) != null
+                && !this.property(property).isNullValue()
                 && type.equals(this.property(property).type())
                 && cardinality.equals(this.property(property).cardinality())) {
             return Optional.of(this.property(property));
@@ -92,12 +97,15 @@ public interface ObjectValue {
     default ObjectValue withProperty(String property, PropertyValue value) {
         return ObjectValue.from(this).property(property, value).build();
     }
+
     default ObjectValue withProperty(String property, PropertyValue.Builder value) {
         return ObjectValue.from(this).property(property, value).build();
     }
+
     default ObjectValue withProperty(String property, Consumer<PropertyValue.Builder> value) {
         return ObjectValue.from(this).property(property, value).build();
     }
+
     default ObjectValue withChangedProperty(String property, PropertyValue.Changer changer) {
         PropertyValue.Builder builder = PropertyValue.Builder.from(this.property(property));
         builder = changer.configure(builder);
@@ -112,6 +120,7 @@ public interface ObjectValue {
     default Builder toBuilder() {
         return from(this);
     }
+
     default Map<String, Object> toMap() {
         return ObjectValueToMap.toMap(this);
     }
