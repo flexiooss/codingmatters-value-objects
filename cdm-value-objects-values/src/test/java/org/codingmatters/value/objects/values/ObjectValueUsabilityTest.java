@@ -2,9 +2,10 @@ package org.codingmatters.value.objects.values;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ObjectValueUsabilityTest {
 
@@ -23,7 +24,7 @@ public class ObjectValueUsabilityTest {
     @Test
     public void singleNonNullProperty() {
         final ObjectValue singlePropertyObjectValue = ObjectValue.builder()
-                .property("prop", v->v.stringValue("value"))
+                .property("prop", v -> v.stringValue("value"))
                 .property("nullProp", PropertyValue.builder().build())
                 .build();
 
@@ -36,8 +37,8 @@ public class ObjectValueUsabilityTest {
 
         final ObjectValue multipleStringPropertyObjectValue = ObjectValue.builder()
                 .property("prop", PropertyValue.multiple(PropertyValue.Type.STRING,
-                        v->v.stringValue("value1"),
-                        v->v.stringValue("value2")
+                        v -> v.stringValue("value1"),
+                        v -> v.stringValue("value2")
                 ))
                 .build();
 
@@ -45,8 +46,8 @@ public class ObjectValueUsabilityTest {
 
         final ObjectValue multipleNumberPropertyObjectValue = ObjectValue.builder()
                 .property("prop", PropertyValue.multiple(PropertyValue.Type.DOUBLE,
-                        v->v.doubleValue(0d),
-                        v->v.doubleValue(1d)
+                        v -> v.doubleValue(0d),
+                        v -> v.doubleValue(1d)
                 ))
                 .build();
 
@@ -57,8 +58,8 @@ public class ObjectValueUsabilityTest {
     public void multipleNonNullProperty() {
         final ObjectValue multiplePropertyObjectValue = ObjectValue.builder()
                 .property("prop", PropertyValue.multiple(PropertyValue.Type.STRING,
-                        v->v.stringValue("value1"),
-                        v->v.stringValue("value2")
+                        v -> v.stringValue("value1"),
+                        v -> v.stringValue("value2")
                 ))
                 .build();
 
@@ -66,13 +67,13 @@ public class ObjectValueUsabilityTest {
         assertFalse(multiplePropertyObjectValue.multipleNonNullProperty("prop", PropertyValue.Type.OBJECT).isPresent());
         assertThat(multiplePropertyObjectValue.multipleNonNullProperty("prop", PropertyValue.Type.STRING).get(),
                 is(PropertyValue.multiple(PropertyValue.Type.STRING,
-                        v->v.stringValue("value1"),
-                        v->v.stringValue("value2")
+                        v -> v.stringValue("value1"),
+                        v -> v.stringValue("value2")
                 ))
         );
 
         final ObjectValue singlePropertyObjectValue = ObjectValue.builder()
-                .property("prop", v->v.objectValue(ObjectValue.builder().build()))
+                .property("prop", v -> v.objectValue(ObjectValue.builder().build()))
                 .build();
 
         assertFalse(singlePropertyObjectValue.multipleNonNullProperty("prop", PropertyValue.Type.STRING).isPresent());
@@ -122,7 +123,7 @@ public class ObjectValueUsabilityTest {
         int index = 1;
 
         PropertyValue.Value val;
-        if(o.property("toto").cardinality().equals(PropertyValue.Cardinality.MULTIPLE)) {
+        if (o.property("toto").cardinality().equals(PropertyValue.Cardinality.MULTIPLE)) {
             val = o.property("toto").multiple()[index];
         } else {
             val = o.property("toto").single();
@@ -133,5 +134,11 @@ public class ObjectValueUsabilityTest {
         assertThat(value.type(), is(PropertyValue.Type.STRING));
         assertThat(value.cardinality(), is(PropertyValue.Cardinality.SINGLE));
         assertThat(value.single().stringValue(), is("tata"));
+    }
+
+    @Test
+    public void givenNullProperty() {
+        ObjectValue value = ObjectValue.builder().property("prop", (PropertyValue) null).build();
+        assertTrue(value.singleNonNullProperty("prop", PropertyValue.Type.OBJECT).isEmpty());
     }
 }
