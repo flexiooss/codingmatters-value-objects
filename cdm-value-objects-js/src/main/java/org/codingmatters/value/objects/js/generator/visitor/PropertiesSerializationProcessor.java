@@ -98,8 +98,19 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     }
 
     @Override
-    public void process( ValueObjectTypePrimitiveType primitiveType ) throws ProcessingException {
-
+    public void process( ValueObjectTypePrimitiveType primitiveType ) throws ProcessingException{
+        if (
+                primitiveType.type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.DATE ||
+                primitiveType.type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.TIME ||
+                primitiveType.type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.DATE_TIME ||
+                primitiveType.type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.TZ_DATE_TIME
+        ){
+            try {
+                writer.string( ".toJSON()" );
+            } catch( IOException e ){
+                throw new ProcessingException( "Error processing primitive type: " + currentProperty, e );
+            }
+        }
     }
 
     @Override
