@@ -1,4 +1,4 @@
-import {TestCase} from 'code-altimeter-js'
+import {TestCase} from '@flexio-oss/code-altimeter-js'
 import '../org/package'
 import {globalFlexioImport} from '@flexio-oss/js-commons-bundle/global-import-registry'
 import {FlexDate, FlexDateTime, FlexTime, FlexZonedDateTime} from '@flexio-oss/js-commons-bundle/flex-types'

@@ -59,7 +59,6 @@ public class RunJsTest {
         processBuilder.directory( new File( dir ) );
         processBuilder.command("hbshed", "test");
         Process process = processBuilder.start();
-
         process.waitFor(120, TimeUnit.SECONDS);
         printError(process);
         assertThat(process.exitValue(), is(0));

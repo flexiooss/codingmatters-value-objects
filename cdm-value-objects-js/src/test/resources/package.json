@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "hotballoon-shed": {
     "build": {
-      "builder": "webpack4",
+      "builder": "webpack5",
       "entries": [
         "src/main/js/bootstrap.js"
       ],
@@ -16,7 +16,7 @@
     }
   },
   "devDependencies": {
-    "code-altimeter-js": "https://github.com/flexiooss/code-altimeter-js.git",
-    "@flexio-oss/js-commons-bundle": "1.0.0-dev"
+    "@flexio-oss/code-altimeter-js": "1.11.0",
+    "@flexio-oss/js-commons-bundle": "1.62.0"
   }
 }
