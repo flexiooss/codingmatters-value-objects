@@ -110,7 +110,8 @@ public class BuilderFromMapTest {
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
         this.compiled = CompiledCode.builder().source(this.dir.getRoot()).compile();
 //        this.fileHelper.printJavaContent("", this.dir.getRoot());
-        this.fileHelper.printFile(this.dir.getRoot(), "ValueWithNumbers.java");
+        this.fileHelper.printFile(this.dir.getRoot(), "ValueWithDateTimeImpl.java");
+        this.fileHelper.printFile(this.dir.getRoot(), "ValueWithDateTime.java");
     }
 
 

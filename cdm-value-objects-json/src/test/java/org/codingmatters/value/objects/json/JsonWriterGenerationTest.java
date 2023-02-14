@@ -32,8 +32,8 @@ import java.time.*;
 import java.util.Base64;
 
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Created by nelt on 3/30/17.
@@ -106,7 +106,7 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.ExampleValueWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             this.compiled.on(writer).invoke("write", JsonGenerator.class, ExampleValue.class).with(generator, value);
             generator.close();
@@ -130,7 +130,7 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.ExampleValueWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             this.compiled.on(writer).invoke("write", JsonGenerator.class, ExampleValue.class).with(generator, value);
             generator.close();
@@ -157,7 +157,7 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.ExampleValueWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             this.compiled.on(writer).invoke("write", JsonGenerator.class, ExampleValue.class).with(generator, value);
             generator.close();
@@ -183,7 +183,7 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.ExampleValueWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             this.compiled.on(writer).invoke("write", JsonGenerator.class, ExampleValue.class).with(generator, value);
             generator.close();
@@ -210,12 +210,12 @@ public class JsonWriterGenerationTest {
                 .doubleProp(12.12d)
                 .booleanProp(true)
                 .dateProp(LocalDate.parse("2011-12-03"))
-                .timeProp(LocalTime.parse("10:15:30"))
-                .dateTimeProp(LocalDateTime.parse("2011-12-03T10:15:30"))
-                .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30+01:00"))
+                .timeProp(LocalTime.parse("10:15:30.123456789"))
+                .dateTimeProp(LocalDateTime.parse("2011-12-03T10:15:30.123456789"))
+                .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30.123456789+01:00"))
                 .build();
         Object writer = this.compiled.getClass("org.generated.json.SimplePropsWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             this.compiled.on(writer).invoke("write", JsonGenerator.class, SimpleProps.class).with(generator, value);
             generator.close();
@@ -230,9 +230,9 @@ public class JsonWriterGenerationTest {
                             "\"doubleProp\":12.12," +
                             "\"booleanProp\":true," +
                             "\"dateProp\":\"2011-12-03\"," +
-                            "\"timeProp\":\"10:15:30\"," +
-                            "\"dateTimeProp\":\"2011-12-03T10:15:30\"," +
-                            "\"tzDateTimeProp\":\"2011-12-03T10:15:30+01:00\"" +
+                            "\"timeProp\":\"10:15:30.123456789\"," +
+                            "\"dateTimeProp\":\"2011-12-03T10:15:30.123456789\"," +
+                            "\"tzDateTimeProp\":\"2011-12-03T10:15:30.123456789+01:00\"" +
                             "}")
             );
         }
@@ -245,7 +245,7 @@ public class JsonWriterGenerationTest {
                 .doubleProp(12d)
                 .build();
         Object writer = this.compiled.getClass("org.generated.json.SimplePropsWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             this.compiled.on(writer).invoke("write", JsonGenerator.class, SimpleProps.class).with(generator, value);
             generator.close();
@@ -283,9 +283,9 @@ public class JsonWriterGenerationTest {
                 .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30+01:00"))
                 .build();
         Object writer = this.compiled.getClass("org.generated.json.SimplePropsWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
-            this.compiled.on(writer).invoke("writeArray", JsonGenerator.class, SimpleProps[].class).with(generator, new SimpleProps[] {value, value});
+            this.compiled.on(writer).invoke("writeArray", JsonGenerator.class, SimpleProps[].class).with(generator, new SimpleProps[]{value, value});
             generator.close();
 
             assertThat(
@@ -323,9 +323,9 @@ public class JsonWriterGenerationTest {
     @Test
     public void writeEmptyArray() throws Exception {
         Object writer = this.compiled.getClass("org.generated.json.SimplePropsWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
-            this.compiled.on(writer).invoke("writeArray", JsonGenerator.class, SimpleProps[].class).with(generator, new SimpleProps[] {});
+            this.compiled.on(writer).invoke("writeArray", JsonGenerator.class, SimpleProps[].class).with(generator, new SimpleProps[]{});
             generator.close();
 
             assertThat(
@@ -338,7 +338,7 @@ public class JsonWriterGenerationTest {
     @Test
     public void writeNullArray() throws Exception {
         Object writer = this.compiled.getClass("org.generated.json.SimplePropsWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             this.compiled.on(writer).invoke("writeArray", JsonGenerator.class, SimpleProps[].class).with(generator, null);
             generator.close();
@@ -357,7 +357,7 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.BinaryWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             this.compiled.on(writer).invoke("write", JsonGenerator.class, Binary.class).with(generator, value);
             generator.close();
@@ -379,12 +379,16 @@ public class JsonWriterGenerationTest {
                 .doubleProp(12.12d)
                 .booleanProp(true)
                 .dateProp(LocalDate.parse("2011-12-03"))
-                .timeProp(LocalTime.parse("10:15:30"))
+                .timeProp(
+                        LocalTime.parse("10:15:30.123456789"), LocalTime.parse("10:15:30.12345678"), LocalTime.parse("10:15:30.1234567"),
+                        LocalTime.parse("10:15:30.123456"), LocalTime.parse("10:15:30.12345"), LocalTime.parse("10:15:30.1234"),
+                        LocalTime.parse("10:15:30.123"), LocalTime.parse("10:15:30.12"), LocalTime.parse("10:15:30.1"), LocalTime.parse("10:15:30")
+                )
                 .dateTimeProp(LocalDateTime.parse("2011-12-03T10:15:30"))
                 .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30+01:00"))
                 .build();
         Object writer = this.compiled.getClass("org.generated.json.ArraySimplePropsWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             this.compiled.on(writer).invoke("write", JsonGenerator.class, ArraySimpleProps.class).with(generator, value);
             generator.close();
@@ -399,7 +403,7 @@ public class JsonWriterGenerationTest {
                             "\"doubleProp\":[12.12]," +
                             "\"booleanProp\":[true]," +
                             "\"dateProp\":[\"2011-12-03\"]," +
-                            "\"timeProp\":[\"10:15:30\"]," +
+                            "\"timeProp\":[\"10:15:30.123456789\",\"10:15:30.12345678\",\"10:15:30.1234567\",\"10:15:30.123456\",\"10:15:30.12345\",\"10:15:30.1234\",\"10:15:30.123\",\"10:15:30.12\",\"10:15:30.1\",\"10:15:30\"]," +
                             "\"dateTimeProp\":[\"2011-12-03T10:15:30\"]," +
                             "\"tzDateTimeProp\":[\"2011-12-03T10:15:30+01:00\"]" +
                             "}")
@@ -422,7 +426,7 @@ public class JsonWriterGenerationTest {
                 .tzDateTimeProp((ZonedDateTime) null)
                 .build();
         Object writer = this.compiled.getClass("org.generated.json.ArraySimplePropsWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             this.compiled.on(writer).invoke("write", JsonGenerator.class, ArraySimpleProps.class).with(generator, value);
             generator.close();
@@ -457,7 +461,7 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.RefValueWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             this.compiled.on(writer).invoke("write", JsonGenerator.class, RefValue.class).with(generator, value);
             generator.close();
@@ -480,7 +484,7 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.RefValueWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             this.compiled.on(writer).invoke("write", JsonGenerator.class, RefValue.class).with(generator, value);
             generator.close();
@@ -504,7 +508,7 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.ValueObjectPropsWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             this.compiled.on(writer).invoke("write", JsonGenerator.class, ValueObjectProps.class).with(generator, value);
             generator.close();
@@ -528,7 +532,7 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.EmbeddedWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             this.compiled.on(writer).invoke("write", JsonGenerator.class, Embedded.class).with(generator, value);
             generator.close();
@@ -548,7 +552,7 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.EnumPropertiesWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             this.compiled.on(writer).invoke("write", JsonGenerator.class, EnumProperties.class).with(generator, value);
             generator.close();
@@ -572,7 +576,7 @@ public class JsonWriterGenerationTest {
                 .build();
 
         Object writer = this.compiled.getClass("org.generated.json.InSpecEnumPropertiesWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             this.compiled.on(writer).invoke("write", JsonGenerator.class, InSpecEnumProperties.class).with(generator, value);
             generator.close();
@@ -593,7 +597,7 @@ public class JsonWriterGenerationTest {
     public void rawPropertyNameHint() throws Exception {
         Hints value = Hints.builder().propName("value").build();
         ObjectHelper writer = this.classes.get("org.generated.json.HintsWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             writer.call("write", JsonGenerator.class, Hints.class).with(generator, value);
             generator.close();
@@ -623,7 +627,7 @@ public class JsonWriterGenerationTest {
                         .build())
                 .build();
         ObjectHelper writer = this.classes.get("org.generated.raw.json.RootTypeWriter").newInstance();
-        try(OutputStream out = new ByteArrayOutputStream()) {
+        try (OutputStream out = new ByteArrayOutputStream()) {
             JsonGenerator generator = this.factory.createGenerator(out);
             writer.call("write", JsonGenerator.class, RootType.class).with(generator, value);
             generator.close();
@@ -635,13 +639,13 @@ public class JsonWriterGenerationTest {
                     is("{" +
                             "\"root-prop\":\"root\"," +
                             "\"nested-one\":{" +
-                                "\"nested-one-prop\":\"nested one\"," +
-                                "\"nested-two\":{" +
-                                    "\"nested-two-prop\":\"nested two\"," +
-                                    "\"nested-three\":{" +
-                                        "\"nested-three-prop\":\"nested three\"" +
-                                    "}" +
-                                "}" +
+                            "\"nested-one-prop\":\"nested one\"," +
+                            "\"nested-two\":{" +
+                            "\"nested-two-prop\":\"nested two\"," +
+                            "\"nested-three\":{" +
+                            "\"nested-three-prop\":\"nested three\"" +
+                            "}" +
+                            "}" +
                             "}" +
                             "}"
                     )

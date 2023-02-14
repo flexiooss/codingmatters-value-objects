@@ -560,7 +560,7 @@ public class JsonReaderGenerationTest {
                 "\"doubleProp\":[12.12]," +
                 "\"booleanProp\":[true]," +
                 "\"dateProp\":[\"2011-12-03\"]," +
-                "\"timeProp\":[\"10:15:30\"]," +
+                "\"timeProp\":[\"10:15:30.123456789\",\"10:15:30.12345678\",\"10:15:30.1234567\",\"10:15:30.123456\",\"10:15:30.12345\",\"10:15:30.1234\",\"10:15:30.123\",\"10:15:30.12\",\"10:15:30.1\",\"10:15:30\"]," +
                 "\"dateTimeProp\":[\"2011-12-03T10:15:30\"]," +
                 "\"tzDateTimeProp\":[\"2011-12-03T10:15:30+01:00\"]" +
                 "}";
@@ -579,7 +579,11 @@ public class JsonReaderGenerationTest {
                                     .doubleProp(12.12d)
                                     .booleanProp(true)
                                     .dateProp(LocalDate.parse("2011-12-03"))
-                                    .timeProp(LocalTime.parse("10:15:30"))
+                                    .timeProp(
+                                            LocalTime.parse("10:15:30.123456789"), LocalTime.parse("10:15:30.12345678"), LocalTime.parse("10:15:30.1234567"),
+                                            LocalTime.parse("10:15:30.123456"), LocalTime.parse("10:15:30.12345"), LocalTime.parse("10:15:30.1234"),
+                                            LocalTime.parse("10:15:30.123"), LocalTime.parse("10:15:30.12"), LocalTime.parse("10:15:30.1"), LocalTime.parse("10:15:30")
+                                    )
                                     .dateTimeProp(LocalDateTime.parse("2011-12-03T10:15:30"))
                                     .tzDateTimeProp(ZonedDateTime.parse("2011-12-03T10:15:30+01:00"))
                                     .build()
