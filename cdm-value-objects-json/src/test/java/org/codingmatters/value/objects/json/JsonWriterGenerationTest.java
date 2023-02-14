@@ -239,6 +239,36 @@ public class JsonWriterGenerationTest {
     }
 
     @Test
+    public void writeFloatsWith0Decimal() throws Exception {
+        SimpleProps value = new SimpleProps.Builder()
+                .floatProp(12f)
+                .doubleProp(12d)
+                .build();
+        Object writer = this.compiled.getClass("org.generated.json.SimplePropsWriter").newInstance();
+        try(OutputStream out = new ByteArrayOutputStream()) {
+            JsonGenerator generator = this.factory.createGenerator(out);
+            this.compiled.on(writer).invoke("write", JsonGenerator.class, SimpleProps.class).with(generator, value);
+            generator.close();
+
+            assertThat(
+                    out.toString(),
+                    is("{" +
+                            "\"stringProp\":null," +
+                            "\"integerProp\":null," +
+                            "\"longProp\":null," +
+                            "\"floatProp\":12.0," +
+                            "\"doubleProp\":12.0," +
+                            "\"booleanProp\":null," +
+                            "\"dateProp\":null," +
+                            "\"timeProp\":null," +
+                            "\"dateTimeProp\":null," +
+                            "\"tzDateTimeProp\":null" +
+                            "}")
+            );
+        }
+    }
+
+    @Test
     public void writeArray() throws Exception {
         SimpleProps value = new SimpleProps.Builder()
                 .stringProp("str")
