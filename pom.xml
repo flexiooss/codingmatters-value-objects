@@ -79,6 +79,7 @@
         <module>cdm-value-objects-doc</module>
         <module>cdm-value-objects-generation-main</module>
         <module>cdm-value-objects-values</module>
+        <module>cdm-value-objects-value-cast</module>
         <module>cdm-value-objects-demo</module>
         <module>cdm-value-objects-php</module>
         <module>cdm-value-objects-yaml-parser</module>
@@ -133,6 +134,11 @@
             <dependency>
                 <groupId>org.codingmatters.value.objects</groupId>
                 <artifactId>cdm-value-objects-values</artifactId>
+                <version>1.86.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codingmatters.value.objects</groupId>
+                <artifactId>cdm-value-objects-value-cast</artifactId>
                 <version>1.86.0-SNAPSHOT</version>
             </dependency>
             <dependency>
