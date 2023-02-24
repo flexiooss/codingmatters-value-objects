@@ -162,10 +162,24 @@ public class ObjectValueUsabilityTest {
         assertThat(multipleString.multipleNonNullProperty("plok", PropertyValue.Type.STRING).isPresent(), is(true));
         assertThat(multipleString.multipleNonNullProperty("plok", PropertyValue.Type.OBJECT).isPresent(), is(false));
 
+        multipleString = ObjectValue.builder()
+                .property("plok", PropertyValue.multiple(PropertyValue.Type.STRING, PropertyValue.builder().buildValue()))
+                .build();
+        // build a value multiple null string
+
+        assertThat(multipleString.multipleNonNullProperty("plok", PropertyValue.Type.STRING).isPresent(), is(true));
+        assertThat(multipleString.multipleNonNullProperty("plok", PropertyValue.Type.OBJECT).isPresent(), is(false));
+
         ObjectValue multipleObject = ObjectValue.builder()
                 .property("plok", PropertyValue.multiple(PropertyValue.Type.OBJECT,
                         v -> v.objectValue(ObjectValue.builder().build())
                 ))
+                .build();
+        assertThat(multipleObject.multipleNonNullProperty("plok", PropertyValue.Type.STRING).isPresent(), is(false));
+        assertThat(multipleObject.multipleNonNullProperty("plok", PropertyValue.Type.OBJECT).isPresent(), is(true));
+
+        multipleObject = ObjectValue.builder()
+                .property("plok", PropertyValue.multiple(PropertyValue.Type.OBJECT, PropertyValue.builder().buildValue()))
                 .build();
         assertThat(multipleObject.multipleNonNullProperty("plok", PropertyValue.Type.STRING).isPresent(), is(false));
         assertThat(multipleObject.multipleNonNullProperty("plok", PropertyValue.Type.OBJECT).isPresent(), is(true));
