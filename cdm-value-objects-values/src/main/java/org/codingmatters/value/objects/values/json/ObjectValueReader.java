@@ -71,20 +71,6 @@ public class ObjectValueReader {
             } else if (parser.currentToken().isNumeric()) {
                 return PropertyValue.builder()
                             .doubleValue(Double.parseDouble(parser.getText()));
-//                try {
-//                    Number number = NumberFormat.getNumberInstance().parse(parser.getText());
-//                    return PropertyValue.builder()
-//                            .doubleValue(number.doubleValue());
-//                } catch (ParseException e) {
-//                    throw new IOException("failed parsing number", e);
-//                }
-//                if (parser.getText().contains(".")) {
-//                    return PropertyValue.builder()
-//                            .doubleValue(Double.parseDouble(parser.getText()));
-//                } else {
-//                    return PropertyValue.builder()
-//                            .longValue(Long.parseLong(parser.getText()));
-//                }
             } else {
                 return PropertyValue.builder()
                         .stringValue(parser.getText());
