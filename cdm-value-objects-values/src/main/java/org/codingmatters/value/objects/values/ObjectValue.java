@@ -78,12 +78,16 @@ public interface ObjectValue {
         if (this.has(property)
                 && this.property(property) != null
                 && !this.property(property).isNullValue()
-                && type.equals(this.property(property).type())
-                && cardinality.equals(this.property(property).cardinality())) {
-            return Optional.of(this.property(property));
-        } else {
-            return Optional.empty();
+                && cardinality.equals(this.property(property).cardinality())
+        ) {
+            // Cannot check the type if the list is empty
+            if (cardinality.equals(PropertyValue.Cardinality.MULTIPLE) && this.property(property).multiple().length == 0) {
+                return Optional.of(this.property(property));
+            } else if (type.equals(this.property(property).type())) {
+                return Optional.of(this.property(property));
+            }
         }
+        return Optional.empty();
     }
 
     default Optional<PropertyValue> singleNonNullProperty(String property, PropertyValue.Type type) {
@@ -115,6 +119,7 @@ public interface ObjectValue {
 
     interface Changer {
         ObjectValue.Builder configure(ObjectValue.Builder builder);
+
     }
 
     default Builder toBuilder() {

@@ -345,7 +345,7 @@ public class ValueImplementation {
                                 ".parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)\n" +
                                 ".toFormatter()",
                                 DateTimeFormatterBuilder.class,
-                                "yyyy[-MM[-dd['T'HH[:mm[:ss[.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S]]]]]]",
+                                "yyyy[-MM[-dd['T'HH[:mm[:ss[.SSSSSSSSS][.SSSSSSSS][.SSSSSSS][.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S]]]",
                                 ChronoField.class
                         )
                         .build())
@@ -360,7 +360,7 @@ public class ValueImplementation {
                                 ".parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)\n" +
                                 ".toFormatter()",
                                 DateTimeFormatterBuilder.class,
-                                "HH[:mm[:ss[.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S]]]",
+                                "HH[:mm[:ss[.SSSSSSSSS][.SSSSSSSS][.SSSSSSS][.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S]]]",
                                 ChronoField.class
                         )
                         .build())

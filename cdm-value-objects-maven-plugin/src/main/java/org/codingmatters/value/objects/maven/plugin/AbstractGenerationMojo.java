@@ -16,6 +16,9 @@ public abstract class AbstractGenerationMojo extends AbstractMojo {
     @Parameter(required = true, alias = "input-spec")
     private File inputSpecification;
 
+    @Parameter(alias = "input-spec-resource")
+    private String inputSpecificationResource;
+
     @Parameter(defaultValue = "${basedir}/target/generated-sources/", alias="output-dir")
     private File outputDirectory;
 
