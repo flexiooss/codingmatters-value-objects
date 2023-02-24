@@ -152,20 +152,6 @@ public class ValueReader {
                 .returns(TypeName.VOID)
                 .addException(ClassName.get(IOException.class))
                 ;
-        /*
-        parser.nextToken();
-        if(parser.currentToken().isStructStart()) {
-          int level = 1;
-          do {
-            parser.nextToken();
-            if (parser.currentToken().isStructStart()) {
-              level++;
-            } else if (parser.currentToken().isStructEnd()) {
-              level--;
-            }
-          } while(level > 0);
-        }
-         */
         result.addStatement("parser.nextToken()");
         result.beginControlFlow("if(parser.currentToken().isStructStart())")
                 .addStatement("int level = 1")
