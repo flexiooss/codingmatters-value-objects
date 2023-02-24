@@ -2,6 +2,9 @@ package org.codingmatters.value.objects.values;
 
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
@@ -140,5 +143,31 @@ public class ObjectValueUsabilityTest {
     public void givenNullProperty() {
         ObjectValue value = ObjectValue.builder().property("prop", (PropertyValue) null).build();
         assertTrue(value.singleNonNullProperty("prop", PropertyValue.Type.OBJECT).isEmpty());
+    }
+
+    @Test
+    public void givenListEmpty() {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("plok", List.of());
+        ObjectValue value = ObjectValue.fromMap(map).build();
+        assertThat(value.multipleNonNullProperty("plok", PropertyValue.Type.STRING).isPresent(), is(true));
+        assertThat(value.multipleNonNullProperty("plok", PropertyValue.Type.OBJECT).isPresent(), is(true));
+    }
+
+    @Test
+    public void givenTypedList() {
+        ObjectValue multipleString = ObjectValue.builder()
+                .property("plok", PropertyValue.multiple(PropertyValue.Type.STRING, v -> v.stringValue("plok")))
+                .build();
+        assertThat(multipleString.multipleNonNullProperty("plok", PropertyValue.Type.STRING).isPresent(), is(true));
+        assertThat(multipleString.multipleNonNullProperty("plok", PropertyValue.Type.OBJECT).isPresent(), is(false));
+
+        ObjectValue multipleObject = ObjectValue.builder()
+                .property("plok", PropertyValue.multiple(PropertyValue.Type.OBJECT,
+                        v -> v.objectValue(ObjectValue.builder().build())
+                ))
+                .build();
+        assertThat(multipleObject.multipleNonNullProperty("plok", PropertyValue.Type.STRING).isPresent(), is(false));
+        assertThat(multipleObject.multipleNonNullProperty("plok", PropertyValue.Type.OBJECT).isPresent(), is(true));
     }
 }
