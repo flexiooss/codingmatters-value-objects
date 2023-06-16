@@ -41,6 +41,7 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ValueObjectProperty property ) throws ProcessingException {
         try {
+            currentIndex = 'a';
             if( property.type() instanceof YamlEnumInSpecEnum ){
                 write.line( "try {" );
                 write.indent();

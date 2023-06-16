@@ -19,6 +19,8 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     private final JsClassGenerator writer;
     private String currentProperty;
 
+    private char currentLambdaVar;
+
     public PropertiesSerializationProcessor( JsClassGenerator jsClassGenerator ) {
         this.writer = jsClassGenerator;
     }
@@ -37,6 +39,7 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     public void process( ValueObjectProperty property ) throws ProcessingException {
         this.currentProperty = property.name();
         try {
+            resetVars();
             writer.line( "if (!isNull(this." + NamingUtility.attributeName( currentProperty ) + ")) {" );
             writer.indent();
             writer.string( "jsonObject['" + currentProperty + "'] = ");
@@ -51,6 +54,16 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
         } catch( IOException e ){
             throw new ProcessingException( "Error processing object value", e );
         }
+    }
+
+    private void resetVars() {
+        this.currentLambdaVar = 'a';
+    }
+
+    private char getAndIncrementLambdaVar() {
+        char currentLambdaVar1 = this.currentLambdaVar;
+        this.currentLambdaVar++;
+        return currentLambdaVar1;
     }
 
     @Override
@@ -81,35 +94,39 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
     }
 
     @Override
-    public void process( ValueObjectTypeList list ) throws ProcessingException {
+    public void process(ValueObjectTypeList list) throws ProcessingException {
         try {
-            if( list.type() instanceof YamlEnum ){
-                writer.string( ".mapToArray(x => x == null ? null : x" );
-                list.type().process( this );
-                writer.string( ")" );
-            }else{
-                writer.string( ".mapToArray(x => x" );
-                list.type().process( this );
-                writer.string( ")" );
+            if (list.type() instanceof YamlEnum) {
+                char lambdaVar = getAndIncrementLambdaVar();
+                writer.string(".mapToArray(" + lambdaVar + " => " + lambdaVar + " == null ? null : " + lambdaVar);
+                list.type().process(this);
+                writer.string(")");
+            } else {
+                char lambdaVar = getAndIncrementLambdaVar();
+                writer.string(".mapToArray(" + lambdaVar + " => " + lambdaVar);
+                list.type().process(this);
+                writer.string(")");
             }
-        } catch( IOException e ){
-            throw new ProcessingException( "Error processing primitive type: " + currentProperty, e );
+        } catch (IOException e) {
+            throw new ProcessingException("Error processing primitive type: " + currentProperty, e);
         }
     }
 
     @Override
-    public void process( ValueObjectTypePrimitiveType primitiveType ) throws ProcessingException{
-        if (
-                primitiveType.type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.DATE ||
-                primitiveType.type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.TIME ||
-                primitiveType.type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.DATE_TIME ||
-                primitiveType.type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.TZ_DATE_TIME
-        ){
-            try {
-                writer.string( ".toJSON()" );
-            } catch( IOException e ){
-                throw new ProcessingException( "Error processing primitive type: " + currentProperty, e );
+    public void process(ValueObjectTypePrimitiveType primitiveType) throws ProcessingException {
+        try {
+            if (
+                    primitiveType.type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.DATE ||
+                            primitiveType.type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.TIME ||
+                            primitiveType.type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.DATE_TIME ||
+                            primitiveType.type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.TZ_DATE_TIME
+            ) {
+                writer.string(".toJSON()");
+            } else if (primitiveType.type() == ValueObjectTypePrimitiveType.YAML_PRIMITIVE_TYPES.OBJECT) {
+                writer.string(".toObject()");
             }
+        } catch (IOException e) {
+            throw new ProcessingException("Error processing primitive type: " + currentProperty, e);
         }
     }
 
