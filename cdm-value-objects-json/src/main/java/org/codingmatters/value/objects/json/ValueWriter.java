@@ -18,10 +18,16 @@ import java.util.regex.Matcher;
  * Created by nelt on 3/30/17.
  */
 public class ValueWriter {
+    public enum NullStrategy {
+        OMIT, KEEP
+    }
+
+    private final NullStrategy nullStrategy;
     private final ValueConfiguration types;
     private final List<PropertySpec> propertySpecs;
 
-    public ValueWriter(ValueConfiguration types, List<PropertySpec> propertySpecs) {
+    public ValueWriter(NullStrategy nullStrategy, ValueConfiguration types, List<PropertySpec> propertySpecs) {
+        this.nullStrategy = nullStrategy;
         this.types = types;
         this.propertySpecs = propertySpecs;
     }
@@ -77,9 +83,8 @@ public class ValueWriter {
     }
 
     private void writePropertyStatements(MethodSpec.Builder method, PropertySpec propertySpec) {
-        method.addStatement("generator.writeFieldName($S)", this.fieldName(propertySpec));
-
         method.beginControlFlow("if(value.$L() != null)", propertySpec.name());
+        method.addStatement("generator.writeFieldName($S)", this.fieldName(propertySpec));
         if(propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE) {
             this.writeSimpleProperty(method, propertySpec);
         } else if(propertySpec.typeSpec().typeKind() == TypeKind.ENUM) {
@@ -90,8 +95,14 @@ public class ValueWriter {
             System.out.println(propertySpec.typeSpec().typeKind() + " : " + propertySpec.typeSpec().typeRef());
             method.addStatement("generator.writeNull()");
         }
-        method.nextControlFlow("else")
-                .addStatement("generator.writeNull()")
+
+        if(this.nullStrategy.equals(NullStrategy.KEEP)) {
+            method.nextControlFlow("else")
+                    .addStatement("generator.writeFieldName($S)", this.fieldName(propertySpec))
+                    .addStatement("generator.writeNull()");
+        }
+
+        method
                 .endControlFlow();
     }
 

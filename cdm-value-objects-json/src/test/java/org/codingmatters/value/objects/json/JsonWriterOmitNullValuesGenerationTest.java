@@ -38,7 +38,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * Created by nelt on 3/30/17.
  */
-public class JsonWriterGenerationTest {
+public class JsonWriterOmitNullValuesGenerationTest {
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
 
@@ -63,15 +63,15 @@ public class JsonWriterGenerationTest {
 
         spec = loadSpec("ref.yaml");
         new SpecCodeGenerator(spec, "org.generated.ref", dir.getRoot()).generate();
-        new JsonFrameworkGenerator(spec, "org.generated.ref", dir.getRoot()).generate();
+        new JsonFrameworkGenerator(spec, "org.generated.ref", dir.getRoot(), ValueWriter.NullStrategy.OMIT).generate();
 
         spec = loadSpec("spec.yaml");
         new SpecCodeGenerator(spec, "org.generated", dir.getRoot()).generate();
-        new JsonFrameworkGenerator(spec, "org.generated", dir.getRoot()).generate();
+        new JsonFrameworkGenerator(spec, "org.generated", dir.getRoot(), ValueWriter.NullStrategy.OMIT).generate();
 
         spec = loadSpec("raw-naming.yaml");
         new SpecCodeGenerator(spec, "org.generated.raw", dir.getRoot()).generate();
-        new JsonFrameworkGenerator(spec, "org.generated.raw", dir.getRoot()).generate();
+        new JsonFrameworkGenerator(spec, "org.generated.raw", dir.getRoot(), ValueWriter.NullStrategy.OMIT).generate();
 
         this.compiled = new CompiledCode.Builder()
                 .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))
@@ -114,10 +114,7 @@ public class JsonWriterGenerationTest {
             assertThat(
                     out.toString(),
                     is("{" +
-                            "\"prop\":\"a value\"," +
-                            "\"listProp\":null," +
-                            "\"complex\":null," +
-                            "\"complexList\":null" +
+                            "\"prop\":\"a value\"" +
                             "}")
             );
         }
@@ -138,10 +135,7 @@ public class JsonWriterGenerationTest {
             assertThat(
                     out.toString(),
                     is("{" +
-                            "\"prop\":null," +
-                            "\"listProp\":[\"a\",\"b\",\"c\"]," +
-                            "\"complex\":null," +
-                            "\"complexList\":null" +
+                            "\"listProp\":[\"a\",\"b\",\"c\"]" +
                             "}")
             );
         }
@@ -165,10 +159,7 @@ public class JsonWriterGenerationTest {
             assertThat(
                     out.toString(),
                     is("{" +
-                            "\"prop\":null," +
-                            "\"listProp\":null," +
-                            "\"complex\":{\"sub\":\"a value\"}," +
-                            "\"complexList\":null" +
+                            "\"complex\":{\"sub\":\"a value\"}" +
                             "}")
             );
         }
@@ -191,9 +182,6 @@ public class JsonWriterGenerationTest {
             assertThat(
                     out.toString(),
                     is("{" +
-                            "\"prop\":null," +
-                            "\"listProp\":null," +
-                            "\"complex\":null," +
                             "\"complexList\":[{\"sub\":\"a value\"}]" +
                             "}")
             );
@@ -253,16 +241,8 @@ public class JsonWriterGenerationTest {
             assertThat(
                     out.toString(),
                     is("{" +
-                            "\"stringProp\":null," +
-                            "\"integerProp\":null," +
-                            "\"longProp\":null," +
                             "\"floatProp\":12.0," +
-                            "\"doubleProp\":12.0," +
-                            "\"booleanProp\":null," +
-                            "\"dateProp\":null," +
-                            "\"timeProp\":null," +
-                            "\"dateTimeProp\":null," +
-                            "\"tzDateTimeProp\":null" +
+                            "\"doubleProp\":12.0" +
                             "}")
             );
         }
@@ -492,7 +472,6 @@ public class JsonWriterGenerationTest {
             assertThat(
                     out.toString(),
                     is("{" +
-                            "\"ref\":null," +
                             "\"refs\":[null]}"
                     )
             );
