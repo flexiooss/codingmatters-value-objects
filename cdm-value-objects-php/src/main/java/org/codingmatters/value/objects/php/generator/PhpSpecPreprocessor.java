@@ -65,13 +65,26 @@ public class PhpSpecPreprocessor {
                     rootValueSpec.addProperty( createInSpecPropertyForEmbeddedType( propertySpec, embeddedPackage ) );
                 }
             } else if( isEnum( propertySpec ) ) {
-                String enumName = capitalizedFirst( valueSpecName ) + capitalizedFirst( propertyName );
-                PropertySpec enumProperty = createEnumProperty(
-                        propertySpec.typeSpec().enumValues(),
-                        valuePackage + "." + valueSpecName.toLowerCase() + "." + enumName,
-                        propertySpec.typeSpec().cardinality(),
-                        propertySpec.name() );
-                rootValueSpec.addProperty( enumProperty );
+                PropertySpec enumProperty;
+                if (propertySpec.typeSpec().isInSpecEnum()) {
+                    String enumName = capitalizedFirst(valueSpecName) + capitalizedFirst(propertyName);
+                    enumProperty = createEnumProperty(
+                            propertySpec.typeSpec().enumValues(),
+                            valuePackage + "." + valueSpecName.toLowerCase() + "." + enumName,
+                            propertySpec.typeSpec().cardinality(),
+                            propertySpec.name());
+                    rootValueSpec.addProperty(enumProperty);
+                } else {
+                    PropertyTypeSpec.Builder enumPropertyType = PropertyTypeSpec.type()
+                            .typeRef(propertySpec.typeSpec().typeRef())
+                            .typeKind(TypeKind.ENUM)
+                            .cardinality(propertySpec.typeSpec().cardinality());
+                    enumProperty = PropertySpec.property()
+                            .name(propertySpec.name())
+                            .type(enumPropertyType)
+                            .build();
+                    rootValueSpec.addProperty(enumProperty);
+                }
             } else if( propertySpec.typeSpec().typeKind() == IN_SPEC_VALUE_OBJECT ) {
                 rootValueSpec.addProperty( PropertySpec.property()
                         .name( propertySpec.name() )
