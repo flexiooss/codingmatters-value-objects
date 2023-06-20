@@ -181,14 +181,14 @@ public class SpecProcessorTest {
         assertThat( spec.valueSpec().propertySpecs().size(), is( 2 ) );
 
         assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().typeKind(), is( TypeKind.ENUM ) );
-        assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().typeRef(), is( "org.generated.enumproperties.EnumPropertiesSingle" ) );
+        assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().typeRef(), is( "java.time.DayOfWeek" ) );
         assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
-        assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().isInSpecEnum(), is( true ) );
+        assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().isInSpecEnum(), is( false ) );
 
         assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().typeKind(), is( TypeKind.ENUM ) );
-        assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().typeRef(), is( "org.generated.enumproperties.EnumPropertiesMultipleList" ) );
+        assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().typeRef(), is( "java.time.DayOfWeekList" ) );
         assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
-        assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().isInSpecEnum(), is( true ) );
+        assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().isInSpecEnum(), is( false ) );
     }
 
     @Test
