@@ -68,7 +68,7 @@ public class AnonymousValueSpec implements PropertyHolderSpec {
 
     @Override
     public PropertySpec propertySpec(String name) {
-        return this.propertySpecs.stream().filter(propertySpec -> propertySpec.name().equals(name)).findFirst().orElse(null);
+        return this.propertySpecs.stream().filter(propertySpec -> name.equals(propertySpec.name())).findFirst().orElse(null);
     }
 
     @Override
