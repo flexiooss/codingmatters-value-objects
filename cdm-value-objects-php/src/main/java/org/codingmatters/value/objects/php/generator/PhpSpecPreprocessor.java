@@ -117,7 +117,7 @@ public class PhpSpecPreprocessor {
         String name = naming.property( propertySpec.name() );
         String valueSpecName = naming.property( valueSpec.name() );
         if( listType.typeSpec().typeKind() == ENUM ) {
-            if (propertySpec.typeSpec().embeddedValueSpec().propertySpec("$list").typeSpec().isInSpecEnum()) {
+            if (listType.typeSpec().isInSpecEnum()) {
                 String enumName = capitalizedFirst(valueSpecName) + capitalizedFirst(name);
                 rootValueSpec.addProperty(createEnumProperty(
                         listType.typeSpec().enumValues(),
@@ -127,7 +127,11 @@ public class PhpSpecPreprocessor {
                 ));
             } else {
                 PropertyTypeSpec.Builder enumPropertyType = PropertyTypeSpec.type()
-                        .typeRef(propertySpec.typeSpec().embeddedValueSpec().propertySpec("$list").typeSpec().typeRef() + "List")
+                        .typeRef(   propertySpec.typeSpec().embeddedValueSpec().propertySpec("$list").typeSpec().typeRef().toLowerCase() +
+                                    propertySpec.typeSpec().embeddedValueSpec().propertySpec("$list").typeSpec().typeRef().substring(
+                                            propertySpec.typeSpec().embeddedValueSpec().propertySpec("$list").typeSpec().typeRef().lastIndexOf(".")
+                                    ) +
+                                    "List")
                         .typeKind(TypeKind.ENUM)
                         .cardinality(PropertyCardinality.LIST);
                 PropertySpec enumListProperty = PropertySpec.property()

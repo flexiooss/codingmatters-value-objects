@@ -2,10 +2,12 @@ package org.codingmatters.value.objects.php;
 
 import org.codingmatters.value.objects.generation.preprocessor.PackagedValueSpec;
 import org.codingmatters.value.objects.php.generator.PhpSpecPreprocessor;
+import org.codingmatters.value.objects.php.generator.SpecPhpGenerator;
 import org.codingmatters.value.objects.php.generator.SpecReaderPhp;
 import org.codingmatters.value.objects.spec.*;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -186,7 +188,7 @@ public class SpecProcessorTest {
         assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().isInSpecEnum(), is( false ) );
 
         assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().typeKind(), is( TypeKind.ENUM ) );
-        assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().typeRef(), is( "java.time.DayOfWeekList" ) );
+        assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().typeRef(), is( "java.time.dayofweek.DayOfWeekList" ) );
         assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
         assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().isInSpecEnum(), is( false ) );
     }
