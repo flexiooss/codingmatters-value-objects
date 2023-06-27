@@ -136,13 +136,14 @@ public class ValueConfiguration {
             try {
                 return ClassName.get(Class.forName(propertySpec.typeSpec().typeRef()));
             } catch (ClassNotFoundException e) {
-                System.err.println("class not found : " + propertySpec.typeSpec().typeRef());
-                System.err.println("classpath :");
-                for (URL url : ((URLClassLoader) Thread.currentThread().getContextClassLoader()).getURLs()) {
-                    System.err.println("\t- " + url.toString());
-                }
-                e.printStackTrace();
-                return null;
+                return ClassName.bestGuess(propertySpec.typeSpec().typeRef());
+//                System.err.println("class not found : " + propertySpec.typeSpec().typeRef());
+//                System.err.println("classpath :");
+//                for (URL url : ((URLClassLoader) Thread.currentThread().getContextClassLoader()).getURLs()) {
+//                    System.err.println("\t- " + url.toString());
+//                }
+//                e.printStackTrace();
+//                return null;
             }
         }
     }
