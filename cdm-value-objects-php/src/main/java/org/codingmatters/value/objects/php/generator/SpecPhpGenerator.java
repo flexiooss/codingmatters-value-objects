@@ -36,7 +36,7 @@ public class SpecPhpGenerator {
         ArrayList<PhpPackagedValueSpec> listValues = new ArrayList<>();
         for( PackagedValueSpec valueSpec : packagedValueSpecs ) {
             for( PropertySpec propertySpec : valueSpec.valueSpec().propertySpecs() ) {
-                if( propertySpec.typeSpec().typeKind() == TypeKind.ENUM ) {
+                if( propertySpec.typeSpec().typeKind() == TypeKind.ENUM && propertySpec.typeSpec().isInSpecEnum()) {
                     String typeRef = propertySpec.typeSpec().typeRef();
                     if( propertySpec.typeSpec().cardinality() == PropertyCardinality.LIST ) {
                         typeRef = typeRef.substring( 0, typeRef.length() - 4 );
@@ -46,8 +46,10 @@ public class SpecPhpGenerator {
                             propertySpec.typeSpec().enumValues() )
                     );
                 }
-                if( propertySpec.typeSpec().cardinality() == PropertyCardinality.LIST ) {
-                    listValues.add( PhpTypedList.createPhpPackagedValueSpec( valueSpec, propertySpec ) );
+                if (propertySpec.typeSpec().cardinality() == PropertyCardinality.LIST) {
+                    if (propertySpec.typeSpec().typeKind() != TypeKind.ENUM || propertySpec.typeSpec().isInSpecEnum()) {
+                        listValues.add(PhpTypedList.createPhpPackagedValueSpec(valueSpec, propertySpec));
+                    }
                 }
             }
         }

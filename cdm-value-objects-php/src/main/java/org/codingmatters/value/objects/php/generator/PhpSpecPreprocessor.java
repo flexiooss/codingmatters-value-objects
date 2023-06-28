@@ -65,13 +65,26 @@ public class PhpSpecPreprocessor {
                     rootValueSpec.addProperty( createInSpecPropertyForEmbeddedType( propertySpec, embeddedPackage ) );
                 }
             } else if( isEnum( propertySpec ) ) {
-                String enumName = capitalizedFirst( valueSpecName ) + capitalizedFirst( propertyName );
-                PropertySpec enumProperty = createEnumProperty(
-                        propertySpec.typeSpec().enumValues(),
-                        valuePackage + "." + valueSpecName.toLowerCase() + "." + enumName,
-                        propertySpec.typeSpec().cardinality(),
-                        propertySpec.name() );
-                rootValueSpec.addProperty( enumProperty );
+                PropertySpec enumProperty;
+                if (propertySpec.typeSpec().isInSpecEnum()) {
+                    String enumName = capitalizedFirst(valueSpecName) + capitalizedFirst(propertyName);
+                    enumProperty = createEnumProperty(
+                            propertySpec.typeSpec().enumValues(),
+                            valuePackage + "." + valueSpecName.toLowerCase() + "." + enumName,
+                            propertySpec.typeSpec().cardinality(),
+                            propertySpec.name());
+                    rootValueSpec.addProperty(enumProperty);
+                } else {
+                    PropertyTypeSpec.Builder enumPropertyType = PropertyTypeSpec.type()
+                            .typeRef(propertySpec.typeSpec().typeRef())
+                            .typeKind(TypeKind.ENUM)
+                            .cardinality(propertySpec.typeSpec().cardinality());
+                    enumProperty = PropertySpec.property()
+                            .name(propertySpec.name())
+                            .type(enumPropertyType)
+                            .build();
+                    rootValueSpec.addProperty(enumProperty);
+                }
             } else if( propertySpec.typeSpec().typeKind() == IN_SPEC_VALUE_OBJECT ) {
                 rootValueSpec.addProperty( PropertySpec.property()
                         .name( propertySpec.name() )
@@ -104,13 +117,29 @@ public class PhpSpecPreprocessor {
         String name = naming.property( propertySpec.name() );
         String valueSpecName = naming.property( valueSpec.name() );
         if( listType.typeSpec().typeKind() == ENUM ) {
-            String enumName = capitalizedFirst( valueSpecName ) + capitalizedFirst( name );
-            rootValueSpec.addProperty( createEnumProperty(
-                    listType.typeSpec().enumValues(),
-                    valuePackage + "." + valueSpecName.toLowerCase() + "." + enumName + "List",
-                    propertySpec.typeSpec().cardinality(),
-                    name
-            ) );
+            if (listType.typeSpec().isInSpecEnum()) {
+                String enumName = capitalizedFirst(valueSpecName) + capitalizedFirst(name);
+                rootValueSpec.addProperty(createEnumProperty(
+                        listType.typeSpec().enumValues(),
+                        valuePackage + "." + valueSpecName.toLowerCase() + "." + enumName + "List",
+                        propertySpec.typeSpec().cardinality(),
+                        name
+                ));
+            } else {
+                PropertyTypeSpec.Builder enumPropertyType = PropertyTypeSpec.type()
+                        .typeRef(   propertySpec.typeSpec().embeddedValueSpec().propertySpec("$list").typeSpec().typeRef().toLowerCase() +
+                                    propertySpec.typeSpec().embeddedValueSpec().propertySpec("$list").typeSpec().typeRef().substring(
+                                            propertySpec.typeSpec().embeddedValueSpec().propertySpec("$list").typeSpec().typeRef().lastIndexOf(".")
+                                    ) +
+                                    "List")
+                        .typeKind(TypeKind.ENUM)
+                        .cardinality(PropertyCardinality.LIST);
+                PropertySpec enumListProperty = PropertySpec.property()
+                        .name(propertySpec.name())
+                        .type(enumPropertyType)
+                        .build();
+                rootValueSpec.addProperty(enumListProperty);
+            }
         } else if( listType.typeSpec().typeKind() == TypeKind.EMBEDDED ) {
             if( "$value-object".equals( listType.typeSpec().embeddedValueSpec().propertySpecs().get( 0 ).name() ) ) {
                 rootValueSpec.addProperty(

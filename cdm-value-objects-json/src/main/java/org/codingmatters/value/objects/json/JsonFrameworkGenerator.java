@@ -19,11 +19,13 @@ public class JsonFrameworkGenerator {
     private final Spec spec;
     private final String rootPackage;
     private final File rootDirectory;
+    private final ValueWriter.NullStrategy nullStrategy;
 
-    public JsonFrameworkGenerator(Spec spec, String rootPackage, File toDirectory) {
+    public JsonFrameworkGenerator(Spec spec, String rootPackage, File toDirectory, ValueWriter.NullStrategy nullStrategy) {
         this.spec = spec;
         this.rootPackage = rootPackage;
         this.rootDirectory = toDirectory;
+        this.nullStrategy = nullStrategy;
     }
 
     public void generate() throws IOException {
@@ -41,7 +43,7 @@ public class JsonFrameworkGenerator {
 
         ValueConfiguration types = new ValueConfiguration(this.rootPackage, valueSpec.packagename(), valueSpec.valueSpec());
 
-        TypeSpec valueWriter = new ValueWriter(types, valueSpec.valueSpec().propertySpecs()).type();
+        TypeSpec valueWriter = new ValueWriter(this.nullStrategy, types, valueSpec.valueSpec().propertySpecs()).type();
         writeJavaFile(jsonDir, valueJsonPackageName, valueWriter);
 
         TypeSpec valueReader = new ValueReader(types, valueSpec.valueSpec().propertySpecs()).type();

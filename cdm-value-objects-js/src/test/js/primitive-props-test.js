@@ -2,6 +2,7 @@ import {TestCase} from '@flexio-oss/code-altimeter-js'
 import '../org/package'
 import {globalFlexioImport} from '@flexio-oss/js-commons-bundle/global-import-registry'
 import {FlexDate, FlexDateTime, FlexTime, FlexZonedDateTime} from '@flexio-oss/js-commons-bundle/flex-types'
+import { isStrictObject } from '@flexio-oss/js-commons-bundle/assert'
 
 const assert = require('assert')
 
@@ -180,6 +181,31 @@ class PrimitivePropsTest extends TestCase {
     let object1 = builder.build()
     let object2 = globalFlexioImport.org.generated.PrimitivePropsBuilder.fromObject(object1.toObject());
     assert.deepEqual(object2, object1)
+  }
+
+  testToObject() {
+    let builder = new globalFlexioImport.org.generated.PrimitivePropsBuilder()
+    builder.stringProp('str')
+//    builder.bytesProp('bytes')
+    builder.integerProp(9)
+    builder.longProp(7)
+    builder.floatProp(9.7)
+    builder.doubleProp(7.9)
+    builder.booleanProp(true)
+    builder.dateProp(new FlexDate('2019-01-09'))
+    builder.timeProp(new FlexTime('14:17:32'))
+    builder.dateTimeProp(new FlexDateTime('2019-01-09T14:17:32'))
+    builder.tzDateTimeProp(new FlexZonedDateTime('2019-01-09T14:17:32-03:00'))
+    let ov = globalFlexioImport.io.flexio.flex_types.ObjectValue
+      .builder()
+      .stringValue('jean', 'tenbien')
+      .build()
+    builder.objectProp(ov)
+    let primitiveProp = builder.build()
+    let obj = primitiveProp.toObject();
+
+    assert.strictEqual(obj["objectProp"] instanceof globalFlexioImport.io.flexio.flex_types.ObjectValue, false);
+    isStrictObject(obj["objectProp"]);
   }
 
 }

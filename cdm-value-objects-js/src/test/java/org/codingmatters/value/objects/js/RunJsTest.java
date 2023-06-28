@@ -53,7 +53,7 @@ public class RunJsTest {
 
     @Ignore
     @Test
-    public void whenName_then() throws Exception {
+    public void runAllJsTests() throws Exception {
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
         System.out.println( "Running 'hbshed test' in " + dir );
         processBuilder.directory( new File( dir ) );

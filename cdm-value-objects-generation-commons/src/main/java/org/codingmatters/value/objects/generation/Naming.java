@@ -94,10 +94,30 @@ public class Naming {
         return false;
     }
 
+    public  boolean isAlreadyDefinedEnum(TypeDeclaration typeDeclaration) {
+        if(typeDeclaration.annotations() == null) return false;
+        for (AnnotationRef annotation : typeDeclaration.annotations()) {
+            if (annotation.name().equalsIgnoreCase("(already-defined-enum)")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public String alreadyDefined(TypeDeclaration typeDeclaration) {
         if(typeDeclaration.annotations() == null) return null;
         for (AnnotationRef annotation : typeDeclaration.annotations()) {
             if (annotation.name().equalsIgnoreCase("(already-defined)")) {
+                return annotation.structuredValue().value().toString();
+            }
+        }
+        return null;
+    }
+
+    public String alreadyDefinedEnum(TypeDeclaration typeDeclaration) {
+        if(typeDeclaration.annotations() == null) return null;
+        for (AnnotationRef annotation : typeDeclaration.annotations()) {
+            if (annotation.name().equalsIgnoreCase("(already-defined-enum)")) {
                 return annotation.structuredValue().value().toString();
             }
         }

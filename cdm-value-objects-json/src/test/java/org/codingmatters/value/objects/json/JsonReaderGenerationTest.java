@@ -62,12 +62,12 @@ public class JsonReaderGenerationTest {
     @Before
     public void setUp() throws Exception {Spec refSpec = loadSpec("ref.yaml");
         new SpecCodeGenerator(refSpec, "org.generated.ref", dir.getRoot()).generate();
-        new JsonFrameworkGenerator(refSpec, "org.generated.ref", dir.getRoot()).generate();
+        new JsonFrameworkGenerator(refSpec, "org.generated.ref", dir.getRoot(), ValueWriter.NullStrategy.KEEP).generate();
 
         this.spec = loadSpec("spec.yaml");
 
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
-        new JsonFrameworkGenerator(this.spec, "org.generated", dir.getRoot()).generate();
+        new JsonFrameworkGenerator(this.spec, "org.generated", dir.getRoot(), ValueWriter.NullStrategy.KEEP).generate();
         this.compiled = new CompiledCode.Builder()
                 .classpath(CompiledCode.findLibraryInClasspath("jackson-core"))
                 .source(this.dir.getRoot())

@@ -2,10 +2,12 @@ package org.codingmatters.value.objects.php;
 
 import org.codingmatters.value.objects.generation.preprocessor.PackagedValueSpec;
 import org.codingmatters.value.objects.php.generator.PhpSpecPreprocessor;
+import org.codingmatters.value.objects.php.generator.SpecPhpGenerator;
 import org.codingmatters.value.objects.php.generator.SpecReaderPhp;
 import org.codingmatters.value.objects.spec.*;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -181,14 +183,14 @@ public class SpecProcessorTest {
         assertThat( spec.valueSpec().propertySpecs().size(), is( 2 ) );
 
         assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().typeKind(), is( TypeKind.ENUM ) );
-        assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().typeRef(), is( "org.generated.enumproperties.EnumPropertiesSingle" ) );
+        assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().typeRef(), is( "java.time.DayOfWeek" ) );
         assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().cardinality(), is( PropertyCardinality.SINGLE ) );
-        assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().isInSpecEnum(), is( true ) );
+        assertThat( spec.valueSpec().propertySpec( "single" ).typeSpec().isInSpecEnum(), is( false ) );
 
         assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().typeKind(), is( TypeKind.ENUM ) );
-        assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().typeRef(), is( "org.generated.enumproperties.EnumPropertiesMultipleList" ) );
+        assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().typeRef(), is( "java.time.dayofweek.DayOfWeekList" ) );
         assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().cardinality(), is( PropertyCardinality.LIST ) );
-        assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().isInSpecEnum(), is( true ) );
+        assertThat( spec.valueSpec().propertySpec( "multiple" ).typeSpec().isInSpecEnum(), is( false ) );
     }
 
     @Test

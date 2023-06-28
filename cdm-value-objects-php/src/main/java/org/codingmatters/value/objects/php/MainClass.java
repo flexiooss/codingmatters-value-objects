@@ -19,7 +19,10 @@ public class MainClass {
     }
 
     public static void main( String[] args ) throws IOException {
-        String rootPath = System.getProperty( "generationTargetDir", "" );
+        String rootPath = System.getProperty( "generationTargetDir",
+                ""
+//                "/home/nico/workspaces/codingmatters/codingmatters-value-objects/cdm-value-objects-php/target/php-test"
+        );
         if( rootPath.equals( "" ) ) {
             System.out.println( "Generation target dir property not found" );
             System.exit( 1 );
