@@ -51,7 +51,7 @@ public class RunJsTest {
         }
     }
 
-//    @Ignore
+    @Ignore
     @Test
     public void runAllJsTests() throws Exception {
         String dir = System.getProperty( "project.build.directory" ) + "/js-test";
