@@ -56,7 +56,7 @@ public class JsValueListDeserializationProcessor implements ParsedYamlProcessor 
     @Override
     public void process( ObjectTypeInSpecValueObject inSpecValueObject ) throws ProcessingException {
         try{
-            write.string( "new " + NamingUtility.classFullName( inSpecValueObject.packageName() + "." + inSpecValueObject.inSpecValueObjectName() ) + "List( ..." + currentVariable + ".map( " + varMap + " => " );
+            write.string( "new " + NamingUtility.classFullName( inSpecValueObject.packageName() + "." + NamingUtility.className( inSpecValueObject.inSpecValueObjectName() ) ) + "List( ..." + currentVariable + ".map( " + varMap + " => " );
         } catch( IOException e ) {
             throw new ProcessingException( e );
         }
@@ -102,7 +102,7 @@ public class JsValueListDeserializationProcessor implements ParsedYamlProcessor 
     @Override
     public void process( YamlEnumExternalEnum externalEnum ) throws ProcessingException {
         try{
-            write.string( "new " + NamingUtility.classFullName( externalEnum.enumReference() ) + "List( ..." + currentVariable + ".map( " + varMap + " => " );
+            write.string( "new " + NamingUtility.classFullName( NamingUtility.externalEnumRef(externalEnum.enumReference())  ) + "List( ..." + currentVariable + ".map( " + varMap + " => " );
         } catch( IOException e ) {
             throw new ProcessingException( e );
         }

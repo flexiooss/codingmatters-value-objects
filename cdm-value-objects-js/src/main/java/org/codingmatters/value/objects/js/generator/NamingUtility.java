@@ -99,4 +99,9 @@ public class NamingUtility {
     public static String getApiName( String apiNameV10 ) {
         return apiNameV10.toLowerCase().replaceAll( "\\s+", "-" );
     }
+
+    public static String externalEnumRef(String enumReference) {
+        int beginIndex = enumReference.lastIndexOf(".");
+        return enumReference.substring(0, beginIndex).toLowerCase() + enumReference.substring(beginIndex);
+    }
 }

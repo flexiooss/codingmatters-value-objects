@@ -11,6 +11,7 @@ import org.codingmatters.value.objects.js.parser.model.types.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.stream.Collectors;
@@ -136,8 +137,12 @@ public class YamlSpecParser {
         if( object.get( "$enum" ) instanceof String ){
             String enumValue = (String) object.get( "$enum" );
             if( enumValue.contains( "," ) ){
-                String name = NamingUtils.camelCase( context.get( context.size() - 2 ) ) + NamingUtils.camelCase( context.get( context.size() - 1 ) );
-                return new YamlEnumInSpecEnum( name, NamingUtils.namespace( this.context ), Arrays.stream( enumValue.split( "," ) ).map( field->field.trim().toUpperCase() ).collect( Collectors.toList() ) );
+                String name =
+//                        NamingUtils.camelCase( context.get( context.size() - 2 ) ) +
+                        NamingUtils.camelCase( context.get( context.size() - 1 ) );
+                String namespace = NamingUtils.namespace(this.context);
+                List<String> enumValues = Arrays.stream(enumValue.split(",")).map(field -> field.trim().toUpperCase()).collect(Collectors.toList());
+                return new YamlEnumInSpecEnum( name, namespace, enumValues);
             }
         } else if( object.get( "$enum" ) instanceof Map ){
             String enumReference = (String) ((Map) object.get( "$enum" )).get( "$type" );

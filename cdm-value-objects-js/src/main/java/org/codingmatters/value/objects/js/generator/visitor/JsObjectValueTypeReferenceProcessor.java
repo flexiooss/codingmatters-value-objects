@@ -115,7 +115,7 @@ public class JsObjectValueTypeReferenceProcessor implements ParsedYamlProcessor 
     @Override
     public void process( YamlEnumExternalEnum externalEnum ) throws ProcessingException {
         try {
-            write.string( NamingUtility.className( externalEnum.enumReference() ) );
+            write.string( NamingUtility.className( NamingUtility.externalEnumRef(externalEnum.enumReference()) ) );
         } catch( IOException e ) {
             throw new ProcessingException( "Error Processing type", e );
         }

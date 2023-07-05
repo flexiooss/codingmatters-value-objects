@@ -1,16 +1,16 @@
 enumProperties:
   single:
     $enum:
-      $type: java.time.DayOfWeek
+      $type: org.generated.InSpecEnumProperties.Single
   multiple:
     $list:
       $enum:
-        $type: java.time.DayOfWeek
+        $type: org.generated.InSpecEnumProperties.Single
   reference:
-    $value-object: org.generated.ref.ExtReferenced
+    $value-object: org.generated.InSpecEnumProperties
   referenceList:
     $list:
-      $value-object: org.generated.ref.ExtReferenced
+      $value-object: org.generated.InSpecEnumProperties
   internalReference: $internal
   internalReferenceList:
     $list: $internal
