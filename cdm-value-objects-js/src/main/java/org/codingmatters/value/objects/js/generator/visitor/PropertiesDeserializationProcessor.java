@@ -78,7 +78,7 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ObjectTypeInSpecValueObject inSpecValueObject ) throws ProcessingException {
         try {
-            String builderName = NamingUtility.builderFullName( inSpecValueObject.packageName() + "." + inSpecValueObject.inSpecValueObjectName() );
+            String builderName = NamingUtility.builderFullName( inSpecValueObject.packageName() + "." + NamingUtility.className( inSpecValueObject.inSpecValueObjectName() ) );
             write.string( builderName + ".fromObject(" + currentVariable + ").build()" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );
@@ -176,7 +176,7 @@ public class PropertiesDeserializationProcessor implements ParsedYamlProcessor {
     @Override
     public void process( YamlEnumExternalEnum externalEnum ) throws ProcessingException {
         try {
-            String className = NamingUtility.classFullName( externalEnum.enumReference() );
+            String className = NamingUtility.classFullName( NamingUtility.externalEnumRef(externalEnum.enumReference()) );
             write.string( className + ".enumValueOf(" + currentVariable + ")" );
         } catch( IOException e ){
             throw new ProcessingException( "Error processing type", e );

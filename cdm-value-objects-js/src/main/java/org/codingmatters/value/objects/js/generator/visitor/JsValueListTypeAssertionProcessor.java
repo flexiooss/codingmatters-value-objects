@@ -48,7 +48,7 @@ public class JsValueListTypeAssertionProcessor implements ParsedYamlProcessor {
     @Override
     public void process( ObjectTypeInSpecValueObject inSpecValueObject ) throws ProcessingException {
         try{
-            write.string( NamingUtility.classFullName( inSpecValueObject.packageName() + "." + inSpecValueObject.inSpecValueObjectName() + "List" ) );
+            write.string( NamingUtility.classFullName( inSpecValueObject.packageName() + "." + NamingUtility.className(inSpecValueObject.inSpecValueObjectName()) + "List" ) );
         } catch( IOException e ) {
             throw new ProcessingException( e );
         }
@@ -129,7 +129,7 @@ public class JsValueListTypeAssertionProcessor implements ParsedYamlProcessor {
     @Override
     public void process( YamlEnumExternalEnum externalEnum ) throws ProcessingException {
         try{
-            write.string( NamingUtility.classFullName( externalEnum.enumReference() + "List" ) );
+            write.string( NamingUtility.classFullName( NamingUtility.externalEnumRef(externalEnum.enumReference()) + "List" ) );
         } catch( IOException e ) {
             throw new ProcessingException( e );
         }

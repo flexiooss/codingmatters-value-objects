@@ -8,10 +8,10 @@ class InSpecEnumTest extends TestCase {
 
   testBuilder() {
     let builder = new globalFlexioImport.org.generated.InSpecEnumPropertiesBuilder()
-    builder.single(globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesSingle.SA)
-    builder.multiple(new globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultipleList(
-      globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MB,
-      globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MC
+    builder.single(globalFlexioImport.org.generated.inspecenumproperties.Single.SA)
+    builder.multiple(new globalFlexioImport.org.generated.inspecenumproperties.MultipleList(
+      globalFlexioImport.org.generated.inspecenumproperties.Multiple.MB,
+      globalFlexioImport.org.generated.inspecenumproperties.Multiple.MC
       )
     )
     let inSpecEnum = builder.build()
@@ -24,25 +24,25 @@ class InSpecEnumTest extends TestCase {
 
   testObjectImmutable() {
     let builder = new globalFlexioImport.org.generated.InSpecEnumPropertiesBuilder()
-    builder.single(globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesSingle.SA)
-    builder.multiple(new globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultipleList(
-      globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MB,
-      globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MC
+    builder.single(globalFlexioImport.org.generated.inspecenumproperties.Single.SA)
+    builder.multiple(new globalFlexioImport.org.generated.inspecenumproperties.MultipleList(
+      globalFlexioImport.org.generated.inspecenumproperties.Multiple.MB,
+      globalFlexioImport.org.generated.inspecenumproperties.Multiple.MC
       )
     )
     let inSpecEnum = builder.build()
 
     assert.throws(() => {
-      inSpecEnum._single = globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesSingle.SB
+      inSpecEnum._single = globalFlexioImport.org.generated.inspecenumproperties.Single.SB
     }, TypeError)
   }
 
   testObjectFrozen() {
     let builder = new globalFlexioImport.org.generated.InSpecEnumPropertiesBuilder()
-    builder.single(globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesSingle.SA)
-    builder.multiple(new globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultipleList(
-      globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MB,
-      globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MC
+    builder.single(globalFlexioImport.org.generated.inspecenumproperties.Single.SA)
+    builder.multiple(new globalFlexioImport.org.generated.inspecenumproperties.MultipleList(
+      globalFlexioImport.org.generated.inspecenumproperties.Multiple.MB,
+      globalFlexioImport.org.generated.inspecenumproperties.Multiple.MC
       )
     )
     let inSpecEnum = builder.build()
@@ -54,10 +54,10 @@ class InSpecEnumTest extends TestCase {
 
   testSerialization() {
     let builder = new globalFlexioImport.org.generated.InSpecEnumPropertiesBuilder()
-    builder.single(globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesSingle.SA)
-    builder.multiple(new globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultipleList(
-      globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MB,
-      globalFlexioImport.org.generated.inspecenumproperties.InSpecEnumPropertiesMultiple.MC
+    builder.single(globalFlexioImport.org.generated.inspecenumproperties.Single.SA)
+    builder.multiple(new globalFlexioImport.org.generated.inspecenumproperties.MultipleList(
+      globalFlexioImport.org.generated.inspecenumproperties.Multiple.MB,
+      globalFlexioImport.org.generated.inspecenumproperties.Multiple.MC
       )
     )
     let inSpecEnum = builder.build()

@@ -15,6 +15,13 @@ import java.util.Locale;
 public class Main {
 
     public static void main( String[] args ) throws ProcessingException, GenerationException {
+//        if( args.length < 3 || args[2].isEmpty() ){
+//            args = new String[]{
+//                    "/home/nico/workspaces/codingmatters/codingmatters-value-objects/cdm-value-objects-js/src/test/resources/05_objectWithInSpecEnum.yaml",
+//                    "/home/nico/workspaces/codingmatters/codingmatters-value-objects/cdm-value-objects-js/target/js-test",
+//                    "org.test"
+//            };
+//        }
         if( args.length < 3 || args[2].isEmpty() ){
             System.out.println( "Args: <yaml spec file path> <target directory> <root package> [--no-sub-package]" );
             System.out.println( "    <yaml spec file path>: Yaml file path OR directory. If dir, then all yaml files in this dir will be generated in the same package" );

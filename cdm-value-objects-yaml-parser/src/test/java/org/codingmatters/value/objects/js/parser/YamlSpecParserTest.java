@@ -219,14 +219,14 @@ public class YamlSpecParserTest {
         ParsedValueObject value = (ParsedValueObject) spec.valueObjects().get( 0 );
 
         assertThat( value.properties().get( 0 ).name(), is( "single" ) );
-        assertThat( ((YamlEnumInSpecEnum) value.properties().get( 0 ).type()).name(), is( "InSpecEnumPropertiesSingle" ) );
+        assertThat( ((YamlEnumInSpecEnum) value.properties().get( 0 ).type()).name(), is( "Single" ) );
         assertThat( ((YamlEnumInSpecEnum) value.properties().get( 0 ).type()).namespace(), is( "inspecenumproperties" ) );
         assertThat( ((YamlEnumInSpecEnum) value.properties().get( 0 ).type()).values().toArray(), is( new String[]{ "SA", "SB", "SC" } ) );
 
         assertThat( value.properties().get( 1 ).name(), is( "multiple" ) );
         assertThat( ((ValueObjectTypeList) value.properties().get( 1 ).type()).name(), is( "InSpecEnumPropertiesMultipleList" ) );
         assertThat( ((ValueObjectTypeList) value.properties().get( 1 ).type()).packageName(), is( "org.generated.inspecenumproperties" ) );
-        assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) value.properties().get( 1 ).type()).type()).name(), is( "InSpecEnumPropertiesMultiple" ) );
+        assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) value.properties().get( 1 ).type()).type()).name(), is( "Multiple" ) );
         assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) value.properties().get( 1 ).type()).type()).namespace(), is( "inspecenumproperties" ) );
         assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) value.properties().get( 1 ).type()).type()).values().toArray(), is( new String[]{ "MA", "MB", "MC" } ) );
     }
@@ -287,7 +287,7 @@ public class YamlSpecParserTest {
         assertThat( ((ObjectTypeNested) value.properties().get( 1 ).type()).nestValueObject().properties().get( 1 ).name(), is( "enums" ) );
         assertThat( ((ValueObjectTypeList) ((ObjectTypeNested) value.properties().get( 1 ).type()).nestValueObject().properties().get( 1 ).type()).name(), is( "ComplexPropertyEnumsList" ) );
         assertThat( ((ValueObjectTypeList) ((ObjectTypeNested) value.properties().get( 1 ).type()).nestValueObject().properties().get( 1 ).type()).packageName(), is( "org.generated.enumlistinembedded.complexproperty" ) );
-        assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) ((ObjectTypeNested) value.properties().get( 1 ).type()).nestValueObject().properties().get( 1 ).type()).type()).name(), is( "ComplexPropertyEnums" ) );
+        assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) ((ObjectTypeNested) value.properties().get( 1 ).type()).nestValueObject().properties().get( 1 ).type()).type()).name(), is( "Enums" ) );
         assertThat( ((YamlEnumInSpecEnum) ((ValueObjectTypeList) ((ObjectTypeNested) value.properties().get( 1 ).type()).nestValueObject().properties().get( 1 ).type()).type()).values().toArray(), is( new String[]{ "A", "B", "C" } ) );
     }
 
