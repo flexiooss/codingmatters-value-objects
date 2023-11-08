@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.generation;
 
 import org.codingmatters.tests.compile.CompiledCode;
+import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
@@ -16,7 +17,7 @@ import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
 import static org.codingmatters.value.objects.spec.Spec.spec;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by nelt on 11/22/16.
@@ -25,6 +26,8 @@ public class EmbeddedObjectPropertySpecGenerationTest {
 
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
+    @Rule
+    public FileHelper fileHelper = new FileHelper();
 
     private final Spec spec  = spec()
             .addValue(valueSpec().name("val")
@@ -60,6 +63,8 @@ public class EmbeddedObjectPropertySpecGenerationTest {
     @Before
     public void setUp() throws Exception {
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
+
+        this.fileHelper.printFile(this.dir.getRoot(), "RefInEmbedded.java");
         this.compiled = CompiledCode.builder().source(this.dir.getRoot()).compile();
     }
 
