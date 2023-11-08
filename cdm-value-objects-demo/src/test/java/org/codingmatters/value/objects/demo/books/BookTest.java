@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
+import java.util.Arrays;
 import java.util.Locale;
 
 import static org.hamcrest.Matchers.*;
@@ -277,5 +278,34 @@ public class BookTest {
         ValueList<Book> filteredBooks = books.toBuilder().filtered(book -> !book.name().contains("bad")).build();
 
         assertThat(filteredBooks, contains(Book.builder().name("good book").build()));
+    }
+
+    @Test
+    public void collectionBuilderAdders() throws Exception {
+        Review ronaldReview = Review.builder().author(a -> a.name("Ronald")).build();
+        Review nancyReview = Review.builder().author(a -> a.name("Nancy")).build();
+        Review mikhailReview = Review.builder().author(a -> a.name("Mikhaïl")).build();
+        Review raissaReview = Review.builder().author(a -> a.name("Raïssa")).build();
+        Review billReview = Review.builder().author(a -> a.name("Bill")).build();
+        Review hillaryReview = Review.builder().author(a -> a.name("Hillary")).build();
+        Review borisReview = Review.builder().author(a -> a.name("Boris")).build();
+        Review nainaReview = Review.builder().author(a -> a.name("Naïna")).build();
+        Review barakReview = Review.builder().author(a -> a.name("Barak")).build();
+        Review michelleReview = Review.builder().author(a -> a.name("Michelle")).build();
+
+        Book.Builder bookBuilder = Book.builder().reviews(ronaldReview);
+        assertThat(bookBuilder.build().reviews(),
+                contains(ronaldReview));
+        assertThat(bookBuilder.reviewsAdd(nancyReview).build().reviews(),
+                contains(ronaldReview, nancyReview));
+        assertThat(bookBuilder.reviewsAddFirst(mikhailReview).build().reviews(),
+                contains(mikhailReview, ronaldReview, nancyReview));
+        assertThat(bookBuilder.reviewsAddAll(raissaReview, billReview).build().reviews(),
+                contains(mikhailReview, ronaldReview, nancyReview, raissaReview, billReview));
+        assertThat(bookBuilder.reviewsAddAll(Arrays.asList(hillaryReview, borisReview)).build().reviews(),
+                contains(mikhailReview, ronaldReview, nancyReview, raissaReview, billReview, hillaryReview, borisReview));
+        assertThat(
+                bookBuilder.reviewsAddAll(ValueList.<Review>builder().with(nainaReview, barakReview, michelleReview).build()).build().reviews(),
+                contains(mikhailReview, ronaldReview, nancyReview, raissaReview, billReview, hillaryReview, borisReview, nainaReview, barakReview, michelleReview));
     }
 }

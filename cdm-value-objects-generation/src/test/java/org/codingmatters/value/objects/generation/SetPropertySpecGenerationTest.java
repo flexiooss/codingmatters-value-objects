@@ -20,6 +20,7 @@ import static org.codingmatters.value.objects.spec.Spec.spec;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.not;
 
 /**
  * Created by nelt on 11/19/16.
@@ -99,11 +100,6 @@ public class SetPropertySpecGenerationTest {
                         .returning(this.compiled.getClass("org.generated.Val$Builder"))
                 )
                 .with(aPublic().method()
-                        .named("setPropAddFirst")
-                        .withParameters(String.class)
-                        .returning(this.compiled.getClass("org.generated.Val$Builder"))
-                )
-                .with(aPublic().method()
                         .named("setPropAddAll")
                         .withParameters(String[].class)
                         .returning(this.compiled.getClass("org.generated.Val$Builder"))
@@ -119,6 +115,13 @@ public class SetPropertySpecGenerationTest {
                         .returning(this.compiled.getClass("org.generated.Val$Builder"))
                 )
         ));
+        assertThat(this.compiled.getClass("org.generated.Val$Builder"), is(not(aStatic().class_()
+                .with(aPublic().method()
+                        .named("setPropAddFirst")
+                        .withParameters(String.class)
+                        .returning(this.compiled.getClass("org.generated.Val$Builder"))
+                )
+        )));
     }
 
     @Test
@@ -152,17 +155,6 @@ public class SetPropertySpecGenerationTest {
         Object builder = this.compiled.onClass("org.generated.Val").invoke("builder");
         this.compiled.on(builder).invoke("setProp", String[].class).with(new Object [] {new String [] {"a", "b"}});
         this.compiled.on(builder).invoke("setPropAdd", String.class).with("c");
-        Object value = this.compiled.on(builder).invoke("build");
-        Object set = this.compiled.on(value).castedTo("org.generated.Val").invoke("setProp");
-
-        assertThat(this.compiled.on(set).invoke("toArray"), is(new Object [] {"a", "b", "c"}));
-    }
-
-    @Test
-    public void builderWithValueAddFirst() throws Exception {
-        Object builder = this.compiled.onClass("org.generated.Val").invoke("builder");
-        this.compiled.on(builder).invoke("setProp", String[].class).with(new Object [] {new String [] {"b", "c"}});
-        this.compiled.on(builder).invoke("setPropAddFirst", String.class).with("a");
         Object value = this.compiled.on(builder).invoke("build");
         Object set = this.compiled.on(value).castedTo("org.generated.Val").invoke("setProp");
 
