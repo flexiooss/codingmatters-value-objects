@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.generation;
 
 import org.codingmatters.tests.compile.CompiledCode;
+import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
@@ -9,13 +10,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
 import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
 import static org.codingmatters.value.objects.spec.Spec.spec;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 
 /**
  * Created by nelt on 11/12/16.
@@ -24,6 +28,8 @@ public class ListPropertySpecGenerationTest {
 
     @Rule
     public TemporaryFolder dir = new TemporaryFolder();
+    @Rule
+    public FileHelper fileHelper = new FileHelper();
 
     private final Spec spec  = spec()
             .addValue(
@@ -108,6 +114,40 @@ public class ListPropertySpecGenerationTest {
     }
 
     @Test
+    public void listPropAddBuilderMethod() throws Exception {
+        this.fileHelper.printJavaContent("", this.dir.getRoot());
+        this.fileHelper.printFile(this.dir.getRoot(), "Val.java");
+
+        assertThat(this.compiled.getClass("org.generated.Val$Builder"), is(aStatic().class_()
+                .with(aPublic().method()
+                        .named("listPropAdd")
+                        .withParameters(String.class)
+                        .returning(this.compiled.getClass("org.generated.Val$Builder"))
+                )
+                .with(aPublic().method()
+                        .named("listPropAddFirst")
+                        .withParameters(String.class)
+                        .returning(this.compiled.getClass("org.generated.Val$Builder"))
+                )
+                .with(aPublic().method()
+                        .named("listPropAddAll")
+                        .withParameters(String[].class)
+                        .returning(this.compiled.getClass("org.generated.Val$Builder"))
+                )
+                .with(aPublic().method()
+                        .named("listPropAddAll")
+                        .withParameters(genericType().baseClass(Collection.class).withParameters(typeParameter().named(String.class.getName())))
+                        .returning(this.compiled.getClass("org.generated.Val$Builder"))
+                )
+                .with(aPublic().method()
+                        .named("listPropAddAll")
+                        .withParameters(genericType().baseClass(this.compiled.getClass("org.generated.ValueList")).withParameters(typeParameter().named(String.class.getName())))
+                        .returning(this.compiled.getClass("org.generated.Val$Builder"))
+                )
+        ));
+    }
+
+    @Test
     public void builderWithValueArray() throws Exception {
         Object builder = this.compiled.onClass("org.generated.Val").invoke("builder");
         this.compiled.on(builder).invoke("listProp", String[].class).with(new Object [] {new String [] {"a", "b", "c"}});
@@ -142,6 +182,68 @@ public class ListPropertySpecGenerationTest {
         Object list = this.compiled.on(value).castedTo("org.generated.Val").invoke("listProp");
 
         assertThat(list, is(nullValue()));
+    }
+
+    @Test
+    public void builderWithValueAdd() throws Exception {
+        Object builder = this.compiled.onClass("org.generated.Val").invoke("builder");
+        this.compiled.on(builder).invoke("listProp", String[].class).with(new Object [] {new String [] {"a", "b"}});
+        this.compiled.on(builder).invoke("listPropAdd", String.class).with("c");
+        Object value = this.compiled.on(builder).invoke("build");
+        Object list = this.compiled.on(value).castedTo("org.generated.Val").invoke("listProp");
+
+        assertThat(this.compiled.on(list).invoke("toArray"), is(new Object [] {"a", "b", "c"}));
+    }
+
+    @Test
+    public void builderWithValueAddFirst() throws Exception {
+        Object builder = this.compiled.onClass("org.generated.Val").invoke("builder");
+        this.compiled.on(builder).invoke("listProp", String[].class).with(new Object [] {new String [] {"b", "c"}});
+        this.compiled.on(builder).invoke("listPropAddFirst", String.class).with("a");
+        Object value = this.compiled.on(builder).invoke("build");
+        Object list = this.compiled.on(value).castedTo("org.generated.Val").invoke("listProp");
+
+        assertThat(this.compiled.on(list).invoke("toArray"), is(new Object [] {"a", "b", "c"}));
+    }
+
+    @Test
+    public void builderWithValueAddAllArray() throws Exception {
+        Object builder = this.compiled.onClass("org.generated.Val").invoke("builder");
+        this.compiled.on(builder).invoke("listProp", String[].class).with(new Object [] {new String [] {"a"}});
+        this.compiled.on(builder).invoke("listPropAddAll", String[].class).with(new Object [] {new String [] {"b", "c"}});
+        Object value = this.compiled.on(builder).invoke("build");
+        Object list = this.compiled.on(value).castedTo("org.generated.Val").invoke("listProp");
+
+        assertThat(this.compiled.on(list).invoke("toArray"), is(new Object [] {"a", "b", "c"}));
+    }
+
+    @Test
+    public void builderWithValueAddAllCollection() throws Exception {
+        Object builder = this.compiled.onClass("org.generated.Val").invoke("builder");
+        this.compiled.on(builder).invoke("listProp", String[].class).with(new Object [] {new String [] {"a"}});
+        this.compiled.on(builder).invoke("listPropAddAll", Collection.class).with(Arrays.asList("b", "c"));
+        Object value = this.compiled.on(builder).invoke("build");
+        Object list = this.compiled.on(value).castedTo("org.generated.Val").invoke("listProp");
+
+        assertThat(this.compiled.on(list).invoke("toArray"), is(new Object [] {"a", "b", "c"}));
+    }
+
+    @Test
+    public void builderWithValueAddAllValueList() throws Exception {
+        Object builder = this.compiled.onClass("org.generated.Val").invoke("builder");
+        this.compiled.on(builder).invoke("listProp", String[].class).with(new Object [] {new String [] {"a"}});
+
+        Object listBuilder = this.compiled.getClass("org.generated.ValueList$Builder").newInstance();
+        this.compiled.on(listBuilder)
+                .invoke("with", Object[].class)
+                .with(new Object [] {new Object [] {"b", "c"}});
+        Object listValue = this.compiled.on(listBuilder).invoke("build");
+
+        this.compiled.on(builder).invoke("listPropAddAll", this.compiled.getClass("org.generated.ValueList")).with(listValue);
+        Object value = this.compiled.on(builder).invoke("build");
+        Object list = this.compiled.on(value).castedTo("org.generated.Val").invoke("listProp");
+
+        assertThat(this.compiled.on(list).invoke("toArray"), is(new Object [] {"a", "b", "c"}));
     }
 
     @Test

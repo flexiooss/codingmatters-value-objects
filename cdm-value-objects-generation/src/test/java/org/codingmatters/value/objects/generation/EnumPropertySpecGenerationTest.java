@@ -69,8 +69,8 @@ public class EnumPropertySpecGenerationTest {
         new SpecCodeGenerator(this.spec, "org.generated", dir.getRoot()).generate();
 
 
-        this.fileHelper.printJavaContent("", this.dir.getRoot());
-        this.fileHelper.printFile(this.dir.getRoot(), "OptionalVal.java");
+//        this.fileHelper.printJavaContent("", this.dir.getRoot());
+//        this.fileHelper.printFile(this.dir.getRoot(), "ValWithRef.java");
         this.classes = CompiledCode.builder().source(this.dir.getRoot()).compile().classLoader();
     }
 
