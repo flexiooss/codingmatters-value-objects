@@ -87,7 +87,7 @@ public class ObjectValuePointedPathManipulator {
         String prop = indexPathManipulator.getProperty();
         List<PropertyValue.Value> listValue = new ArrayList<>();
 
-        if (baseValue.has(prop)) {
+        if (baseValue.has(prop) && baseValue.property(prop) != null) {
             PropertyValue.Value[] values = baseValue.property(prop).multiple();
             listValue = Arrays.stream(values).collect(Collectors.toList());
         }

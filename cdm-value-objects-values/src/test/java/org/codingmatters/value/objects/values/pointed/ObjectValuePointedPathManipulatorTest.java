@@ -213,8 +213,15 @@ public class ObjectValuePointedPathManipulatorTest {
 
     @Test
     public void multipleNullValue() {
-        PropertyValue prop = new ObjectValuePointedPathManipulator(ObjectValue.builder().property("prop", (PropertyValue) null).build())
-                .valueAtPath("prop[0]");
+        ObjectValuePointedPathManipulator manipulator = new ObjectValuePointedPathManipulator(ObjectValue.builder().property("prop", (PropertyValue) null).build());
+        PropertyValue prop = manipulator.valueAtPath("prop[0]");
         assertThat(prop, nullValue());
+
+        ObjectValue plok = ObjectValue.builder().property("val", v -> v.stringValue("plok")).build();
+        ObjectValue result = manipulator.updateValueAt("prop[1]", plok);
+        assertThat(result, is(ObjectValue.builder().property("prop", PropertyValue.multiple(PropertyValue.Type.OBJECT,
+                v -> v.objectValue(ObjectValue.builder().build()),
+                v -> v.objectValue(plok)
+        )).build()));
     }
 }
