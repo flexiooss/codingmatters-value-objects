@@ -52,13 +52,13 @@ public class ObjectValuePointedPathManipulatorTest {
         ));
 
         ObjectValue nonEmptyValue = ObjectValue.builder()
-                .property("toto", t->t.objectValue(
+                .property("toto", t -> t.objectValue(
                         ObjectValue.builder()
-                                .property("tata", ta->ta.stringValue("tata value"))
-                                .property("plok", p->p.objectValue(
+                                .property("tata", ta -> ta.stringValue("tata value"))
+                                .property("plok", p -> p.objectValue(
                                         ObjectValue.builder()
                                                 .property("a", a -> a.stringValue("plok old value"))
-                                                .property("b", b->b.stringValue("b value"))
+                                                .property("b", b -> b.stringValue("b value"))
                                                 .build()
                                 ))
                                 .build()
@@ -70,7 +70,7 @@ public class ObjectValuePointedPathManipulatorTest {
         assertThat(resWithNonEmpty, is(
                 ObjectValue.builder().property("toto", t -> t.objectValue(
                         ObjectValue.builder()
-                                .property("tata", ta->ta.stringValue("tata value"))
+                                .property("tata", ta -> ta.stringValue("tata value"))
                                 .property("plok", v -> v.objectValue(
                                         ObjectValue.builder()
                                                 .property("a", a -> a.stringValue("plok"))
@@ -209,5 +209,12 @@ public class ObjectValuePointedPathManipulatorTest {
         ObjectValue base = ObjectValue.builder().property("plok", PropertyValue.multiple(PropertyValue.Type.OBJECT, v -> v.objectValue(tutu))).build();
         PropertyValue res = new ObjectValuePointedPathManipulator(base).valueAtPath("plok[0].tutu");
         assertThat(res, is(PropertyValue.builder().objectValue(value).build()));
+    }
+
+    @Test
+    public void multipleNullValue() {
+        PropertyValue prop = new ObjectValuePointedPathManipulator(ObjectValue.builder().property("prop", (PropertyValue) null).build())
+                .valueAtPath("prop[0]");
+        assertThat(prop, nullValue());
     }
 }
