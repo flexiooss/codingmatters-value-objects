@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.js;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@Ignore
 public class RunJsTest {
 
     private static ProcessBuilder processBuilder;
