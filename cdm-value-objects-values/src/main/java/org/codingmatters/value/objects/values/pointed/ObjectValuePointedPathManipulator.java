@@ -42,11 +42,12 @@ public class ObjectValuePointedPathManipulator {
 
     private PropertyValue multipleValue(PointedIndexPathManipulator indexPathManipulator, ObjectValue currentValue) {
         String prop = indexPathManipulator.getProperty();
-        if (!currentValue.has(prop)) {
+        if (!currentValue.has(prop) || currentValue.property(prop) == null) {
             return null;
         }
         int index = indexPathManipulator.getIndex();
-        PropertyValue.Value[] values = currentValue.property(prop).multiple();
+        PropertyValue property = currentValue.property(prop);
+        PropertyValue.Value[] values = property.multiple();
         if (values.length <= index) {
             return null;
         }
@@ -86,7 +87,7 @@ public class ObjectValuePointedPathManipulator {
         String prop = indexPathManipulator.getProperty();
         List<PropertyValue.Value> listValue = new ArrayList<>();
 
-        if (baseValue.has(prop)) {
+        if (baseValue.has(prop) && baseValue.property(prop) != null) {
             PropertyValue.Value[] values = baseValue.property(prop).multiple();
             listValue = Arrays.stream(values).collect(Collectors.toList());
         }
