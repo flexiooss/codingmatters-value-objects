@@ -23,7 +23,6 @@ public class RunPhpTest {
     public static void setUp() throws Exception {
         String dir = System.getProperty( "project.build.directory" ) + "/php-test";
         File directory = new File(dir);
-        new File(directory, ".cache/composer/vcs").mkdirs();
         processBuilder = new ProcessBuilder();
         processBuilder.directory(directory);
         processBuilder.command( "composer", "install");
