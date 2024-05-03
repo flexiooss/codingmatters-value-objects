@@ -16,15 +16,17 @@ public class RunPhpTest {
 
     public static final int COMPOSER_INSTALL_TIMEOUT_IN_MINUTES = 6;
     public static final int PHP_UNIT_TEST_TIMEOUT_IN_SECONDS = 20;
-    
+
     private static ProcessBuilder processBuilder;
 
     @BeforeClass
     public static void setUp() throws Exception {
         String dir = System.getProperty( "project.build.directory" ) + "/php-test";
+        File directory = new File(dir);
+        new File(directory, ".cache/composer/vcs").mkdirs();
         processBuilder = new ProcessBuilder();
-        processBuilder.directory( new File( dir ) );
-        processBuilder.command( "composer", "install" );
+        processBuilder.directory(directory);
+        processBuilder.command( "composer", "install");
         Process process = processBuilder.start();
         process.waitFor( COMPOSER_INSTALL_TIMEOUT_IN_MINUTES, TimeUnit.MINUTES );
         if( process.exitValue() != 0 ) {
