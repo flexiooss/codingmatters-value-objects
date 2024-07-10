@@ -37,6 +37,12 @@ class ObjectValueImpl implements ObjectValue {
         return this.properties.keySet().toArray(new String[this.properties.size()]);
     }
 
+    @Override
+    public ObjectValue withoutProperty(String property) {
+        HashMap<String, PropertyValue> copy = new HashMap<>(this.properties);
+        copy.remove(property);
+        return new ObjectValueImpl(copy);
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -183,5 +183,16 @@ public class ObjectValueUsabilityTest {
                 .build();
         assertThat(multipleObject.multipleNonNullProperty("plok", PropertyValue.Type.STRING).isPresent(), is(false));
         assertThat(multipleObject.multipleNonNullProperty("plok", PropertyValue.Type.OBJECT).isPresent(), is(true));
+    }
+
+    @Test
+    public void withoutPropertyCopy() throws Exception {
+        ObjectValue value = ObjectValue.builder()
+                .property("p1", v -> v.stringValue("v1"))
+                .property("p2", v -> v.stringValue("v2"))
+                .build();
+
+        ObjectValue copy = value.withoutProperty("p2");
+        assertThat(copy.propertyNames(), arrayContaining("p1"));
     }
 }
