@@ -110,6 +110,8 @@ public interface ObjectValue {
         return ObjectValue.from(this).property(property, value).build();
     }
 
+    ObjectValue withoutProperty(String property);
+
     default ObjectValue withChangedProperty(String property, PropertyValue.Changer changer) {
         PropertyValue.Builder builder = PropertyValue.Builder.from(this.property(property));
         builder = changer.configure(builder);
