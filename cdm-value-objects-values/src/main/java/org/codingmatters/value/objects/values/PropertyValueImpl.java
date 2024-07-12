@@ -173,6 +173,46 @@ class PropertyValueImpl implements PropertyValue {
     }
 
     @Override
+    public String[] multipleString() {
+        return Arrays.stream(multiple()).map(Value::stringValue).toArray(String[]::new);
+    }
+
+    @Override
+    public Long[] multipleLong() {
+        return Arrays.stream(multiple()).map(Value::longValue).toArray(Long[]::new);
+    }
+
+    @Override
+    public Double[] multipleDouble() {
+        return Arrays.stream(multiple()).map(Value::doubleValue).toArray(Double[]::new);
+    }
+
+    @Override
+    public ObjectValue[] multipleObject() {
+        return Arrays.stream(multiple()).map(Value::objectValue).toArray(ObjectValue[]::new);
+    }
+
+    @Override
+    public LocalDate[] multipleDate() {
+        return Arrays.stream(multiple()).map(Value::dateValue).toArray(LocalDate[]::new);
+    }
+
+    @Override
+    public LocalDateTime[] multipleDatetime() {
+        return Arrays.stream(multiple()).map(Value::datetimeValue).toArray(LocalDateTime[]::new);
+    }
+
+    @Override
+    public LocalTime[] multipleTime() {
+        return Arrays.stream(multiple()).map(Value::timeValue).toArray(LocalTime[]::new);
+    }
+
+    @Override
+    public Boolean[] multipleBoolean() {
+        return Arrays.stream(multiple()).map(Value::booleanValue).toArray(Boolean[]::new);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

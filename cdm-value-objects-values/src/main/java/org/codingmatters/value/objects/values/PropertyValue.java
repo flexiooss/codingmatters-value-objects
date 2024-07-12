@@ -19,8 +19,40 @@ public interface PropertyValue {
         return new PropertyValueImpl(value.type(), Cardinality.SINGLE, new Value[]{value});
     }
 
-    static PropertyValue multiple(Type type, Value ... values) {
-        if(values != null) {
+    static PropertyValue multipleString(String... values) {
+        return multiple(Type.STRING, Arrays.stream(values).map(val -> PropertyValue.builder().stringValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+    }
+
+    static PropertyValue multipleLong(Long... values) {
+        return multiple(Type.LONG, Arrays.stream(values).map(val -> PropertyValue.builder().longValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+    }
+
+    static PropertyValue multipleDouble(Double... values) {
+        return multiple(Type.DOUBLE, Arrays.stream(values).map(val -> PropertyValue.builder().doubleValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+    }
+
+    static PropertyValue multipleObject(ObjectValue... values) {
+        return multiple(Type.OBJECT, Arrays.stream(values).map(val -> PropertyValue.builder().objectValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+    }
+
+    static PropertyValue multipleDate(LocalDate... values) {
+        return multiple(Type.DATE, Arrays.stream(values).map(val -> PropertyValue.builder().dateValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+    }
+
+    static PropertyValue multipleTime(LocalTime... values) {
+        return multiple(Type.TIME, Arrays.stream(values).map(val -> PropertyValue.builder().timeValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+    }
+
+    static PropertyValue multipleDateTime(LocalDateTime... values) {
+        return multiple(Type.DATETIME, Arrays.stream(values).map(val -> PropertyValue.builder().datetimeValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+    }
+
+    static PropertyValue multipleBoolean(Boolean... values) {
+        return multiple(Type.DATETIME, Arrays.stream(values).map(val -> PropertyValue.builder().booleanValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+    }
+
+    static PropertyValue multiple(Type type, Value... values) {
+        if (values != null) {
             for (Value value : values) {
                 if (value.rawValue() != null) {
                     assert value.isa(type);
@@ -31,9 +63,9 @@ public interface PropertyValue {
         return new PropertyValueImpl(type, Cardinality.MULTIPLE, values);
     }
 
-    static PropertyValue multiple(Type type, Builder ... builders) {
+    static PropertyValue multiple(Type type, Builder... builders) {
         Value[] values = null;
-        if(builders != null) {
+        if (builders != null) {
             values = new Value[builders.length];
             for (int i = 0; i < builders.length; i++) {
                 values[i] = builders[i].buildValue();
@@ -43,9 +75,9 @@ public interface PropertyValue {
     }
 
     @SafeVarargs
-    static PropertyValue multiple(Type type, Consumer<Builder> ... consumers) {
+    static PropertyValue multiple(Type type, Consumer<Builder>... consumers) {
         Builder[] builders = null;
-        if(consumers != null) {
+        if (consumers != null) {
             builders = new Builder[consumers.length];
             for (int i = 0; i < builders.length; i++) {
                 builders[i] = PropertyValue.builder();
@@ -57,11 +89,12 @@ public interface PropertyValue {
 
 
     class Builder {
+
         private Type type = Type.OBJECT;
         private Object raw = null;
 
         public static Builder from(PropertyValue value) {
-            if(value == null || value.isNullValue()) return new Builder();
+            if (value == null || value.isNullValue()) return new Builder();
 
             Builder result = new Builder();
             result.type = value.type();
@@ -137,7 +170,7 @@ public interface PropertyValue {
             return new PropertyValueImpl(
                     this.type,
                     Cardinality.SINGLE,
-                    new Value[] {this.buildValue()}
+                    new Value[]{this.buildValue()}
             );
         }
 
@@ -206,18 +239,18 @@ public interface PropertyValue {
         public abstract Builder set(Builder builder, Object value);
 
         static public Type fromObject(Object o) throws UnsupportedTypeException {
-            if(o == null) return STRING;
-            if(o instanceof String) {
+            if (o == null) return STRING;
+            if (o instanceof String) {
                 return STRING;
-            } else if(o instanceof Long || o instanceof Integer) {
+            } else if (o instanceof Long || o instanceof Integer) {
                 return LONG;
-            } else if(o instanceof Double || o instanceof Float) {
+            } else if (o instanceof Double || o instanceof Float) {
                 return DOUBLE;
-            } else if(o instanceof Boolean) {
+            } else if (o instanceof Boolean) {
                 return BOOLEAN;
-            } else if(o instanceof byte[]) {
+            } else if (o instanceof byte[]) {
                 return BYTES;
-            } else if(o instanceof ObjectValue){
+            } else if (o instanceof ObjectValue) {
                 return OBJECT;
             } else {
                 throw new UnsupportedTypeException("unsupported type : " + o.getClass());
@@ -225,6 +258,7 @@ public interface PropertyValue {
         }
 
         static public class UnsupportedTypeException extends Exception {
+
             public UnsupportedTypeException(String msg) {
                 super(msg);
             }
@@ -236,31 +270,61 @@ public interface PropertyValue {
     }
 
     Type type();
+
     Cardinality cardinality();
 
     Object rawValue();
+
     boolean isNullValue();
 
     interface Value {
+
         String stringValue();
+
         Long longValue();
+
         Double doubleValue();
+
         Boolean booleanValue();
+
         byte[] bytesValue();
+
         ObjectValue objectValue();
+
         Object rawValue();
+
         LocalDate dateValue();
+
         LocalTime timeValue();
+
         LocalDateTime datetimeValue();
 
         boolean isa(Type type);
+
         Type type();
 
         boolean isNull();
     }
 
     Value single();
+
     Value[] multiple();
+
+    String[] multipleString();
+
+    Long[] multipleLong();
+
+    Double[] multipleDouble();
+
+    ObjectValue[] multipleObject();
+
+    LocalDate[] multipleDate();
+
+    LocalTime[] multipleTime();
+
+    LocalDateTime[] multipleDatetime();
+
+    Boolean[] multipleBoolean();
 
     interface Changer {
         PropertyValue.Builder configure(PropertyValue.Builder builder);
@@ -271,12 +335,12 @@ public interface PropertyValue {
     }
 
     static PropertyValue fromObject(Object object) throws Type.UnsupportedTypeException {
-        if(object == null) return null;
+        if (object == null) return null;
 
-        if(object instanceof Object[]) {
+        if (object instanceof Object[]) {
             object = Arrays.asList((Object[]) object);
         }
-        if(object instanceof Iterable) {
+        if (object instanceof Iterable) {
             List<Value> vals = new LinkedList<>();
             for (Object o : ((Iterable) object)) {
                 vals.add(o == null ? PropertyValue.builder().buildValue() : fromObject(o).single());
@@ -318,7 +382,7 @@ public interface PropertyValue {
             if (object instanceof byte[]) {
                 return PropertyValue.builder().bytesValue((byte[]) object).build();
             }
-            if(object instanceof Map) {
+            if (object instanceof Map) {
                 return PropertyValue.builder().objectValue(ObjectValue.fromMap((Map) object).build()).build();
             }
         }
