@@ -307,5 +307,16 @@ public class BookTest {
         assertThat(
                 bookBuilder.reviewsAddAll(ValueList.<Review>builder().with(nainaReview, barakReview, michelleReview).build()).build().reviews(),
                 contains(mikhailReview, ronaldReview, nancyReview, raissaReview, billReview, hillaryReview, borisReview, nainaReview, barakReview, michelleReview));
+        assertThat(
+                bookBuilder.reviewsAddAll(
+                        r -> r.author(a -> a.name("Nikita")),
+                        r -> r.author(a -> a.name("Maroussia"))
+                ).build().reviews(),
+                contains(
+                        mikhailReview, ronaldReview, nancyReview, raissaReview, billReview, hillaryReview, borisReview, nainaReview, barakReview, michelleReview,
+                        Review.builder().author(a -> a.name("Nikita")).build(), Review.builder().author(a -> a.name("Maroussia")).build()
+                ));
+
+
     }
 }

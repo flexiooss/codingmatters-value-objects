@@ -9,6 +9,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import java.util.Collection;
+
 import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.codingmatters.value.objects.spec.AnonymousValueSpec.anonymousValueSpec;
 import static org.codingmatters.value.objects.spec.PropertySpec.property;

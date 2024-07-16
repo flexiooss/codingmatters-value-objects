@@ -5,10 +5,7 @@ import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.TypeKind;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static javax.lang.model.element.Modifier.*;
@@ -314,8 +311,20 @@ public class ValueBuilder {
                             .addModifiers(PUBLIC)
                             .beginControlFlow("if(this.$N == null)", propertySpec.name())
                             .addStatement("return this.$N($N)", propertySpec.name(), propertySpec.name())
+                            .nextControlFlow("else if($L != null)", varargParameterName)
+                            .addStatement("this.$N = this.$N.toBuilder().with(($T<$T>) $T.stream($L).map(" +
+                                            "consumer -> {" +
+                                            "$T.Builder builder = $T.builder();" +
+                                            "consumer.accept(builder);" +
+                                            "return builder.build();" +
+                                            "}).toList()).build()",
+                                    propertySpec.name(), propertySpec.name(),
+                                    List.class, propertyType,
+                                    Arrays.class, varargParameterName,
+                                    propertyType, propertyType
+                            )
+                            .addStatement("return this")
                             .nextControlFlow("else")
-                            .addStatement("this.$N = this.$N.toBuilder().with($N).build()", propertySpec.name(), propertySpec.name(), propertySpec.name())
                             .addStatement("return this")
                             .endControlFlow()
                             .build()
