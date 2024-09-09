@@ -26,6 +26,7 @@ public class ContextSpecParser {
     public static final String ENUM_MARK = "$enum";
     public static final String PROTOCOL_MARK = "$conforms-to";
     public static final String BUILDER_PROTOCOL_MARK = "$builder-conforms-to";
+    public static final String BUILDER_PROTOCOL_PARAMETRIZED_MARK = "$builder-conforms-to-parametrized";
 
     private final Map<String, ?> root;
     private Stack<String> context;
@@ -53,6 +54,8 @@ public class ContextSpecParser {
                     value.addConformsTo(this.protocolList(properties.get(propertyName)));
                 } else if(BUILDER_PROTOCOL_MARK.equals(propertyName)) {
                     value.addBuilderConformsTo(this.protocolList(properties.get(propertyName)));
+                } else if(BUILDER_PROTOCOL_PARAMETRIZED_MARK.equals(propertyName)) {
+                    value.addBuilderConformsToParametrized(this.protocolList(properties.get(propertyName)));
                 } else if(HINTS_MARK.equals(propertyName)) {
                 } else {
                     value.addProperty(this.createPropertySpec(propertyName, properties.get(propertyName)));
