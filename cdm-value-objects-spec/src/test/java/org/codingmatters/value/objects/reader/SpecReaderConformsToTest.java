@@ -122,6 +122,25 @@ public class SpecReaderConformsToTest {
     }
 
     @Test
+    public void singleBuilderConformsToParametrized() throws Exception {
+        try(InputStream in = streamFor(string()
+                .line("val:")
+                .line("  $builder-conforms-to-parametrized: org.package.Protocol")
+                .build())) {
+            assertThat(
+                    reader.read(in),
+                    is(
+                            spec()
+                                    .addValue(valueSpec().name("val")
+                                            .addBuilderConformsToParametrized("org.package.Protocol")
+                                    )
+                                    .build()
+                    )
+            );
+        }
+    }
+
+    @Test
     public void multipleBuilderConformsTo() throws Exception {
         try(InputStream in = streamFor(string()
                 .line("val:")

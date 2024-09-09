@@ -3,6 +3,8 @@ package org.codingmatters.value.objects.generation;
 import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.tests.compile.helpers.ClassLoaderHelper;
+import org.codingmatters.tests.reflect.matchers.TypeMatcher;
+import org.codingmatters.value.objects.generation.util.ParametrizedInterface;
 import org.codingmatters.value.objects.spec.*;
 import org.junit.Before;
 import org.junit.Rule;
@@ -10,9 +12,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.Serializable;
+import java.util.function.Supplier;
 
 
-import static org.codingmatters.tests.reflect.ReflectMatchers.aStatic;
+import static org.codingmatters.tests.reflect.ReflectMatchers.*;
 import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
 import static org.codingmatters.value.objects.spec.Spec.spec;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
@@ -28,7 +31,10 @@ public class BuilderConformsToTest {
 
     private final Spec spec  = spec()
             .addValue(valueSpec().name("singleProtocol")
-                    .addBuilderConformsTo(Serializable.class.getName())
+                    .addBuilderConformsTo(Serializable.class.getCanonicalName())
+            )
+            .addValue(valueSpec().name("singleParametrizedProtocol")
+                    .addBuilderConformsToParametrized(ParametrizedInterface.class.getCanonicalName())
             )
             .addValue(valueSpec().name("manyProtocols")
                     .addConformsTo()
@@ -38,7 +44,7 @@ public class BuilderConformsToTest {
                     .addProperty(PropertySpec.property()
                             .name("embed").type(type().typeKind(TypeKind.EMBEDDED).cardinality(PropertyCardinality.SINGLE)
                                     .embeddedValueSpec(AnonymousValueSpec.anonymousValueSpec()
-                                            .addBuilderConformsTo(Serializable.class.getName())
+                                            .addBuilderConformsTo(Serializable.class.getCanonicalName())
                                             .build())
                             )
                             .build())
@@ -64,6 +70,19 @@ public class BuilderConformsToTest {
                 this.classes.get("org.generated.SingleProtocol$Builder").get(),
                 is(aStatic().public_().class_().implementing(Serializable.class))
         );
+    }
+
+    @Test
+    public void singleParametrizedImplementedInterface() throws Exception {
+        this.fileHelper.printFile(this.dir.getRoot(), "SingleParametrizedProtocol.java");
+        assertThat(
+                this.classes.get("org.generated.SingleParametrizedProtocol$Builder").get(),
+                is(aStatic().public_().class_().implementing(ParametrizedInterface.class))
+//                is(aStatic().public_().class_().implementing(genericType().baseClass(ParametrizedInterface.class)
+//                        .withParameters(typeParameter().aClass(this.classes.get("org.generated.SingleParametrizedProtocol$Builder").get()))
+//                ))
+        );
+
     }
 
     @Test

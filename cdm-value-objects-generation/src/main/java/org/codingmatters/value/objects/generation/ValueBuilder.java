@@ -20,7 +20,7 @@ public class ValueBuilder {
     private final List<FieldSpec> fields;
     private final List<MethodSpec> setters;
     private final MethodSpec buildMethod;
-    private final List<ClassName> protocols;
+    private final List<TypeName> protocols;
 
     public ValueBuilder(ValueConfiguration types, List<PropertySpec> propertySpecs) {
         this.types = types;
@@ -360,11 +360,15 @@ public class ValueBuilder {
                 .build();
     }
 
-    private List<ClassName> createProtocols() {
-        List<ClassName> result = new LinkedList<>();
+    private List<TypeName> createProtocols() {
+        List<TypeName> result = new LinkedList<>();
 
         for (String protocol : this.types.valueSpec().builderProtocols()) {
             result.add(ClassName.bestGuess(protocol));
+        }
+        for (String protocol : this.types.valueSpec().parametrizedBuilderProtocols()) {
+            result.add(ParameterizedTypeName.get(ClassName.bestGuess(protocol), ClassName.bestGuess("Builder")));
+//            result.add(ClassName.bestGuess(protocol));
         }
 
         return result;

@@ -31,7 +31,9 @@ public class ValueSpecPreprocessor {
         ValueSpec.Builder valueSpecBuilder = ValueSpec.valueSpec()
                 .name(valueSpec.name())
                 .addConformsTo(valueSpec.protocols().toArray(new String[valueSpec.protocols().size()]))
-                .addBuilderConformsTo(valueSpec.builderProtocols().toArray(new String[valueSpec.builderProtocols().size()]));
+                .addBuilderConformsTo(valueSpec.builderProtocols().toArray(new String[valueSpec.builderProtocols().size()]))
+                .addBuilderConformsToParametrized(valueSpec.parametrizedBuilderProtocols().toArray(new String[valueSpec.parametrizedBuilderProtocols().size()]))
+                ;
         for (PropertySpec propertySpec : valueSpec.propertySpecs()) {
             if(EMBEDDED.equals(propertySpec.typeSpec().typeKind())) {
                 String embeddedPackage = this.packageName + "." + valueSpec.name().toLowerCase();

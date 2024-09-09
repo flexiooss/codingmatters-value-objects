@@ -16,6 +16,7 @@ public class AnonymousValueSpec implements PropertyHolderSpec {
         private List<PropertySpec> propertySpecs = new LinkedList<>();
         private HashSet<String> protocols = new HashSet<>();
         private HashSet<String> builderProtocols = new HashSet<>();
+        private HashSet<String> parametrizedBuilderProtocols = new HashSet<>();
 
         public Builder addProperty(PropertySpec spec) {
             this.propertySpecs.add(spec);
@@ -40,19 +41,29 @@ public class AnonymousValueSpec implements PropertyHolderSpec {
             return this;
         }
 
+        public AnonymousValueSpec.Builder addBuilderConformsToParametrized(String ... protocols) {
+            if(protocols != null && protocols.length != 0) {
+                this.parametrizedBuilderProtocols.addAll(Arrays.asList(protocols));
+            }
+            return this;
+        }
+
         public AnonymousValueSpec build() {
-            return new AnonymousValueSpec(new ArrayList<>(this.propertySpecs), new LinkedList<>(this.protocols), new LinkedList<>(this.builderProtocols));
+            return new AnonymousValueSpec(new ArrayList<>(this.propertySpecs), new LinkedList<>(this.protocols), new LinkedList<>(this.builderProtocols),
+                    new ArrayList<>(this.parametrizedBuilderProtocols));
         }
     }
 
     private final List<PropertySpec> propertySpecs;
     private final List<String> protocols;
     private final List<String> builderProtocols;
+    private final List<String> parametrizedBuilderProtocols;
 
-    private AnonymousValueSpec(List<PropertySpec> propertySpecs, List<String> protocols, List<String> builderProtocols) {
+    private AnonymousValueSpec(List<PropertySpec> propertySpecs, List<String> protocols, List<String> builderProtocols, List<String> parametrizedBuilderProtocols) {
         this.propertySpecs = propertySpecs;
         this.protocols = protocols;
         this.builderProtocols = builderProtocols;
+        this.parametrizedBuilderProtocols = parametrizedBuilderProtocols;
     }
 
     public List<PropertySpec> propertySpecs() {
@@ -65,6 +76,9 @@ public class AnonymousValueSpec implements PropertyHolderSpec {
     public List<String> builderProtocols() {
         return builderProtocols;
     }
+    public List<String> parametrizedBuilderProtocols() {
+        return parametrizedBuilderProtocols;
+    }
 
     @Override
     public PropertySpec propertySpec(String name) {
@@ -76,12 +90,12 @@ public class AnonymousValueSpec implements PropertyHolderSpec {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AnonymousValueSpec that = (AnonymousValueSpec) o;
-        return Objects.equals(propertySpecs, that.propertySpecs) && Objects.equals(protocols, that.protocols) && Objects.equals(builderProtocols, that.builderProtocols);
+        return Objects.equals(propertySpecs, that.propertySpecs) && Objects.equals(protocols, that.protocols) && Objects.equals(builderProtocols, that.builderProtocols) && Objects.equals(parametrizedBuilderProtocols, that.parametrizedBuilderProtocols);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(propertySpecs, protocols, builderProtocols);
+        return Objects.hash(propertySpecs, protocols, builderProtocols, parametrizedBuilderProtocols);
     }
 
     @Override
@@ -90,6 +104,7 @@ public class AnonymousValueSpec implements PropertyHolderSpec {
                 "propertySpecs=" + propertySpecs +
                 ", protocols=" + protocols +
                 ", builderProtocols=" + builderProtocols +
+                ", parametrizedBuilderProtocols=" + parametrizedBuilderProtocols +
                 '}';
     }
 }
