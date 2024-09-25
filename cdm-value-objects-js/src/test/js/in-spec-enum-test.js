@@ -22,6 +22,22 @@ class InSpecEnumTest extends TestCase {
     assert.strictEqual(inSpecEnum.multiple().length, 2)
   }
 
+  testNullValue() {
+    let builder = new globalFlexioImport.org.generated.InSpecEnumPropertiesBuilder()
+    builder.single(null)
+    builder.multiple(new globalFlexioImport.org.generated.inspecenumproperties.MultipleList(
+      globalFlexioImport.org.generated.inspecenumproperties.Multiple.MB,
+      null
+      )
+    )
+    let inSpecEnum = builder.build()
+
+    assert.strictEqual(inSpecEnum.single(), null)
+    assert.strictEqual(inSpecEnum.multiple()[0].name(), 'MB')
+    assert.strictEqual(inSpecEnum.multiple()[1], null)
+    assert.strictEqual(inSpecEnum.multiple().length, 2)
+  }
+
   testObjectImmutable() {
     let builder = new globalFlexioImport.org.generated.InSpecEnumPropertiesBuilder()
     builder.single(globalFlexioImport.org.generated.inspecenumproperties.Single.SA)
@@ -72,6 +88,17 @@ class InSpecEnumTest extends TestCase {
     assert.strictEqual(inSpecEnum.multiple()[0].name(), 'MB')
     assert.strictEqual(inSpecEnum.multiple()[1].name(), 'MC')
     assert.strictEqual(inSpecEnum.multiple().length, 2)
+  }
+
+  testDeserializationNullValues() {
+    let json = '{"single":null, "secondSingle":"BA", "multiple":["MB","MC", null]}'
+    let inSpecEnum = globalFlexioImport.org.generated.InSpecEnumPropertiesBuilder.fromJson(json).build()
+    assert.strictEqual(inSpecEnum.single(), null)
+    assert.strictEqual(inSpecEnum.secondSingle().name(), 'BA')
+    assert.strictEqual(inSpecEnum.multiple()[0].name(), 'MB')
+    assert.strictEqual(inSpecEnum.multiple()[1].name(), 'MC')
+    assert.strictEqual(inSpecEnum.multiple()[2], null)
+    assert.strictEqual(inSpecEnum.multiple().length, 3)
   }
 
   testDeserializationWithBadEnumValues(){

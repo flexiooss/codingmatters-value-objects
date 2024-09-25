@@ -52,6 +52,13 @@ class ListOListTest extends TestCase {
     assert.deepEqual(yaayDoubleList.doubleList()[1][1].aie(), 'car en bar!')
   }
 
+  testListWithNullItem() {
+      let json = '{"simpleList":[{"aie":"carramba!"}, null]}'
+      let yaayDoubleList = globalFlexioImport.org.generated.YaayDoubleListBuilder.fromJson(json).build()
+      assert.deepEqual(yaayDoubleList.simpleList()[0].aie(), 'carramba!')
+      assert.strictEqual(yaayDoubleList.simpleList()[1], null)
+  }
+
   testToObject() {
     let yaay1 = new globalFlexioImport.org.generated.YaayBuilder()
     yaay1.aie('carramba!')
