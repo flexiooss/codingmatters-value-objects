@@ -44,7 +44,12 @@ public class JsValueObjectGenerator implements ParsedYamlProcessor {
         this.flexioAssertImport.add( "isNull" );
         this.flexioAssertImport.add( "isObject" );
         this.flexioAssertImport.add( "isString" );
+        this.flexioAssertImport.add( "isFunction" );
+        this.flexioAssertImport.add( "TypeCheck" );
+        this.flexioAssertImport.add( "assertInstanceOf" );
         this.flexioGeneratorHelperImport.add( "deepFreezeSeal" );
+        this.flexioGeneratorHelperImport.add( "valueObjectInterface" );
+        this.flexioGeneratorHelperImport.add( "valueObjectBuilderInterface" );
         this.packageBuilder = packageBuilder;
         this.generateList = generateList;
     }

@@ -17,6 +17,6 @@
   },
   "devDependencies": {
     "@flexio-oss/code-altimeter-js": "1.11.0",
-    "@flexio-oss/js-commons-bundle": "1.62.0"
+    "@flexio-oss/js-commons-bundle": "1.157.0"
   }
 }
