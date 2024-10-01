@@ -3,8 +3,11 @@ package org.codingmatters.value.objects.js.generator.valueObject;
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.JsFileWriter;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
-import org.codingmatters.value.objects.js.generator.visitor.JsTypeAssertionProcessor;
+import org.codingmatters.value.objects.js.generator.visitor.JsChangedBuilderCallProcessor;
+import org.codingmatters.value.objects.js.generator.visitor.JsEqualityListProcessor;
+import org.codingmatters.value.objects.js.generator.visitor.JsEqualityProcessor;
 import org.codingmatters.value.objects.js.generator.visitor.JsObjectValueTypeReferenceProcessor;
+import org.codingmatters.value.objects.js.generator.visitor.JsTypeAssertionProcessor;
 import org.codingmatters.value.objects.js.generator.visitor.PropertiesDeserializationProcessor;
 import org.codingmatters.value.objects.js.generator.visitor.PropertiesSerializationProcessor;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
@@ -33,19 +36,57 @@ public class JsClassGenerator extends JsFileWriter {
 
     public void valueObjectClass(ParsedValueObject valueObject, String objectName, JsClassGenerator write) throws IOException, ProcessingException {
         String builderName = NamingUtility.builderName(objectName);
-        write.line("class " + objectName + " {");
+        write.line("/**");
+        write.line(" * @implements ValueObjectInterface");
+        write.line(" */");
+        write.line("class " + objectName + "  extends valueObjectInterface() {");
         write.constructor(valueObject.properties());
         write.valueObjectGetters(valueObject.properties());
-        write.valueObjectWithMethods(valueObject.properties(), objectName, NamingUtility.builderName(objectName));
+        write.valueObjectWithMethods(valueObject.properties(), objectName, builderName);
+        write.valueObjectWithChangedMethods(valueObject.properties(), objectName, builderName);
         write.valueObjectBuilderMethod(builderName);
         write.valueObjectFromInstanceMethod(objectName, builderName);
         write.valueObjectFromObjectMethod(builderName);
         write.valueObjectFromJSONMethod(builderName);
         write.valueObjectToObjectMethod(valueObject.properties());
         write.valueObjectToJsonMethod();
+        write.equalsMethod(objectName, valueObject);
+        write.toBuilder(builderName);
         write.line("}");
         write.newLine();
         write.line("export { " + objectName + " }");
+    }
+
+    private void toBuilder(String builderName) throws IOException {
+        line("/**");
+        line(" * @return {" + builderName + "}");
+        line(" */");
+        line("toBuilder(){");
+        line("return " + builderName + ".from(this)");
+        line("}");
+    }
+
+    private void equalsMethod(String objectName, ParsedValueObject valueObject) throws IOException, ProcessingException {
+        line(" /**");
+        line(" * @param {?" + objectName + "} to");
+        line(" * @return {boolean}");
+        line(" */");
+        line("equals(to) {");
+        line("if (isNull(to)) return false;");
+        indent();
+        writer.write("assertInstanceOf(to, ");
+        String reference = valueObject.packageName() + "." + NamingUtility.className(valueObject.name());
+        writer.write(NamingUtility.classFullName(reference));
+        writer.write(", '");
+        writer.write(reference);
+        writer.write("')");
+        newLine();
+        JsEqualityProcessor equalityProcessor = new JsEqualityProcessor(this);
+        for (ValueObjectProperty property : valueObject.properties()) {
+            equalityProcessor.process(property);
+        }
+        line("return true;");
+        line("}");
     }
 
     public void constructor(List<ValueObjectProperty> properties) throws IOException {
@@ -65,7 +106,7 @@ public class JsClassGenerator extends JsFileWriter {
         line(" */");
         List<String> names = properties.stream().map(prop -> propertyName(prop.name())).collect(Collectors.toList());
         line("constructor(" + String.join(", ", names) + ") {");
-
+        line("super()");
         for (ValueObjectProperty prop : properties) {
             line("/**");
             line(" * @private");
@@ -84,7 +125,7 @@ public class JsClassGenerator extends JsFileWriter {
         for (ValueObjectProperty property : properties) {
             line("/**");
             indent();
-            string(" * @returns {");
+            string(" * @returns {?");
             property.type().process(jsTypeDescriptor);
             string("}");
             newLine();
@@ -165,11 +206,15 @@ public class JsClassGenerator extends JsFileWriter {
 
     public void builderClass(ParsedValueObject valueObject, String objectName, JsClassGenerator write) throws IOException, ProcessingException {
         String builderName = NamingUtility.builderName(objectName);
-        write.line("class " + builderName + " {");
+        write.line("/**");
+        write.line(" * @implements ValueObjectBuilderInterface");
+        write.line(" */");
+        write.line("class " + builderName + " extends valueObjectBuilderInterface() {");
         write.line("/**");
         write.line(" * @constructor");
         write.line(" */");
         write.line("constructor() {");
+        write.line("super()");
         write.line(String.join("\n    ", valueObject.properties().stream().map(prop -> "this." + NamingUtility.attributeName(prop.name()) + " = null").collect(Collectors.toList())));
         write.line("}");
         write.line("");
@@ -240,10 +285,17 @@ public class JsClassGenerator extends JsFileWriter {
         }
     }
 
+    private void valueObjectWithChangedMethods(List<ValueObjectProperty> properties, String objectName, String builderName) throws IOException, ProcessingException {
+        JsChangedBuilderCallProcessor processor = new JsChangedBuilderCallProcessor(this, objectName, builderName);
+        for (ValueObjectProperty property : properties) {
+            property.process(processor);
+        }
+    }
+
     public void builderBuildMethod(String objectName, List<ValueObjectProperty> properties) throws IOException {
         line("/**");
-        line(" * @returns {" + objectName + "}");
-        line(" */");
+        line("* @returns {" + objectName + "}");
+        line("*/");
         line("build() {");
         line("return new " + objectName + "(" +
                 String.join(", ", properties.stream().map(prop -> "this." + attributeName(prop.name())).collect(Collectors.toList())) +
@@ -253,17 +305,17 @@ public class JsClassGenerator extends JsFileWriter {
     }
 
     public void builderFromObjectMethod(String builderName, List<ValueObjectProperty> properties) throws IOException, ProcessingException {
-        line( "static getPropertyFromObject( jsonObject, propertyName, normalizedPropertyName ){" );
-        line( "if( jsonObject[propertyName] !== undefined && !isNull( jsonObject[propertyName] )){" );
-        line( "return jsonObject[propertyName];" );
-        line( "}" );
-        line( "else if( jsonObject[normalizedPropertyName] !== undefined && !isNull( jsonObject[normalizedPropertyName] )){" );
-        line( "return jsonObject[normalizedPropertyName];" );
-        line( "}" );
-        line( "else {" );
-        line( "return null;" );
-        line( "}" );
-        line( "}" );
+        line("static getPropertyFromObject( jsonObject, propertyName, normalizedPropertyName ){");
+        line("if( jsonObject[propertyName] !== undefined && !isNull( jsonObject[propertyName] )){");
+        line("return jsonObject[propertyName];");
+        line("}");
+        line("else if( jsonObject[normalizedPropertyName] !== undefined && !isNull( jsonObject[normalizedPropertyName] )){");
+        line("return jsonObject[normalizedPropertyName];");
+        line("}");
+        line("else {");
+        line("return null;");
+        line("}");
+        line("}");
 
         line("/**");
         line(" * @param {Object} jsonObject");
@@ -272,12 +324,12 @@ public class JsClassGenerator extends JsFileWriter {
         line("static fromObject(jsonObject) {");
         line("assertType(isObject(jsonObject), 'input should be an object')");
         line("let builder = new " + builderName + "()");
-        line( "let jsonProperty;" );
+        line("let jsonProperty;");
         PropertiesDeserializationProcessor propertiesDeserializationProcessor = new PropertiesDeserializationProcessor(this, typesPackage);
         for (ValueObjectProperty property : properties) {
-            line( "jsonProperty = " + builderName + ".getPropertyFromObject( jsonObject, '" + property.name() + "', '" + NamingUtility.propertyName( property.name() ) + "' );" );
-            line( "if( jsonProperty !== undefined && !isNull( jsonProperty )){" );
-            propertiesDeserializationProcessor.currentVariable( "jsonProperty" );
+            line("jsonProperty = " + builderName + ".getPropertyFromObject( jsonObject, '" + property.name() + "', '" + NamingUtility.propertyName(property.name()) + "' );");
+            line("if( jsonProperty !== undefined && !isNull( jsonProperty )){");
+            propertiesDeserializationProcessor.currentVariable("jsonProperty");
             propertiesDeserializationProcessor.process(property);
             line("}");
         }
@@ -346,4 +398,15 @@ public class JsClassGenerator extends JsFileWriter {
         line("}");
         newLine();
     }
+
+    public void equalsMethodForList(ValueObjectType inSpecValueObject, String className) throws IOException, ProcessingException {
+        line("/**");
+        line("* @param {?" + className + "} to");
+        line("* @return  {boolean}");
+        line("*/");
+        line("equals(to) {");
+        inSpecValueObject.process(new JsEqualityListProcessor(this));
+        line("}");
+    }
+
 }

@@ -33,6 +33,7 @@ public class JsValueListGenerator implements ParsedYamlProcessor {
         write.listConstructor();
         write.elementAccessor( inSpecValueObject );
         write.builderValidateElement( inSpecValueObject );
+        write.equalsMethodForList(inSpecValueObject, className);
         write.line( "}" );
         write.line( "export { " + className + " }" );
         write.flush();

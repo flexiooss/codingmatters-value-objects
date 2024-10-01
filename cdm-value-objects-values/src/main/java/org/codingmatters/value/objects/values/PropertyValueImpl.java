@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.Objects;
 
 class PropertyValueImpl implements PropertyValue {
 
@@ -216,20 +217,13 @@ class PropertyValueImpl implements PropertyValue {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         PropertyValueImpl that = (PropertyValueImpl) o;
-
-        if (type != that.type) return false;
-        if (cardinality != that.cardinality) return false;
-        return Arrays.deepEquals(value, that.value);
+        return type == that.type && cardinality == that.cardinality && Objects.deepEquals(value, that.value);
     }
 
     @Override
     public int hashCode() {
-        int result = type != null ? type.hashCode() : 0;
-        result = 31 * result + (cardinality != null ? cardinality.hashCode() : 0);
-        result = 31 * result + Arrays.hashCode(value);
-        return result;
+        return Objects.hash(type, cardinality, Arrays.hashCode(value));
     }
 
     @Override

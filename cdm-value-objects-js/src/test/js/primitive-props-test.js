@@ -35,6 +35,25 @@ class PrimitivePropsTest extends TestCase {
     assert.strictEqual(primitiveProp.objectProp().stringValue('jean'), 'tenbien')
   }
 
+  testEquals() {
+     let builder = new globalFlexioImport.org.generated.PrimitivePropsBuilder()
+       builder.stringProp('str')
+       builder.integerProp(9)
+       builder.longProp(7)
+       builder.floatProp(9.7)
+       builder.doubleProp(7.9)
+       builder.booleanProp(true)
+       let ov = globalFlexioImport.io.flexio.flex_types.ObjectValue
+         .builder()
+         .stringValue('jean', 'tenbien')
+         .build()
+       builder.objectProp(ov)
+       let primitiveProp = builder.build()
+
+       assert.strictEqual(primitiveProp.equals(primitiveProp), true)
+       assert.strictEqual(primitiveProp.equals(primitiveProp.withStringProp('plok')), false)
+  }
+
   testEmbededBuilder() {
     let ov = globalFlexioImport.io.flexio.flex_types.ObjectValue
       .builder()
