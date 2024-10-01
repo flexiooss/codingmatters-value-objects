@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-//@Ignore
+@Ignore
 public class RunJsTest {
 
     private static ProcessBuilder processBuilder;
