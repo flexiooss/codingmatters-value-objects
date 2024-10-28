@@ -218,6 +218,9 @@ class PropertyValueImpl implements PropertyValue {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PropertyValueImpl that = (PropertyValueImpl) o;
+        if((this.type == null || that.type == null) && cardinality.equals(Cardinality.MULTIPLE) && Objects.deepEquals(this.value, new Value[0])) {
+            return that.cardinality.equals(Cardinality.MULTIPLE) && Objects.deepEquals(that.value, new Value[0]);
+        }
         return type == that.type && cardinality == that.cardinality && Objects.deepEquals(value, that.value);
     }
 
