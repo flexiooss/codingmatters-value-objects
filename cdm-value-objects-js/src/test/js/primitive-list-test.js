@@ -134,13 +134,62 @@ class PrimitiveListTest extends TestCase {
     assert.deepEqual(arrayProps.integerList(), [1, 2, 3, null])
     assert.deepEqual(arrayProps.longList(), [4, 5, 6, null])
     assert.deepEqual(arrayProps.stringList(), ['1', '2', '3', null])
-    }
+  }
 
 
   testDeserializationWithNormalizedName() {
     let json = '{"dateList":["2019-01-17"]}'
     let arrayProps = globalFlexioImport.org.generated.ArraySimplePropsBuilder.fromJson(json).build()
     assert.strictEqual(arrayProps.dateList()[0].toJSON(), '2019-01-17')
+  }
+
+  testToObject() {
+    let json = '{"stringList":["1","2","3",null],"integerList":[1,2,3,null],"longList":[4,5,6,null],"floatList":[1.5,1.6,1.9,null],"doubleList":[1.4,1.7,1.9,null],"booleanList":[true,true,false,null],"date-list":["2019-01-17",null],"timeList":["14:15:37",null],"dateTimeList":["2019-01-17T14:15:37",null],"tzDateTimeList":["2019-01-17T14:15:37+04:30",null]}'
+
+    let arrayProps = globalFlexioImport.org.generated.ArraySimplePropsBuilder.fromJson(json).build()
+    assert.deepEqual(arrayProps.booleanList(), [true, true, false, null])
+    assert.strictEqual(arrayProps.dateList()[0].toJSON(), '2019-01-17')
+    assert.strictEqual(arrayProps.dateList()[1], null)
+    assert.strictEqual(arrayProps.dateTimeList()[0].toJSON(), '2019-01-17T14:15:37')
+    assert.strictEqual(arrayProps.dateTimeList()[1], null)
+    assert.strictEqual(arrayProps.timeList()[0].toJSON(), '14:15:37')
+    assert.strictEqual(arrayProps.timeList()[1], null)
+    assert.strictEqual(arrayProps.tzDateTimeList()[0].toJSON(), '2019-01-17T14:15:37+04:30')
+    assert.strictEqual(arrayProps.tzDateTimeList()[1], null)
+    assert.deepEqual(arrayProps.doubleList(), [1.4, 1.7, 1.9, null])
+    assert.deepEqual(arrayProps.floatList(), [1.5, 1.6, 1.9, null])
+    assert.deepEqual(arrayProps.integerList(), [1, 2, 3, null])
+    assert.deepEqual(arrayProps.longList(), [4, 5, 6, null])
+    assert.deepEqual(arrayProps.stringList(), ['1', '2', '3', null])
+
+    let object = arrayProps.toObject();
+
+    assert.deepEqual(object["booleanList"], [true, true, false, null])
+    assert.strictEqual(object["date-list"][0], '2019-01-17')
+    assert.strictEqual(object["date-list"][1], null)
+    assert.strictEqual(object["dateTimeList"][0], '2019-01-17T14:15:37')
+    assert.strictEqual(object["dateTimeList"][1], null)
+    assert.strictEqual(object["timeList"][0], '14:15:37')
+    assert.strictEqual(object["timeList"][1], null)
+    assert.strictEqual(object["tzDateTimeList"][0], '2019-01-17T14:15:37+04:30')
+    assert.strictEqual(object["tzDateTimeList"][1], null)
+    assert.deepEqual(object["doubleList"], [1.4, 1.7, 1.9, null])
+    assert.deepEqual(object["floatList"], [1.5, 1.6, 1.9, null])
+    assert.deepEqual(object["integerList"], [1, 2, 3, null])
+    assert.deepEqual(object["longList"], [4, 5, 6, null])
+    assert.deepEqual(object["stringList"], ['1', '2', '3', null])
+  }
+
+  testWithChanged() {
+    let json = '{"stringList":["1","2","3",null]}'
+    let arrayProps = globalFlexioImport.org.generated.ArraySimplePropsBuilder.fromJson(json).build()
+    let changed = arrayProps.withChangedStringList(l=>l.withPush("truc"));
+    changed = changed.withChangedIntegerList(l=>l.withPush(1));
+
+    assert.strictEqual(arrayProps.stringList().length, 4)
+    assert.strictEqual(changed.stringList().length, 5)
+    assert.strictEqual(changed.stringList().get(4), "truc")
+    assert.strictEqual(changed.integerList().length, 1)
   }
 
 }

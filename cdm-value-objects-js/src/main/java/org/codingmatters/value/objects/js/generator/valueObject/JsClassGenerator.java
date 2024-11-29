@@ -286,7 +286,7 @@ public class JsClassGenerator extends JsFileWriter {
     }
 
     private void valueObjectWithChangedMethods(List<ValueObjectProperty> properties, String objectName, String builderName) throws IOException, ProcessingException {
-        JsChangedBuilderCallProcessor processor = new JsChangedBuilderCallProcessor(this, objectName, builderName);
+        JsChangedBuilderCallProcessor processor = new JsChangedBuilderCallProcessor(this, objectName, builderName, typesPackage);
         for (ValueObjectProperty property : properties) {
             property.process(processor);
         }
