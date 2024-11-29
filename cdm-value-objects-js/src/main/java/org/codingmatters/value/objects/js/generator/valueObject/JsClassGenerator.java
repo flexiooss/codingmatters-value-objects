@@ -26,12 +26,14 @@ public class JsClassGenerator extends JsFileWriter {
     private final JsObjectValueTypeReferenceProcessor jsTypeDescriptor;
     private final JsTypeAssertionProcessor jsTypeAssertion;
     private final String typesPackage;
+    private final GenerationContext generationContext;
 
-    public JsClassGenerator(String filePath, String typesPackage) throws IOException {
+    public JsClassGenerator(String filePath, GenerationContext generationContext) throws IOException {
         super(filePath);
+        this.generationContext = generationContext;
         this.jsTypeDescriptor = new JsObjectValueTypeReferenceProcessor(this);
-        this.jsTypeAssertion = new JsTypeAssertionProcessor(this, typesPackage);
-        this.typesPackage = typesPackage;
+        this.jsTypeAssertion = new JsTypeAssertionProcessor(this, generationContext.typesPackage());
+        this.typesPackage = generationContext.typesPackage();
     }
 
     public void valueObjectClass(ParsedValueObject valueObject, String objectName, JsClassGenerator write) throws IOException, ProcessingException {
@@ -75,7 +77,7 @@ public class JsClassGenerator extends JsFileWriter {
         line("if (isNull(to)) return false;");
         indent();
         writer.write("assertInstanceOf(to, ");
-        String reference = valueObject.packageName() + "." + NamingUtility.className(valueObject.name());
+        String reference = generationContext.currentPackage() + "." + NamingUtility.className(valueObject.name());
         writer.write(NamingUtility.classFullName(reference));
         writer.write(", '");
         writer.write(reference);

@@ -2,6 +2,7 @@ package org.codingmatters.value.objects.js.generator.visitor;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
+import org.codingmatters.value.objects.js.generator.valueObject.GenerationContext;
 import org.codingmatters.value.objects.js.generator.valueObject.JsClassGenerator;
 import org.codingmatters.value.objects.js.parser.model.ParsedEnum;
 import org.codingmatters.value.objects.js.parser.model.ParsedValueObject;
@@ -14,11 +15,11 @@ import java.io.IOException;
 
 public class JsValueListGenerator implements ParsedYamlProcessor {
 
-    private final String typesPackage;
+    private final GenerationContext generationContext;
     private final String filePath;
 
-    public JsValueListGenerator( String typesPackage, String filePath ) {
-        this.typesPackage = typesPackage;
+    public JsValueListGenerator(GenerationContext generationContext, String filePath ) {
+        this.generationContext = generationContext;
         this.filePath = filePath;
     }
 
@@ -56,7 +57,7 @@ public class JsValueListGenerator implements ParsedYamlProcessor {
 
     @Override
     public void process( ObjectTypeExternalValue externalValueObject ) throws ProcessingException {
-        try( JsClassGenerator write = new JsClassGenerator( filePath, typesPackage ) ){
+        try( JsClassGenerator write = new JsClassGenerator( filePath, generationContext) ){
             writeList( write, externalValueObject, externalValueObject.objectReference() );
         } catch( Exception e ) {
             throw new ProcessingException( e );
@@ -86,7 +87,7 @@ public class JsValueListGenerator implements ParsedYamlProcessor {
     @Override
     public void process( ValueObjectTypeList list ) throws ProcessingException {
         if( list.type() instanceof ValueObjectTypeList ){
-            try( JsClassGenerator write = new JsClassGenerator( filePath, typesPackage ) ){
+            try( JsClassGenerator write = new JsClassGenerator( filePath, generationContext) ){
                 writeList( write, list.type(), list.name() );
             } catch( Exception e ) {
                 throw new ProcessingException( "error generating list", e );
@@ -107,7 +108,7 @@ public class JsValueListGenerator implements ParsedYamlProcessor {
 
     @Override
     public void process( YamlEnumInSpecEnum inSpecEnum ) throws ProcessingException {
-        try( JsClassGenerator write = new JsClassGenerator( filePath, typesPackage ) ){
+        try( JsClassGenerator write = new JsClassGenerator( filePath, generationContext) ){
             writeList( write, inSpecEnum, inSpecEnum.name() );
         } catch( Exception e ) {
             throw new ProcessingException( e );
