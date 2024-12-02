@@ -112,6 +112,13 @@ class InSpecEnumTest extends TestCase {
 
     assert.strictEqual(JSON.stringify(inSpecEnum), '{"secondSingle":"BA","multiple":["MB",null]}')
   }
+
+  testToObjectEnum(){
+    let json = '{"single":null, "secondSingle":"BA", "multiple":["MB","MC", null]}'
+    let inSpecEnum = globalFlexioImport.org.generated.InSpecEnumPropertiesBuilder.fromJson(json).build()
+    let obj = inSpecEnum.toObject();
+    assert.strictEqual(obj["multiple"][2], null)
+  }
 }
 
 runTest(InSpecEnumTest)

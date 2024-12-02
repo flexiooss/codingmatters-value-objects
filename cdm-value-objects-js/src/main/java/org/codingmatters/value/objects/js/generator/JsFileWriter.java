@@ -4,12 +4,19 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 
 public class JsFileWriter implements AutoCloseable {
 
     public static final String INDENTATION_UNITY = "  ";
-    protected BufferedWriter writer;
+    protected Writer writer;
     protected int indent;
+
+    public JsFileWriter(StringWriter writer) {
+        this.indent = 0;
+        this.writer = writer;
+    }
 
     public JsFileWriter(String filePath) {
         this.indent = 0;
@@ -40,7 +47,7 @@ public class JsFileWriter implements AutoCloseable {
     public void writeLine(String line) throws IOException {
         indent();
         writer.write(line);
-        writer.newLine();
+        newLine();
     }
 
     public void string(String line) throws IOException {
@@ -54,7 +61,7 @@ public class JsFileWriter implements AutoCloseable {
     }
 
     public void newLine() throws IOException {
-        writer.newLine();
+        writer.write(System.lineSeparator());
     }
 
     public void flush() throws IOException {

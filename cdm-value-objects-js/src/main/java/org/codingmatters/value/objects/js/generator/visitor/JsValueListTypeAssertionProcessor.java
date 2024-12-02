@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.js.generator.visitor;
 
 import org.codingmatters.value.objects.js.error.ProcessingException;
+import org.codingmatters.value.objects.js.generator.JsFileWriter;
 import org.codingmatters.value.objects.js.generator.NamingUtility;
 import org.codingmatters.value.objects.js.generator.valueObject.JsClassGenerator;
 import org.codingmatters.value.objects.js.parser.model.ParsedEnum;
@@ -14,9 +15,9 @@ import java.io.IOException;
 
 public class JsValueListTypeAssertionProcessor implements ParsedYamlProcessor {
     private final String typesPackage;
-    private final JsClassGenerator write;
+    private final JsFileWriter write;
 
-    public JsValueListTypeAssertionProcessor( String rootPackage, JsClassGenerator write ) {
+    public JsValueListTypeAssertionProcessor( String rootPackage, JsFileWriter write ) {
         typesPackage = rootPackage;
         this.write = write;
     }

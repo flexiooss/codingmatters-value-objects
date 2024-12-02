@@ -103,9 +103,9 @@ public class PropertiesSerializationProcessor implements ParsedYamlProcessor {
                 writer.string(")");
             } else {
                 char lambdaVar = getAndIncrementLambdaVar();
-                writer.string(".mapToArray(" + lambdaVar + " => " + lambdaVar);
+                writer.string(".mapToArray(" + lambdaVar + " => !isNull(" + lambdaVar + ") ? " + lambdaVar);
                 list.type().process(this);
-                writer.string(")");
+                writer.string(" : null)");
             }
         } catch (IOException e) {
             throw new ProcessingException("Error processing primitive type: " + currentProperty, e);
