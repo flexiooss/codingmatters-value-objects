@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.codingmatters.value.objects</groupId>
         <artifactId>codingmatters-value-objects</artifactId>
-        <version>1.116.0-SNAPSHOT</version>
+        <version>1.117.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>cdm-value-objects-matchers</artifactId>
