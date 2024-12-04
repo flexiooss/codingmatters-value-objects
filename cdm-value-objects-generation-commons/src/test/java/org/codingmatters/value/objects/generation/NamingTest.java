@@ -24,6 +24,16 @@ public class NamingTest {
     }
 
     @Test
+    public void dollarsRemoved() throws Exception {
+        assertThat(new Naming().type("$camel", "case"), is("CamelCase"));
+        assertThat(new Naming().type("camel", "$case"), is("CamelCase"));
+        assertThat(new Naming().type("ca$mel", "cas$e"), is("CamelCase"));
+        assertThat(new Naming().property("$camel", "case"), is("camelCase"));
+        assertThat(new Naming().property("camel", "$case"), is("camelCase"));
+        assertThat(new Naming().property("came$l", "ca$se"), is("camelCase"));
+    }
+
+    @Test
     public void camelCase() throws Exception {
         assertThat(new Naming().type("camel", "case"), is("CamelCase"));
         assertThat(new Naming().property("camel", "case"), is("camelCase"));
