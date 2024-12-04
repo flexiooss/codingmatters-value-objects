@@ -38,6 +38,7 @@ public class Naming {
     private final String [] normalize(String ... parts) {
         LinkedList<String> result = new LinkedList<>();
         for (String part : parts) {
+            part = part.replaceAll("\\$", "");
             for (String subpart : part.split("(\\s+)|(-+)")) {
                 result.add(subpart);
             }
