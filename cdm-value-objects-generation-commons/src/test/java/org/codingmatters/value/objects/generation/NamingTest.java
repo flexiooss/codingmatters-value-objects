@@ -34,6 +34,21 @@ public class NamingTest {
     }
 
     @Test
+    public void punctuationRemoved() throws Exception {
+        String punctuation = "!\"#$%&'()*+,/:;<=>?@[\\]^_`{|}~";
+        for (char c : punctuation.toCharArray()) {
+            assertThat(new Naming().type("" + c + "camel", "case"), is("CamelCase"));
+            assertThat(new Naming().type("camel", "" + c + "case"), is("CamelCase"));
+            assertThat(new Naming().type("ca" + c + "mel", "cas" + c + "e"), is("CamelCase"));
+            assertThat(new Naming().property("" + c + "camel", "case"), is("camelCase"));
+            assertThat(new Naming().property("camel", "" + c + "case"), is("camelCase"));
+            assertThat(new Naming().property("came" + c + "l", "ca" + c + "se"), is("camelCase"));
+        }
+    }
+
+
+
+    @Test
     public void camelCase() throws Exception {
         assertThat(new Naming().type("camel", "case"), is("CamelCase"));
         assertThat(new Naming().property("camel", "case"), is("camelCase"));
@@ -43,8 +58,20 @@ public class NamingTest {
     public void dashesAreWordSeparators() throws Exception {
         assertThat(new Naming().type("camel-case"), is("CamelCase"));
         assertThat(new Naming().type("camel------case"), is("CamelCase"));
+        assertThat(new Naming().type("-camel-case"), is("CamelCase"));
         assertThat(new Naming().property("camel-case"), is("camelCase"));
         assertThat(new Naming().property("camel-------case"), is("camelCase"));
+        assertThat(new Naming().property("-camel-case"), is("camelCase"));
+    }
+
+    @Test
+    public void dotsAreWordSeparators() throws Exception {
+        assertThat(new Naming().type("camel.case"), is("CamelCase"));
+        assertThat(new Naming().type("camel......case"), is("CamelCase"));
+        assertThat(new Naming().type(".camel.case"), is("CamelCase"));
+        assertThat(new Naming().property("camel.case"), is("camelCase"));
+        assertThat(new Naming().property("camel.......case"), is("camelCase"));
+        assertThat(new Naming().property(".camel.case"), is("camelCase"));
     }
 
     @Test

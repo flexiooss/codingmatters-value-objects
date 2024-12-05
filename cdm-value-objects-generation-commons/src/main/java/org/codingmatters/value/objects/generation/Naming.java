@@ -35,12 +35,14 @@ public class Naming {
         return result.toString();
     }
 
-    private final String [] normalize(String ... parts) {
+    private String [] normalize(String ... parts) {
         LinkedList<String> result = new LinkedList<>();
         for (String part : parts) {
-            part = part.replaceAll("\\$", "");
-            for (String subpart : part.split("(\\s+)|(-+)")) {
-                result.add(subpart);
+            for (String subpart : part.split("(\\s+)|([\\-.]+)")) {
+                subpart = subpart.replaceAll("\\p{Punct}", "");
+                if(! subpart.isEmpty()) {
+                    result.add(subpart);
+                }
             }
         }
         return result.toArray(new String[result.size()]);
