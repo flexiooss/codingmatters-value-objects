@@ -35,7 +35,7 @@ public class NamingTest {
 
     @Test
     public void punctuationRemoved() throws Exception {
-        String punctuation = "!\"#$%&'()*+,/:;<=>?@[\\]^_`{|}~";
+        String punctuation = "!\"#$%&'()*+,/:;<=>?@[]^`{|}~";
         for (char c : punctuation.toCharArray()) {
             assertThat(new Naming().type("" + c + "camel", "case"), is("CamelCase"));
             assertThat(new Naming().type("camel", "" + c + "case"), is("CamelCase"));
@@ -44,6 +44,16 @@ public class NamingTest {
             assertThat(new Naming().property("camel", "" + c + "case"), is("camelCase"));
             assertThat(new Naming().property("came" + c + "l", "ca" + c + "se"), is("camelCase"));
         }
+    }
+
+    @Test
+    public void underscoreNotRemoved() throws Exception {
+        assertThat(new Naming().type("" + '_' + "camel", "case"), is("_camelCase"));
+        assertThat(new Naming().type("camel", "" + '_' + "case"), is("Camel_case"));
+        assertThat(new Naming().type("ca" + '_' + "mel", "cas" + '_' + "e"), is("Ca_melCas_e"));
+        assertThat(new Naming().property("" + '_' + "camel", "case"), is("_camelCase"));
+        assertThat(new Naming().property("camel", "" + '_' + "case"), is("camel_case"));
+        assertThat(new Naming().property("came" + '_' + "l", "ca" + '_' + "se"), is("came_lCa_se"));
     }
 
 
