@@ -39,7 +39,8 @@ public class Naming {
         LinkedList<String> result = new LinkedList<>();
         for (String part : parts) {
             for (String subpart : part.split("(\\s+)|([\\-.]+)")) {
-                subpart = subpart.replaceAll("\\p{Punct}", "");
+                // "!\"#$%&'()*+,/:;<=>?@[\\]^`{|}~"
+                subpart = subpart.replaceAll("[!\"#$%&'()*+,/:;<=>?@\\[\\]^`{|}~]", "");
                 if(! subpart.isEmpty()) {
                     result.add(subpart);
                 }
