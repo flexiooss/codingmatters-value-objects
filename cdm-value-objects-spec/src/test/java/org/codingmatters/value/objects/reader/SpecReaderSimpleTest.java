@@ -91,6 +91,7 @@ public class SpecReaderSimpleTest {
                 .line("val:")
                 .line("  p1: string")
                 .line("  p2: string")
+                .line("  snake_prop: string")
                 .build())) {
             assertThat(
                     reader.read(in),
@@ -99,6 +100,7 @@ public class SpecReaderSimpleTest {
                                     .addValue(valueSpec().name("val")
                                             .addProperty(property().name("p1").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
                                             .addProperty(property().name("p2").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
+                                            .addProperty(property().name("snake_prop").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
                                     )
                                     .build()
                     )
@@ -147,8 +149,8 @@ public class SpecReaderSimpleTest {
                     )
             );
             assertThat(
-                    spec.valueSpec("val").propertySpec("camelCase4"),
-                    is(property().name("camelCase4").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE))
+                    spec.valueSpec("val").propertySpec("camelcase4"),
+                    is(property().name("camelcase4").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE))
                             .hints(stringSet("property:raw(camel$case4)"))
                             .build()
                     )

@@ -19,6 +19,7 @@ public class ValueBuilderTest {
                 .booleanProperty(true)
                 .listProperty("a", "b", "c")
                 .setProperty("a", "b", "a")
+                .snakecase("plop")
                 .build();
 
         assertThat(value.stringProperty(), is("toto"));
