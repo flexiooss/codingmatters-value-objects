@@ -91,6 +91,7 @@ public class SpecReaderSimpleTest {
                 .line("val:")
                 .line("  p1: string")
                 .line("  p2: string")
+                .line("  snake_prop: string")
                 .build())) {
             assertThat(
                     reader.read(in),
@@ -99,6 +100,7 @@ public class SpecReaderSimpleTest {
                                     .addValue(valueSpec().name("val")
                                             .addProperty(property().name("p1").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
                                             .addProperty(property().name("p2").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
+                                            .addProperty(property().name("snake_prop").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
                                     )
                                     .build()
                     )
@@ -116,6 +118,7 @@ public class SpecReaderSimpleTest {
                 .line("  camel#case3: string")
                 .line("  camel$case4: string")
                 .line("  camel!case5: string")
+                .line("  snake_case: string")
                 .build())) {
             Spec spec = reader.read(in);
             assertThat(
@@ -147,8 +150,8 @@ public class SpecReaderSimpleTest {
                     )
             );
             assertThat(
-                    spec.valueSpec("val").propertySpec("camelCase4"),
-                    is(property().name("camelCase4").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE))
+                    spec.valueSpec("val").propertySpec("camelcase4"),
+                    is(property().name("camelcase4").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE))
                             .hints(stringSet("property:raw(camel$case4)"))
                             .build()
                     )
@@ -157,6 +160,12 @@ public class SpecReaderSimpleTest {
                     spec.valueSpec("val").propertySpec("camelcase5"),
                     is(property().name("camelcase5").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE))
                             .hints(stringSet("property:raw(camel!case5)"))
+                            .build()
+                    )
+            );
+            assertThat(
+                    spec.valueSpec("val").propertySpec("snake_case"),
+                    is(property().name("snake_case").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE))
                             .build()
                     )
             );

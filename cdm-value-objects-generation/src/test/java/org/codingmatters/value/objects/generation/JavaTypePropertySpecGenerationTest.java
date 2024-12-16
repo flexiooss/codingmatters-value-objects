@@ -39,6 +39,7 @@ public class JavaTypePropertySpecGenerationTest {
                     .addProperty(property().name("prop").type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(String.class.getName())))
                     .addProperty(property().name("prop2").type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(String.class.getName())))
                     .addProperty(property().name("binary").type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(byte[].class.getName())))
+                    .addProperty(property().name("snake_prop").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
             )
             .build();
     private ClassLoaderHelper classes;
@@ -71,6 +72,7 @@ public class JavaTypePropertySpecGenerationTest {
                         .with(anInstance().method().named("prop").withoutParameters().returning(String.class))
                         .with(anInstance().method().named("prop2").withoutParameters().returning(String.class))
                         .with(anInstance().method().named("binary").withoutParameters().returning(byte[].class))
+                        .with(anInstance().method().named("snake_prop").withoutParameters().returning(String.class))
                 )
         );
     }

@@ -5,6 +5,7 @@ value:
     $list: string
   setProperty:
     $set: string
+  snake_case: string
 
 complexValue:
   recursiveProperty: $complexValue

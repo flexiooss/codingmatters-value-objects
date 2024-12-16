@@ -31,6 +31,7 @@ public class NamingTest {
         assertThat(new Naming().property("$camel", "case"), is("camelCase"));
         assertThat(new Naming().property("camel", "$case"), is("camelCase"));
         assertThat(new Naming().property("came$l", "ca$se"), is("camelCase"));
+        assertThat(new Naming().property("came$l", "ca$se"), is("camelCase"));
     }
 
     @Test

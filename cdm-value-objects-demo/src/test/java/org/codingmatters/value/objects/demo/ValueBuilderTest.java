@@ -19,12 +19,14 @@ public class ValueBuilderTest {
                 .booleanProperty(true)
                 .listProperty("a", "b", "c")
                 .setProperty("a", "b", "a")
+                .snake_case("plop")
                 .build();
 
         assertThat(value.stringProperty(), is("toto"));
         assertThat(value.booleanProperty(), is(true));
         assertThat(value.listProperty().toArray(), is(new String [] {"a", "b", "c"}));
         assertThat(value.setProperty().toArray(), is(new String [] {"a", "b"}));
+        assertThat(value.snake_case(), is("plop"));
     }
 
     @Test

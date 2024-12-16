@@ -12,7 +12,7 @@ public class ValueObjectNaming {
         return this.name(this::lowerCaseFirst, parts);
     }
 
-    private String name(Function<String, String> firstPartTransformer, String ... parts) {
+    private String name(Function<String, String> firstPartTransformer,  String ... parts) {
         if(parts == null) return null;
         if(parts.length == 0) return "";
         parts = this.normalize(parts);
@@ -27,8 +27,9 @@ public class ValueObjectNaming {
     private String [] normalize(String ... parts) {
         LinkedList<String> result = new LinkedList<>();
         for (String part : parts) {
-            for (String subpart : part.split("(\\s+)|([\\-.$]+)")) {
-                subpart = subpart.replaceAll("\\p{Punct}", "");
+            for (String subpart : part.split("(\\s+)|([\\-.]+)")) {
+                // "!\"#$%&'()*+,/:;<=>?@[\\]^`{|}~"
+                subpart = subpart.replaceAll("[!\"#$%&'()*+,/:;<=>?@\\[\\]^`{|}~]", "");
                 if(! subpart.isEmpty()) {
                     result.add(subpart);
                 }
@@ -43,5 +44,4 @@ public class ValueObjectNaming {
     private String lowerCaseFirst(String str) {
         return str.substring(0, 1).toLowerCase() + str.substring(1);
     }
-
 }
