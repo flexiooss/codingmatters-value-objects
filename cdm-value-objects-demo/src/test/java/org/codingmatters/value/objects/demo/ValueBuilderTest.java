@@ -26,6 +26,7 @@ public class ValueBuilderTest {
         assertThat(value.booleanProperty(), is(true));
         assertThat(value.listProperty().toArray(), is(new String [] {"a", "b", "c"}));
         assertThat(value.setProperty().toArray(), is(new String [] {"a", "b"}));
+        assertThat(value.snake_case(), is("plop"));
     }
 
     @Test
