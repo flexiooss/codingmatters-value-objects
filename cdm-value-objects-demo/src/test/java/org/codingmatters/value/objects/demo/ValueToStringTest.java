@@ -18,7 +18,7 @@ public class ValueToStringTest {
                 .setProperty()
                 .build();
 
-        assertThat(value.toString(), is("Value{stringProperty=toto, booleanProperty=true, listProperty=null, setProperty=null}"));
+        assertThat(value.toString(), is("Value{stringProperty=toto, booleanProperty=true, listProperty=null, setProperty=null, snake_case=null}"));
     }
 
     @Test
@@ -30,6 +30,6 @@ public class ValueToStringTest {
                 .setProperty(new String [0])
                 .build();
 
-        assertThat(value.toString(), is("Value{stringProperty=toto, booleanProperty=true, listProperty=[], setProperty=[]}"));
+        assertThat(value.toString(), is("Value{stringProperty=toto, booleanProperty=true, listProperty=[], setProperty=[], snake_case=null}"));
     }
 }

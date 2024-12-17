@@ -1,6 +1,7 @@
 package org.codingmatters.value.objects.reader;
 
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
+import org.codingmatters.value.objects.reader.utils.ValueObjectNaming;
 import org.codingmatters.value.objects.spec.*;
 
 import java.util.*;
@@ -30,6 +31,8 @@ public class ContextSpecParser {
 
     private final Map<String, ?> root;
     private Stack<String> context;
+
+    private final ValueObjectNaming naming = new ValueObjectNaming();
 
     public ContextSpecParser(Map<String, ?> root) {
         this.root = root;
@@ -78,10 +81,6 @@ public class ContextSpecParser {
     private PropertySpec.Builder createPropertySpec(String name, Object value) throws SpecSyntaxException {
         this.context.push(name);
         try {
-            if (!JAVA_IDENTIFIER_PATTERN.matcher(name).matches()) {
-                throw new SpecSyntaxException("malformed property name {context} : should be a valid java identifier", this.context);
-            }
-
             PropertyCardinality cardinality;
             if(value instanceof Map && ((Map) value).containsKey(LIST_MARK)) {
                 cardinality = PropertyCardinality.LIST;
@@ -121,6 +120,13 @@ public class ContextSpecParser {
                 } else {
                     hints.add(String.valueOf(((Map) value).get(HINTS_MARK)));
                 }
+            }
+
+
+            String normalizedName = this.naming.property(name);
+            if(! normalizedName.equals(name)) {
+                hints.add("property:raw(" + name + ")");
+                name = normalizedName;
             }
 
             return property()

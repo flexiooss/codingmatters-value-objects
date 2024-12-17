@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import org.codingmatters.value.objects.exception.LowLevelSyntaxException;
 import org.codingmatters.value.objects.exception.SpecSyntaxException;
 import org.codingmatters.value.objects.spec.PropertyCardinality;
+import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
 import org.codingmatters.value.objects.spec.ValueSpec;
 import org.hamcrest.Matchers;
@@ -16,6 +17,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.codingmatters.value.objects.spec.PropertySpec.property;
 import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
@@ -45,19 +49,6 @@ public class SpecReaderSimpleTest {
         try(InputStream in = streamFor(string()
                 .line("val")
                 .line("  prop string")
-                .build())) {
-            reader.read(in);
-        }
-    }
-
-    @Test
-    public void malformedPropertyName() throws Exception {
-        this.exception.expect(SpecSyntaxException.class);
-        this.exception.expectMessage("malformed property name \"val/prop erty\" : should be a valid java identifier");
-
-        try(InputStream in = streamFor(string()
-                .line("val:")
-                .line("  prop erty: string")
                 .build())) {
             reader.read(in);
         }
@@ -100,6 +91,7 @@ public class SpecReaderSimpleTest {
                 .line("val:")
                 .line("  p1: string")
                 .line("  p2: string")
+                .line("  snake_prop: string")
                 .build())) {
             assertThat(
                     reader.read(in),
@@ -108,8 +100,73 @@ public class SpecReaderSimpleTest {
                                     .addValue(valueSpec().name("val")
                                             .addProperty(property().name("p1").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
                                             .addProperty(property().name("p2").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
+                                            .addProperty(property().name("snake_prop").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
                                     )
                                     .build()
+                    )
+            );
+        }
+    }
+
+    @Test
+    public void propertyNaming() throws Exception {
+        try(InputStream in = streamFor(string()
+                .line("val:")
+                .line("  prop erty: string")
+                .line("  camel-case1: string")
+                .line("  camel.case2: string")
+                .line("  camel#case3: string")
+                .line("  camel$case4: string")
+                .line("  camel!case5: string")
+                .line("  snake_case: string")
+                .build())) {
+            Spec spec = reader.read(in);
+            assertThat(
+                    spec.valueSpec("val").propertySpec("propErty"),
+                    is(property().name("propErty").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE))
+                            .hints(stringSet("property:raw(prop erty)"))
+                            .build()
+                    )
+            );
+            assertThat(
+                    spec.valueSpec("val").propertySpec("camelCase1"),
+                    is(property().name("camelCase1").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE))
+                            .hints(stringSet("property:raw(camel-case1)"))
+                            .build()
+                    )
+            );
+            assertThat(
+                    spec.valueSpec("val").propertySpec("camelCase2"),
+                    is(property().name("camelCase2").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE))
+                            .hints(stringSet("property:raw(camel.case2)"))
+                            .build()
+                    )
+            );
+            assertThat(
+                    spec.valueSpec("val").propertySpec("camelcase3"),
+                    is(property().name("camelcase3").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE))
+                            .hints(stringSet("property:raw(camel#case3)"))
+                            .build()
+                    )
+            );
+            assertThat(
+                    spec.valueSpec("val").propertySpec("camelcase4"),
+                    is(property().name("camelcase4").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE))
+                            .hints(stringSet("property:raw(camel$case4)"))
+                            .build()
+                    )
+            );
+            assertThat(
+                    spec.valueSpec("val").propertySpec("camelcase5"),
+                    is(property().name("camelcase5").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE))
+                            .hints(stringSet("property:raw(camel!case5)"))
+                            .build()
+                    )
+            );
+            assertThat(
+                    spec.valueSpec("val").propertySpec("snake_case"),
+                    is(property().name("snake_case").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE))
+                            .build()
                     )
             );
         }
@@ -252,5 +309,10 @@ public class SpecReaderSimpleTest {
 
         }
 
+    }
+
+
+    private Set<String> stringSet(String... strings) {
+        return new HashSet<>(Arrays.asList(strings));
     }
 }
