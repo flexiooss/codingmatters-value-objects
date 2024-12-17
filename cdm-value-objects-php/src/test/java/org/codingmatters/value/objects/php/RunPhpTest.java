@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class RunPhpTest {
 
@@ -28,15 +29,11 @@ public class RunPhpTest {
         processBuilder.command("composer", "install");
         System.out.println("Running composer install...");
         Process process = processBuilder.start();
-        boolean terminated = process.waitFor(COMPOSER_INSTALL_TIMEOUT_IN_MINUTES, TimeUnit.MINUTES);
-        if (terminated) {
-            if (process.exitValue() != 0) {
-                printError(process);
-            }
-            assertThat(process.exitValue(), is(0));
-        } else {
-            throw new AssertionError("command 'composer install' timed out after " + COMPOSER_INSTALL_TIMEOUT_IN_MINUTES + " minutes");
+        assertTrue("composer install took too much time", process.waitFor(10, TimeUnit.MINUTES));
+        if (process.exitValue() != 0) {
+            printError(process);
         }
+        assertThat(process.exitValue(), is(0));
     }
 
     private static void printError(Process process) throws IOException {
