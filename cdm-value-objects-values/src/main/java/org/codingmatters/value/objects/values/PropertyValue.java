@@ -54,7 +54,7 @@ public interface PropertyValue {
     static PropertyValue multiple(Type type, Value... values) {
         if (values != null) {
             for (Value value : values) {
-                if (value.rawValue() != null) {
+                if (value != null && value.rawValue() != null) {
                     assert value.isa(type);
                 }
             }
