@@ -30,7 +30,12 @@ public class OptionalObjectValue {
     }
 
     public OptionalPropertyValue property(String property) {
-        return new OptionalPropertyValue(this.value.isPresent() ? this.get().property(property) : null);
+        if(this.value.isPresent()) {
+            if(this.value.get().property(property) != null && ! this.value.get().property(property).isNullValue()) {
+                return new OptionalPropertyValue(this.get().property(property));
+            }
+        }
+        return new OptionalPropertyValue(null);
     }
 
 

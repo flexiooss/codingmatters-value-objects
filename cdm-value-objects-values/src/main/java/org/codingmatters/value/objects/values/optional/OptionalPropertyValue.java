@@ -51,8 +51,10 @@ public class OptionalPropertyValue {
     }
 
     public boolean isPresent() {
-        return value.isPresent();
+        return ! this.isEmpty();
     }
+
+    static PropertyValue EMPTY = PropertyValue.builder().build();
 
     public boolean isEmpty() {
         return value.isEmpty();
