@@ -48,7 +48,11 @@ public interface PropertyValue {
     }
 
     static PropertyValue multipleBoolean(Boolean... values) {
-        return multiple(Type.DATETIME, Arrays.stream(values).map(val -> PropertyValue.builder().booleanValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+        return multiple(Type.BOOLEAN, Arrays.stream(values).map(val -> PropertyValue.builder().booleanValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+    }
+
+    static PropertyValue multipleBytes(byte[]... values) {
+        return multiple(Type.BYTES, Arrays.stream(values).map(val -> PropertyValue.builder().bytesValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
     }
 
     static PropertyValue multiple(Type type, Value... values) {
