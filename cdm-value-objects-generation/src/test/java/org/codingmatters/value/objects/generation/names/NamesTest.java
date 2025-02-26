@@ -23,6 +23,7 @@ import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
 import static org.codingmatters.value.objects.spec.Spec.spec;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.is;
 
 public class NamesTest {
@@ -134,6 +135,12 @@ public class NamesTest {
                 classes.get("org.generated.Val").call("names_").call("prop1").get(),
                 is("prop1")
         );
+    }
+
+    @Test
+    public void givenCallingNames__whenCallingAllNames__thenArrayWithPropertyNamesReturned() throws Exception {
+        String [] actual = (String[]) classes.get("org.generated.Val").call("names_").call("allNames_").get();
+        assertThat(actual, is(arrayContaining("prop1", "prop2")));
     }
 
     @Test
