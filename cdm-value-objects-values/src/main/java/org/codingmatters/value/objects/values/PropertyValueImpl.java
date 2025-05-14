@@ -19,12 +19,14 @@ class PropertyValueImpl implements PropertyValue {
 
         @Override
         public String stringValue() {
+            if(this.value == null) return null;
             assert this.type.equals(Type.STRING);
             return (String) this.value;
         }
 
         @Override
         public Long longValue() {
+            if(this.value == null) return null;
             if( this.type.equals( Type.DOUBLE ) ){
                 return this.doubleValue().longValue();
             } else {
@@ -35,6 +37,7 @@ class PropertyValueImpl implements PropertyValue {
 
         @Override
         public Double doubleValue() {
+            if(this.value == null) return null;
             if( this.type.equals( Type.LONG ) ){
                 return this.longValue().doubleValue();
             } else {
@@ -45,36 +48,42 @@ class PropertyValueImpl implements PropertyValue {
 
         @Override
         public Boolean booleanValue() {
+            if(this.value == null) return null;
             assert this.type.equals(Type.BOOLEAN);
             return (Boolean) this.value;
         }
 
         @Override
         public byte[] bytesValue() {
+            if(this.value == null) return null;
             assert this.type.equals(Type.BYTES);
             return (byte[]) this.value;
         }
 
         @Override
         public LocalDate dateValue() {
+            if(this.value == null) return null;
             assert this.type.equals(Type.DATE);
             return (LocalDate) this.value;
         }
 
         @Override
         public LocalTime timeValue() {
+            if(this.value == null) return null;
             assert this.type.equals(Type.TIME);
             return (LocalTime) this.value;
         }
 
         @Override
         public LocalDateTime datetimeValue() {
+            if(this.value == null) return null;
             assert this.type.equals(Type.DATETIME);
             return (LocalDateTime) this.value;
         }
 
         @Override
         public ObjectValue objectValue() {
+            if(this.value == null) return null;
             assert this.type.equals(Type.OBJECT);
             return (ObjectValue) this.value;
         }
@@ -161,6 +170,61 @@ class PropertyValueImpl implements PropertyValue {
                             this.value[0].isNull()
                     ;
         }
+    }
+
+    @Override
+    public boolean isSingle() {
+        return Cardinality.SINGLE.equals(this.cardinality);
+    }
+
+    @Override
+    public boolean isMultiple() {
+        return ! this.isSingle();
+    }
+
+    @Override
+    public boolean isA(Type type) {
+        if(this.isSingle() && this.value == null) return true;
+        if(this.isMultiple() && (this.value == null || this.value.length == 0)) return true;
+
+        return type.equals(this.type);
+    }
+
+    @Override
+    public boolean isAString() {
+        return this.isA(Type.STRING);
+    }
+    @Override
+    public boolean isADouble() {
+        return this.isA(Type.DOUBLE);
+    }
+    @Override
+    public boolean isALong() {
+        return this.isA(Type.LONG);
+    }
+    @Override
+    public boolean isABytes() {
+        return this.isA(Type.BYTES);
+    }
+    @Override
+    public boolean isADatetime() {
+        return this.isA(Type.DATETIME);
+    }
+    @Override
+    public boolean isADate() {
+        return this.isA(Type.DATE);
+    }
+    @Override
+    public boolean isATime() {
+        return this.isA(Type.TIME);
+    }
+    @Override
+    public boolean isABoolean() {
+        return this.isA(Type.BOOLEAN);
+    }
+    @Override
+    public boolean isAObject() {
+        return this.isA(Type.OBJECT);
     }
 
     @Override

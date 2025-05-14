@@ -91,6 +91,19 @@ public interface PropertyValue {
         return multiple(type, builders);
     }
 
+    boolean isSingle();
+    boolean isMultiple();
+
+    boolean isA(Type type);
+    boolean isAString();
+    boolean isADouble();
+    boolean isALong();
+    boolean isABytes();
+    boolean isADatetime();
+    boolean isADate();
+    boolean isATime();
+    boolean isABoolean();
+    boolean isAObject();
 
     class Builder {
 
