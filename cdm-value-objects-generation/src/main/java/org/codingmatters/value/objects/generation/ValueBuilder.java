@@ -232,12 +232,53 @@ public class ValueBuilder {
                         .endControlFlow()
                         .build()
         );
+        result.add(
+                MethodSpec.methodBuilder(propertySpec.name() + "AddIf")
+                        .addParameter(Boolean.class, "condition")
+                        .addParameter(this.types.propertySingleType(propertySpec), "last")
+                        .returns(this.types.valueBuilderType())
+                        .addModifiers(PUBLIC)
+                        .beginControlFlow("if(! condition)")
+                        .addStatement("return this")
+                        .endControlFlow()
+                        .beginControlFlow("if(this.$N == null)", propertySpec.name())
+                        .addStatement("return this.$N(last)", propertySpec.name())
+                        .nextControlFlow("else")
+                        .addStatement("this.$N = this.$N.toBuilder().with(last).build()", propertySpec.name(), propertySpec.name())
+                        .addStatement("return this")
+                        .endControlFlow()
+                        .build()
+        );
         if(! propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
             result.add(
                     MethodSpec.methodBuilder(propertySpec.name() + "AddFirst")
                             .addParameter(this.types.propertySingleType(propertySpec), "first")
                             .returns(this.types.valueBuilderType())
                             .addModifiers(PUBLIC)
+                            .beginControlFlow("if(this.$N == null)", propertySpec.name())
+                            .addStatement("return this.$N(first)", propertySpec.name())
+                            .nextControlFlow("else")
+                            .addStatement("this.$N = new $T.Builder<$T>().with(first).with(this.$N).build()",
+                                    propertySpec.name(),
+                                    propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST) ?
+                                            this.types.collectionConfiguration().valueListType() :
+                                            this.types.collectionConfiguration().valueSetType(),
+                                    this.types.propertySingleType(propertySpec),
+                                    propertySpec.name()
+                            )
+                            .addStatement("return this")
+                            .endControlFlow()
+                            .build()
+            );
+            result.add(
+                    MethodSpec.methodBuilder(propertySpec.name() + "AddFirstIf")
+                            .addParameter(Boolean.class, "condition")
+                            .addParameter(this.types.propertySingleType(propertySpec), "first")
+                            .returns(this.types.valueBuilderType())
+                            .addModifiers(PUBLIC)
+                            .beginControlFlow("if(! condition)")
+                            .addStatement("return this")
+                            .endControlFlow()
                             .beginControlFlow("if(this.$N == null)", propertySpec.name())
                             .addStatement("return this.$N(first)", propertySpec.name())
                             .nextControlFlow("else")

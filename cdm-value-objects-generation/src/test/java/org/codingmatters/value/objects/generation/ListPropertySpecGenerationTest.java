@@ -144,6 +144,16 @@ public class ListPropertySpecGenerationTest {
                         .withParameters(genericType().baseClass(this.compiled.getClass("org.generated.ValueList")).withParameters(typeParameter().named(String.class.getName())))
                         .returning(this.compiled.getClass("org.generated.Val$Builder"))
                 )
+                .with(aPublic().method()
+                        .named("listPropAddIf")
+                        .withParameters(Boolean.class, String.class)
+                        .returning(this.compiled.getClass("org.generated.Val$Builder"))
+                )
+                .with(aPublic().method()
+                        .named("listPropAddFirstIf")
+                        .withParameters(Boolean.class, String.class)
+                        .returning(this.compiled.getClass("org.generated.Val$Builder"))
+                )
         ));
     }
 
@@ -196,10 +206,34 @@ public class ListPropertySpecGenerationTest {
     }
 
     @Test
+    public void builderWithValueAddIf() throws Exception {
+        Object builder = this.compiled.onClass("org.generated.Val").invoke("builder");
+        this.compiled.on(builder).invoke("listProp", String[].class).with(new Object [] {new String [] {"a", "b"}});
+        this.compiled.on(builder).invoke("listPropAddIf", Boolean.class, String.class).with(Boolean.TRUE, "c");
+        this.compiled.on(builder).invoke("listPropAddIf", Boolean.class, String.class).with(Boolean.FALSE, "d");
+        Object value = this.compiled.on(builder).invoke("build");
+        Object list = this.compiled.on(value).castedTo("org.generated.Val").invoke("listProp");
+
+        assertThat(this.compiled.on(list).invoke("toArray"), is(new Object [] {"a", "b", "c"}));
+    }
+
+    @Test
     public void builderWithValueAddFirst() throws Exception {
         Object builder = this.compiled.onClass("org.generated.Val").invoke("builder");
         this.compiled.on(builder).invoke("listProp", String[].class).with(new Object [] {new String [] {"b", "c"}});
         this.compiled.on(builder).invoke("listPropAddFirst", String.class).with("a");
+        Object value = this.compiled.on(builder).invoke("build");
+        Object list = this.compiled.on(value).castedTo("org.generated.Val").invoke("listProp");
+
+        assertThat(this.compiled.on(list).invoke("toArray"), is(new Object [] {"a", "b", "c"}));
+    }
+
+    @Test
+    public void builderWithValueAddFirstIf() throws Exception {
+        Object builder = this.compiled.onClass("org.generated.Val").invoke("builder");
+        this.compiled.on(builder).invoke("listProp", String[].class).with(new Object [] {new String [] {"b", "c"}});
+        this.compiled.on(builder).invoke("listPropAddFirstIf", Boolean.class, String.class).with(Boolean.TRUE, "a");
+        this.compiled.on(builder).invoke("listPropAddFirstIf", Boolean.class, String.class).with(Boolean.FALSE, "d");
         Object value = this.compiled.on(builder).invoke("build");
         Object list = this.compiled.on(value).castedTo("org.generated.Val").invoke("listProp");
 
