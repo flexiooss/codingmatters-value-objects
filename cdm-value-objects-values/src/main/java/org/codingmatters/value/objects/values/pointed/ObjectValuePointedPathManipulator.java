@@ -97,7 +97,9 @@ public class ObjectValuePointedPathManipulator {
                 } else if (property.isMultiple()) {
                     List<PropertyValue.Value> array = new ArrayList<>(Arrays.stream(property.multiple()).toList());
                     if (remove) {
-                        array.remove(indexPathManipulator.getIndex());
+                        if (array.size() > indexPathManipulator.getIndex()) {
+                            array.remove(indexPathManipulator.getIndex());
+                        }
                     } else {
                         array.set(indexPathManipulator.getIndex(), PropertyValue.builder().objectValue((ObjectValue) null).buildValue());
                     }

@@ -355,4 +355,18 @@ public class ObjectValuePointedPathManipulatorTest {
                         .build())
         ).build()));
     }
+
+    @Test
+    public void removeExpression() {
+        ObjectValue value = ObjectValue.builder()
+                .property("expression", v -> v.objectValue(ObjectValue.builder()
+                        .property("operator", a -> a.stringValue("OR"))
+                        .property("expression", PropertyValue.multipleObject(
+                                ObjectValue.builder().property("a", b -> b.stringValue("a")).build()
+                        ))
+                        .build()))
+                .build();
+        ObjectValue res = new ObjectValuePointedPathManipulator(value).removeValue("expression.expression[1]");
+        assertThat(res, is(value));
+    }
 }
