@@ -171,7 +171,7 @@ public class ObjectValuePointedPathManipulator {
 
         if (baseValue.has(prop) && baseValue.property(prop) != null) {
             PropertyValue.Value[] values = baseValue.property(prop).multiple();
-            listValue = Arrays.stream(values).toList();
+            listValue = new ArrayList<>(Arrays.stream(values).toList());
         }
         while (listValue.size() < index + 1) {
             listValue.add(PropertyValue.builder().objectValue(ObjectValue.builder().build()).buildValue());
