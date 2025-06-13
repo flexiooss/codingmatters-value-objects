@@ -26,6 +26,9 @@ public class PointedIndexPathManipulator {
         if (this.path == null) {
             return null;
         }
-        return path.substring(0, path.indexOf("["));
+        if (this.hasIndex()) {
+            return this.path.substring(0, path.indexOf("["));
+        }
+        return this.path;
     }
 }

@@ -1,7 +1,5 @@
 package org.codingmatters.value.objects.values;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -133,7 +131,7 @@ public class PropertyValueFromObjectTest {
 
     @Test
     public void stringArrayNullValue() throws Exception {
-        String[] value = {"one", null,"three"};
+        String[] value = {"one", null, "three"};
         PropertyValue actualPropertyValue = PropertyValue.fromObject(value);
         PropertyValue expectedPropertyValue = PropertyValue.multiple(
                 PropertyValue.Type.STRING,
@@ -147,7 +145,7 @@ public class PropertyValueFromObjectTest {
 
     @Test
     public void stringArrayNullFirstValue() throws Exception {
-        String[] value = {null, "two","three"};
+        String[] value = {null, "two", "three"};
         PropertyValue actualPropertyValue = PropertyValue.fromObject(value);
         PropertyValue expectedPropertyValue = PropertyValue.multiple(
                 PropertyValue.Type.STRING,
@@ -216,7 +214,7 @@ public class PropertyValueFromObjectTest {
         value.put("p1", "v1");
         value.put("p2", "v2");
 
-        PropertyValue actualPropertyValue = PropertyValue.fromObject(new Object[] {value});
+        PropertyValue actualPropertyValue = PropertyValue.fromObject(new Object[]{value});
         PropertyValue expectedPropertyValue = PropertyValue.multiple(
                 PropertyValue.Type.OBJECT,
                 PropertyValue.builder().objectValue(ObjectValue.builder()
@@ -226,5 +224,12 @@ public class PropertyValueFromObjectTest {
                 )
         );
         assertThat(actualPropertyValue, is(expectedPropertyValue));
+    }
+
+    @Test
+    public void multipleEmpty() {
+        PropertyValue prop = PropertyValue.multipleEmpty(PropertyValue.Type.BOOLEAN);
+        assertThat(prop.multiple().length, is(0));
+        assertThat(prop.type(), is(PropertyValue.Type.BOOLEAN));
     }
 }

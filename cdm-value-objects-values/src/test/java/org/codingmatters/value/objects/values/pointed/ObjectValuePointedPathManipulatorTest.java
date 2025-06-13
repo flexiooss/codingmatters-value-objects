@@ -224,4 +224,135 @@ public class ObjectValuePointedPathManipulatorTest {
                 v -> v.objectValue(plok)
         )).build()));
     }
+
+    @Test
+    public void removeValue() {
+        ObjectValue value = ObjectValue.builder().property("prop", (PropertyValue) null).build();
+        ObjectValuePointedPathManipulator manipulator = new ObjectValuePointedPathManipulator(value);
+
+        ObjectValue res = manipulator.removeValue("");
+        assertThat(res, is(value));
+
+        res = manipulator.removeValue("prop");
+        assertThat(res, is(ObjectValue.builder().build()));
+
+        res = manipulator.removeValue("prop.plok");
+        assertThat(res, is(value));
+
+        res = manipulator.removeValue("prop.plok.prop");
+        assertThat(res, is(value));
+    }
+
+    @Test
+    public void replaceByNullValue() {
+        ObjectValue value = ObjectValue.builder().property("prop", v -> v.objectValue((ObjectValue) null)).build();
+        ObjectValuePointedPathManipulator manipulator = new ObjectValuePointedPathManipulator(value);
+
+        ObjectValue res = manipulator.replaceByNullValue("");
+        assertThat(res, is(value));
+
+        res = manipulator.replaceByNullValue("prop");
+        assertThat(res, is(value));
+
+        res = manipulator.replaceByNullValue("prop.plok");
+        assertThat(res, is(value));
+
+        res = manipulator.replaceByNullValue("prop.plok.prop");
+        assertThat(res, is(value));
+    }
+
+    @Test
+    public void replaceByNullValueArray() {
+        ObjectValue value = ObjectValue.builder().property("prop", PropertyValue.multipleObject(ObjectValue.builder().build())).build();
+        ObjectValuePointedPathManipulator manipulator = new ObjectValuePointedPathManipulator(value);
+        ObjectValue res = manipulator.replaceByNullValue("prop");
+        assertThat(res, is(ObjectValue.builder().property("prop", PropertyValue.builder().objectValue((ObjectValue) null).build()).build()));
+
+
+        res = manipulator.replaceByNullValue("prop[0]");
+        assertThat(res, is(ObjectValue.builder().property("prop", PropertyValue.multipleObject((ObjectValue) null)).build()));
+
+
+        value = ObjectValue.builder().property("prop", PropertyValue.multipleObject(
+                ObjectValue.builder()
+                        .property("plok", a -> a.objectValue(ObjectValue.builder().build()))
+                        .build())
+        ).build();
+        manipulator = new ObjectValuePointedPathManipulator(value);
+        res = manipulator.replaceByNullValue("prop[0].plok");
+        assertThat(res, is(ObjectValue.builder().property("prop", PropertyValue.multipleObject(ObjectValue.builder()
+                .property("plok", v -> v.objectValue((ObjectValue) null))
+                .build())).build()));
+
+        value = ObjectValue.builder().property("prop", PropertyValue.multipleObject(
+                ObjectValue.builder()
+                        .property("plok", a -> a.objectValue(ObjectValue.builder()
+                                .property("sub", PropertyValue.multipleObject(
+                                        ObjectValue.builder().property("a", s -> s.stringValue("a")).build(),
+                                        ObjectValue.builder().property("a", s -> s.stringValue("b")).build(),
+                                        ObjectValue.builder().property("a", s -> s.stringValue("c")).build(),
+                                        ObjectValue.builder().property("a", s -> s.stringValue("d")).build()
+                                ))
+                                .build()))
+                        .build())
+        ).build();
+        manipulator = new ObjectValuePointedPathManipulator(value);
+        res = manipulator.replaceByNullValue("prop[0].plok.sub[1]");
+        assertThat(res, is(ObjectValue.builder().property("prop", PropertyValue.multipleObject(
+                ObjectValue.builder()
+                        .property("plok", a -> a.objectValue(ObjectValue.builder()
+                                .property("sub", PropertyValue.multipleObject(
+                                        ObjectValue.builder().property("a", s -> s.stringValue("a")).build(),
+                                        null,
+                                        ObjectValue.builder().property("a", s -> s.stringValue("c")).build(),
+                                        ObjectValue.builder().property("a", s -> s.stringValue("d")).build()
+                                ))
+                                .build()))
+                        .build())
+        ).build()));
+    }
+
+    @Test
+    public void removeValueArray() {
+        ObjectValue value = ObjectValue.builder().property("prop", PropertyValue.multipleObject(ObjectValue.builder().build())).build();
+        ObjectValuePointedPathManipulator manipulator = new ObjectValuePointedPathManipulator(value);
+        ObjectValue res = manipulator.removeValue("prop[0]");
+        assertThat(res, is(ObjectValue.builder().property("prop", PropertyValue.multipleEmpty(PropertyValue.Type.OBJECT)).build()));
+
+
+        value = ObjectValue.builder().property("prop", PropertyValue.multipleObject(
+                ObjectValue.builder()
+                        .property("plok", a -> a.objectValue(ObjectValue.builder().build()))
+                        .build())
+        ).build();
+        manipulator = new ObjectValuePointedPathManipulator(value);
+        res = manipulator.removeValue("prop[0].plok");
+        assertThat(res, is(ObjectValue.builder().property("prop", PropertyValue.multipleObject(ObjectValue.builder().build())).build()));
+
+        value = ObjectValue.builder().property("prop", PropertyValue.multipleObject(
+                ObjectValue.builder()
+                        .property("plok", a -> a.objectValue(ObjectValue.builder()
+                                .property("sub", PropertyValue.multipleObject(
+                                        ObjectValue.builder().property("a", s -> s.stringValue("a")).build(),
+                                        ObjectValue.builder().property("a", s -> s.stringValue("b")).build(),
+                                        ObjectValue.builder().property("a", s -> s.stringValue("c")).build(),
+                                        ObjectValue.builder().property("a", s -> s.stringValue("d")).build()
+                                ))
+                                .build()))
+                        .build())
+        ).build();
+        manipulator = new ObjectValuePointedPathManipulator(value);
+        res = manipulator.removeValue("prop[0].plok.sub[1]");
+        assertThat(res, is(ObjectValue.builder().property("prop", PropertyValue.multipleObject(
+                ObjectValue.builder()
+                        .property("plok", a -> a.objectValue(ObjectValue.builder()
+                                .property("sub", PropertyValue.multipleObject(
+                                        ObjectValue.builder().property("a", s -> s.stringValue("a")).build(),
+                                        ObjectValue.builder().property("a", s -> s.stringValue("c")).build(),
+                                        ObjectValue.builder().property("a", s -> s.stringValue("d")).build()
+                                ))
+                                .build()))
+                        .build())
+        ).build()));
+    }
 }

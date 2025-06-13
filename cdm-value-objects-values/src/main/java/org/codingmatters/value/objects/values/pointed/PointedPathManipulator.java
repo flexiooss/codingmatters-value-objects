@@ -3,7 +3,6 @@ package org.codingmatters.value.objects.values.pointed;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PointedPathManipulator {
     private final String pointedPath;
@@ -22,7 +21,7 @@ public class PointedPathManipulator {
             array[0] = pointedPath;
             split = array;
         }
-        return Arrays.stream(split).collect(Collectors.toList());
+        return Arrays.stream(split).toList();
     }
 
     public List<String> getPathIndexSeparated() {
