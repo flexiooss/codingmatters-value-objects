@@ -55,6 +55,10 @@ public interface PropertyValue {
         return multiple(Type.BYTES, Arrays.stream(values).map(val -> PropertyValue.builder().bytesValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
     }
 
+    static PropertyValue multipleEmpty(Type type) {
+        return new PropertyValueImpl(type, Cardinality.MULTIPLE, new Value[]{});
+    }
+
     static PropertyValue multiple(Type type, Value... values) {
         if (values != null) {
             for (Value value : values) {
@@ -92,17 +96,27 @@ public interface PropertyValue {
     }
 
     boolean isSingle();
+
     boolean isMultiple();
 
     boolean isA(Type type);
+
     boolean isAString();
+
     boolean isADouble();
+
     boolean isALong();
+
     boolean isABytes();
+
     boolean isADatetime();
+
     boolean isADate();
+
     boolean isATime();
+
     boolean isABoolean();
+
     boolean isAObject();
 
     class Builder {

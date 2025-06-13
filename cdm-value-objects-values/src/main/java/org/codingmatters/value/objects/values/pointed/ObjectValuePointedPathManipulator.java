@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ObjectValuePointedPathManipulator {
     private final ObjectValue value;
@@ -62,6 +61,89 @@ public class ObjectValuePointedPathManipulator {
         return this.travel(iterator, this.value, value);
     }
 
+    public ObjectValue removeValue(String pointedPath) {
+        if (pointedPath == null || pointedPath.isEmpty()) {
+            return this.value;
+        }
+
+        Iterator<String> iterator = this.getIterator(pointedPath);
+        if (iterator.hasNext()) {
+            return this.travelRemove(iterator, this.value, true);
+        }
+        return this.value;
+    }
+
+    public ObjectValue replaceByNullValue(String pointedPath) {
+        if (pointedPath == null || pointedPath.isEmpty()) {
+            return this.value;
+        }
+
+        Iterator<String> iterator = this.getIterator(pointedPath);
+        if (iterator.hasNext()) {
+            return this.travelRemove(iterator, this.value, false);
+        }
+        return this.value;
+    }
+
+    private ObjectValue travelRemove(Iterator<String> iterator, ObjectValue value, boolean remove) {
+        String path = iterator.next();
+        PointedIndexPathManipulator indexPathManipulator = new PointedIndexPathManipulator(path);
+
+        if (!iterator.hasNext()) {
+            if (indexPathManipulator.hasIndex()) {
+                PropertyValue property = value.property(indexPathManipulator.getProperty());
+                if (property == null || property.isNullValue()) {
+                    return value;
+                } else if (property.isMultiple()) {
+                    List<PropertyValue.Value> array = new ArrayList<>(Arrays.stream(property.multiple()).toList());
+                    if (remove) {
+                        if (array.size() > indexPathManipulator.getIndex()) {
+                            array.remove(indexPathManipulator.getIndex());
+                        }
+                    } else {
+                        array.set(indexPathManipulator.getIndex(), PropertyValue.builder().objectValue((ObjectValue) null).buildValue());
+                    }
+                    return value.withProperty(indexPathManipulator.getProperty(), PropertyValue.multiple(PropertyValue.Type.OBJECT, array.toArray(new PropertyValue.Value[0])));
+                } else {
+                    return value;
+                }
+            } else {
+                if (remove) {
+                    return value.withoutProperty(path);
+                } else {
+                    return value.withProperty(path, PropertyValue.builder().objectValue((ObjectValue) null).build());
+                }
+            }
+        }
+        if (value == null) {
+            return value;
+        } else if (value.has(indexPathManipulator.getProperty())) {
+            PropertyValue property = value.property(indexPathManipulator.getProperty());
+            if (property == null || property.isNullValue()) {
+                return value;
+            }
+
+            if (indexPathManipulator.hasIndex()) {
+                PropertyValue.Value val = property.multiple()[indexPathManipulator.getIndex()];
+                if (val.isNull()) {
+                    return value;
+                }
+                List<PropertyValue.Value> list = new ArrayList<>(Arrays.stream(property.multiple()).toList());
+                ObjectValue sub = this.travelRemove(iterator, val.objectValue(), remove);
+                list.set(indexPathManipulator.getIndex(), PropertyValue.builder().objectValue(sub).buildValue());
+                return value.withProperty(indexPathManipulator.getProperty(), PropertyValue.multiple(PropertyValue.Type.OBJECT, list.toArray(new PropertyValue.Value[0])));
+            } else {
+                PropertyValue.Value val = property.single();
+                if (val.isNull()) {
+                    return value;
+                }
+                return value.withProperty(indexPathManipulator.getProperty(), v -> v.objectValue(this.travelRemove(iterator, val.objectValue(), remove)));
+            }
+        } else {
+            return value;
+        }
+    }
+
     private Iterator<String> getIterator(String pointedPath) {
         return new PointedPathManipulator(pointedPath).getPath().iterator();
     }
@@ -89,7 +171,7 @@ public class ObjectValuePointedPathManipulator {
 
         if (baseValue.has(prop) && baseValue.property(prop) != null) {
             PropertyValue.Value[] values = baseValue.property(prop).multiple();
-            listValue = Arrays.stream(values).collect(Collectors.toList());
+            listValue = Arrays.stream(values).toList();
         }
         while (listValue.size() < index + 1) {
             listValue.add(PropertyValue.builder().objectValue(ObjectValue.builder().build()).buildValue());
