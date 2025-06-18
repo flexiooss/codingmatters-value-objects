@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.codingmatters.value.objects</groupId>
         <artifactId>codingmatters-value-objects</artifactId>
-        <version>1.138.0</version>
+        <version>1.139.0</version>
     </parent>
 
     <artifactId>cdm-value-objects-value-cast</artifactId>
