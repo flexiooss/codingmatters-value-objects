@@ -49,7 +49,7 @@ public class ValueWriter {
 
         method.addStatement("generator.writeStartObject()");
         for (PropertySpec propertySpec : this.propertySpecs) {
-            if(! JsonPropertyHelper.isTransient(propertySpec)) {
+            if (!JsonPropertyHelper.isTransient(propertySpec)) {
                 this.writePropertyStatements(method, propertySpec);
             } else {
                 System.out.println("skipping transient field " + propertySpec.name());
@@ -68,14 +68,14 @@ public class ValueWriter {
                 .addParameter(ArrayTypeName.of(this.types.valueType()), "values")
                 .addException(ClassName.get(IOException.class));
 
-        method.beginControlFlow("if(values == null)")
-                    .addStatement("generator.writeNull()")
+        method.beginControlFlow("if (values == null)")
+                .addStatement("generator.writeNull()")
                 .nextControlFlow("else")
-                    .addStatement("generator.writeStartArray()")
-                    .beginControlFlow("for($T value : values)", this.types.valueType())
-                        .addStatement("this.write(generator, value)")
-                    .endControlFlow()
-                    .addStatement("generator.writeEndArray()")
+                .addStatement("generator.writeStartArray()")
+                .beginControlFlow("for ($T value : values)", this.types.valueType())
+                .addStatement("this.write(generator, value)")
+                .endControlFlow()
+                .addStatement("generator.writeEndArray()")
                 .endControlFlow();
 
         method.returns(TypeName.VOID);
@@ -83,20 +83,20 @@ public class ValueWriter {
     }
 
     private void writePropertyStatements(MethodSpec.Builder method, PropertySpec propertySpec) {
-        method.beginControlFlow("if(value.$L() != null)", propertySpec.name());
+        method.beginControlFlow("if (value.$L() != null)", propertySpec.name());
         method.addStatement("generator.writeFieldName($S)", this.fieldName(propertySpec));
-        if(propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE) {
+        if (propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE) {
             this.writeSimpleProperty(method, propertySpec);
-        } else if(propertySpec.typeSpec().typeKind() == TypeKind.ENUM) {
+        } else if (propertySpec.typeSpec().typeKind() == TypeKind.ENUM) {
             this.writeEnumValue(method, propertySpec);
-        } else if(propertySpec.typeSpec().typeKind().isValueObject()) {
+        } else if (propertySpec.typeSpec().typeKind().isValueObject()) {
             this.externalValueObjectWriteStatements(method, propertySpec);
         } else {
             System.out.println(propertySpec.typeSpec().typeKind() + " : " + propertySpec.typeSpec().typeRef());
             method.addStatement("generator.writeNull()");
         }
 
-        if(this.nullStrategy.equals(NullStrategy.KEEP)) {
+        if (this.nullStrategy.equals(NullStrategy.KEEP)) {
             method.nextControlFlow("else")
                     .addStatement("generator.writeFieldName($S)", this.fieldName(propertySpec))
                     .addStatement("generator.writeNull()");
@@ -108,7 +108,7 @@ public class ValueWriter {
 
     private String fieldName(PropertySpec propertySpec) {
         Optional<Matcher> hint = propertySpec.matchingHint("property:raw\\(([^)]*)\\)");
-        if(hint.isPresent()) {
+        if (hint.isPresent()) {
             return hint.get().group(1);
         } else {
             return propertySpec.name();
@@ -143,10 +143,10 @@ public class ValueWriter {
         } else {
             method.addStatement("generator.writeStartArray()");
             method.beginControlFlow("for ($T element : value.$L())", propertyClass, propertySpec.name())
-                    .beginControlFlow("if(element != null)")
-                        .addStatement("new $T().write(generator, element)", propertyWriter)
+                    .beginControlFlow("if (element != null)")
+                    .addStatement("new $T().write(generator, element)", propertyWriter)
                     .nextControlFlow("else")
-                        .addStatement("generator.writeNull()")
+                    .addStatement("generator.writeNull()")
                     .endControlFlow()
                     .endControlFlow();
             method.addStatement("generator.writeEndArray()");
