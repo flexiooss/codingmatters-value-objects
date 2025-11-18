@@ -14,6 +14,7 @@ import org.codingmatters.value.objects.spec.TypeKind;
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
@@ -39,10 +40,11 @@ public class ValueReader {
                 .addMethod(this.readListValueMethod())
                 .addMethod(this.consumeUnexpectedProperty())
                 .addType(this.tokensEnum())
-                ;
+                .addField(this.cacheSize())
+                .addField(this.cacheNormalizedName());
 
         for (PropertySpec propertySpec : this.propertySpecs) {
-            if(! JsonPropertyHelper.isTransient(propertySpec)) {
+            if (!JsonPropertyHelper.isTransient(propertySpec)) {
                 SimplePropertyReaderProducer propertyReaderProducer = this.propertyReaderProducer(propertySpec);
                 if (propertyReaderProducer != null) {
                     this.addPropertyReaderStatements(result, propertySpec, propertyReaderProducer);
@@ -54,6 +56,25 @@ public class ValueReader {
 
 
         return result.build();
+    }
+
+    private FieldSpec cacheSize() {
+        return FieldSpec.builder(TypeName.INT, "MAX_CACHE_SIZE", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                .initializer("100")
+                .build();
+    }
+
+    private FieldSpec cacheNormalizedName() {
+        ParameterizedTypeName map = ParameterizedTypeName.get(
+                ClassName.get(Map.class),
+                ClassName.get(String.class),
+                ClassName.get(String.class)
+        );
+
+        return FieldSpec
+                .builder(map, "normalizedName", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                .initializer(CodeBlock.builder().add("new $T<>()", ConcurrentHashMap.class).build())
+                .build();
     }
 
     private TypeSpec tokensEnum() {
@@ -95,16 +116,16 @@ public class ValueReader {
                 .addModifiers(Modifier.STATIC, Modifier.PUBLIC)
                 .addParameter(String.class, "str")
                 .returns(ClassName.bestGuess("Token"))
-                .beginControlFlow("for(Token token : Token.values())")
-                    .beginControlFlow("if(token.name.equals(str))")
-                        .addStatement("return token")
-                    .nextControlFlow("else if(token.rawName.equals(str))")
-                        .addStatement("return token")
-                    .nextControlFlow("else if(token.name.equals(normalizeFieldName(str)))")
-                        .addStatement("return token")
-                    .nextControlFlow("else if(token.rawName.equals(normalizeFieldName(str)))")
-                        .addStatement("return token")
-                    .endControlFlow()
+                .beginControlFlow("for (Token token : Token.values())")
+                .beginControlFlow("if (token.name.equals(str) || token.rawName.equals(str))")
+                .addStatement("return token")
+                .endControlFlow()
+
+                .addStatement("$T normalized = normalizeFieldName(str)", String.class)
+
+                .beginControlFlow("if (token.name.equals(normalized) || token.rawName.equals(normalized))")
+                .addStatement("return token")
+                .endControlFlow()
                 .endControlFlow()
                 .addStatement("return __UNKNOWN__")
                 .build());
@@ -114,7 +135,7 @@ public class ValueReader {
 
     private String rawName(PropertySpec propertySpec) {
         Optional<Matcher> hint = propertySpec.matchingHint("property:raw\\(([^)]*)\\)");
-        if(hint.isPresent()) {
+        if (hint.isPresent()) {
             return hint.get().group(1);
         } else {
             return propertySpec.name();
@@ -129,17 +150,24 @@ public class ValueReader {
         MethodSpec.Builder result = MethodSpec.methodBuilder("normalizeFieldName")
                 .addModifiers(Modifier.STATIC, Modifier.PRIVATE)
                 .addParameter(String.class, "fieldName")
-                .returns(String.class)
-                ;
-        result.addStatement("if(fieldName == null) return null");
-        result.addStatement("if(fieldName.trim().equals(\"\")) return \"\"");
-        result.addStatement("fieldName = $T.stream(fieldName.split($S)).map(s -> s.substring(0, 1).toUpperCase() + s.substring(1)).collect($T.joining())",
-                Arrays.class,
-                "(\\s|-)+",
-                Collectors.class
-        );
-        result.addStatement("fieldName =  fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1)");
-        result.addStatement("return fieldName");
+                .returns(String.class);
+        result.addStatement("if (fieldName == null) return null");
+        result.addStatement("if (fieldName.trim().isEmpty()) return \"\"");
+
+        result.addCode("return normalizedName.computeIfAbsent(fieldName, key -> {\n")
+                .addCode(CodeBlock.builder()
+                        .indent()
+                        .beginControlFlow("if (normalizedName.size() >= MAX_CACHE_SIZE)")
+                        .addStatement("normalizedName.clear()")
+                        .endControlFlow()
+                        .addStatement("$T[] split = key.split($S)", String.class, "(\\s|-)+")
+                        .addStatement("$T res = $T.stream(split).map(s -> s.substring(0, 1).toUpperCase() + s.substring(1)).collect($T.joining())",
+                                String.class, Arrays.class, Collectors.class)
+                        .addStatement("return res.substring(0, 1).toLowerCase() + res.substring(1)")
+                        .unindent()
+                        .build())
+                .addStatement("})")
+                .build();
 
         return result.build();
     }
@@ -150,19 +178,18 @@ public class ValueReader {
                 .addModifiers(Modifier.PRIVATE)
                 .addParameter(ClassName.get(JsonParser.class), "parser")
                 .returns(TypeName.VOID)
-                .addException(ClassName.get(IOException.class))
-                ;
+                .addException(ClassName.get(IOException.class));
         result.addStatement("parser.nextToken()");
-        result.beginControlFlow("if(parser.currentToken().isStructStart())")
+        result.beginControlFlow("if (parser.currentToken().isStructStart())")
                 .addStatement("int level = 1")
-                    .beginControlFlow("do")
-                    .addStatement("parser.nextToken()")
-                        .beginControlFlow("if (parser.currentToken().isStructStart())")
-                            .addStatement("level++")
-                        .nextControlFlow("if (parser.currentToken().isStructEnd())")
-                            .addStatement("level--")
-                        .endControlFlow()
-                    .endControlFlow("while(level > 0)")
+                .beginControlFlow("do")
+                .addStatement("parser.nextToken()")
+                .beginControlFlow("if (parser.currentToken().isStructStart())")
+                .addStatement("level++")
+                .nextControlFlow("if (parser.currentToken().isStructEnd())")
+                .addStatement("level--")
+                .endControlFlow()
+                .endControlFlow("while(level > 0)")
                 .endControlFlow();
 
 
@@ -171,12 +198,12 @@ public class ValueReader {
 
     private SimplePropertyReaderProducer propertyReaderProducer(PropertySpec propertySpec) {
         SimplePropertyReaderProducer propertyReaderProducer = null;
-        if(propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE) {
+        if (propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE) {
             propertyReaderProducer = SimplePropertyReaders.forClassName(propertySpec.typeSpec().typeRef()).producer();
-        } else if(propertySpec.typeSpec().typeKind() == TypeKind.ENUM) {
+        } else if (propertySpec.typeSpec().typeKind() == TypeKind.ENUM) {
             //"getText", String.class, JsonToken.VALUE_STRING
             propertyReaderProducer = new SimplePropertyReaderProducer(
-                    new HashSet<>(Arrays.asList(JsonToken.VALUE_STRING)),
+                    new HashSet<>(List.of(JsonToken.VALUE_STRING)),
                     "getText",
                     new EnumPropertyStatement(this.types)
             );
@@ -190,12 +217,12 @@ public class ValueReader {
                 String initializerFormat = "";
                 List<Object> initializerArgs = new LinkedList<>();
 
-                initializerFormat += "new $T($T.asList(";
+                initializerFormat += "new $T<>($T.of(";
                 initializerArgs.add(HashSet.class);
-                initializerArgs.add(Arrays.class);
+                initializerArgs.add(List.class);
                 boolean first = true;
                 for (JsonToken jsonToken : propertyReader.expectedTokens()) {
-                    if(! first) {
+                    if (!first) {
                         initializerFormat += ", ";
                     }
                     first = false;
@@ -208,7 +235,7 @@ public class ValueReader {
                 result.addField(
                         FieldSpec
                                 .builder(
-                                        ClassName.get(Set.class),
+                                        ParameterizedTypeName.get(ClassName.get(Set.class), ClassName.get(JsonToken.class)),
                                         this.expectedTokenField(propertySpec),
                                         Modifier.PRIVATE, Modifier.STATIC)
                                 .initializer(initializerFormat, initializerArgs.toArray())
@@ -234,20 +261,20 @@ public class ValueReader {
                 .addStatement("if (parser.currentToken() == null) return null")
                 .addStatement("if (parser.currentToken() == JsonToken.VALUE_NULL) return null")
                 .beginControlFlow("if (parser.currentToken() == JsonToken.START_ARRAY)")
-                    .addStatement("LinkedList<$T> listValue = new LinkedList<>()", this.types.valueType())
-                    .beginControlFlow("while (parser.nextToken() != JsonToken.END_ARRAY)")
-                        .beginControlFlow("if(parser.currentToken() == JsonToken.VALUE_NULL)")
-                            .addStatement("listValue.add(null)")
-                        .nextControlFlow("else")
-                            .addStatement("listValue.add(this.read(parser))")
-                        .endControlFlow()
-                    .endControlFlow()
-                    .addStatement("return listValue.toArray(new $T[listValue.size()])", this.types.valueType())
+                .addStatement("LinkedList<$T> listValue = new LinkedList<>()", this.types.valueType())
+                .beginControlFlow("while (parser.nextToken() != JsonToken.END_ARRAY)")
+                .beginControlFlow("if (parser.currentToken() == JsonToken.VALUE_NULL)")
+                .addStatement("listValue.add(null)")
+                .nextControlFlow("else")
+                .addStatement("listValue.add(this.read(parser))")
+                .endControlFlow()
+                .endControlFlow()
+                .addStatement("return listValue.toArray(new $T[0])", this.types.valueType())
                 .endControlFlow()
                 .addStatement("throw new IOException(String.format($S, parser.currentToken()))",
                         "failed reading " + this.types.valueType() + " array, current token was %s"
                 )
-                 ;
+        ;
 
         return method.build();
     }
@@ -259,20 +286,20 @@ public class ValueReader {
                 .returns(this.types.valueType())
                 .addException(IOException.class);
         /*
-        if(parser.getCurrentToken() == null) {
+        if (parser.getCurrentToken() == null) {
                 parser.nextToken();
         }
          */
         method
-                .beginControlFlow("if(parser.getCurrentToken() == null)")
+                .beginControlFlow("if (parser.getCurrentToken() == null)")
                 .addStatement("parser.nextToken()")
                 .endControlFlow();
 
         /*
-        if(parser.currentToken() == JsonToken.VALUE_NULL) return null;
+        if (parser.currentToken() == JsonToken.VALUE_NULL) return null;
         */
-        method.addStatement("if(parser.currentToken() == null) return null");
-        method.addStatement("if(parser.currentToken() == $T.VALUE_NULL) return null", JsonToken.class);
+        method.addStatement("if (parser.currentToken() == null) return null");
+        method.addStatement("if (parser.currentToken() == $T.VALUE_NULL) return null", JsonToken.class);
         /*
         if (parser.currentToken() != JsonToken.START_OBJECT) {
             throw new IOException(
@@ -282,7 +309,7 @@ public class ValueReader {
             );
         }
         */
-        method.beginControlFlow("if(parser.currentToken() != $T.START_OBJECT)", JsonToken.class)
+        method.beginControlFlow("if (parser.currentToken() != $T.START_OBJECT)", JsonToken.class)
                 .addStatement("" +
                         "throw new IOException(\n" +
                         "        String.format(\"reading a %s object, was expecting %s, but was %s\",\n" +
@@ -292,21 +319,21 @@ public class ValueReader {
                 .endControlFlow();
         method.addStatement("$T builder = $T.builder()", this.types.valueBuilderType(), this.types.valueType());
         method.beginControlFlow("while (parser.nextToken() != $T.END_OBJECT)", JsonToken.class)
-                .addStatement("Token token = Token.from(parser.getCurrentName())")
-                .beginControlFlow("if(token != null)")
-                    .beginControlFlow("switch (token)");
+                .addStatement("Token token = Token.from(parser.currentName())")
+                .beginControlFlow("if (token != null)")
+                .beginControlFlow("switch (token)");
         for (PropertySpec propertySpec : this.propertySpecs) {
-            if(! JsonPropertyHelper.isTransient(propertySpec)) {
+            if (!JsonPropertyHelper.isTransient(propertySpec)) {
                 this.propertyStatements(method, propertySpec);
             }
         }
         method.beginControlFlow("default:")
                 .addStatement("this.consumeUnexpectedProperty(parser)")
                 .endControlFlow()
-            ;
+        ;
         method.endControlFlow()
                 .nextControlFlow("else") // token == null
-                    .addStatement("this.consumeUnexpectedProperty(parser)")
+                .addStatement("this.consumeUnexpectedProperty(parser)")
                 .endControlFlow()
                 .endControlFlow();
 
@@ -316,9 +343,9 @@ public class ValueReader {
     }
 
     private void propertyStatements(MethodSpec.Builder method, PropertySpec propertySpec) {
-        if(propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE || propertySpec.typeSpec().typeKind() == TypeKind.ENUM) {
+        if (propertySpec.typeSpec().typeKind() == TypeKind.JAVA_TYPE || propertySpec.typeSpec().typeKind() == TypeKind.ENUM) {
             SimplePropertyReaderProducer propertyReaderProducer = this.propertyReaderProducer(propertySpec);
-            if(propertyReaderProducer!= null) {
+            if (propertyReaderProducer != null) {
                 if (!propertySpec.typeSpec().cardinality().isCollection()) {
                     this.singleSimplePropertyStatement(method, propertySpec, propertyReaderProducer);
                 } else {
@@ -327,8 +354,8 @@ public class ValueReader {
             } else {
                 System.err.println("NYIMPL type ref for simple property: " + propertySpec.typeSpec().typeRef());
             }
-        } else if(propertySpec.typeSpec().typeKind().isValueObject()) {
-            if(! propertySpec.typeSpec().cardinality().isCollection()) {
+        } else if (propertySpec.typeSpec().typeKind().isValueObject()) {
+            if (!propertySpec.typeSpec().cardinality().isCollection()) {
                 this.singleComplexPropertyStatement(method, propertySpec);
             } else {
                 ClassName propertyClass = this.types.valueObjectSingleType(propertySpec);
@@ -364,7 +391,7 @@ public class ValueReader {
                     builder.complex(new ComplexReader().read(parser));
                     break;
              */
-        if(! propertySpec.typeSpec().cardinality().isCollection()) {
+        if (!propertySpec.typeSpec().cardinality().isCollection()) {
             method.beginControlFlow("case $L:", this.enumConstant(propertySpec))
                     .addStatement("parser.nextToken()")
                     .addStatement("builder.$L(new $T().read(parser))", propertySpec.name(), propertyReader)
@@ -451,11 +478,11 @@ public class ValueReader {
                 .addStatement("if (parser.currentToken() == $T.VALUE_NULL) return null", JsonToken.class)
                 .addStatement("if (expectedTokens.contains(parser.currentToken())) return reader.read(parser)")
                 .addStatement("" +
-                        "throw new $T(\n" +
-                        "    $T.format(\"reading property %s, was expecting %s, but was %s\",\n" +
-                        "        propertyName, expectedTokens, parser.currentToken()\n" +
-                        "    )\n" +
-                        ")"
+                                "throw new $T(\n" +
+                                "    $T.format(\"reading property %s, was expecting %s, but was %s\",\n" +
+                                "        propertyName, expectedTokens, parser.currentToken()\n" +
+                                "    )\n" +
+                                ")"
                         , IOException.class, String.class
                 )
                 .build();
@@ -479,22 +506,22 @@ public class ValueReader {
                 .addStatement("parser.nextToken()")
                 .addStatement("if (parser.currentToken() == $T.VALUE_NULL) return null", JsonToken.class)
                 .beginControlFlow("if (parser.currentToken() == $T.START_ARRAY)", JsonToken.class)
-                    .addStatement("$T<T> listValue = new $T<>()", LinkedList.class, LinkedList.class)
-                    .beginControlFlow("while (parser.nextToken() != $T.END_ARRAY)", JsonToken.class)
-                        .beginControlFlow("if(parser.currentToken() == $T.VALUE_NULL)", JsonToken.class)
-                            .addStatement("listValue.add(null)")
-                        .nextControlFlow("else")
-                            .addStatement("listValue.add(reader.read(parser))")
-                        .endControlFlow()
-                    .endControlFlow()
-                    .addStatement("return listValue")
+                .addStatement("$T<T> listValue = new $T<>()", LinkedList.class, LinkedList.class)
+                .beginControlFlow("while (parser.nextToken() != $T.END_ARRAY)", JsonToken.class)
+                .beginControlFlow("if (parser.currentToken() == $T.VALUE_NULL)", JsonToken.class)
+                .addStatement("listValue.add(null)")
+                .nextControlFlow("else")
+                .addStatement("listValue.add(reader.read(parser))")
+                .endControlFlow()
+                .endControlFlow()
+                .addStatement("return listValue")
                 .endControlFlow()
                 .addStatement("" +
-                        "throw new $T(\n" +
-                        "        $T.format(\"reading property %s, was expecting %s, but was %s\",\n" +
-                        "                propertyName, $T.START_ARRAY, parser.currentToken()\n" +
-                        "        )\n" +
-                        ")",
+                                "throw new $T(\n" +
+                                "        $T.format(\"reading property %s, was expecting %s, but was %s\",\n" +
+                                "                propertyName, $T.START_ARRAY, parser.currentToken()\n" +
+                                "        )\n" +
+                                ")",
                         IOException.class, String.class, JsonToken.class
                 )
                 .build();
