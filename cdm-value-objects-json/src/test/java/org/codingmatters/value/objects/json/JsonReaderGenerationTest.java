@@ -13,7 +13,17 @@ import org.codingmatters.value.objects.exception.SpecSyntaxException;
 import org.codingmatters.value.objects.generation.SpecCodeGenerator;
 import org.codingmatters.value.objects.reader.SpecReader;
 import org.codingmatters.value.objects.spec.Spec;
-import org.generated.*;
+import org.generated.ArraySimpleProps;
+import org.generated.Binary;
+import org.generated.Embedded;
+import org.generated.EnumProperties;
+import org.generated.ExampleValue;
+import org.generated.Hints;
+import org.generated.InSpecEnumProperties;
+import org.generated.RefValue;
+import org.generated.Referenced;
+import org.generated.SimpleProps;
+import org.generated.ValueObjectProps;
 import org.generated.embedded.Multiple;
 import org.generated.embedded.Single;
 import org.generated.examplevalue.Complex;
@@ -25,14 +35,27 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
-import java.time.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.Set;
 
-import static org.codingmatters.tests.reflect.ReflectMatchers.*;
-import static org.hamcrest.Matchers.*;
+import static org.codingmatters.tests.reflect.ReflectMatchers.aClass;
+import static org.codingmatters.tests.reflect.ReflectMatchers.aPrivate;
+import static org.codingmatters.tests.reflect.ReflectMatchers.aPublic;
+import static org.codingmatters.tests.reflect.ReflectMatchers.classType;
+import static org.codingmatters.tests.reflect.ReflectMatchers.genericType;
+import static org.codingmatters.tests.reflect.ReflectMatchers.typeParameter;
+import static org.codingmatters.tests.reflect.ReflectMatchers.variableType;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.arrayContaining;
+import static org.hamcrest.Matchers.emptyArray;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 /**
  * Created by nelt on 4/6/17.
@@ -101,6 +124,12 @@ public class JsonReaderGenerationTest {
                         .with(aPublic().method().named("readArray")
                                 .withParameters(JsonParser.class)
                                 .returning(ReflectMatchers.typeArray(classType(ExampleValue.class)))
+                                .throwing(IOException.class)
+                        )
+
+                        .with(aPublic().method().named("readString")
+                                .withParameters(JsonFactory.class, String.class)
+                                .returning(ExampleValue.class)
                                 .throwing(IOException.class)
                         )
                         .with(aPrivate().method().named("readValue")

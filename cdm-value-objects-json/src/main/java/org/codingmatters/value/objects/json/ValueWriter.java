@@ -1,5 +1,6 @@
 package org.codingmatters.value.objects.json;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.squareup.javapoet.*;
 import org.codingmatters.value.objects.generation.ValueConfiguration;
@@ -9,6 +10,7 @@ import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.TypeKind;
 
 import javax.lang.model.element.Modifier;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -35,9 +37,30 @@ public class ValueWriter {
     public TypeSpec type() {
         return TypeSpec.classBuilder(this.types.valueType().simpleName() + "Writer")
                 .addModifiers(Modifier.PUBLIC)
+                .addMethod(this.buildWriteStringWithFactoryMethod())
                 .addMethod(this.buildWriteWithGeneratorMethod())
                 .addMethod(this.buildWriteArrayWithGeneratorMethod())
                 .build();
+    }
+
+    private MethodSpec buildWriteStringWithFactoryMethod() {
+        MethodSpec.Builder method = MethodSpec.methodBuilder("writeString")
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(JsonFactory.class, "jsonFactory")
+                .addParameter(this.types.valueType(), "value")
+                .returns(String.class)
+                .addException(ClassName.get(IOException.class))
+                .beginControlFlow("try($T out = new $T(); $T generator = jsonFactory.createGenerator(out))",
+                        ByteArrayOutputStream.class, ByteArrayOutputStream.class, JsonGenerator.class
+                )
+                .addStatement("this.write(generator, value)")
+                .addStatement("generator.close()")
+                .addStatement("return out.toString()")
+                .endControlFlow()
+                ;
+
+
+        return method.build();
     }
 
     private MethodSpec buildWriteWithGeneratorMethod() {
