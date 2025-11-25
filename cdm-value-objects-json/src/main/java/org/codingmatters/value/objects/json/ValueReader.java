@@ -1,5 +1,6 @@
 package org.codingmatters.value.objects.json;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.squareup.javapoet.*;
@@ -33,6 +34,7 @@ public class ValueReader {
     public TypeSpec type() {
         TypeSpec.Builder result = TypeSpec.classBuilder(this.types.valueType().simpleName() + "Reader")
                 .addModifiers(Modifier.PUBLIC)
+                .addMethod(this.readStringMethod())
                 .addMethod(this.readWithParserMethod())
                 .addMethod(this.readArrayWithParserMethod())
                 .addType(this.readerFunctionalInterface())
@@ -340,6 +342,21 @@ public class ValueReader {
         method.addStatement("return builder.build()");
 
         return method.build();
+    }
+
+
+
+    private MethodSpec readStringMethod() {
+        return MethodSpec.methodBuilder("readString")
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(ClassName.get(JsonFactory.class), "jsonFactory")
+                .addParameter(ClassName.get(String.class), "json")
+                .returns(this.types.valueType())
+                .addException(IOException.class)
+                .beginControlFlow("try($T parser = jsonFactory.createParser(json))", JsonParser.class)
+                .addStatement("return this.read(parser)")
+                .endControlFlow()
+                .build();
     }
 
     private void propertyStatements(MethodSpec.Builder method, PropertySpec propertySpec) {
