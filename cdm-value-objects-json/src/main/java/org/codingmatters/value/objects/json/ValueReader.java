@@ -262,6 +262,13 @@ public class ValueReader {
                 .addStatement("parser.nextToken()")
                 .addStatement("if (parser.currentToken() == null) return null")
                 .addStatement("if (parser.currentToken() == JsonToken.VALUE_NULL) return null")
+
+                .beginControlFlow("if (parser.currentToken() == JsonToken.START_OBJECT)")
+                .addStatement("LinkedList<$T> listValue = new LinkedList<>()", this.types.valueType())
+                .addStatement("listValue.add(this.read(parser))")
+                .addStatement("return listValue.toArray(new $T[0])", this.types.valueType())
+                .endControlFlow()
+
                 .beginControlFlow("if (parser.currentToken() == JsonToken.START_ARRAY)")
                 .addStatement("LinkedList<$T> listValue = new LinkedList<>()", this.types.valueType())
                 .beginControlFlow("while (parser.nextToken() != JsonToken.END_ARRAY)")
