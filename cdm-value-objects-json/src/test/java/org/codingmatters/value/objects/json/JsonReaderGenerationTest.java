@@ -289,6 +289,27 @@ public class JsonReaderGenerationTest {
     }
 
     @Test
+    public void readArrayOnSingleObject() throws Exception {
+        this.fileHelper.printJavaContent("", this.dir.getRoot());
+        this.fileHelper.printFile(this.dir.getRoot(), "ComplexListReader.java");
+
+        String json = "{\"sub\":\"a value\"}";
+        try(JsonParser parser = this.factory.createParser(json.getBytes())) {
+            ComplexList[] value = (ComplexList[]) this.classes.get("org.generated.examplevalue.json.ComplexListReader").newInstance()
+                    .call("readArray", JsonParser.class).with(parser)
+                    .get();
+
+            assertThat(
+                    value,
+                    is(arrayContaining(new ComplexList.Builder()
+                            .sub("a value")
+                            .build()
+                    ))
+            );
+        }
+    }
+
+    @Test
     public void readArrayEmptyComplexList() throws Exception {
         String json = "[]";
         try(JsonParser parser = this.factory.createParser(json.getBytes())) {
