@@ -3,9 +3,7 @@ package org.codingmatters.value.objects.generation.collection;
 import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -26,14 +24,15 @@ public class CollectionBuilder {
                 .addTypeVariable(TypeVariableName.get("E"))
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .addField(FieldSpec.builder(
-                        ParameterizedTypeName.get(ClassName.get(LinkedList.class), TypeVariableName.get("E")),
+                        ParameterizedTypeName.get(ClassName.get(ArrayList.class), TypeVariableName.get("E")),
                         "delegate", Modifier.PRIVATE, Modifier.FINAL)
-                        .initializer("new $T<>()", LinkedList.class)
+                        .initializer("new $T<>()", ArrayList.class)
                         .build())
                 .addMethod(MethodSpec.methodBuilder("build")
                         .addModifiers(Modifier.PUBLIC)
                         .returns(ParameterizedTypeName.get(valueCollectionInterface, TypeVariableName.get("E")))
-                        .addStatement("return new $T<>(this.delegate)", valueCollectionImpl)
+                        .addStatement("")
+                        .addStatement("return new $T<>($T.unmodifiableList(new $T<>(this.delegate)))", valueCollectionImpl, Collections.class, ArrayList.class)
                         .build())
 
                 .addMethod(MethodSpec.methodBuilder("with")
@@ -54,12 +53,7 @@ public class CollectionBuilder {
                         .addModifiers(Modifier.PUBLIC)
                         .addParameter(ParameterizedTypeName.get(ClassName.get(Predicate.class), TypeVariableName.get("E")), "predicate")
                         .returns(ParameterizedTypeName.get(this.valueCollectionInterface.nestedClass("Builder"), TypeVariableName.get("E")))
-                        //.addStatement("return builder<E>().with(this.delegate.stream().filter(predicate).collect($T.toList()))", Collectors.class)
-                        .addStatement("$T<E> filteredContent = new $T<>(this.delegate.stream().filter(predicate).collect($T.toList()))",
-                                LinkedList.class, LinkedList.class, Collectors.class
-                        )
-                        .addStatement("this.delegate.clear()")
-                        .addStatement("this.delegate.addAll(filteredContent)")
+                        .addStatement("this.delegate.removeIf(predicate.negate())")
                         .addStatement("return this")
                         .build())
                 .build();
