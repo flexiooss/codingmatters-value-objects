@@ -193,18 +193,15 @@ public class ValueBuilder {
                             .returns(this.types.valueBuilderType())
                             .addModifiers(PUBLIC)
                             .beginControlFlow("if($N != null)", varargParameterName)
-                                .addStatement("$T elements = new $T()",
-                                        ParameterizedTypeName.get(ClassName.get(LinkedList.class), propertyType),
-                                        ParameterizedTypeName.get(ClassName.get(LinkedList.class), propertyType))
-                                .beginControlFlow("for($T $N : $N)",
-                                        ParameterizedTypeName.get(ClassName.get(Consumer.class), propertyType.nestedClass("Builder")),
-                                        propertySpec.name(),
-                                        varargParameterName)
-                                    .addStatement("$T.Builder builder = $T.builder()", propertyType, propertyType)
-                                    .addStatement("$N.accept(builder)", propertySpec.name())
-                                    .addStatement("elements.add(builder.build())", propertySpec.name())
-                                .endControlFlow()
-                            .addStatement("this.$N(elements.toArray(new $T[elements.size()]))", propertySpec.name(), propertyType)
+
+                            .addStatement("$T[] elements = new $T[$N.length]", propertyType, propertyType, varargParameterName)
+                            .beginControlFlow("for(int i = 0; i < elements.length; i++)", varargParameterName)
+                                .addStatement("$T.Builder builder = $T.builder()", propertyType, propertyType)
+                                .addStatement("$N[i].accept(builder)", varargParameterName)
+                                .addStatement("elements[i] = builder.build()")
+                            .endControlFlow()
+                            .addStatement("this.$N(elements)", propertySpec.name())
+
                             .endControlFlow()
                             .addStatement("return this")
                             .build()
