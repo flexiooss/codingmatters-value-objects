@@ -31,7 +31,7 @@ public class ObjectValueReader {
     private ObjectValue.Builder objectValue(JsonParser parser) throws IOException {
         ObjectValue.Builder builder = ObjectValue.builder();
         while (parser.nextToken() != JsonToken.END_OBJECT) {
-            String propertyName = parser.getCurrentName();
+            String propertyName = parser.currentName();
             PropertyValue propertyValue = null;
 
             parser.nextToken();
