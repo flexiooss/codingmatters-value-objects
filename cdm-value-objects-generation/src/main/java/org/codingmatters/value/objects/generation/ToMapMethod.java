@@ -27,15 +27,15 @@ public class ToMapMethod {
                         ArrayList.class, Object.class, listVar, ArrayList.class, propertySpec.name());
 
                 if (propertySpec.typeSpec().typeKind().equals(TypeKind.ENUM)) {
-                    block.beginControlFlow("for($T __item : this.$L())", this.types.propertySingleType(propertySpec), propertySpec.name());
+                    block.beginControlFlow("for ($T __item : this.$L())", this.types.propertySingleType(propertySpec), propertySpec.name());
                     block.addStatement("$L.add(__item.name())", listVar);
                     block.endControlFlow();
                 } else if (propertySpec.typeSpec().typeKind().isValueObject()) {
-                    block.beginControlFlow("for($T __item : this.$L())", this.types.propertySingleType(propertySpec), propertySpec.name());
+                    block.beginControlFlow("for ($T __item : this.$L())", this.types.propertySingleType(propertySpec), propertySpec.name());
                     block.addStatement("$L.add(__item.toMap())", listVar);
                     block.endControlFlow();
                 } else {
-                    block.beginControlFlow("for($T __item : this.$L())", this.types.propertySingleType(propertySpec), propertySpec.name());
+                    block.beginControlFlow("for ($T __item : this.$L())", this.types.propertySingleType(propertySpec), propertySpec.name());
                     block.addStatement("$L.add(__item)", listVar);
                     block.endControlFlow();
                 }

@@ -6,7 +6,10 @@ import org.codingmatters.value.objects.spec.TypeKind;
 import org.codingmatters.value.objects.spec.TypeToken;
 
 import java.time.temporal.TemporalAccessor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class FromMapBuilderMethod {
     private final ValueConfiguration types;
@@ -35,13 +38,13 @@ public class FromMapBuilderMethod {
                 block.endControlFlow();
             }
 
-            block.beginControlFlow("if ($LPropertyValue != null)", propName);
             if (propertySpec.typeSpec().cardinality().isCollection()) {
                 this.multipleProperty(block, propertySpec);
             } else {
+                block.beginControlFlow("if ($LPropertyValue != null)", propName);
                 this.singleProperty(block, propertySpec);
+                block.endControlFlow();
             }
-            block.endControlFlow();
         }
 
         block
@@ -52,25 +55,21 @@ public class FromMapBuilderMethod {
 
     private void singleProperty(CodeBlock.Builder block, PropertySpec propertySpec) {
         if (propertySpec.typeSpec().typeKind().equals(TypeKind.ENUM)) {
-            block.beginControlFlow("if ($LPropertyValue instanceof $T)", propertySpec.name(), String.class);
+            block.beginControlFlow("if ($LPropertyValue instanceof $T __str)", propertySpec.name(), String.class);
             block
                     .beginControlFlow("try")
-                    .addStatement("builder.$L($T.valueOf(($T) $LPropertyValue))",
+                    .addStatement("builder.$L($T.valueOf(__str))",
                             propertySpec.name(),
-                            this.types.propertyType(propertySpec),
-                            String.class,
-                            propertySpec.name()
+                            this.types.propertyType(propertySpec)
                     )
                     .nextControlFlow("catch($T e)", IllegalArgumentException.class)
                     .endControlFlow();
             block.endControlFlow();
         } else if (propertySpec.typeSpec().typeKind().isValueObject()) {
-            block.beginControlFlow("if ($LPropertyValue instanceof $T)", propertySpec.name(), Map.class);
-            block.addStatement("builder.$L($T.fromMap(($T) $LPropertyValue).build())",
+            block.beginControlFlow("if ($LPropertyValue instanceof $T __map)", propertySpec.name(), Map.class);
+            block.addStatement("builder.$L($T.fromMap(__map).build())",
                     propertySpec.name(),
-                    this.types.propertyType(propertySpec),
-                    Map.class,
-                    propertySpec.name()
+                    this.types.propertyType(propertySpec)
             );
             block.endControlFlow();
         } else if (TypeKind.JAVA_TYPE.equals(propertySpec.typeSpec().typeKind())) {
@@ -82,22 +81,14 @@ public class FromMapBuilderMethod {
                         String.class);
                 this.dateAndTimeType(block, propertySpec);
             } else if (this.types.isNumber(propertySpec.typeSpec().typeRef())) {
-                block.beginControlFlow("if ($LPropertyValue instanceof $T)", propertySpec.name(), Number.class);
-                block.addStatement("$T $LValue = (($T) $LPropertyValue).$L()",
+                block.beginControlFlow("if ($LPropertyValue instanceof $T __num)", propertySpec.name(), Number.class);
+                block.addStatement("$T $LValue = __num.$L()",
                         this.types.propertyType(propertySpec),
-                        propertySpec.name(),
-                        Number.class,
                         propertySpec.name(),
                         this.numberMethodFor(propertySpec.typeSpec().typeRef())
                 );
             } else {
-                block.beginControlFlow("if ($LPropertyValue instanceof $T)", propertySpec.name(), this.types.propertyType(propertySpec));
-                block.addStatement("$T $LValue = ($T) $LPropertyValue",
-                        this.types.propertyType(propertySpec),
-                        propertySpec.name(),
-                        this.types.propertyType(propertySpec),
-                        propertySpec.name()
-                );
+                block.beginControlFlow("if ($LPropertyValue instanceof $T $LValue)", propertySpec.name(), this.types.propertyType(propertySpec), propertySpec.name());
             }
             block.addStatement("builder.$L($LValue)",
                     propertySpec.name(),
@@ -124,27 +115,27 @@ public class FromMapBuilderMethod {
     }
 
     private void multipleProperty(CodeBlock.Builder block, PropertySpec propertySpec) {
-        block.beginControlFlow("if ($LPropertyValue instanceof $T)", propertySpec.name(), Collection.class);
+        block.beginControlFlow("if ($LPropertyValue instanceof $T __coll)", propertySpec.name(), Collection.class);
         String listVar = propertySpec.name() + "Elements";
 
         if (propertySpec.typeSpec().typeKind().equals(TypeKind.ENUM)) {
-            block.addStatement("$T $L = new $T((($T)$LPropertyValue).size())",
-                    List.class, listVar, ArrayList.class, Collection.class, propertySpec.name());
-            block.beginControlFlow("for($T v : ($T) $LPropertyValue)", Object.class, Collection.class, propertySpec.name());
-            block.beginControlFlow("if (v instanceof $T)", String.class);
+            block.addStatement("$T $L = new $T(__coll.size())",
+                    List.class, listVar, ArrayList.class);
+            block.beginControlFlow("for ($T v : __coll)", Object.class);
+            block.beginControlFlow("if (v instanceof $T __str)", String.class);
             block.beginControlFlow("try");
-            block.addStatement("$L.add($T.valueOf(($T) v))", listVar, this.types.propertySingleType(propertySpec), String.class);
+            block.addStatement("$L.add($T.valueOf(__str))", listVar, this.types.propertySingleType(propertySpec));
             block.nextControlFlow("catch($T e)", IllegalArgumentException.class);
             block.endControlFlow();
             block.endControlFlow();
             block.endControlFlow();
             block.addStatement("builder.$L($L)", propertySpec.name(), listVar);
         } else if (propertySpec.typeSpec().typeKind().isValueObject()) {
-            block.addStatement("$T $L = new $T((($T)$LPropertyValue).size())",
-                    List.class, listVar, ArrayList.class, Collection.class, propertySpec.name());
-            block.beginControlFlow("for($T v : ($T) $LPropertyValue)", Object.class, Collection.class, propertySpec.name());
-            block.beginControlFlow("if (v instanceof $T)", Map.class);
-            block.addStatement("$L.add($T.fromMap(($T) v).build())", listVar, this.types.propertySingleType(propertySpec), Map.class);
+            block.addStatement("$T $L = new $T(__coll.size())",
+                    List.class, listVar, ArrayList.class);
+            block.beginControlFlow("for ($T v : __coll)", Object.class);
+            block.beginControlFlow("if (v instanceof $T __map)", Map.class);
+            block.addStatement("$L.add($T.fromMap(__map).build())", listVar, this.types.propertySingleType(propertySpec));
             block.endControlFlow();
             block.endControlFlow();
             block.addStatement("builder.$L($L)", propertySpec.name(), listVar);
@@ -152,11 +143,11 @@ public class FromMapBuilderMethod {
             if (this.types.isDateOrTimeType(propertySpec.typeSpec().typeRef())) {
                 this.dateOrTypeCollection(block, propertySpec);
             } else {
-                block.addStatement("$T $L = new $T((($T)$LPropertyValue).size())",
-                        List.class, listVar, ArrayList.class, Collection.class, propertySpec.name());
-                block.beginControlFlow("for($T v : ($T) $LPropertyValue)", Object.class, Collection.class, propertySpec.name());
-                block.beginControlFlow("if (v instanceof $T)", this.types.propertySingleType(propertySpec));
-                block.addStatement("$L.add(($T) v)", listVar, this.types.propertySingleType(propertySpec));
+                block.addStatement("$T $L = new $T(__coll.size())",
+                        List.class, listVar, ArrayList.class);
+                block.beginControlFlow("for ($T v : __coll)", Object.class);
+                block.beginControlFlow("if (v instanceof $T __val)", this.types.propertySingleType(propertySpec));
+                block.addStatement("$L.add(__val)", listVar);
                 block.endControlFlow();
                 block.endControlFlow();
                 block.addStatement("builder.$L($L)", propertySpec.name(), listVar);
@@ -171,19 +162,15 @@ public class FromMapBuilderMethod {
                 propertySpec.name()
         );
 
-        block.beginControlFlow("if ($LPropertyValue instanceof $T)", propertySpec.name(), String.class)
-                .addStatement("$T $LTemporal = $T.$L.parse(($T) $LPropertyValue)",
+        block.beginControlFlow("if ($LPropertyValue instanceof $T __str)", propertySpec.name(), String.class)
+                .addStatement("$T __temporal = $T.$L.parse(__str)",
                         TemporalAccessor.class,
-                        propertySpec.name(),
                         this.types.valueImplType(),
-                        this.formatterFor(propertySpec.typeSpec().typeRef()),
-                        String.class,
-                        propertySpec.name()
+                        this.formatterFor(propertySpec.typeSpec().typeRef())
                 )
-                .addStatement("$LValue = $T.from($LTemporal)",
+                .addStatement("$LValue = $T.from(__temporal)",
                         propertySpec.name(),
-                        this.types.propertyType(propertySpec),
-                        propertySpec.name()
+                        this.types.propertyType(propertySpec)
                 )
         ;
         block.nextControlFlow("else")
@@ -196,28 +183,25 @@ public class FromMapBuilderMethod {
     }
 
     private void dateOrTypeCollection(CodeBlock.Builder block, PropertySpec propertySpec) {
-        block.addStatement("$T $LElements = new $T()", List.class, propertySpec.name(), LinkedList.class);
-        block.beginControlFlow("for($T rawElement : ($T) $LPropertyValue)", Object.class, Collection.class, propertySpec.name())
+        block.addStatement("$T $LElements = new $T(__coll.size())", List.class, propertySpec.name(), ArrayList.class);
+        block.beginControlFlow("for ($T __raw : __coll)", Object.class)
                 .addStatement("$T $LValue = null",
                         this.types.propertySingleType(propertySpec),
                         propertySpec.name()
                 )
 
-                .beginControlFlow("if (rawElement instanceof $T)", String.class)
-                .addStatement("$T $LTemporal = $T.$L.parse(($T) rawElement)",
+                .beginControlFlow("if (__raw instanceof $T __str)", String.class)
+                .addStatement("$T __temporal = $T.$L.parse(__str)",
                         TemporalAccessor.class,
-                        propertySpec.name(),
                         this.types.valueImplType(),
-                        this.formatterFor(propertySpec.typeSpec().typeRef()),
-                        String.class
+                        this.formatterFor(propertySpec.typeSpec().typeRef())
                 )
-                .addStatement("$LValue = $T.from($LTemporal)",
+                .addStatement("$LValue = $T.from(__temporal)",
                         propertySpec.name(),
-                        this.types.propertySingleType(propertySpec),
-                        propertySpec.name()
+                        this.types.propertySingleType(propertySpec)
                 )
-                .nextControlFlow("else if (rawElement instanceof $T)", this.types.propertySingleType(propertySpec))
-                .addStatement("$LValue = ($T) rawElement", propertySpec.name(), this.types.propertySingleType(propertySpec))
+                .nextControlFlow("else if (__raw instanceof $T __val)", this.types.propertySingleType(propertySpec))
+                .addStatement("$LValue = __val", propertySpec.name())
                 .endControlFlow()
                 .beginControlFlow("if ($LValue != null)", propertySpec.name())
                 .addStatement("$LElements.add($LValue)", propertySpec.name(), propertySpec.name())

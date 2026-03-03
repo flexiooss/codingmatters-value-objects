@@ -195,7 +195,7 @@ public class ValueBuilder {
                             .beginControlFlow("if ($N != null)", varargParameterName)
 
                             .addStatement("$T[] elements = new $T[$N.length]", propertyType, propertyType, varargParameterName)
-                            .beginControlFlow("for(int i = 0; i < elements.length; i++)", varargParameterName)
+                            .beginControlFlow("for (int i = 0; i < elements.length; i++)", varargParameterName)
                             .addStatement("$T.Builder builder = $T.builder()", propertyType, propertyType)
                             .addStatement("$N[i].accept(builder)", varargParameterName)
                             .addStatement("elements[i] = builder.build()")
