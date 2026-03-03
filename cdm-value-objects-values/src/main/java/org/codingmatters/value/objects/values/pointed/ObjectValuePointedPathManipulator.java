@@ -116,7 +116,7 @@ public class ObjectValuePointedPathManipulator {
             }
         }
         if (value == null) {
-            return value;
+            return null;
         } else if (value.has(indexPathManipulator.getProperty())) {
             PropertyValue property = value.property(indexPathManipulator.getProperty());
             if (property == null || property.isNullValue()) {

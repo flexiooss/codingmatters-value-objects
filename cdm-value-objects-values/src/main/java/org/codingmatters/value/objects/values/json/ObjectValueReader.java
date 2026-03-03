@@ -6,7 +6,7 @@ import org.codingmatters.value.objects.values.ObjectValue;
 import org.codingmatters.value.objects.values.PropertyValue;
 
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ObjectValueReader {
@@ -48,31 +48,28 @@ public class ObjectValueReader {
     }
 
     private PropertyValue multiplePropertyValue(JsonParser parser) throws IOException {
-        List<PropertyValue.Value> values = new LinkedList<>();
+        List<PropertyValue.Value> values = new ArrayList<>();
         while (parser.nextToken() != JsonToken.END_ARRAY) {
             values.add(this.valueBuilder(parser).buildValue());
         }
 
         PropertyValue.Type type = values.isEmpty() ? PropertyValue.Type.STRING : values.getFirst().type();
-        return PropertyValue.multiple(type, values.toArray(new PropertyValue.Value[values.size()]));
+        return PropertyValue.multiple(type, values.toArray(new PropertyValue.Value[0]));
     }
 
     private PropertyValue.Builder valueBuilder(JsonParser parser) throws IOException {
-        if (parser.currentToken() == JsonToken.VALUE_NULL) {
-            return PropertyValue.builder()
-                    .stringValue(null);
-        } else if (parser.currentToken().isScalarValue()) {
-            if (parser.currentToken().isBoolean()) {
-                return PropertyValue.builder()
-                        .booleanValue(Boolean.parseBoolean(parser.getText()));
-            } else if (parser.currentToken().isNumeric()) {
-                return PropertyValue.builder()
-                        .doubleValue(Double.parseDouble(parser.getText()));
+        JsonToken currentToken = parser.currentToken();
+        if (currentToken == JsonToken.VALUE_NULL) {
+            return PropertyValue.builder().stringValue(null);
+        } else if (currentToken.isScalarValue()) {
+            if (currentToken.isBoolean()) {
+                return PropertyValue.builder().booleanValue(Boolean.parseBoolean(parser.getText()));
+            } else if (currentToken.isNumeric()) {
+                return PropertyValue.builder().doubleValue(Double.parseDouble(parser.getText()));
             } else {
-                return PropertyValue.builder()
-                        .stringValue(parser.getText());
+                return PropertyValue.builder().stringValue(parser.getText());
             }
-        } else if (parser.currentToken() == JsonToken.START_OBJECT) {
+        } else if (currentToken == JsonToken.START_OBJECT) {
             return PropertyValue.builder().objectValue(this.objectValue(parser));
         } else {
             return PropertyValue.builder();
@@ -88,7 +85,7 @@ public class ObjectValueReader {
         if (parser.currentToken() == null) return null;
         if (parser.currentToken() == JsonToken.VALUE_NULL) return null;
         if (parser.currentToken() == JsonToken.START_ARRAY) {
-            LinkedList<ObjectValue> listValue = new LinkedList<>();
+            List<ObjectValue> listValue = new ArrayList<>();
             while (parser.nextToken() != JsonToken.END_ARRAY) {
                 if (parser.currentToken() == JsonToken.VALUE_NULL) {
                     listValue.add(null);
@@ -96,7 +93,7 @@ public class ObjectValueReader {
                     listValue.add(this.read(parser));
                 }
             }
-            return listValue.toArray(new ObjectValue[listValue.size()]);
+            return listValue.toArray(new ObjectValue[0]);
         }
         throw new IOException(String.format("failed reading org.codingmatters.value.objects.values.ObjectValue array, current token was %s", parser.currentToken()));
     }
