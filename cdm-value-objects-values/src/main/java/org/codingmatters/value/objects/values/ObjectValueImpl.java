@@ -8,13 +8,14 @@ import java.util.Map;
 class ObjectValueImpl implements ObjectValue {
 
     private final Map<String, PropertyValue> properties;
+    private String[] cachedPropertyNames;
 
     public ObjectValueImpl(Map<String, PropertyValue> properties) {
         this.properties = new HashMap<>(properties);
     }
 
     public String[] properties() {
-        return this.properties.keySet().toArray(new String[this.properties.size()]);
+        return this.propertyNames();
     }
 
     @Override
@@ -34,7 +35,10 @@ class ObjectValueImpl implements ObjectValue {
 
     @Override
     public String[] propertyNames() {
-        return this.properties.keySet().toArray(new String[this.properties.size()]);
+        if (this.cachedPropertyNames == null) {
+            this.cachedPropertyNames = this.properties.keySet().toArray(new String[0]);
+        }
+        return this.cachedPropertyNames;
     }
 
     @Override

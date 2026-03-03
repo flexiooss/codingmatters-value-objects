@@ -19,71 +19,80 @@ public class OptionalValue {
     }
 
     public Optional<String> stringValue() {
-        if(this.value.isEmpty()) return Optional.empty();
+        if (this.value.isEmpty()) return Optional.empty();
         try {
             return Optional.ofNullable(this.value.get().stringValue());
         } catch (AssertionError e) {
             return Optional.empty();
         }
     }
+
     public Optional<Long> longValue() {
-        if(this.value.isEmpty()) return Optional.empty();
+        if (this.value.isEmpty()) return Optional.empty();
         try {
             return Optional.ofNullable(this.value.get().longValue());
         } catch (AssertionError e) {
             return Optional.empty();
         }
     }
+
     public Optional<Double> doubleValue() {
-        if(this.value.isEmpty()) return Optional.empty();
+        if (this.value.isEmpty()) return Optional.empty();
         try {
             return Optional.ofNullable(this.value.get().doubleValue());
         } catch (AssertionError e) {
             return Optional.empty();
         }
     }
+
     public Optional<Boolean> booleanValue() {
-        if(this.value.isEmpty()) return Optional.empty();
+        if (this.value.isEmpty()) return Optional.empty();
         try {
             return Optional.ofNullable(this.value.get().booleanValue());
         } catch (AssertionError e) {
             return Optional.empty();
         }
     }
+
     public Optional<byte[]> bytesValue() {
-        if(this.value.isEmpty()) return Optional.empty();
+        if (this.value.isEmpty()) return Optional.empty();
         try {
             return Optional.ofNullable(this.value.get().bytesValue());
         } catch (AssertionError e) {
             return Optional.empty();
         }
     }
+
     public OptionalObjectValue objectValue() {
-        if(this.value.isEmpty()) return new OptionalObjectValue(null);
+        if (this.value.isEmpty()) return new OptionalObjectValue(null);
         return new OptionalObjectValue(this.value.get().objectValue());
     }
+
     public Optional<Object> rawValue() {
-        if(this.value.isEmpty()) return Optional.empty();
+        if (this.value.isEmpty()) return Optional.empty();
         return Optional.ofNullable(this.value.get().rawValue());
     }
+
     public Optional<LocalDate> dateValue() {
-        if(this.value.isEmpty()) return Optional.empty();
+        if (this.value.isEmpty()) return Optional.empty();
         try {
             return Optional.ofNullable(this.value.get().dateValue());
         } catch (AssertionError e) {
             return Optional.empty();
         }
     }
+
     public Optional<LocalTime> timeValue() {
-        if(this.value.isEmpty()) return Optional.empty();
+        if (this.value.isEmpty()) return Optional.empty();
         try {
             return Optional.ofNullable(this.value.get().timeValue());
         } catch (AssertionError e) {
             return Optional.empty();
         }
     }
+
     public Optional<LocalDateTime> datetimeValue() {
-        if(this.value.isEmpty()) return Optional.empty();
+        if (this.value.isEmpty()) return Optional.empty();
         try {
             return Optional.ofNullable(this.value.get().datetimeValue());
         } catch (AssertionError e) {
@@ -92,16 +101,17 @@ public class OptionalValue {
     }
 
     public Optional<PropertyValue.Type> type() {
-        if(this.value.isEmpty()) return Optional.empty();
+        if (this.value.isEmpty()) return Optional.empty();
         return Optional.ofNullable(this.value.get().type());
     }
 
     public boolean isa(PropertyValue.Type type) {
-        if(this.value.isEmpty()) return false;
+        if (this.value.isEmpty()) return false;
         return this.value.get().isa(type);
     }
+
     public boolean isNull() {
-        if(this.value.isEmpty()) return true;
+        if (this.value.isEmpty()) return true;
         return this.value.get().isNull();
     }
 

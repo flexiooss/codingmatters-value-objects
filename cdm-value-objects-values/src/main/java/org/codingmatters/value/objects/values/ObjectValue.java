@@ -29,11 +29,12 @@ public interface ObjectValue {
         }
 
         Builder result = builder();
-        for (Object name : value.keySet()) {
+        for (Object entry : value.entrySet()) {
+            Map.Entry e = (Map.Entry) entry;
             try {
-                result.property(name.toString(), PropertyValue.fromObject(value.get(name)));
-            } catch (PropertyValue.Type.UnsupportedTypeException e) {
-                e.printStackTrace();
+                result.property(e.getKey().toString(), PropertyValue.fromObject(e.getValue()));
+            } catch (PropertyValue.Type.UnsupportedTypeException ex) {
+                ex.printStackTrace();
             }
         }
 
@@ -75,16 +76,13 @@ public interface ObjectValue {
     String[] propertyNames();
 
     default Optional<PropertyValue> nonNullProperty(String property, PropertyValue.Type type, PropertyValue.Cardinality cardinality) {
-        if (this.has(property)
-                && this.property(property) != null
-                && !this.property(property).isNullValue()
-                && cardinality.equals(this.property(property).cardinality())
-        ) {
+        PropertyValue prop = this.property(property);
+        if (prop != null && !prop.isNullValue() && cardinality.equals(prop.cardinality())) {
             // Cannot check the type if the list is empty
-            if (cardinality.equals(PropertyValue.Cardinality.MULTIPLE) && this.property(property).multiple().length == 0) {
-                return Optional.of(this.property(property));
-            } else if (type.equals(this.property(property).type())) {
-                return Optional.of(this.property(property));
+            if (cardinality.equals(PropertyValue.Cardinality.MULTIPLE) && prop.multiple().length == 0) {
+                return Optional.of(prop);
+            } else if (type.equals(prop.type())) {
+                return Optional.of(prop);
             }
         }
         return Optional.empty();

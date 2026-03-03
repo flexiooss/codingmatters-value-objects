@@ -6,21 +6,18 @@ import org.codingmatters.value.objects.values.ObjectValue;
 import org.codingmatters.value.objects.values.PropertyValue;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
 public class ObjectValueReader {
 
     public ObjectValue read(JsonParser parser) throws IOException {
-        if(parser.getCurrentToken() == null) {
+        if (parser.getCurrentToken() == null) {
             parser.nextToken();
         }
-        if(parser.currentToken() == null) return null;
-        if(parser.currentToken() == JsonToken.VALUE_NULL) return null;
-        if(parser.currentToken() != JsonToken.START_OBJECT) {
+        if (parser.currentToken() == null) return null;
+        if (parser.currentToken() == JsonToken.VALUE_NULL) return null;
+        if (parser.currentToken() != JsonToken.START_OBJECT) {
             throw new IOException(
                     String.format("reading a %s object, was expecting %s, but was %s",
                             ObjectValue.class.getName(), JsonToken.START_OBJECT, parser.currentToken()
@@ -38,7 +35,7 @@ public class ObjectValueReader {
             PropertyValue propertyValue = null;
 
             parser.nextToken();
-            if(parser.currentToken() == JsonToken.START_ARRAY) {
+            if (parser.currentToken() == JsonToken.START_ARRAY) {
                 propertyValue = this.multiplePropertyValue(parser);
             } else {
                 propertyValue = this.singlePropertyValue(parser);
@@ -56,26 +53,26 @@ public class ObjectValueReader {
             values.add(this.valueBuilder(parser).buildValue());
         }
 
-        PropertyValue.Type type = values.isEmpty() ? PropertyValue.Type.STRING : values.get(0).type();
+        PropertyValue.Type type = values.isEmpty() ? PropertyValue.Type.STRING : values.getFirst().type();
         return PropertyValue.multiple(type, values.toArray(new PropertyValue.Value[values.size()]));
     }
 
     private PropertyValue.Builder valueBuilder(JsonParser parser) throws IOException {
-        if(parser.currentToken() == JsonToken.VALUE_NULL) {
+        if (parser.currentToken() == JsonToken.VALUE_NULL) {
             return PropertyValue.builder()
                     .stringValue(null);
-        } else if(parser.currentToken().isScalarValue()) {
+        } else if (parser.currentToken().isScalarValue()) {
             if (parser.currentToken().isBoolean()) {
                 return PropertyValue.builder()
                         .booleanValue(Boolean.parseBoolean(parser.getText()));
             } else if (parser.currentToken().isNumeric()) {
                 return PropertyValue.builder()
-                            .doubleValue(Double.parseDouble(parser.getText()));
+                        .doubleValue(Double.parseDouble(parser.getText()));
             } else {
                 return PropertyValue.builder()
                         .stringValue(parser.getText());
             }
-        } else if(parser.currentToken() == JsonToken.START_OBJECT) {
+        } else if (parser.currentToken() == JsonToken.START_OBJECT) {
             return PropertyValue.builder().objectValue(this.objectValue(parser));
         } else {
             return PropertyValue.builder();
@@ -93,7 +90,7 @@ public class ObjectValueReader {
         if (parser.currentToken() == JsonToken.START_ARRAY) {
             LinkedList<ObjectValue> listValue = new LinkedList<>();
             while (parser.nextToken() != JsonToken.END_ARRAY) {
-                if(parser.currentToken() == JsonToken.VALUE_NULL) {
+                if (parser.currentToken() == JsonToken.VALUE_NULL) {
                     listValue.add(null);
                 } else {
                     listValue.add(this.read(parser));

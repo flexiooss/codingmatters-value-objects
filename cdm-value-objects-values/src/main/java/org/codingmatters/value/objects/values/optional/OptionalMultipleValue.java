@@ -17,7 +17,7 @@ public class OptionalMultipleValue {
     }
 
     public OptionalValue get(int index) {
-        if(this.values.isEmpty() || this.values.get().length <= index) return new OptionalValue(null);
+        if (this.values.isEmpty() || this.values.get().length <= index) return new OptionalValue(null);
         return new OptionalValue(this.values.get()[index]);
     }
 

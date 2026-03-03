@@ -368,55 +368,33 @@ public interface PropertyValue {
     static PropertyValue fromObject(Object object) throws Type.UnsupportedTypeException {
         if (object == null) return null;
 
-        if (object instanceof Object[]) {
-            object = Arrays.asList((Object[]) object);
+        if (object instanceof Object[] arr) {
+            object = Arrays.asList(arr);
         }
-        if (object instanceof Iterable) {
+        if (object instanceof Iterable<?> iterable) {
             List<Value> vals = new LinkedList<>();
-            for (Object o : ((Iterable) object)) {
+            for (Object o : iterable) {
                 vals.add(o == null ? PropertyValue.builder().buildValue() : fromObject(o).single());
             }
             return PropertyValue.multiple(
                     vals.stream().filter(value -> value != null && !value.isNull()).map(Value::type).findFirst().orElse(Type.OBJECT),
                     vals.toArray(new Value[0]));
         } else {
-            if (object instanceof String) {
-                return PropertyValue.builder().stringValue((String) object).build();
-            }
-            if (object instanceof Long) {
-                return PropertyValue.builder().longValue((long) object).build();
-            }
-            if (object instanceof Integer) {
-                return PropertyValue.builder().longValue((long) (Integer) object).build();
-            }
-            if (object instanceof Double) {
-                return PropertyValue.builder().doubleValue((Double) object).build();
-            }
-            if (object instanceof Float) {
-                return PropertyValue.builder().doubleValue((double) (Float) object).build();
-            }
-            if (object instanceof Boolean) {
-                return PropertyValue.builder().booleanValue((Boolean) object).build();
-            }
-            if (object instanceof ObjectValue) {
-                return PropertyValue.builder().objectValue((ObjectValue) object).build();
-            }
-            if (object instanceof LocalDateTime) {
-                return PropertyValue.builder().datetimeValue((LocalDateTime) object).build();
-            }
-            if (object instanceof LocalDate) {
-                return PropertyValue.builder().dateValue((LocalDate) object).build();
-            }
-            if (object instanceof LocalTime) {
-                return PropertyValue.builder().timeValue((LocalTime) object).build();
-            }
-            if (object instanceof byte[]) {
-                return PropertyValue.builder().bytesValue((byte[]) object).build();
-            }
-            if (object instanceof Map) {
-                return PropertyValue.builder().objectValue(ObjectValue.fromMap((Map) object).build()).build();
-            }
+           return switch (object) {
+                case String s -> PropertyValue.builder().stringValue(s).build();
+                case Long l ->  PropertyValue.builder().longValue(l).build();
+                case Integer i -> PropertyValue.builder().longValue(i.longValue()).build();
+                case Double d -> PropertyValue.builder().doubleValue(d).build();
+                case Float f -> PropertyValue.builder().doubleValue(f.doubleValue()).build();
+                case Boolean b -> PropertyValue.builder().booleanValue(b).build();
+                case ObjectValue o -> PropertyValue.builder().objectValue(o).build();
+                case LocalDateTime dt -> PropertyValue.builder().datetimeValue(dt).build();
+                case LocalDate d -> PropertyValue.builder().dateValue(d).build();
+                case LocalTime t -> PropertyValue.builder().timeValue(t).build();
+                case byte[] bytes -> PropertyValue.builder().bytesValue(bytes).build();
+                case Map map -> PropertyValue.builder().objectValue(ObjectValue.fromMap(map).build()).build();
+                default -> throw new Type.UnsupportedTypeException("unsupported type : " + object.getClass());
+            };
         }
-        throw new Type.UnsupportedTypeException("unsupported type : " + object.getClass());
     }
 }

@@ -1,8 +1,6 @@
 package org.codingmatters.value.objects.values.vals.json;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.SerializableString;
-import org.codingmatters.value.objects.values.ObjectValue;
 import org.codingmatters.value.objects.values.vals.Val;
 import org.codingmatters.value.objects.values.vals.ValVisitor;
 
@@ -16,7 +14,7 @@ import java.util.Optional;
 public class ValWriter {
     public void write(JsonGenerator generator, Val value) throws IOException {
         Optional<IOException> result = value.accept(new WriterVisitor(generator));
-        if(result.isPresent()) {
+        if (result.isPresent()) {
             throw result.get();
         }
     }
@@ -38,7 +36,7 @@ public class ValWriter {
                 this.generator.writeStartObject();
                 for (String propertyName : object.propertyNames()) {
                     this.generator.writeFieldName(propertyName);
-                    if(object.property(propertyName) != null) {
+                    if (object.property(propertyName) != null) {
                         object.property(propertyName).accept(this);
                     } else {
                         generator.writeNull();
@@ -59,7 +57,7 @@ public class ValWriter {
                     value.accept(this);
                 }
                 this.generator.writeEndArray();
-            } catch(IOException e) {
+            } catch (IOException e) {
                 return Optional.of(e);
             }
             return Optional.empty();
@@ -85,16 +83,16 @@ public class ValWriter {
                         generator.writeBinary((byte[]) value.value());
                         break;
                     case DATE:
-                        generator.writeString(((LocalDate)value.value()).format(DateTimeFormatter.ISO_LOCAL_DATE));
+                        generator.writeString(((LocalDate) value.value()).format(DateTimeFormatter.ISO_LOCAL_DATE));
                         break;
                     case TIME:
-                        generator.writeString(((LocalTime)value.value()).format(DateTimeFormatter.ISO_LOCAL_TIME));
+                        generator.writeString(((LocalTime) value.value()).format(DateTimeFormatter.ISO_LOCAL_TIME));
                         break;
                     case DATETIME:
-                        generator.writeString(((LocalDateTime)value.value()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                        generator.writeString(((LocalDateTime) value.value()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                         break;
                 }
-            } catch(IOException e) {
+            } catch (IOException e) {
                 return Optional.of(e);
             }
             return Optional.empty();
