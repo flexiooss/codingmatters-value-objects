@@ -29,19 +29,21 @@ public class OptionalPropertyValue {
 
     public OptionalValue single() {
         if (this.value.isEmpty()) return new OptionalValue(null);
-        if (!PropertyValue.Cardinality.SINGLE.equals(this.value.get().cardinality())) {
+        PropertyValue prop = this.value.get();
+        if (!PropertyValue.Cardinality.SINGLE.equals(prop.cardinality())) {
             return new OptionalValue(null);
         } else {
-            return new OptionalValue(this.value.get().single());
+            return new OptionalValue(prop.single());
         }
     }
 
     public OptionalMultipleValue multiple() {
         if (this.value.isEmpty()) return new OptionalMultipleValue(null);
-        if (!PropertyValue.Cardinality.MULTIPLE.equals(this.value.get().cardinality())) {
+        PropertyValue prop = this.value.get();
+        if (!PropertyValue.Cardinality.MULTIPLE.equals(prop.cardinality())) {
             return new OptionalMultipleValue(null);
         } else {
-            return new OptionalMultipleValue(this.value.get().multiple());
+            return new OptionalMultipleValue(prop.multiple());
         }
     }
 

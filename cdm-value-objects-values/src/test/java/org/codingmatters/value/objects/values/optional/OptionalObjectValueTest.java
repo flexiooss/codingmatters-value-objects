@@ -7,8 +7,10 @@ import org.junit.Test;
 import java.util.HashMap;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class OptionalObjectValueTest {
 
@@ -17,6 +19,7 @@ public class OptionalObjectValueTest {
         assertThat(new OptionalObjectValue(ObjectValue.builder().build()).isPresent(), is(true));
         assertThat(new OptionalObjectValue(ObjectValue.builder().build()).isEmpty(), is(false));
     }
+
     @Test
     public void whenNullValue__thenIsNotPresent_andIsEmpty() throws Exception {
         assertThat(new OptionalObjectValue(null).isPresent(), is(false));
@@ -27,12 +30,14 @@ public class OptionalObjectValueTest {
     public void whenUnderlyingObjectIsNull__thenPropertyAreNavigable_andValuesAreAbsent() throws Exception {
         OptionalObjectValue opt = new OptionalObjectValue(null);
         assertThat(opt.property("plok").isPresent(), is(false));
+        assertThat(opt.has("plok"), is(false));
     }
 
     @Test
     public void givenUnderlyingObjectIsEmpty__thenSinglePropertyIsNavigable_andValuesAreAbsent() throws Exception {
         OptionalObjectValue opt = new OptionalObjectValue(ObjectValue.builder().build());
         assertThat(opt.property("plok").isPresent(), is(false));
+        assertThat(opt.has("plok"), is(false));
     }
 
     @Test

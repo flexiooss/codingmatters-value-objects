@@ -25,14 +25,16 @@ public class OptionalObjectValue {
     public boolean has(String property) {
         return this.value.isPresent() && this.value.get().has(property);
     }
-    public String [] propertyNames() {
+
+    public String[] propertyNames() {
         return this.value.isPresent() ? this.value.get().propertyNames() : new String[0];
     }
 
     public OptionalPropertyValue property(String property) {
-        if(this.value.isPresent()) {
-            if(this.value.get().property(property) != null && ! this.value.get().property(property).isNullValue()) {
-                return new OptionalPropertyValue(this.get().property(property));
+        if (this.value.isPresent()) {
+            PropertyValue prop = this.value.get().property(property);
+            if (prop != null && !prop.isNullValue()) {
+                return new OptionalPropertyValue(prop);
             }
         }
         return new OptionalPropertyValue(null);
