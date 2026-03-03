@@ -51,7 +51,7 @@ public class NamesInterface {
     private List<MethodSpec> propertyNameMethods() {
         List<MethodSpec> results = new LinkedList<>();
         for (PropertySpec propertySpec : this.propertySpecs) {
-            if(propertySpec.typeSpec().typeKind().isValueObject()) {
+            if (propertySpec.typeSpec().typeKind().isValueObject()) {
                 ClassName valueObjectNamesType = this.types.valueObjectNamesType(propertySpec);
                 results.add(MethodSpec.methodBuilder(propertySpec.name() + "Names")
                         .addModifiers(Modifier.DEFAULT, Modifier.PUBLIC)

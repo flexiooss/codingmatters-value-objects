@@ -32,7 +32,7 @@ public class InSpecListPropertySpecGenerationTest {
     @Rule
     public FileHelper fileHelper = new FileHelper();
 
-    private final Spec spec  = spec()
+    private final Spec spec = spec()
             .addValue(
                     valueSpec().name("ref")
             )
@@ -78,7 +78,7 @@ public class InSpecListPropertySpecGenerationTest {
     @Test
     public void builderMethod_withConsumer() throws Exception {
 //        this.fileHelper.printJavaContent("", this.dir.getRoot());
-//        this.fileHelper.printFile(this.dir.getRoot(), "Val.java");
+        this.fileHelper.printFile(this.dir.getRoot(), "Val.java");
 
         assertThat(this.compiled.getClass("org.generated.Val$Builder"), is(aStatic().class_()
                 .with(aMethod()
