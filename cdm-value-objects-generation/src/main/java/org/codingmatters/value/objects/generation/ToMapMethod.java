@@ -16,8 +16,8 @@ public class ToMapMethod {
 
     public CodeBlock block() {
         int propertyCount = this.types.valueSpec().propertySpecs().size();
-        CodeBlock.Builder block = CodeBlock.builder()
-                .addStatement("$T result = new $T($L)", HashMap.class, HashMap.class, propertyCount);
+        int size = (int) (Math.ceil(propertyCount / 0.75) + 1); // hashmap resize factor is 75%
+        CodeBlock.Builder block = CodeBlock.builder().addStatement("$T result = new $T($L)", HashMap.class, HashMap.class, size);
 
         for (PropertySpec propertySpec : this.types.valueSpec().propertySpecs()) {
             block.beginControlFlow("if (this.$L() != null)", propertySpec.name());
