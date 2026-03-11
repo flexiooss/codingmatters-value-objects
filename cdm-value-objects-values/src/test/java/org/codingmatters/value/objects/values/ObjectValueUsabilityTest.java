@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.arrayContaining;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -194,5 +195,15 @@ public class ObjectValueUsabilityTest {
 
         ObjectValue copy = value.withoutProperty("p2");
         assertThat(copy.propertyNames(), arrayContaining("p1"));
+    }
+
+    @Test
+    public void properties() {
+        ObjectValueImpl value = (ObjectValueImpl) ObjectValue.builder()
+                .property("p", p -> p.stringValue("plok"))
+                .build();
+        assertThat(value.propertyNames(), is(value.properties()));
+        assertThat(value.propertyNames().length, is(1));
+        assertThat(value.propertyNames()[0], is("p"));
     }
 }

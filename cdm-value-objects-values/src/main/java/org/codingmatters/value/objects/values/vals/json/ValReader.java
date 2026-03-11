@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class ValReader {
     public Val read(JsonParser parser) throws IOException {
-        if(parser.currentToken() == null) {
+        if (parser.currentToken() == null) {
             parser.nextToken();
         }
 
@@ -16,13 +16,13 @@ public class ValReader {
     }
 
     private Val parse(JsonParser parser) throws IOException {
-        if(parser.currentToken() == JsonToken.VALUE_NULL) return null;
+        if (parser.currentToken() == JsonToken.VALUE_NULL) return null;
 
-        if(parser.currentToken() == JsonToken.START_OBJECT) {
+        if (parser.currentToken() == JsonToken.START_OBJECT) {
             return this.parseObject(parser);
-        } else if(parser.currentToken() == JsonToken.START_ARRAY) {
+        } else if (parser.currentToken() == JsonToken.START_ARRAY) {
             return this.parseArray(parser);
-        } else if(parser.currentToken().isScalarValue()) {
+        } else if (parser.currentToken().isScalarValue()) {
             return this.parseBaseType(parser);
         } else {
             throw new IOException("don't know what to do with token : " + parser.currentToken());

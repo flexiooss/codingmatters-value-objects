@@ -55,7 +55,7 @@ public class ValueBuilder {
         List<MethodSpec> setters = new LinkedList<>();
 
         for (PropertySpec propertySpec : this.propertySpecs) {
-            if(propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SINGLE)) {
+            if (propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SINGLE)) {
                 setters.addAll(this.createSingleSetter(propertySpec));
             } else {
                 setters.addAll(this.createMultipleSetters(propertySpec));
@@ -69,14 +69,14 @@ public class ValueBuilder {
         LinkedList<MethodSpec> result = new LinkedList<>();
         result.add(
                 MethodSpec.methodBuilder(propertySpec.name())
-                    .addParameter(this.types.propertyType(propertySpec), propertySpec.name())
-                    .returns(this.types.valueBuilderType())
-                    .addModifiers(PUBLIC)
-                    .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
-                    .addStatement("return this")
-                    .build()
+                        .addParameter(this.types.propertyType(propertySpec), propertySpec.name())
+                        .returns(this.types.valueBuilderType())
+                        .addModifiers(PUBLIC)
+                        .addStatement("this.$N = $N", propertySpec.name(), propertySpec.name())
+                        .addStatement("return this")
+                        .build()
         );
-        if(propertySpec.typeSpec().typeKind().isValueObject()) {
+        if (propertySpec.typeSpec().typeKind().isValueObject()) {
             ClassName propertyType = this.types.valueObjectSingleType(propertySpec);
             result.add(
                     MethodSpec.methodBuilder(propertySpec.name())
@@ -92,7 +92,7 @@ public class ValueBuilder {
                             .build()
             );
         }
-        if(propertySpec.typeSpec().typeKind().equals(TypeKind.JAVA_TYPE) && propertySpec.typeSpec().typeRef().equals(String.class.getName())) {
+        if (propertySpec.typeSpec().typeKind().equals(TypeKind.JAVA_TYPE) && propertySpec.typeSpec().typeRef().equals(String.class.getName())) {
             this.addFormattedStringSetters(propertySpec, result);
         }
         return result;
@@ -181,24 +181,24 @@ public class ValueBuilder {
                         .build()
         );
 
-        if(propertySpec.typeSpec().typeKind().isValueObject()) {
+        if (propertySpec.typeSpec().typeKind().isValueObject()) {
             ClassName propertyType = this.types.valueObjectSingleType(propertySpec);
             String varargParameterName = propertySpec.name() + "Elements";
             result.add(
                     MethodSpec.methodBuilder(propertySpec.name())
                             .varargs().addParameter(
                                     ArrayTypeName.of(ParameterizedTypeName.get(ClassName.get(Consumer.class), propertyType.nestedClass("Builder"))),
-                            varargParameterName
+                                    varargParameterName
                             )
                             .returns(this.types.valueBuilderType())
                             .addModifiers(PUBLIC)
-                            .beginControlFlow("if($N != null)", varargParameterName)
+                            .beginControlFlow("if ($N != null)", varargParameterName)
 
                             .addStatement("$T[] elements = new $T[$N.length]", propertyType, propertyType, varargParameterName)
-                            .beginControlFlow("for(int i = 0; i < elements.length; i++)", varargParameterName)
-                                .addStatement("$T.Builder builder = $T.builder()", propertyType, propertyType)
-                                .addStatement("$N[i].accept(builder)", varargParameterName)
-                                .addStatement("elements[i] = builder.build()")
+                            .beginControlFlow("for (int i = 0; i < elements.length; i++)", varargParameterName)
+                            .addStatement("$T.Builder builder = $T.builder()", propertyType, propertyType)
+                            .addStatement("$N[i].accept(builder)", varargParameterName)
+                            .addStatement("elements[i] = builder.build()")
                             .endControlFlow()
                             .addStatement("this.$N(elements)", propertySpec.name())
 
@@ -212,7 +212,6 @@ public class ValueBuilder {
     }
 
 
-
     private List<MethodSpec> createMultipleAdders(PropertySpec propertySpec) {
         List<MethodSpec> result = new LinkedList<>();
 
@@ -221,7 +220,7 @@ public class ValueBuilder {
                         .addParameter(this.types.propertySingleType(propertySpec), "last")
                         .returns(this.types.valueBuilderType())
                         .addModifiers(PUBLIC)
-                        .beginControlFlow("if(this.$N == null)", propertySpec.name())
+                        .beginControlFlow("if (this.$N == null)", propertySpec.name())
                         .addStatement("return this.$N(last)", propertySpec.name())
                         .nextControlFlow("else")
                         .addStatement("this.$N = this.$N.toBuilder().with(last).build()", propertySpec.name(), propertySpec.name())
@@ -235,10 +234,10 @@ public class ValueBuilder {
                         .addParameter(this.types.propertySingleType(propertySpec), "last")
                         .returns(this.types.valueBuilderType())
                         .addModifiers(PUBLIC)
-                        .beginControlFlow("if(! condition)")
+                        .beginControlFlow("if (! condition)")
                         .addStatement("return this")
                         .endControlFlow()
-                        .beginControlFlow("if(this.$N == null)", propertySpec.name())
+                        .beginControlFlow("if (this.$N == null)", propertySpec.name())
                         .addStatement("return this.$N(last)", propertySpec.name())
                         .nextControlFlow("else")
                         .addStatement("this.$N = this.$N.toBuilder().with(last).build()", propertySpec.name(), propertySpec.name())
@@ -246,13 +245,13 @@ public class ValueBuilder {
                         .endControlFlow()
                         .build()
         );
-        if(! propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
+        if (!propertySpec.typeSpec().cardinality().equals(PropertyCardinality.SET)) {
             result.add(
                     MethodSpec.methodBuilder(propertySpec.name() + "AddFirst")
                             .addParameter(this.types.propertySingleType(propertySpec), "first")
                             .returns(this.types.valueBuilderType())
                             .addModifiers(PUBLIC)
-                            .beginControlFlow("if(this.$N == null)", propertySpec.name())
+                            .beginControlFlow("if (this.$N == null)", propertySpec.name())
                             .addStatement("return this.$N(first)", propertySpec.name())
                             .nextControlFlow("else")
                             .addStatement("this.$N = new $T.Builder<$T>().with(first).with(this.$N).build()",
@@ -273,10 +272,10 @@ public class ValueBuilder {
                             .addParameter(this.types.propertySingleType(propertySpec), "first")
                             .returns(this.types.valueBuilderType())
                             .addModifiers(PUBLIC)
-                            .beginControlFlow("if(! condition)")
+                            .beginControlFlow("if (! condition)")
                             .addStatement("return this")
                             .endControlFlow()
-                            .beginControlFlow("if(this.$N == null)", propertySpec.name())
+                            .beginControlFlow("if (this.$N == null)", propertySpec.name())
                             .addStatement("return this.$N(first)", propertySpec.name())
                             .nextControlFlow("else")
                             .addStatement("this.$N = new $T.Builder<$T>().with(first).with(this.$N).build()",
@@ -298,7 +297,7 @@ public class ValueBuilder {
                         .addParameter(this.types.propertyType(propertySpec), propertySpec.name())
                         .returns(this.types.valueBuilderType())
                         .addModifiers(PUBLIC)
-                        .beginControlFlow("if(this.$N == null)", propertySpec.name())
+                        .beginControlFlow("if (this.$N == null)", propertySpec.name())
                         .addStatement("return this.$N($N)", propertySpec.name(), propertySpec.name())
                         .nextControlFlow("else")
                         .addStatement("this.$N = this.$N.toBuilder().with($N).build()", propertySpec.name(), propertySpec.name(), propertySpec.name())
@@ -311,7 +310,7 @@ public class ValueBuilder {
                         .varargs().addParameter(ArrayTypeName.of(this.types.propertySingleType(propertySpec)), propertySpec.name())
                         .returns(this.types.valueBuilderType())
                         .addModifiers(PUBLIC)
-                        .beginControlFlow("if(this.$N == null)", propertySpec.name())
+                        .beginControlFlow("if (this.$N == null)", propertySpec.name())
                         .addStatement("return this.$N($N)", propertySpec.name(), propertySpec.name())
                         .nextControlFlow("else")
                         .addStatement("this.$N = this.$N.toBuilder().with($N).build()", propertySpec.name(), propertySpec.name(), propertySpec.name())
@@ -327,7 +326,7 @@ public class ValueBuilder {
                         )
                         .returns(this.types.valueBuilderType())
                         .addModifiers(PUBLIC)
-                        .beginControlFlow("if(this.$N == null)", propertySpec.name())
+                        .beginControlFlow("if (this.$N == null)", propertySpec.name())
                         .addStatement("return this.$N($N)", propertySpec.name(), propertySpec.name())
                         .nextControlFlow("else")
                         .addStatement("this.$N = this.$N.toBuilder().with($N).build()", propertySpec.name(), propertySpec.name(), propertySpec.name())
@@ -336,7 +335,7 @@ public class ValueBuilder {
                         .build()
         );
 
-        if(propertySpec.typeSpec().typeKind().isValueObject()) {
+        if (propertySpec.typeSpec().typeKind().isValueObject()) {
             ClassName propertyType = this.types.valueObjectSingleType(propertySpec);
             String varargParameterName = propertySpec.name() + "Elements";
             result.add(
@@ -347,9 +346,9 @@ public class ValueBuilder {
                             )
                             .returns(this.types.valueBuilderType())
                             .addModifiers(PUBLIC)
-                            .beginControlFlow("if(this.$N == null)", propertySpec.name())
+                            .beginControlFlow("if (this.$N == null)", propertySpec.name())
                             .addStatement("return this.$N($N)", propertySpec.name(), propertySpec.name())
-                            .nextControlFlow("else if($L != null)", varargParameterName)
+                            .nextControlFlow("else if ($L != null)", varargParameterName)
                             .addStatement("this.$N = this.$N.toBuilder().with(($T<$T>) $T.stream($L).map(" +
                                             "consumer -> {" +
                                             "$T.Builder builder = $T.builder();" +
@@ -378,7 +377,7 @@ public class ValueBuilder {
         List<String> constructorParametersNames = new LinkedList<>();
 
         for (PropertySpec propertySpec : this.propertySpecs) {
-            if(constructorParametersFormat == null) {
+            if (constructorParametersFormat == null) {
                 constructorParametersFormat = "";
             } else {
                 constructorParametersFormat += ", ";
@@ -386,7 +385,7 @@ public class ValueBuilder {
             constructorParametersFormat += "this.$N";
             constructorParametersNames.add(propertySpec.name());
         }
-        if(constructorParametersFormat == null) {
+        if (constructorParametersFormat == null) {
             constructorParametersFormat = "";
         }
         return MethodSpec.methodBuilder("build")
@@ -412,9 +411,9 @@ public class ValueBuilder {
         return result;
     }
 
-    static private Object [] concat(Object first, Object ... others) {
+    static private Object[] concat(Object first, Object... others) {
         int size = 1;
-        if(others != null) {
+        if (others != null) {
             size += others.length;
         }
         Object[] result = new Object[size];

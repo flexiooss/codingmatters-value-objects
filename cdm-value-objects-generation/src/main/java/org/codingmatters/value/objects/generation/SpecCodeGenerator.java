@@ -36,14 +36,14 @@ public class SpecCodeGenerator {
     public void generate() throws IOException {
         File packageDestination = packageDir(rootDirectory, this.rootPackage);
 
-        if(this.hasPropertyWithCardinality(this.spec, LIST)) {
+        if (this.hasPropertyWithCardinality(this.spec, LIST)) {
             TypeSpec valueListInterface = new ValueList(this.rootPackage).type();
             writeJavaFile(packageDestination, this.rootPackage, valueListInterface);
             writeJavaFile(packageDestination, this.rootPackage, new ValueListImplementation(this.rootPackage, valueListInterface).type());
             writeJavaFile(packageDestination, this.rootPackage + ".optional", new OptionalValueList(this.rootPackage, valueListInterface).type());
 
         }
-        if(this.hasPropertyWithCardinality(this.spec, SET)) {
+        if (this.hasPropertyWithCardinality(this.spec, SET)) {
             TypeSpec valueSetInterface = new ValueSet(this.rootPackage).type();
             writeJavaFile(packageDestination, this.rootPackage, valueSetInterface);
             writeJavaFile(packageDestination, this.rootPackage, new ValueSetImplementation(this.rootPackage, valueSetInterface).type());
@@ -66,11 +66,11 @@ public class SpecCodeGenerator {
 
     private boolean hasPropertyWithCardinality(PropertyHolderSpec valueSpec, PropertyCardinality cardinality) {
         for (PropertySpec propertySpec : valueSpec.propertySpecs()) {
-            if(cardinality.equals(propertySpec.typeSpec().cardinality())) {
+            if (cardinality.equals(propertySpec.typeSpec().cardinality())) {
                 return true;
             }
-            if(propertySpec.typeSpec().typeKind() == EMBEDDED) {
-                if(this.hasPropertyWithCardinality(propertySpec.typeSpec().embeddedValueSpec(), cardinality)) {
+            if (propertySpec.typeSpec().typeKind() == EMBEDDED) {
+                if (this.hasPropertyWithCardinality(propertySpec.typeSpec().embeddedValueSpec(), cardinality)) {
                     return true;
                 }
             }

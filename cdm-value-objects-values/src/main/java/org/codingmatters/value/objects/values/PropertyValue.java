@@ -3,8 +3,8 @@ package org.codingmatters.value.objects.values;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -20,39 +20,75 @@ public interface PropertyValue {
     }
 
     static PropertyValue multipleString(String... values) {
-        return multiple(Type.STRING, Arrays.stream(values).map(val -> PropertyValue.builder().stringValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+        Value[] array = new Value[values.length];
+        for (int i = 0; i < values.length; i++) {
+            array[i] = new PropertyValueImpl.ValueImpl(Type.STRING, values[i]);
+        }
+        return multiple(Type.STRING, array);
     }
 
     static PropertyValue multipleLong(Long... values) {
-        return multiple(Type.LONG, Arrays.stream(values).map(val -> PropertyValue.builder().longValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+        Value[] array = new Value[values.length];
+        for (int i = 0; i < values.length; i++) {
+            array[i] = new PropertyValueImpl.ValueImpl(Type.LONG, values[i]);
+        }
+        return multiple(Type.LONG, array);
     }
 
     static PropertyValue multipleDouble(Double... values) {
-        return multiple(Type.DOUBLE, Arrays.stream(values).map(val -> PropertyValue.builder().doubleValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+        Value[] array = new Value[values.length];
+        for (int i = 0; i < values.length; i++) {
+            array[i] = new PropertyValueImpl.ValueImpl(Type.DOUBLE, values[i]);
+        }
+        return multiple(Type.DOUBLE, array);
     }
 
     static PropertyValue multipleObject(ObjectValue... values) {
-        return multiple(Type.OBJECT, Arrays.stream(values).map(val -> PropertyValue.builder().objectValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+        Value[] array = new Value[values.length];
+        for (int i = 0; i < values.length; i++) {
+            array[i] = new PropertyValueImpl.ValueImpl(Type.OBJECT, values[i]);
+        }
+        return multiple(Type.OBJECT, array);
     }
 
     static PropertyValue multipleDate(LocalDate... values) {
-        return multiple(Type.DATE, Arrays.stream(values).map(val -> PropertyValue.builder().dateValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+        Value[] array = new Value[values.length];
+        for (int i = 0; i < values.length; i++) {
+            array[i] = new PropertyValueImpl.ValueImpl(Type.DATE, values[i]);
+        }
+        return multiple(Type.DATE, array);
     }
 
     static PropertyValue multipleTime(LocalTime... values) {
-        return multiple(Type.TIME, Arrays.stream(values).map(val -> PropertyValue.builder().timeValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+        Value[] array = new Value[values.length];
+        for (int i = 0; i < values.length; i++) {
+            array[i] = new PropertyValueImpl.ValueImpl(Type.TIME, values[i]);
+        }
+        return multiple(Type.TIME, array);
     }
 
     static PropertyValue multipleDateTime(LocalDateTime... values) {
-        return multiple(Type.DATETIME, Arrays.stream(values).map(val -> PropertyValue.builder().datetimeValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+        Value[] array = new Value[values.length];
+        for (int i = 0; i < values.length; i++) {
+            array[i] = new PropertyValueImpl.ValueImpl(Type.DATETIME, values[i]);
+        }
+        return multiple(Type.DATETIME, array);
     }
 
     static PropertyValue multipleBoolean(Boolean... values) {
-        return multiple(Type.BOOLEAN, Arrays.stream(values).map(val -> PropertyValue.builder().booleanValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+        Value[] array = new Value[values.length];
+        for (int i = 0; i < values.length; i++) {
+            array[i] = new PropertyValueImpl.ValueImpl(Type.BOOLEAN, values[i]);
+        }
+        return multiple(Type.BOOLEAN, array);
     }
 
     static PropertyValue multipleBytes(byte[]... values) {
-        return multiple(Type.BYTES, Arrays.stream(values).map(val -> PropertyValue.builder().bytesValue(val).buildValue()).toArray(PropertyValue.Value[]::new));
+        Value[] array = new Value[values.length];
+        for (int i = 0; i < values.length; i++) {
+            array[i] = new PropertyValueImpl.ValueImpl(Type.BYTES, values[i]);
+        }
+        return multiple(Type.BYTES, array);
     }
 
     static PropertyValue multipleEmpty(Type type) {
@@ -368,55 +404,33 @@ public interface PropertyValue {
     static PropertyValue fromObject(Object object) throws Type.UnsupportedTypeException {
         if (object == null) return null;
 
-        if (object instanceof Object[]) {
-            object = Arrays.asList((Object[]) object);
+        if (object instanceof Object[] arr) {
+            object = Arrays.asList(arr);
         }
-        if (object instanceof Iterable) {
-            List<Value> vals = new LinkedList<>();
-            for (Object o : ((Iterable) object)) {
+        if (object instanceof Iterable<?> iterable) {
+            List<Value> vals = new ArrayList<>();
+            for (Object o : iterable) {
                 vals.add(o == null ? PropertyValue.builder().buildValue() : fromObject(o).single());
             }
             return PropertyValue.multiple(
                     vals.stream().filter(value -> value != null && !value.isNull()).map(Value::type).findFirst().orElse(Type.OBJECT),
                     vals.toArray(new Value[0]));
         } else {
-            if (object instanceof String) {
-                return PropertyValue.builder().stringValue((String) object).build();
-            }
-            if (object instanceof Long) {
-                return PropertyValue.builder().longValue((long) object).build();
-            }
-            if (object instanceof Integer) {
-                return PropertyValue.builder().longValue((long) (Integer) object).build();
-            }
-            if (object instanceof Double) {
-                return PropertyValue.builder().doubleValue((Double) object).build();
-            }
-            if (object instanceof Float) {
-                return PropertyValue.builder().doubleValue((double) (Float) object).build();
-            }
-            if (object instanceof Boolean) {
-                return PropertyValue.builder().booleanValue((Boolean) object).build();
-            }
-            if (object instanceof ObjectValue) {
-                return PropertyValue.builder().objectValue((ObjectValue) object).build();
-            }
-            if (object instanceof LocalDateTime) {
-                return PropertyValue.builder().datetimeValue((LocalDateTime) object).build();
-            }
-            if (object instanceof LocalDate) {
-                return PropertyValue.builder().dateValue((LocalDate) object).build();
-            }
-            if (object instanceof LocalTime) {
-                return PropertyValue.builder().timeValue((LocalTime) object).build();
-            }
-            if (object instanceof byte[]) {
-                return PropertyValue.builder().bytesValue((byte[]) object).build();
-            }
-            if (object instanceof Map) {
-                return PropertyValue.builder().objectValue(ObjectValue.fromMap((Map) object).build()).build();
-            }
+            return switch (object) {
+                case String s -> PropertyValue.builder().stringValue(s).build();
+                case Long l -> PropertyValue.builder().longValue(l).build();
+                case Integer i -> PropertyValue.builder().longValue(i.longValue()).build();
+                case Double d -> PropertyValue.builder().doubleValue(d).build();
+                case Float f -> PropertyValue.builder().doubleValue(f.doubleValue()).build();
+                case Boolean b -> PropertyValue.builder().booleanValue(b).build();
+                case ObjectValue o -> PropertyValue.builder().objectValue(o).build();
+                case LocalDateTime dt -> PropertyValue.builder().datetimeValue(dt).build();
+                case LocalDate d -> PropertyValue.builder().dateValue(d).build();
+                case LocalTime t -> PropertyValue.builder().timeValue(t).build();
+                case byte[] bytes -> PropertyValue.builder().bytesValue(bytes).build();
+                case Map map -> PropertyValue.builder().objectValue(ObjectValue.fromMap(map).build()).build();
+                default -> throw new Type.UnsupportedTypeException("unsupported type : " + object.getClass());
+            };
         }
-        throw new Type.UnsupportedTypeException("unsupported type : " + object.getClass());
     }
 }

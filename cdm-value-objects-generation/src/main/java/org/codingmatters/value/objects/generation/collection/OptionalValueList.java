@@ -35,15 +35,15 @@ public class OptionalValueList {
                         .build())
                 .addTypeVariable(TypeVariableName.get("O"))
                 .addMethod(MethodSpec.methodBuilder("get")
-                    .addModifiers(Modifier.PUBLIC)
-                    .addParameter(TypeName.INT, "index")
-                    .returns(TypeVariableName.get("O"))
-                    .beginControlFlow("if(this.optional.isPresent())")
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(TypeName.INT, "index")
+                        .returns(TypeVariableName.get("O"))
+                        .beginControlFlow("if (this.optional.isPresent())")
                         .addStatement("return this.createOptional.apply(this.optional.get().size() > index ? this.optional.get().get(index) : null)")
-                    .nextControlFlow("else")
+                        .nextControlFlow("else")
                         .addStatement("return this.createOptional.apply(null)")
-                    .endControlFlow()
-                    .build())
+                        .endControlFlow()
+                        .build())
                 .build();
     }
 }

@@ -5,7 +5,6 @@ import org.codingmatters.value.objects.spec.PropertyCardinality;
 import org.codingmatters.value.objects.spec.PropertySpec;
 import org.codingmatters.value.objects.spec.TypeKind;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +93,7 @@ public class ValueInterface {
                 .addModifiers(STATIC, PUBLIC)
                 .addParameter(this.types.valueType(), "value")
                 .returns(this.types.valueBuilderType())
-                .beginControlFlow("if(value != null)")
+                .beginControlFlow("if (value != null)")
                 .addStatement(statement, bindings.toArray())
                 .endControlFlow()
                 .beginControlFlow("else")
@@ -134,10 +133,10 @@ public class ValueInterface {
 
         for (PropertySpec propertySpec : propertySpecs) {
             result.addAll(this.createDefaultWhithers(propertySpec));
-            if(propertySpec.typeSpec().typeKind().isValueObject()) {
+            if (propertySpec.typeSpec().typeKind().isValueObject()) {
                 result.addAll(this.createChangedWithers(propertySpec));
             }
-            if(propertySpec.typeSpec().cardinality().isCollection()) {
+            if (propertySpec.typeSpec().cardinality().isCollection()) {
                 result.addAll(this.createIterableWithers(propertySpec));
             }
         }
@@ -179,9 +178,9 @@ public class ValueInterface {
                     .returns(this.types.valueType())
                     .addModifiers(PUBLIC, ABSTRACT)
                     .addParameter(ParameterizedTypeName.get(
-                            ClassName.get(Function.class),
-                            this.types.propertySingleType(propertySpec),
-                            this.types.propertySingleType(propertySpec)
+                                    ClassName.get(Function.class),
+                                    this.types.propertySingleType(propertySpec),
+                                    this.types.propertySingleType(propertySpec)
                             ),
                             "current"
                     )
@@ -191,7 +190,7 @@ public class ValueInterface {
             TypeName type = this.types.propertySingleType(propertySpec);
             ParameterizedTypeName changerType =
                     propertySpec.typeSpec().cardinality().equals(PropertyCardinality.LIST) ?
-                        this.types.collectionConfiguration().valueListOfTypeChanger(type) :
+                            this.types.collectionConfiguration().valueListOfTypeChanger(type) :
                             this.types.collectionConfiguration().valueSetOfTypeChanger(type);
 
             results.add(MethodSpec.methodBuilder(this.types.changedWitherMethodName(propertySpec))
@@ -244,7 +243,7 @@ public class ValueInterface {
         List<TypeSpec> result = new LinkedList<>();
 
         for (PropertySpec propertySpec : propertySpecs) {
-            if(TypeKind.ENUM.equals(propertySpec.typeSpec().typeKind()) && propertySpec.typeSpec().isInSpecEnum()) {
+            if (TypeKind.ENUM.equals(propertySpec.typeSpec().typeKind()) && propertySpec.typeSpec().isInSpecEnum()) {
                 result.add(this.createEnum(propertySpec));
             }
         }
@@ -253,8 +252,7 @@ public class ValueInterface {
 
     private TypeSpec createEnum(PropertySpec propertySpec) {
         TypeSpec.Builder result = TypeSpec.enumBuilder(this.types.enumTypeName(propertySpec.name()))
-                .addModifiers(STATIC, PUBLIC)
-                ;
+                .addModifiers(STATIC, PUBLIC);
         for (String value : propertySpec.typeSpec().enumValues()) {
             result.addEnumConstant(value);
         }

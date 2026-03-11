@@ -60,7 +60,7 @@ public class OptionalValue {
                             propertySpec.name());
                 }
             } else {
-                if(propertySpec.typeSpec().cardinality() == PropertyCardinality.LIST) {
+                if (propertySpec.typeSpec().cardinality() == PropertyCardinality.LIST) {
                     if (propertySpec.typeSpec().typeKind().isValueObject()) {
                         result.addStatement("this.$L = new $T<>(value != null ? value.$L() : null, e -> $T.of(e))",
                                 propertySpec.name(),
@@ -91,31 +91,31 @@ public class OptionalValue {
         List<FieldSpec> results = new LinkedList<>();
 
         results.add(FieldSpec.builder(
-                ParameterizedTypeName.get(ClassName.get(Optional.class), this.types.valueType()),
-                "optional")
+                        ParameterizedTypeName.get(ClassName.get(Optional.class), this.types.valueType()),
+                        "optional")
                 .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
                 .build());
 
         for (PropertySpec propertySpec : this.propertySpecs) {
-            if(! propertySpec.typeSpec().cardinality().isCollection()) {
+            if (!propertySpec.typeSpec().cardinality().isCollection()) {
                 if (!propertySpec.typeSpec().typeKind().isValueObject()) {
                     results.add(FieldSpec.builder(
-                            ParameterizedTypeName.get(ClassName.get(Optional.class), this.types.propertyType(propertySpec)),
-                            propertySpec.name())
+                                    ParameterizedTypeName.get(ClassName.get(Optional.class), this.types.propertyType(propertySpec)),
+                                    propertySpec.name())
                             .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
                             .build());
                 } else {
                     results.add(FieldSpec.builder(
-                            this.types.propertyOptionalType(propertySpec),
-                            propertySpec.name())
+                                    this.types.propertyOptionalType(propertySpec),
+                                    propertySpec.name())
                             .addModifiers(Modifier.PRIVATE)
                             .initializer("this.$L", propertySpec.name())
                             .build());
                 }
             } else {
                 results.add(FieldSpec.builder(
-                        this.types.propertyOptionalType(propertySpec),
-                        propertySpec.name())
+                                this.types.propertyOptionalType(propertySpec),
+                                propertySpec.name())
                         .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
                         .build());
             }
@@ -129,7 +129,7 @@ public class OptionalValue {
         List<MethodSpec> results = new LinkedList<>();
 
         for (PropertySpec propertySpec : this.propertySpecs) {
-            if(! propertySpec.typeSpec().cardinality().isCollection()) {
+            if (!propertySpec.typeSpec().cardinality().isCollection()) {
                 if (!propertySpec.typeSpec().typeKind().isValueObject()) {
                     results.add(MethodSpec.methodBuilder(propertySpec.name())
                             .addModifiers(Modifier.PUBLIC)
@@ -140,7 +140,7 @@ public class OptionalValue {
                     results.add(MethodSpec.methodBuilder(propertySpec.name())
                             .addModifiers(Modifier.PUBLIC, Modifier.SYNCHRONIZED)
                             .returns(this.types.propertyOptionalType(propertySpec))
-                            .beginControlFlow("if(this.$L == null)", propertySpec.name())
+                            .beginControlFlow("if (this.$L == null)", propertySpec.name())
                             .addStatement("this.$L = $T.of(this.optional.isPresent() ? this.optional.get().$L() : null)",
                                     propertySpec.name(),
                                     this.types.propertyOptionalType(propertySpec),

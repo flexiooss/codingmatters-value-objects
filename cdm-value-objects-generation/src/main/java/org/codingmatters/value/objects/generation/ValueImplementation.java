@@ -110,8 +110,8 @@ public class ValueImplementation {
     private MethodSpec createEquals() {
 
         String statement;
-        List<Object> bindings= new LinkedList<>();
-        if(propertySpecs.size() > 0) {
+        List<Object> bindings = new LinkedList<>();
+        if (propertySpecs.size() > 0) {
             statement = "$T that = ($T) o;\n";
             bindings.add(this.types.valueImplType());
             bindings.add(this.types.valueImplType());
@@ -119,13 +119,13 @@ public class ValueImplementation {
             statement += "return ";
             boolean started = false;
             for (PropertySpec propertySpec : propertySpecs) {
-                if(started) {
+                if (started) {
                     statement += " && \n";
                 }
                 started = true;
 
                 statement += "$T.equals(this." + propertySpec.name() + ", that." + propertySpec.name() + ")";
-                if(this.isByteArrayType(propertySpec)) {
+                if (this.isByteArrayType(propertySpec)) {
                     bindings.add(ClassName.get(Arrays.class));
                 } else {
                     bindings.add(ClassName.get(Objects.class));
@@ -174,17 +174,16 @@ public class ValueImplementation {
                 propertySpecs.stream()
                         .map(propertySpec -> "\"" + propertySpec.name() + "=\" + $T.toString(this." + propertySpec.name() + ") +\n")
                         .collect(Collectors.joining(
-                                "\", \" + ",
-                                "return \"" + this.types.valueType().simpleName() + "{\" +\n",
-                                "'}'"
+                                        "\", \" + ",
+                                        "return \"" + this.types.valueType().simpleName() + "{\" +\n",
+                                        "'}'"
                                 )
-                        )
-                ;
+                        );
 
-        Object [] args = new Object[propertySpecs.size()];
-        for (int i = 0; i < propertySpecs.size() ; i++) {
+        Object[] args = new Object[propertySpecs.size()];
+        for (int i = 0; i < propertySpecs.size(); i++) {
             PropertySpec propertySpec = propertySpecs.get(i);
-            if(this.isByteArrayType(propertySpec)) {
+            if (this.isByteArrayType(propertySpec)) {
                 args[i] = Arrays.class;
             } else {
                 args[i] = Objects.class;
@@ -212,10 +211,10 @@ public class ValueImplementation {
                             .addStatement("return $T.from(this)." + propertySpec.name() + "(value).build()", this.types.valueType())
                             .build()
             );
-            if(propertySpec.typeSpec().typeKind().isValueObject()) {
+            if (propertySpec.typeSpec().typeKind().isValueObject()) {
                 this.createChangedWithers(result, propertySpec);
             }
-            if(propertySpec.typeSpec().cardinality().isCollection()) {
+            if (propertySpec.typeSpec().cardinality().isCollection()) {
                 result.add(
                         MethodSpec.methodBuilder(this.types.witherMethodName(propertySpec))
                                 .returns(this.types.valueType())
@@ -238,7 +237,7 @@ public class ValueImplementation {
     }
 
     private void createChangedWithers(List<MethodSpec> result, PropertySpec propertySpec) {
-        if(! propertySpec.typeSpec().cardinality().isCollection()) {
+        if (!propertySpec.typeSpec().cardinality().isCollection()) {
             result.add(
                     MethodSpec.methodBuilder(this.types.changedWitherMethodName(propertySpec))
                             .returns(this.types.valueType())
@@ -259,9 +258,9 @@ public class ValueImplementation {
                     .returns(this.types.valueType())
                     .addModifiers(PUBLIC)
                     .addParameter(ParameterizedTypeName.get(
-                            ClassName.get(Function.class),
-                            this.types.propertySingleType(propertySpec),
-                            this.types.propertySingleType(propertySpec)
+                                    ClassName.get(Function.class),
+                                    this.types.propertySingleType(propertySpec),
+                                    this.types.propertySingleType(propertySpec)
                             ),
                             "current"
                     )
@@ -338,12 +337,12 @@ public class ValueImplementation {
         return FieldSpec.builder(DateTimeFormatter.class, "LOCAL_DATE_TEMPORAL_FORMATTER", STATIC, PUBLIC, FINAL)
                 .initializer(CodeBlock.builder()
                         .addStatement("new $T().appendPattern($S)" +
-                                ".parseDefaulting($T.MONTH_OF_YEAR, 1)" +
-                                ".parseDefaulting(ChronoField.DAY_OF_MONTH, 1)\n" +
-                                ".parseDefaulting(ChronoField.HOUR_OF_DAY, 0)\n" +
-                                ".parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)\n" +
-                                ".parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)\n" +
-                                ".toFormatter()",
+                                        ".parseDefaulting($T.MONTH_OF_YEAR, 1)" +
+                                        ".parseDefaulting(ChronoField.DAY_OF_MONTH, 1)\n" +
+                                        ".parseDefaulting(ChronoField.HOUR_OF_DAY, 0)\n" +
+                                        ".parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)\n" +
+                                        ".parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)\n" +
+                                        ".toFormatter()",
                                 DateTimeFormatterBuilder.class,
                                 "yyyy[-MM[-dd['T'HH[:mm[:ss[.SSSSSSSSS][.SSSSSSSS][.SSSSSSS][.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S]]]",
                                 ChronoField.class
@@ -356,9 +355,9 @@ public class ValueImplementation {
         return FieldSpec.builder(DateTimeFormatter.class, "LOCAL_TIME_TEMPORAL_FORMATTER", STATIC, PUBLIC, FINAL)
                 .initializer(CodeBlock.builder()
                         .addStatement("new $T().appendPattern($S)" +
-                                ".parseDefaulting($T.MINUTE_OF_HOUR, 0)\n" +
-                                ".parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)\n" +
-                                ".toFormatter()",
+                                        ".parseDefaulting($T.MINUTE_OF_HOUR, 0)\n" +
+                                        ".parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)\n" +
+                                        ".toFormatter()",
                                 DateTimeFormatterBuilder.class,
                                 "HH[:mm[:ss[.SSSSSSSSS][.SSSSSSSS][.SSSSSSS][.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S]]]",
                                 ChronoField.class

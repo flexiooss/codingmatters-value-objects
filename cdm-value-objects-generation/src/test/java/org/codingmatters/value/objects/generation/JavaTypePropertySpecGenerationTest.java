@@ -4,7 +4,6 @@ import org.codingmatters.tests.compile.CompiledCode;
 import org.codingmatters.tests.compile.FileHelper;
 import org.codingmatters.tests.compile.helpers.ClassLoaderHelper;
 import org.codingmatters.tests.compile.helpers.helpers.ObjectHelper;
-import org.codingmatters.tests.reflect.matchers.TypeMatcher;
 import org.codingmatters.value.objects.spec.Spec;
 import org.codingmatters.value.objects.spec.TypeKind;
 import org.junit.Before;
@@ -19,9 +18,9 @@ import static org.codingmatters.value.objects.spec.PropertySpec.property;
 import static org.codingmatters.value.objects.spec.PropertyTypeSpec.type;
 import static org.codingmatters.value.objects.spec.Spec.spec;
 import static org.codingmatters.value.objects.spec.ValueSpec.valueSpec;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by nelt on 9/14/16.
@@ -33,13 +32,13 @@ public class JavaTypePropertySpecGenerationTest {
 
     private FileHelper fileHelper = new FileHelper();
 
-    private final Spec spec  = spec()
+    private final Spec spec = spec()
             .addValue(
                     valueSpec().name("val")
-                    .addProperty(property().name("prop").type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(String.class.getName())))
-                    .addProperty(property().name("prop2").type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(String.class.getName())))
-                    .addProperty(property().name("binary").type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(byte[].class.getName())))
-                    .addProperty(property().name("snake_prop").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
+                            .addProperty(property().name("prop").type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(String.class.getName())))
+                            .addProperty(property().name("prop2").type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(String.class.getName())))
+                            .addProperty(property().name("binary").type(type().typeKind(TypeKind.JAVA_TYPE).typeRef(byte[].class.getName())))
+                            .addProperty(property().name("snake_prop").type(type().typeRef(String.class.getName()).typeKind(TypeKind.JAVA_TYPE)))
             )
             .build();
     private ClassLoaderHelper classes;
