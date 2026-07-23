@@ -44,6 +44,11 @@ public interface ObjectValue {
     class Builder {
         private final Map<String, PropertyValue> properties = new HashMap<>();
 
+        public Builder withoutProperty(String property) {
+            this.properties.remove(property);
+            return this;
+        }
+
         public Builder property(String property, PropertyValue value) {
             this.properties.put(property, value);
             return this;
