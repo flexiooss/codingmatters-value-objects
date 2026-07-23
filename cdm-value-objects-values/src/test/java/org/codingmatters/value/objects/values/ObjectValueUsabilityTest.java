@@ -7,7 +7,9 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
+import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -205,5 +207,61 @@ public class ObjectValueUsabilityTest {
         assertThat(value.propertyNames(), is(value.properties()));
         assertThat(value.propertyNames().length, is(1));
         assertThat(value.propertyNames()[0], is("p"));
+    }
+
+    @Test
+    public void builderWithoutProperty__whenPropertyPresent__thenPropertyRemoved() throws Exception {
+        ObjectValue value = ObjectValue.builder()
+                .property("p1", v -> v.stringValue("v1"))
+                .property("p2", v -> v.stringValue("v2"))
+                .withoutProperty("p2")
+                .build();
+
+        assertThat(value.propertyNames(), arrayContaining("p1"));
+        assertThat(value.has("p2"), is(false));
+        assertThat(value.property("p1").single().stringValue(), is("v1"));
+    }
+
+    @Test
+    public void builderWithoutProperty__whenPropertyAbsent__thenNoOp() throws Exception {
+        ObjectValue value = ObjectValue.builder()
+                .property("p1", v -> v.stringValue("v1"))
+                .withoutProperty("unknown")
+                .build();
+
+        assertThat(value.propertyNames(), arrayContaining("p1"));
+        assertThat(value.has("p1"), is(true));
+    }
+
+    @Test
+    public void builderWithoutProperty__whenAllPropertiesRemoved__thenEmptyObjectValue() throws Exception {
+        ObjectValue value = ObjectValue.builder()
+                .property("p1", v -> v.stringValue("v1"))
+                .property("p2", v -> v.stringValue("v2"))
+                .withoutProperty("p1")
+                .withoutProperty("p2")
+                .build();
+
+        assertThat(value.propertyNames(), emptyArray());
+    }
+
+    @Test
+    public void builderWithoutProperty__thenReturnsSameBuilderForChaining() throws Exception {
+        ObjectValue.Builder builder = ObjectValue.builder()
+                .property("p1", v -> v.stringValue("v1"));
+
+        assertThat(builder.withoutProperty("p1"), is(sameInstance(builder)));
+    }
+
+    @Test
+    public void builderWithoutProperty__whenPropertyReAdded__thenPropertyPresent() throws Exception {
+        ObjectValue value = ObjectValue.builder()
+                .property("p1", v -> v.stringValue("v1"))
+                .withoutProperty("p1")
+                .property("p1", v -> v.stringValue("v2"))
+                .build();
+
+        assertThat(value.propertyNames(), arrayContaining("p1"));
+        assertThat(value.property("p1").single().stringValue(), is("v2"));
     }
 }
